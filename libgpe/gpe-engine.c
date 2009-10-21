@@ -871,3 +871,9 @@ gpe_engine_remove_object (GPEEngine *engine,
 	engine->priv->object_list = g_list_delete_link (engine->priv->object_list, item);
 	gpe_engine_deactivate_plugins (engine, object);
 }
+
+GPEEngine *
+gpe_engine_new (void)
+{
+	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE, NULL));
+}
