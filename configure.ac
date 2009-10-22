@@ -121,6 +121,7 @@ Makefile
 libgpe/Makefile
 loaders/Makefile
 loaders/c/Makefile
+gpe-demo/Makefile
 po/Makefile.in
 ])
 
