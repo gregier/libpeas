@@ -27,6 +27,7 @@
 #include <gtk/gtk.h>
 #include "gpe-plugin-info.h"
 #include "gpe-plugin.h"
+#include "gpe-path-info.h"
 
 G_BEGIN_DECLS
 
@@ -65,7 +66,8 @@ struct _GPEEngineClass
 };
 
 GType		 gpe_engine_get_type			(void) G_GNUC_CONST;
-GPEEngine	*gpe_engine_new				(void);
+
+GPEEngine	*gpe_engine_new				(const GPEPathInfo *paths);
 
 void		 gpe_engine_garbage_collect		(GPEEngine      *engine);
 

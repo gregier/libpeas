@@ -55,6 +55,8 @@ _gpe_plugin_info_unref (GPEPluginInfo *info)
 		g_object_unref (info->plugin);
 
 	g_free (info->file);
+	g_free (info->module_dir);
+	g_free (info->data_dir);
 	g_free (info->module_name);
 	g_strfreev (info->dependencies);
 	g_free (info->name);
@@ -94,13 +96,15 @@ gpe_plugin_info_get_type (void)
 /**
  * gpe_plugin_info_new:
  * @filename: the filename where to read the plugin information
+ * @pathinfo: a #GPEPathInfo.
  *
  * Creates a new #GPEPluginInfo from a file on the disk.
  *
  * Return value: a newly created #GPEPluginInfo.
  */
 GPEPluginInfo *
-_gpe_plugin_info_new (const gchar *file)
+_gpe_plugin_info_new (const gchar       *file,
+		      const GPEPathInfo *pathinfo)
 {
 	GPEPluginInfo *info;
 	GKeyFile *plugin_file = NULL;
@@ -229,6 +233,9 @@ _gpe_plugin_info_new (const gchar *file)
 
 	g_key_file_free (plugin_file);
 
+	info->module_dir = g_strdup (pathinfo->module_dir);
+	info->data_dir = g_build_filename (pathinfo->data_dir, info->module_name, NULL);
+
 	/* If we know nothing about the availability of the plugin,
 	   set it as available */
 	info->available = TRUE;
@@ -279,6 +286,22 @@ gpe_plugin_info_get_module_name (GPEPluginInfo *info)
 	g_return_val_if_fail (info != NULL, NULL);
 
 	return info->module_name;
+}
+
+const gchar *
+gpe_plugin_info_get_module_dir (GPEPluginInfo *info)
+{
+	g_return_val_if_fail (info != NULL, NULL);
+
+	return info->module_dir;
+}
+
+const gchar *
+gpe_plugin_info_get_data_dir (GPEPluginInfo *info)
+{
+	g_return_val_if_fail (info != NULL, NULL);
+
+	return info->data_dir;
 }
 
 const gchar *

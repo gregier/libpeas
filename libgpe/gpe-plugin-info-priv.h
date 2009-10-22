@@ -26,6 +26,8 @@
 
 #include "gpe-plugin-info.h"
 #include "gpe-plugin.h"
+#include "gpe-path-info.h"
+
 
 struct _GPEPluginInfo
 {
@@ -33,6 +35,8 @@ struct _GPEPluginInfo
 
 	GPEPlugin         *plugin;
 	gchar             *file;
+	gchar             *module_dir;
+	gchar             *data_dir;
 
 	gchar             *module_name;
 	gchar		  *loader;
@@ -52,7 +56,7 @@ struct _GPEPluginInfo
 	gint               available : 1;
 };
 
-GPEPluginInfo	*_gpe_plugin_info_new		(const gchar *file);
+GPEPluginInfo	*_gpe_plugin_info_new		(const gchar *file, const GPEPathInfo *pathinfo);
 void		 _gpe_plugin_info_ref		(GPEPluginInfo *info);
 void		 _gpe_plugin_info_unref		(GPEPluginInfo *info);
 

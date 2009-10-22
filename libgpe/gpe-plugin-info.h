@@ -40,6 +40,8 @@ gboolean 	 gpe_plugin_info_is_available		(GPEPluginInfo *info);
 gboolean	 gpe_plugin_info_is_configurable	(GPEPluginInfo *info);
 
 const gchar	*gpe_plugin_info_get_module_name	(GPEPluginInfo *info);
+const gchar	*gpe_plugin_info_get_module_dir		(GPEPluginInfo *info);
+const gchar	*gpe_plugin_info_get_data_dir		(GPEPluginInfo *info);
 
 const gchar	*gpe_plugin_info_get_name		(GPEPluginInfo *info);
 const gchar	*gpe_plugin_info_get_description	(GPEPluginInfo *info);

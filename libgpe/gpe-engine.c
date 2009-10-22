@@ -59,11 +59,18 @@ enum
 
 static guint signals[LAST_SIGNAL];
 
+/* Properties */
+enum
+{
+	PROP_0,
+	PROP_PATH_INFOS
+};
+
 G_DEFINE_TYPE(GPEEngine, gpe_engine, G_TYPE_OBJECT)
 
 struct _GPEEnginePrivate
 {
-	gchar **plugins_dirs;
+	const GPEPathInfo *paths;
 
 	GList *plugin_list;
 	GHashTable *loaders;
@@ -99,6 +106,8 @@ load_dir_real (GPEEngine *engine,
 	gboolean ret = TRUE;
 
 	g_return_val_if_fail (dir != NULL, TRUE);
+
+	g_debug ("Loading %s...", dir);
 
 	d = g_dir_open (dir, 0, &error);
 	if (!d)
@@ -136,7 +145,7 @@ load_plugin_info (GPEEngine *engine,
 {
 	GPEPluginInfo *info;
 
-	info = _gpe_plugin_info_new (filename);
+	info = _gpe_plugin_info_new (filename, (GPEPathInfo *) userdata);
 
 	if (info == NULL)
 		return TRUE;
@@ -158,57 +167,15 @@ load_plugin_info (GPEEngine *engine,
 static void
 load_all_plugins (GPEEngine *engine)
 {
-	gchar *plugin_dir;
-	const gchar *pdirs_env = NULL;
+	const GPEPathInfo *pathinfo;
 
-	/* load user plugins */
-	plugin_dir = gpe_dirs_get_user_plugins_dir ();
-	if (g_file_test (plugin_dir, G_FILE_TEST_IS_DIR))
+	for (pathinfo = engine->priv->paths; pathinfo->module_dir != NULL; pathinfo++)
 	{
 		load_dir_real (engine,
-			       plugin_dir,
+			       pathinfo->module_dir,
 			       PLUGIN_EXT,
 			       load_plugin_info,
-			       NULL);
-
-	}
-	g_free (plugin_dir);
-
-	/* load system plugins */
-	pdirs_env = g_getenv ("GPE_PLUGINS_PATH");
-
-	if (pdirs_env != NULL)
-	{
-		gchar **pdirs;
-		gint i;
-
-		pdirs = g_strsplit (pdirs_env, G_SEARCHPATH_SEPARATOR_S, 0);
-
-		for (i = 0; pdirs[i] != NULL; i++)
-		{
-			if (!load_dir_real (engine,
-					    pdirs[i],
-					    PLUGIN_EXT,
-					    load_plugin_info,
-					    NULL))
-			{
-				break;
-			}
-		}
-
-		g_strfreev (pdirs);
-	}
-	else
-	{
-		plugin_dir = gpe_dirs_get_plugins_dir ();
-
-		load_dir_real (engine,
-			       plugin_dir,
-			       PLUGIN_EXT,
-			       load_plugin_info,
-			       NULL);
-
-		g_free (plugin_dir);
+			       (gpointer) pathinfo);
 	}
 }
 
@@ -272,8 +239,6 @@ gpe_engine_init (GPEEngine *engine)
 
 	engine->priv->object_list = NULL;
 
-	load_all_plugins (engine);
-
 	/* make sure that the first reactivation will read active plugins
 	   from the prefs */
 	engine->priv->activate_from_prefs = TRUE;
@@ -283,6 +248,12 @@ gpe_engine_init (GPEEngine *engine)
 						       equal_lowercase,
 						       (GDestroyNotify)g_free,
 						       (GDestroyNotify)loader_destroy);
+}
+
+static void
+gpe_engine_constructed (GObject *object)
+{
+	load_all_plugins (GPE_ENGINE (object));
 }
 
 static void
@@ -298,6 +269,25 @@ gpe_engine_garbage_collect (GPEEngine *engine)
 	g_hash_table_foreach (engine->priv->loaders,
 			      (GHFunc) loader_garbage_collect,
 			      NULL);
+}
+
+static void
+gpe_engine_set_property (GObject      *object,
+			 guint         prop_id,
+			 const GValue *value,
+			 GParamSpec   *pspec)
+{
+	GPEEngine *engine = GPE_ENGINE (object);
+
+        switch (prop_id)
+        {
+                case PROP_PATH_INFOS:
+                        engine->priv->paths = (const GPEPathInfo *) g_value_get_pointer (value);
+			break;
+                default:
+                        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+                        break;
+        }
 }
 
 static void
@@ -338,10 +328,18 @@ gpe_engine_class_init (GPEEngineClass *klass)
 	GType the_type = G_TYPE_FROM_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = gpe_engine_constructed;
+	object_class->set_property = gpe_engine_set_property;
 	object_class->finalize = gpe_engine_finalize;
 	klass->activate_plugin = gpe_engine_activate_plugin_real;
 	klass->deactivate_plugin = gpe_engine_deactivate_plugin_real;
 	klass->plugin_deactivated = dummy;
+
+        g_object_class_install_property (object_class, PROP_PATH_INFOS,
+                                         g_param_spec_pointer ("path-infos",
+                                                               "Path Infos",
+                                                               "Information on the paths where to find plugins",
+                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
 	signals[ACTIVATE_PLUGIN] =
 		g_signal_new ("activate-plugin",
@@ -525,52 +523,13 @@ save_active_plugin_list (GPEEngine *engine)
 	g_slist_free (active_plugins);
 }
 
-static gchar *
-find_plugin_data_dir (const gchar   *install_dir,
-                      GPEPluginInfo *info)
-{
-	gchar *gpe_lib_dir;
-	gchar *data_dir;
-
-	/* If it's a "user" plugin the data dir is $install_dir/$module_name.
-	 * if instead it's a "system" plugin the data dir is under
-	 * $data_dir, so the data is located it's under
-	 * $prefix/share/libgpe-2.0/plugins/$module_name.
-	 */
-	gpe_lib_dir = gpe_dirs_get_lib_dir ();
-
-	/* CHECK: is checking the prefix enough or should we be more
-	 * careful about normalizing paths etc? */
-	if (g_str_has_prefix (install_dir, gpe_lib_dir))
-	{
-		gchar *gpe_data_dir = gpe_dirs_get_data_dir ();
-
-		data_dir = g_build_filename (gpe_data_dir,
-					     "plugins",
-					     info->module_name,
-					     NULL);
-
-		g_free (gpe_data_dir);
-	}
-	else
-	{
-		data_dir = g_build_filename (install_dir,
-					     info->module_name,
-					     NULL);
-	}
-
-	g_free (gpe_lib_dir);
-
-	return data_dir;
-}
-
 static gboolean
 load_plugin (GPEEngine     *engine,
 	     GPEPluginInfo *info)
 {
 	GPEPluginLoader *loader;
-	gchar *path;
-	gchar *data_dir;
+	const gchar *path;
+	const gchar *data_dir;
 
 	if (gpe_plugin_info_is_active (info))
 		return TRUE;
@@ -587,15 +546,12 @@ load_plugin (GPEEngine     *engine,
 		return FALSE;
 	}
 
-	path = g_path_get_dirname (info->file);
+	path = gpe_plugin_info_get_module_dir (info);
+	data_dir = gpe_plugin_info_get_data_dir (info);
 	g_return_val_if_fail (path != NULL, FALSE);
-
-	data_dir = find_plugin_data_dir (path, info);
+	g_return_val_if_fail (data_dir != NULL, FALSE);
 
 	info->plugin = gpe_plugin_loader_load (loader, info, path, data_dir);
-
-	g_free (data_dir);
-	g_free (path);
 
 	if (info->plugin == NULL)
 	{
@@ -873,7 +829,7 @@ gpe_engine_remove_object (GPEEngine *engine,
 }
 
 GPEEngine *
-gpe_engine_new (void)
+gpe_engine_new (const GPEPathInfo *paths)
 {
-	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE, NULL));
+	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE, "path-infos", paths, NULL));
 }
