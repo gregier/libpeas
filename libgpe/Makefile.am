@@ -17,14 +17,14 @@ libgpe_2_0_la_LIBADD = $(GPE_LIBS)
 
 INST_H_FILES =			\
 	gpe-plugin.h		\
-	gpe-plugin-info.h
+	gpe-plugin-info.h	\
+	gpe-engine.h
 
 NOINST_H_FILES =		\
 	gpe-dirs.h		\
 	gpe-object-module.h	\
 	gpe-plugin-info-priv.h	\
-	gpe-plugin-loader.h	\
-	gpe-engine.h
+	gpe-plugin-loader.h
 
 libgpe_2_0_la_SOURCES = 	\
 	gpe-dirs.c		\
