@@ -325,14 +325,14 @@ gpe_plugin_info_get_icon_name (GPEPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, NULL);
 
-	/* use the gedit-plugin icon as a default if the plugin does not
+	/* use the libgpe-plugin icon as a default if the plugin does not
 	   have its own */
 	if (info->icon_name != NULL &&
 	    gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
 				     info->icon_name))
 		return info->icon_name;
 	else
-		return "gedit-plugin";
+		return "libgpe-plugin";
 }
 
 const gchar **

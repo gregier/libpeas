@@ -1,4 +1,4 @@
 ## Process this file with automake to produce Makefile.in
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = libgpe loaders libgpeui gpe-demo
+SUBDIRS = libgpe loaders libgpeui data gpe-demo
