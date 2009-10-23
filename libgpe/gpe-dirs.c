@@ -25,13 +25,39 @@
 gchar *
 gpe_dirs_get_data_dir (void)
 {
-	return g_build_filename (DATADIR, "libgpe-2.0", NULL);
+	gchar *data_dir;
+
+#ifndef G_OS_WIN32
+	data_dir = g_build_filename (DATADIR, "libgpe-2.0", NULL);
+#else
+	gchar *win32_dir;
+
+	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+
+	data_dir = g_build_filename (win32_dir, "share", "libgpe-2.0", NULL);
+	g_free (win32_dir);
+#endif
+
+	return data_dir;
 }
 
 gchar *
 gpe_dirs_get_lib_dir (void)
 {
-	return g_build_filename (LIBDIR, "libgpe-2.0",  NULL);
+	gchar *lib_dir;
+
+#ifndef G_OS_WIN32
+	lib_dir = g_build_filename (LIBDIR, "libgpe-2.0",  NULL);
+#else
+	gchar *win32_dir;
+
+	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+
+	data_dir = g_build_filename (win32_dir, "lib", "libgpe-2.0", NULL);
+	g_free (win32_dir);
+#endif
+
+	return lib_dir;
 }
 
 gchar *
