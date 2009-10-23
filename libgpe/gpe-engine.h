@@ -71,8 +71,13 @@ GPEEngine	*gpe_engine_new				(const GPEPathInfo *paths);
 
 void		 gpe_engine_garbage_collect		(GPEEngine      *engine);
 
+/* plugin list management */
+void		 gpe_engine_rescan_plugins		(GPEEngine      *engine);
 const GList	*gpe_engine_get_plugin_list 		(GPEEngine      *engine);
+void		 gpe_engine_set_active_plugin_list	(GPEEngine      *engine,
+							 GList          *active_plugins);
 
+/* plugin info */
 GPEPluginInfo	*gpe_engine_get_plugin_info		(GPEEngine      *engine,
 							 const gchar    *name);
 
@@ -89,11 +94,6 @@ void	 	 gpe_engine_configure_plugin		(GPEEngine      *engine,
 /* plugin activation/deactivation per target_object */
 void		 gpe_engine_update_plugins_ui		(GPEEngine      *engine,
 							 GObject        *target_object);
-
-/* private for gconf notification */
-void		 gpe_engine_active_plugins_changed	(GPEEngine      *engine);
-
-void		 gpe_engine_rescan_plugins		(GPEEngine      *engine);
 
 /* object management */
 void		 gpe_engine_add_object			(GPEEngine     *engine,

@@ -35,10 +35,6 @@
 #include "gpe-object-module.h"
 #include "gpe-plugin.h"
 #include "gpe-dirs.h"
-/*#include <gedit/gedit-prefs-manager.h>*/
-
-#define GPE_ENGINE_BASE_KEY "/apps/gedit-2/plugins"
-#define GPE_ENGINE_KEY GPE_ENGINE_BASE_KEY "/active-plugins"
 
 #define PLUGIN_EXT	".gedit-plugin"
 #define LOADER_EXT	G_MODULE_SUFFIX
@@ -76,8 +72,6 @@ struct _GPEEnginePrivate
 	GHashTable *loaders;
 
 	GList *object_list;
-
-	gboolean activate_from_prefs;
 };
 
 static void	gpe_engine_activate_plugin_real		 (GPEEngine     *engine,
@@ -238,10 +232,6 @@ gpe_engine_init (GPEEngine *engine)
 						    GPEEnginePrivate);
 
 	engine->priv->object_list = NULL;
-
-	/* make sure that the first reactivation will read active plugins
-	   from the prefs */
-	engine->priv->activate_from_prefs = TRUE;
 
 	/* mapping from loadername -> loader object */
 	engine->priv->loaders = g_hash_table_new_full (hash_lowercase,
@@ -501,28 +491,6 @@ gpe_engine_get_plugin_info (GPEEngine   *engine,
 	return l == NULL ? NULL : (GPEPluginInfo *) l->data;
 }
 
-static void
-save_active_plugin_list (GPEEngine *engine)
-{
-	GSList *active_plugins = NULL;
-	GList *l;
-
-	for (l = engine->priv->plugin_list; l != NULL; l = l->next)
-	{
-		GPEPluginInfo *info = (GPEPluginInfo *) l->data;
-
-		if (gpe_plugin_info_is_active (info))
-		{
-			active_plugins = g_slist_prepend (active_plugins,
-							  (gpointer)gpe_plugin_info_get_module_name (info));
-		}
-	}
-
-/*	gedit_prefs_manager_set_active_plugins (active_plugins); */
-
-	g_slist_free (active_plugins);
-}
-
 static gboolean
 load_plugin (GPEEngine     *engine,
 	     GPEPluginInfo *info)
@@ -590,9 +558,6 @@ gpe_engine_activate_plugin (GPEEngine     *engine,
 
 	g_signal_emit (engine, signals[ACTIVATE_PLUGIN], 0, info);
 
-	if (gpe_plugin_info_is_active (info))
-		save_active_plugin_list (engine);
-
 	return gpe_plugin_info_is_active (info);
 }
 
@@ -635,8 +600,6 @@ gpe_engine_deactivate_plugin (GPEEngine     *engine,
 		return TRUE;
 
 	g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
-	if (!gpe_plugin_info_is_active (info))
-		save_active_plugin_list (engine);
 
 	return !gpe_plugin_info_is_active (info);
 }
@@ -645,42 +608,21 @@ static void
 gpe_engine_activate_plugins (GPEEngine *engine,
 			     GObject   *target_object)
 {
-	GSList *active_plugins = NULL;
 	GList *pl;
 
 	g_return_if_fail (GPE_IS_ENGINE (engine));
 	g_return_if_fail (G_IS_OBJECT (target_object));
 
-	/* the first time, we get the 'active' plugins from gconf */
-	if (engine->priv->activate_from_prefs)
-	{
-/*		active_plugins = gedit_prefs_manager_get_active_plugins (); */
-	}
-
 	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
 	{
 		GPEPluginInfo *info = (GPEPluginInfo*)pl->data;
 
-		if (engine->priv->activate_from_prefs &&
-		    g_slist_find_custom (active_plugins,
-					 gpe_plugin_info_get_module_name (info),
-					 (GCompareFunc)strcmp) == NULL)
-			continue;
-
-		/* If plugin is not active, don't try to activate/load it */
-		if (!engine->priv->activate_from_prefs &&
-		    !gpe_plugin_info_is_active (info))
+		/* check if the plugin hasn't been activated yet. */
+		if (gpe_plugin_info_is_active (info))
 			continue;
 
 		if (load_plugin (engine, info))
 			gpe_plugin_activate (info->plugin, target_object);
-	}
-
-	if (engine->priv->activate_from_prefs)
-	{
-		g_slist_foreach (active_plugins, (GFunc) g_free, NULL);
-		g_slist_free (active_plugins);
-		engine->priv->activate_from_prefs = FALSE;
 	}
 
 	/* also call update_ui after activation */
@@ -761,17 +703,15 @@ gpe_engine_configure_plugin (GPEEngine     *engine,
 }
 
 void
-gpe_engine_active_plugins_changed (GPEEngine *engine)
+gpe_engine_set_active_plugin_list (GPEEngine *engine,
+				   GList     *active_plugins)
 {
-	gboolean to_activate;
-	GSList *active_plugins = NULL;
 	GList *pl;
-
-/*	active_plugins = gedit_prefs_manager_get_active_plugins (); */
 
 	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
 	{
 		GPEPluginInfo *info = (GPEPluginInfo*)pl->data;
+		gboolean to_activate;
 
 		if (!gpe_plugin_info_is_available (info))
 			continue;
