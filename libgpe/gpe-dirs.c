@@ -61,26 +61,6 @@ gpe_dirs_get_lib_dir (void)
 }
 
 gchar *
-gpe_dirs_get_user_plugins_dir (void)
-{
-	return g_build_filename (g_get_user_config_dir (), "libgpe", "plugins", NULL);
-}
-
-gchar *
-gpe_dirs_get_plugins_dir (void)
-{
-	gchar *lib_dir;
-	gchar *plugin_dir;
-	
-	lib_dir = gpe_dirs_get_lib_dir ();
-	plugin_dir = g_build_filename (lib_dir, "plugins",  NULL);
-
-	g_free (lib_dir);
-	
-	return plugin_dir;
-}
-
-gchar *
 gpe_dirs_get_plugin_loaders_dir (void)
 {
 	gchar *lib_dir;

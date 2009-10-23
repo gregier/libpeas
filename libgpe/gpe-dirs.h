@@ -30,8 +30,6 @@ G_BEGIN_DECLS
 
 gchar	*gpe_dirs_get_data_dir			(void);
 gchar	*gpe_dirs_get_lib_dir			(void);
-gchar	*gpe_dirs_get_user_plugins_dir		(void);
-gchar	*gpe_dirs_get_plugins_dir		(void);
 gchar	*gpe_dirs_get_plugin_loaders_dir	(void);
 
 
