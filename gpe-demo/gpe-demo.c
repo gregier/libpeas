@@ -5,6 +5,17 @@ GPEEngine *engine;
 GtkWidget *main_window;
 int n_windows;
 
+static void
+activate_plugin (GtkButton *button, const gchar *plugin_name)
+{
+	GPEPluginInfo *info;
+
+	g_debug ("%s %s", G_STRFUNC, plugin_name);
+	info = gpe_engine_get_plugin_info (engine, plugin_name);
+	g_return_if_fail (info != NULL);
+	gpe_engine_activate_plugin (engine, info);
+}
+
 static gboolean
 window_delete_event_cb (GtkWidget *widget,
 			GdkEvent *event,
@@ -54,7 +65,11 @@ create_main_window ()
 	button = gtk_button_new_with_label ("New window");
 	g_signal_connect (button, "clicked", G_CALLBACK (create_new_window), NULL);
 	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
-	
+
+	button = gtk_button_new_with_label ("Hello World");
+	g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "helloworld");
+	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
+
 	button = gtk_button_new_from_stock (GTK_STOCK_QUIT);
 	g_signal_connect (button, "clicked", G_CALLBACK (gtk_main_quit), NULL);
 	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);

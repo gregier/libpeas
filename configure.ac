@@ -122,6 +122,8 @@ libgpe/Makefile
 loaders/Makefile
 loaders/c/Makefile
 gpe-demo/Makefile
+gpe-demo/plugins/Makefile
+gpe-demo/plugins/helloworld/Makefile
 po/Makefile.in
 ])
 

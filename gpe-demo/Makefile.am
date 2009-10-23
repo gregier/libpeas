@@ -1,3 +1,5 @@
+SUBDIRS=plugins
+
 bin_PROGRAMS = gpe-demo
 
 gpe_demo_SOURCES = \
