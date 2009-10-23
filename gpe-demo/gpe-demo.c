@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <libgpe/gpe-engine.h>
+#include <libgpeui/gpe-plugin-manager.h>
 
 GPEEngine *engine;
 GtkWidget *main_window;
@@ -14,6 +15,22 @@ activate_plugin (GtkButton *button, const gchar *plugin_name)
 	info = gpe_engine_get_plugin_info (engine, plugin_name);
 	g_return_if_fail (info != NULL);
 	gpe_engine_activate_plugin (engine, info);
+}
+
+static void
+create_plugin_manager (GtkButton *button, gpointer user_data)
+{
+	GtkWidget *window;
+	GtkWidget *manager;
+
+	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_container_set_border_width (GTK_CONTAINER (window), 6);
+	gtk_window_set_title (GTK_WINDOW (window), "GPE Plugin Manager");
+
+	manager = gpe_plugin_manager_new (engine);
+	gtk_container_add (GTK_CONTAINER (window), manager);
+
+	gtk_widget_show_all (window);
 }
 
 static gboolean
@@ -68,6 +85,10 @@ create_main_window ()
 
 	button = gtk_button_new_with_label ("Hello World");
 	g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "helloworld");
+	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
+
+	button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);
+	g_signal_connect (button, "clicked", G_CALLBACK (create_plugin_manager), NULL);
 	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
 	button = gtk_button_new_from_stock (GTK_STOCK_QUIT);

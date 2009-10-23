@@ -7,7 +7,8 @@ gpe_demo_SOURCES = \
 
 gpe_demo_LDADD = \
 	$(GPE_LIBS)			\
-	../libgpe/libgpe-2.0.la
+	../libgpe/libgpe-2.0.la		\
+	../libgpeui/libgpeui-2.0.la
 
 gpe_demo_CFLAGS = \
 	$(GPE_CFLAGS)			\
