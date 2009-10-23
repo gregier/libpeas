@@ -23,6 +23,7 @@ Makefile.in
 /configure.lineno
 /data/Makefile.in
 /depcomp
+/gpe-demo/gpe-demo
 /gnome-doc-utils.make
 /gtk-doc.make
 /install-sh
