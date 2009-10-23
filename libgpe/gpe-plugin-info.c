@@ -32,16 +32,10 @@
 #include "gpe-plugin-info-priv.h"
 #include "gpe-plugin.h"
 
-void
+GPEPluginInfo *
 _gpe_plugin_info_ref (GPEPluginInfo *info)
 {
 	g_atomic_int_inc (&info->refcount);
-}
-
-static GPEPluginInfo *
-gpe_plugin_info_copy (GPEPluginInfo *info)
-{
-	_gpe_plugin_info_ref (info);
 	return info;
 }
 
@@ -87,7 +81,7 @@ gpe_plugin_info_get_type (void)
 	if (G_UNLIKELY (!the_type))
 		the_type = g_boxed_type_register_static (
 					"GPEPluginInfo",
-					(GBoxedCopyFunc) gpe_plugin_info_copy,
+					(GBoxedCopyFunc) _gpe_plugin_info_ref,
 					(GBoxedFreeFunc) _gpe_plugin_info_unref);
 
 	return the_type;

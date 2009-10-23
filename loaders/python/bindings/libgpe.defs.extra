@@ -1,0 +1,8 @@
+(define-boxed PluginInfo
+  (in-module "GPE")
+  (c-name "GPEPluginInfo")
+  (gtype-id "GPE_TYPE_PLUGIN_INFO")
+  (copy-func "gpe_plugin_info_ref")
+  (release-func "gpe_plugin_info_unref")
+)
+

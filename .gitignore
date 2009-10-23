@@ -33,7 +33,8 @@ Makefile.in
 /intltool-merge.in
 /intltool-update
 /intltool-update.in
-/libplugins/Makefile.in
+/loaders/python/bindings/libgpe.defs
+/loaders/python/bindings/libgpe.c
 /libtool
 /ltmain.sh
 /m4
