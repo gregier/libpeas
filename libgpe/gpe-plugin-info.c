@@ -98,17 +98,22 @@ gpe_plugin_info_get_type (void)
  */
 GPEPluginInfo *
 _gpe_plugin_info_new (const gchar       *file,
-		      const GPEPathInfo *pathinfo)
+		      const GPEPathInfo *pathinfo,
+		      const gchar       *app_name)
 {
 	GPEPluginInfo *info;
 	GKeyFile *plugin_file = NULL;
+	gchar *section_header;
 	gchar *str;
 
 	g_return_val_if_fail (file != NULL, NULL);
+	g_return_val_if_fail (app_name != NULL, NULL);
 
 	info = g_new0 (GPEPluginInfo, 1);
 	info->refcount = 1;
 	info->file = g_strdup (file);
+
+	section_header = g_strdup_printf ("%s Plugin", app_name);
 
 	plugin_file = g_key_file_new ();
 	if (!g_key_file_load_from_file (plugin_file, file, G_KEY_FILE_NONE, NULL))
@@ -117,16 +122,16 @@ _gpe_plugin_info_new (const gchar       *file,
 		goto error;
 	}
 
-	if (!g_key_file_has_key (plugin_file, "Gedit Plugin", "IAge", NULL))
+	if (!g_key_file_has_key (plugin_file, section_header, "IAge", NULL))
 		goto error;
 
 	/* Check IAge=2 */
-	if (g_key_file_get_integer (plugin_file, "Gedit Plugin", "IAge", NULL) != 2)
+	if (g_key_file_get_integer (plugin_file, section_header, "IAge", NULL) != 2)
 		goto error;
 
 	/* Get module name */
 	str = g_key_file_get_string (plugin_file,
-				     "Gedit Plugin",
+				     section_header,
 				     "Module",
 				     NULL);
 
@@ -142,7 +147,7 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get the dependency list */
 	info->dependencies = g_key_file_get_string_list (plugin_file,
-							 "Gedit Plugin",
+							 section_header,
 							 "Depends",
 							 NULL,
 							 NULL);
@@ -151,7 +156,7 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get the loader for this plugin */
 	str = g_key_file_get_string (plugin_file,
-				     "Gedit Plugin",
+				     section_header,
 				     "Loader",
 				     NULL);
 
@@ -167,7 +172,7 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get Name */
 	str = g_key_file_get_locale_string (plugin_file,
-					    "Gedit Plugin",
+					    section_header,
 					    "Name",
 					    NULL, NULL);
 	if (str)
@@ -180,7 +185,7 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get Description */
 	str = g_key_file_get_locale_string (plugin_file,
-					    "Gedit Plugin",
+					    section_header,
 					    "Description",
 					    NULL, NULL);
 	if (str)
@@ -188,7 +193,7 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get Icon */
 	str = g_key_file_get_locale_string (plugin_file,
-					    "Gedit Plugin",
+					    section_header,
 					    "Icon",
 					    NULL, NULL);
 	if (str)
@@ -196,14 +201,14 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get Authors */
 	info->authors = g_key_file_get_string_list (plugin_file,
-						    "Gedit Plugin",
+						    section_header,
 						    "Authors",
 						    NULL,
 						    NULL);
 
 	/* Get Copyright */
 	str = g_key_file_get_string (plugin_file,
-				     "Gedit Plugin",
+				     section_header,
 				     "Copyright",
 				     NULL);
 	if (str)
@@ -211,7 +216,7 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get Website */
 	str = g_key_file_get_string (plugin_file,
-				     "Gedit Plugin",
+				     section_header,
 				     "Website",
 				     NULL);
 	if (str)
@@ -219,12 +224,13 @@ _gpe_plugin_info_new (const gchar       *file,
 
 	/* Get Version */
 	str = g_key_file_get_string (plugin_file,
-				     "Gedit Plugin",
+				     section_header,
 				     "Version",
 				     NULL);
 	if (str)
 		info->version = str;
 
+	g_free (section_header);
 	g_key_file_free (plugin_file);
 
 	info->module_dir = g_strdup (pathinfo->module_dir);
@@ -242,6 +248,7 @@ error:
 	g_free (info->name);
 	g_free (info->loader);
 	g_free (info);
+	g_free (section_header);
 	g_key_file_free (plugin_file);
 
 	return NULL;

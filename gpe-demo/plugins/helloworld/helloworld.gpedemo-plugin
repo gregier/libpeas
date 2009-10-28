@@ -1,4 +1,4 @@
-[Gedit Plugin]
+[GPEDemo Plugin]
 Module=helloworld
 IAge=2
 Name=Hello World

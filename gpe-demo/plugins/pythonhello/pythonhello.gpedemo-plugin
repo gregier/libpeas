@@ -1,4 +1,4 @@
-[Gedit Plugin]
+[GPEDemo Plugin]
 Module=pythonhello
 Loader=python
 IAge=2

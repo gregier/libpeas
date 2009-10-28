@@ -134,13 +134,13 @@ load_dir_real (GPEEngine *engine,
 }
 
 static gboolean
-load_plugin_info (GPEEngine *engine,
-		  const gchar        *filename,
-		  gpointer            userdata)
+load_plugin_info (GPEEngine    *engine,
+		  const gchar  *filename,
+		  gpointer      userdata)
 {
 	GPEPluginInfo *info;
 
-	info = _gpe_plugin_info_new (filename, (GPEPathInfo *) userdata);
+	info = _gpe_plugin_info_new (filename, (GPEPathInfo *) userdata, engine->priv->app_name);
 
 	if (info == NULL)
 		return TRUE;

@@ -56,7 +56,9 @@ struct _GPEPluginInfo
 	gint               available : 1;
 };
 
-GPEPluginInfo	*_gpe_plugin_info_new		(const gchar *file, const GPEPathInfo *pathinfo);
+GPEPluginInfo	*_gpe_plugin_info_new		(const gchar       *file,
+						 const GPEPathInfo *pathinfo,
+						 const gchar       *app_name);
 GPEPluginInfo	*_gpe_plugin_info_ref		(GPEPluginInfo *info);
 void		 _gpe_plugin_info_unref		(GPEPluginInfo *info);
 
