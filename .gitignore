@@ -21,7 +21,8 @@ Makefile.in
 /config.sub
 /configure
 /configure.lineno
-/data/Makefile.in
+/data/libgpe-2.0.pc
+/data/libgpeui-2.0.pc
 /depcomp
 /gpe-demo/gpe-demo
 /gnome-doc-utils.make

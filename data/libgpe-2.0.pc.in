@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libgpe
+Description: Gedit's Plugin Engine, as a lib
+Requires: glib-2.0 >= 2.14
+Version: @VERSION@
+Cflags: -I${includedir}/libgpe-2.0
+Libs: -L${libdir} -lgpe-2.0

@@ -229,6 +229,8 @@ loaders/c/Makefile
 loaders/python/Makefile
 loaders/python/bindings/Makefile
 data/Makefile
+data/libgpe-2.0.pc
+data/libgpeui-2.0.pc
 data/icons/Makefile
 gpe-demo/Makefile
 gpe-demo/plugins/Makefile
