@@ -36,3 +36,6 @@ libgpe_2_0_la_SOURCES = 	\
 	gpe-engine.c		\
 	$(INST_H_FILES)		\
 	$(NOINST_H_FILES)
+
+headerdir = $(prefix)/include/libgpe-2.0/libgpe
+header_DATA = $(INST_H_FILES)

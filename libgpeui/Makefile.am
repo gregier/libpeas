@@ -19,3 +19,6 @@ INST_H_FILES =			\
 libgpeui_2_0_la_SOURCES = 	\
 	gpe-plugin-manager.c	\
 	$(INST_H_FILES)
+
+headerdir = $(prefix)/include/libgpe-2.0/libgpeui
+header_DATA = $(INST_H_FILES)
