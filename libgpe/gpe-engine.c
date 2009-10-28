@@ -618,7 +618,7 @@ gpe_engine_activate_plugins (GPEEngine *engine,
 		GPEPluginInfo *info = (GPEPluginInfo*)pl->data;
 
 		/* check if the plugin hasn't been activated yet. */
-		if (gpe_plugin_info_is_active (info))
+		if (!gpe_plugin_info_is_active (info))
 			continue;
 
 		if (load_plugin (engine, info))
