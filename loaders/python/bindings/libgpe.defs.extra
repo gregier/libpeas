@@ -6,3 +6,36 @@
   (release-func "gpe_plugin_info_unref")
 )
 
+(define-virtual activate
+  (of-object "GPEPlugin")
+  (return-type "none")
+  (parameters
+    '("GObject*" "object")
+  )
+)
+
+(define-virtual deactivate
+  (of-object "GPEPlugin")
+  (return-type "none")
+  (parameters
+    '("GObject*" "object")
+  )
+)
+
+(define-virtual update_ui
+  (of-object "GPEPlugin")
+  (return-type "none")
+  (parameters
+    '("GObject*" "object")
+  )
+)
+
+(define-virtual create_configure_dialog
+  (of-object "GPEPlugin")
+  (return-type "GtkWidget*")
+)
+
+(define-virtual is_configurable
+  (of-object "GPEPlugin")
+  (return-type "gboolean")
+)
