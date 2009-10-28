@@ -233,6 +233,7 @@ data/icons/Makefile
 gpe-demo/Makefile
 gpe-demo/plugins/Makefile
 gpe-demo/plugins/helloworld/Makefile
+gpe-demo/plugins/pythonhello/Makefile
 po/Makefile.in
 ])
 

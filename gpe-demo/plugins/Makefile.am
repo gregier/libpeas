@@ -1,1 +1,1 @@
-SUBDIRS = helloworld
+SUBDIRS = helloworld pythonhello

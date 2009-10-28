@@ -87,6 +87,10 @@ create_main_window ()
 	g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "helloworld");
 	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
+	button = gtk_button_new_with_label ("Python Hello");
+	g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "pythonhello");
+	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
+
 	button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);
 	g_signal_connect (button, "clicked", G_CALLBACK (create_plugin_manager), NULL);
 	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
