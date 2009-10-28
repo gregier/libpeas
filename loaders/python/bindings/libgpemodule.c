@@ -19,9 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
  * USA
  */
+
 #include <Python.h>
 #include <pyglib.h>
 #include <pygobject.h>
+#include <pygtk/pygtk.h>
 
 #include "config.h"
 
@@ -38,6 +40,7 @@ initlibgpe (void)
     d = PyModule_GetDict (m);
 
     init_pygobject_check (2, 16, 2);
+    init_pygtk ();
 
     pygpe_register_classes (d);
 

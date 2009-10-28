@@ -32,7 +32,7 @@ libgpe_la_CFLAGS = 					\
 	$(PYTHON_CFLAGS)				\
 	$(AM_CFLAGS)
 
-libgpe.defs: $(BINDINGS_HDRS)
+libgpe.defs: $(BINDINGS_HDRS) libgpe.defs.extra
 	$(AM_V_GEN) ( $(PYGTK_H2DEF) -n GPE $(BINDINGS_HDRS); cat $@.extra ) > $@
 
 libgpe.c: libgpe.defs libgpe.override
