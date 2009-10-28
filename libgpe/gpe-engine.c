@@ -36,7 +36,6 @@
 #include "gpe-plugin.h"
 #include "gpe-dirs.h"
 
-#define PLUGIN_EXT	".gedit-plugin"
 #define LOADER_EXT	G_MODULE_SUFFIX
 
 typedef struct
@@ -59,7 +58,8 @@ static guint signals[LAST_SIGNAL];
 enum
 {
 	PROP_0,
-	PROP_PATH_INFOS
+	PROP_PATH_INFOS,
+	PROP_APP_NAME
 };
 
 G_DEFINE_TYPE(GPEEngine, gpe_engine, G_TYPE_OBJECT)
@@ -67,6 +67,7 @@ G_DEFINE_TYPE(GPEEngine, gpe_engine, G_TYPE_OBJECT)
 struct _GPEEnginePrivate
 {
 	const GPEPathInfo *paths;
+	gchar *app_name;
 
 	GList *plugin_list;
 	GHashTable *loaders;
@@ -162,12 +163,20 @@ static void
 load_all_plugins (GPEEngine *engine)
 {
 	const GPEPathInfo *pathinfo;
+	gchar *plugin_extension;
+	gchar *c;
+
+	plugin_extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
+	for (c = plugin_extension; *c != '\0'; c++)
+		*c = g_ascii_tolower (*c);
+
+	g_debug ("extension: %s", plugin_extension);
 
 	for (pathinfo = engine->priv->paths; pathinfo->module_dir != NULL; pathinfo++)
 	{
 		load_dir_real (engine,
 			       pathinfo->module_dir,
-			       PLUGIN_EXT,
+			       plugin_extension,
 			       load_plugin_info,
 			       (gpointer) pathinfo);
 	}
@@ -274,6 +283,28 @@ gpe_engine_set_property (GObject      *object,
                 case PROP_PATH_INFOS:
                         engine->priv->paths = (const GPEPathInfo *) g_value_get_pointer (value);
 			break;
+		case PROP_APP_NAME:
+			engine->priv->app_name = g_value_dup_string (value);
+			break;
+                default:
+                        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+                        break;
+        }
+}
+
+static void
+gpe_engine_get_property (GObject    *object,
+			 guint       prop_id,
+			 GValue     *value,
+			 GParamSpec *pspec)
+{
+	GPEEngine *engine = GPE_ENGINE (object);
+
+        switch (prop_id)
+        {
+		case PROP_APP_NAME:
+			g_value_set_string (value, engine->priv->app_name);
+			break;
                 default:
                         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
                         break;
@@ -320,6 +351,7 @@ gpe_engine_class_init (GPEEngineClass *klass)
 
 	object_class->constructed = gpe_engine_constructed;
 	object_class->set_property = gpe_engine_set_property;
+	object_class->get_property = gpe_engine_get_property;
 	object_class->finalize = gpe_engine_finalize;
 	klass->activate_plugin = gpe_engine_activate_plugin_real;
 	klass->deactivate_plugin = gpe_engine_deactivate_plugin_real;
@@ -330,6 +362,13 @@ gpe_engine_class_init (GPEEngineClass *klass)
                                                                "Path Infos",
                                                                "Information on the paths where to find plugins",
                                                                G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
+
+        g_object_class_install_property (object_class, PROP_APP_NAME,
+                                         g_param_spec_string ("app-name",
+                                                              "Application Name",
+                                                              "The application name",
+							      "libgpe",
+                                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
 	signals[ACTIVATE_PLUGIN] =
 		g_signal_new ("activate-plugin",
@@ -769,7 +808,10 @@ gpe_engine_remove_object (GPEEngine *engine,
 }
 
 GPEEngine *
-gpe_engine_new (const GPEPathInfo *paths)
+gpe_engine_new (const gchar *app_name, const GPEPathInfo *paths)
 {
-	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE, "path-infos", paths, NULL));
+	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE,
+					 "app-name", app_name,
+					 "path-infos", paths,
+					 NULL));
 }

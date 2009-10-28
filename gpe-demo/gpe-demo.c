@@ -115,7 +115,7 @@ main (int argc, char **argv)
 
 	gtk_init (&argc, &argv);
 
-	engine = gpe_engine_new (paths);
+	engine = gpe_engine_new ("GPEDemo", paths);
 
 	n_windows = 0;
 	main_window = create_main_window ();

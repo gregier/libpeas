@@ -67,7 +67,8 @@ struct _GPEEngineClass
 
 GType		 gpe_engine_get_type			(void) G_GNUC_CONST;
 
-GPEEngine	*gpe_engine_new				(const GPEPathInfo *paths);
+GPEEngine	*gpe_engine_new				(const gchar    *app_name,
+							 const GPEPathInfo *paths);
 
 void		 gpe_engine_garbage_collect		(GPEEngine      *engine);
 

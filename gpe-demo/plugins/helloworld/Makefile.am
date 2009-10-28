@@ -14,4 +14,4 @@ libhelloworld_la_SOURCES = \
 libhelloworld_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libhelloworld_la_LIBADD  = $(GPE_LIBS)
 
-plugin_DATA = helloworld.gedit-plugin
+plugin_DATA = helloworld.gpedemo-plugin
