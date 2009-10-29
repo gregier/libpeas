@@ -764,9 +764,6 @@ gpe_engine_set_active_plugin_list (GPEEngine *engine,
 		else if (gpe_plugin_info_is_active (info) && !to_activate)
 			g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
 	}
-
-	g_slist_foreach (active_plugins, (GFunc) g_free, NULL);
-	g_slist_free (active_plugins);
 }
 
 void
