@@ -11,6 +11,7 @@ INCLUDES = \
 	$(DISABLE_DEPRECATED_CFLAGS)	\
 	$(PYGTK_CFLAGS)			\
 	$(PYTHON_CFLAGS)		\
+	-DGPE_PYEXECDIR=\""$(pyexecdir)"\" \
 	-DGPE_LOCALEDIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 
 loader_LTLIBRARIES = libpythonloader.la

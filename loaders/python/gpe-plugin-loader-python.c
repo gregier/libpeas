@@ -341,6 +341,33 @@ gpe_python_shutdown (GPEPluginLoaderPython *loader)
 }
 
 /* C equivalent of
+ *    import sys
+ *    sys.path.insert(0, module_path)
+ */
+static gboolean
+gpe_plugin_loader_python_add_module_path (GPEPluginLoaderPython *self,
+					  const gchar           *module_path)
+{
+	PyObject *sys, *pathlist, *pathstring;
+
+	g_return_val_if_fail (GPE_IS_PLUGIN_LOADER_PYTHON (self), FALSE);
+	g_return_val_if_fail (module_path != NULL, FALSE);
+
+	sys = PyImport_ImportModule ("sys");
+	if (sys == NULL)
+	{
+		g_warning ("Error adding module path: could not import sys.");
+		return FALSE;
+	}
+
+	pathlist = PyDict_GetItemString (PyModule_GetDict (sys), "path");
+	pathstring = PyString_FromString (module_path);
+	PyList_Insert(pathlist, 0, pathstring);
+	Py_DECREF (pathstring);
+	return TRUE;
+}
+
+/* C equivalent of
  *    import pygtk
  *    pygtk.require ("2.0")
  */
@@ -522,6 +549,8 @@ gpe_python_init (GPEPluginLoaderPython *loader)
 	}
 
 	PySys_SetArgv (1, argv);
+
+	gpe_plugin_loader_python_add_module_path (loader, GPE_PYEXECDIR);
 
 	if (!gpe_check_pygtk2 ())
 	{
