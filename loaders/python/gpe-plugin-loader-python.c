@@ -56,7 +56,10 @@ typedef struct
 	gchar    *path;
 } PythonInfo;
 
-static void gpe_plugin_loader_iface_init (gpointer g_iface, gpointer iface_data);
+static void	 gpe_plugin_loader_iface_init			(gpointer		g_iface,
+								 gpointer		iface_data);
+static gboolean  gpe_plugin_loader_python_add_module_path	(GPEPluginLoaderPython *self,
+								 const gchar           *module_path);
 
 /* We retreive this to check for correct class hierarchy */
 static PyTypeObject *PyGPEPlugin_Type;
@@ -179,6 +182,15 @@ static const gchar *
 gpe_plugin_loader_iface_get_id (void)
 {
 	return "Python";
+}
+
+static void
+gpe_plugin_loader_iface_add_module_directory (GPEPluginLoader *loader,
+					      const gchar     *module_dir)
+{
+	g_debug ("Adding %s as a module path for the python loader.", module_dir);
+	gpe_plugin_loader_python_add_module_path (GPE_PLUGIN_LOADER_PYTHON (loader),
+						  module_dir);
 }
 
 static GPEPlugin *
@@ -317,6 +329,7 @@ gpe_plugin_loader_iface_init (gpointer g_iface,
 	GPEPluginLoaderInterface *iface = (GPEPluginLoaderInterface *) g_iface;
 
 	iface->get_id = gpe_plugin_loader_iface_get_id;
+	iface->add_module_directory = gpe_plugin_loader_iface_add_module_directory;
 	iface->load = gpe_plugin_loader_iface_load;
 	iface->unload = gpe_plugin_loader_iface_unload;
 	iface->garbage_collect = gpe_plugin_loader_iface_garbage_collect;

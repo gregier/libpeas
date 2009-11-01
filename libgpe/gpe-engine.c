@@ -58,7 +58,8 @@ static guint signals[LAST_SIGNAL];
 enum
 {
 	PROP_0,
-	PROP_APP_NAME
+	PROP_APP_NAME,
+	PROP_BASE_MODULE_DIR
 };
 
 G_DEFINE_TYPE(GPEEngine, gpe_engine, G_TYPE_OBJECT)
@@ -67,6 +68,7 @@ struct _GPEEnginePrivate
 {
 	GPtrArray *pathinfos;
 	gchar *app_name;
+	gchar *base_module_dir;
 
 	GList *plugin_list;
 	GHashTable *loaders;
@@ -283,6 +285,9 @@ gpe_engine_set_property (GObject      *object,
 		case PROP_APP_NAME:
 			engine->priv->app_name = g_value_dup_string (value);
 			break;
+		case PROP_BASE_MODULE_DIR:
+			engine->priv->base_module_dir = g_value_dup_string (value);
+			break;
                 default:
                         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
                         break;
@@ -301,6 +306,9 @@ gpe_engine_get_property (GObject    *object,
         {
 		case PROP_APP_NAME:
 			g_value_set_string (value, engine->priv->app_name);
+			break;
+		case PROP_BASE_MODULE_DIR:
+			g_value_set_string (value, engine->priv->base_module_dir);
 			break;
                 default:
                         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -337,6 +345,8 @@ gpe_engine_finalize (GObject *object)
 	g_list_free (engine->priv->plugin_list);
 	g_list_free (engine->priv->object_list);
 	g_ptr_array_free (engine->priv->pathinfos, TRUE);
+	g_free (engine->priv->app_name);
+	g_free (engine->priv->base_module_dir);
 
 	G_OBJECT_CLASS (gpe_engine_parent_class)->finalize (object);
 }
@@ -360,6 +370,13 @@ gpe_engine_class_init (GPEEngineClass *klass)
                                                               "The application name",
 							      "libgpe",
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
+
+        g_object_class_install_property (object_class, PROP_BASE_MODULE_DIR,
+                                         g_param_spec_string ("base-module-dir",
+							      "Base module dir",
+							      "The base application dir for binding modules lookup",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
 	signals[ACTIVATE_PLUGIN] =
 		g_signal_new ("activate-plugin",
@@ -421,6 +438,12 @@ load_plugin_loader (GPEEngine *engine,
 				g_object_unref (loader);
 			module = NULL;
 			loader = NULL;
+		}
+		else
+		{
+			gchar *module_dir = g_build_filename (engine->priv->base_module_dir, loader_id, NULL);
+			gpe_plugin_loader_add_module_directory (loader, module_dir);
+			g_free (module_dir);
 		}
 
 		g_type_module_unuse (G_TYPE_MODULE (module));
@@ -762,9 +785,11 @@ gpe_engine_remove_object (GPEEngine *engine,
 }
 
 GPEEngine *
-gpe_engine_new (const gchar *app_name)
+gpe_engine_new (const gchar *app_name,
+		const gchar *base_module_dir)
 {
 	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE,
 					 "app-name", app_name,
+					 "base-module-dir", base_module_dir,
 					 NULL));
 }

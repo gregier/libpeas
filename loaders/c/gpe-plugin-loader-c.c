@@ -40,6 +40,13 @@ gpe_plugin_loader_iface_get_id (void)
 	return "C";
 }
 
+void
+gpe_plugin_loader_iface_add_module_directory (GPEPluginLoader *loader,
+					      const gchar     *module_dir)
+{
+	/* This is a no-op for C modules... */
+}
+
 static GPEPlugin *
 gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
 			      GPEPluginInfo   *info,
@@ -111,6 +118,7 @@ gpe_plugin_loader_iface_init (gpointer g_iface,
 	GPEPluginLoaderInterface *iface = (GPEPluginLoaderInterface *) g_iface;
 
 	iface->get_id = gpe_plugin_loader_iface_get_id;
+	iface->add_module_directory = gpe_plugin_loader_iface_add_module_directory;
 	iface->load = gpe_plugin_loader_iface_load;
 	iface->unload = gpe_plugin_loader_iface_unload;
 }

@@ -88,6 +88,20 @@ gpe_plugin_loader_type_get_id (GType type)
 	return iface->get_id ();
 }
 
+void
+gpe_plugin_loader_add_module_directory (GPEPluginLoader *loader,
+					const gchar     *module_dir)
+{
+	GPEPluginLoaderInterface *iface;
+
+	g_return_if_fail (GPE_IS_PLUGIN_LOADER (loader));
+
+	iface = GPE_PLUGIN_LOADER_GET_INTERFACE (loader);
+	g_return_if_fail (iface->add_module_directory != NULL);
+
+	iface->add_module_directory (loader, module_dir);
+}
+
 GPEPlugin *
 gpe_plugin_loader_load (GPEPluginLoader *loader,
 			GPEPluginInfo   *info,

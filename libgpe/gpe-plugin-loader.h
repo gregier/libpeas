@@ -42,6 +42,9 @@ struct _GPEPluginLoaderInterface {
 
 	const gchar	*(*get_id)		(void);
 
+	void		 (*add_module_directory)(GPEPluginLoader	*loader,
+						 const gchar		*module_dir);
+
 	GPEPlugin	*(*load)		(GPEPluginLoader 	*loader,
 						 GPEPluginInfo	        *info,
 						 const gchar       	*path,
@@ -56,8 +59,12 @@ struct _GPEPluginLoaderInterface {
 GType		 gpe_plugin_loader_get_type		(void);
 
 const gchar	*gpe_plugin_loader_type_get_id		(GType 			 type);
+
+void		 gpe_plugin_loader_add_module_directory	(GPEPluginLoader	*loader,
+							 const gchar		*module_dir);
+
 GPEPlugin	*gpe_plugin_loader_load			(GPEPluginLoader 	*loader,
-							 GPEPluginInfo 	*info,
+							 GPEPluginInfo 		*info,
 							 const gchar		*path,
 							 const gchar		*datadir);
 void		 gpe_plugin_loader_unload		(GPEPluginLoader 	*loader,

@@ -107,7 +107,7 @@ main (int argc, char **argv)
 {
 	gtk_init (&argc, &argv);
 
-	engine = gpe_engine_new ("GPEDemo");
+	engine = gpe_engine_new ("GPEDemo", GPE_PREFIX "/lib/gpe-demo/");
 	gpe_engine_add_plugin_directory (engine, "./plugins/", "./plugins");
 	gpe_engine_add_plugin_directory (engine,
 					 GPE_PREFIX "/lib/gpe-demo/plugins/",
