@@ -75,8 +75,8 @@ void		 gpe_engine_garbage_collect		(GPEEngine      *engine);
 /* plugin list management */
 void		 gpe_engine_rescan_plugins		(GPEEngine      *engine);
 const GList	*gpe_engine_get_plugin_list 		(GPEEngine      *engine);
-void		 gpe_engine_set_active_plugin_list	(GPEEngine      *engine,
-							 GList          *active_plugins);
+void		 gpe_engine_set_active_plugins		(GPEEngine      *engine,
+							 const gchar   **plugin_names);
 
 /* plugin info */
 GPEPluginInfo	*gpe_engine_get_plugin_info		(GPEEngine      *engine,

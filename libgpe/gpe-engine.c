@@ -741,27 +741,41 @@ gpe_engine_configure_plugin (GPEEngine     *engine,
 	gtk_widget_show (conf_dlg);
 }
 
+static gboolean
+string_in_strv (const gchar  *needle,
+		const gchar **haystack)
+{
+	guint i;
+	for (i = 0; haystack[i] != NULL; i++)
+		if (strcmp (haystack[i], needle) == 0)
+			return TRUE;
+	return FALSE;
+}
+
 void
-gpe_engine_set_active_plugin_list (GPEEngine *engine,
-				   GList     *active_plugins)
+gpe_engine_set_active_plugins (GPEEngine    *engine,
+			       const gchar **plugin_names)
 {
 	GList *pl;
 
 	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
 	{
 		GPEPluginInfo *info = (GPEPluginInfo*)pl->data;
+		const gchar *module_name;
+		gboolean is_active;
 		gboolean to_activate;
 
 		if (!gpe_plugin_info_is_available (info))
 			continue;
 
-		to_activate = (g_slist_find_custom (active_plugins,
-						    gpe_plugin_info_get_module_name (info),
-						    (GCompareFunc)strcmp) != NULL);
+		module_name = gpe_plugin_info_get_module_name (info);
+		is_active = gpe_plugin_info_is_active (info);
 
-		if (!gpe_plugin_info_is_active (info) && to_activate)
+		to_activate = string_in_strv (module_name, plugin_names);
+
+		if (!is_active && to_activate)
 			g_signal_emit (engine, signals[ACTIVATE_PLUGIN], 0, info);
-		else if (gpe_plugin_info_is_active (info) && !to_activate)
+		else if (is_active && !to_activate)
 			g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
 	}
 }
