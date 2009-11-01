@@ -41,12 +41,15 @@ libgpe.c: libgpe.defs libgpe.override
 		--override libgpe.override \
 		--prefix pygpe $< ) > $@
 
+defsdir = $(datadir)/pygtk/2.0/defs
+defs_DATA = libgpe.defs
+
 BUILT_SOURCES = \
 	libgpe.c
 
 EXTRA_DIST = \
 	libgpe.override	\
-	libgpe.defs
+	libgpe.defs.extra
 
 CLEANFILES = $(BUILT_SOURCES)
 
