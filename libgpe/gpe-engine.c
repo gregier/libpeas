@@ -88,6 +88,14 @@ dummy (GPEEngine *engine, GPEPluginInfo *info)
 	/* Empty */
 }
 
+static void
+string_ascii_tolower (gchar *string)
+{
+	gchar *c;
+	for (c = string; *c != '\0'; c++)
+		*c = g_ascii_tolower (*c);
+}
+
 static gboolean
 load_dir_real (GPEEngine *engine,
 	       const gchar        *dir,
@@ -164,11 +172,9 @@ load_all_plugins (GPEEngine *engine)
 {
 	const GPEPathInfo *pathinfo;
 	gchar *plugin_extension;
-	gchar *c;
 
 	plugin_extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
-	for (c = plugin_extension; *c != '\0'; c++)
-		*c = g_ascii_tolower (*c);
+	string_ascii_tolower (plugin_extension);
 
 	g_debug ("extension: %s", plugin_extension);
 
@@ -213,18 +219,20 @@ loader_destroy (LoaderInfo *info)
 	g_free (info);
 }
 
-static void
-add_loader (GPEEngine *engine,
-	    const gchar        *loader_id,
-	    GPEObjectModule  *module)
+static LoaderInfo *
+add_loader (GPEEngine        *engine,
+	    const gchar      *loader_id,
+	    GPEObjectModule  *module,
+	    GPEPluginLoader  *loader)
 {
 	LoaderInfo *info;
 
 	info = g_new (LoaderInfo, 1);
-	info->loader = NULL;
+	info->loader = loader;
 	info->module = module;
 
 	g_hash_table_insert (engine->priv->loaders, g_strdup (loader_id), info);
+	return info;
 }
 
 static void
@@ -395,71 +403,54 @@ gpe_engine_class_init (GPEEngineClass *klass)
 	g_type_class_add_private (klass, sizeof (GPEEnginePrivate));
 }
 
-static gboolean
-load_loader (GPEEngine *engine,
-	     const gchar      *filename,
-	     gpointer          data)
+static LoaderInfo *
+load_plugin_loader (GPEEngine *engine,
+		    const gchar *loader_id)
 {
+	gchar *loader_dirname;
+	gchar *loader_basename;
 	GPEObjectModule *module;
-	gchar *base;
-	gchar *path;
-	const gchar *id;
-	GType type;
+	GPEPluginLoader *loader;
 
-	/* try to load in the module */
-	path = g_path_get_dirname (filename);
-	base = g_path_get_basename (filename);
+	/* Let's build the expected filename of the requested plugin loader */
+	loader_dirname = gpe_dirs_get_plugin_loaders_dir ();
+	loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, LOADER_EXT);
+	string_ascii_tolower (loader_basename);
 
-	/* for now they are all resident */
-	module = gpe_object_module_new (base,
-					  path,
-					  "register_gpe_plugin_loader",
-					  TRUE);
+	g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
 
-	g_free (base);
-	g_free (path);
+	/* For now all modules are resident */
+	module = gpe_object_module_new (loader_basename, loader_dirname,
+					"register_gpe_plugin_loader", TRUE);
+
+	g_free (loader_dirname);
+	g_free (loader_basename);
 
 	/* make sure to load the type definition */
-	if (!g_type_module_use (G_TYPE_MODULE (module)))
+	if (g_type_module_use (G_TYPE_MODULE (module)))
 	{
-		g_object_unref (module);
-		g_warning ("Plugin loader module `%s' could not be loaded", filename);
-
-		return TRUE;
-	}
-
-	/* get the exported type and check the name as exported by the
-	 * loader interface */
-	type = gpe_object_module_get_object_type (module);
-	id = gpe_plugin_loader_type_get_id (type);
-
-	add_loader (engine, id, module);
-	g_type_module_unuse (G_TYPE_MODULE (module));
-
-	return TRUE;
-}
-
-static void
-ensure_loader (LoaderInfo *info)
-{
-	if (info->loader == NULL && info->module != NULL)
-	{
-		/* create a new loader object */
-		GPEPluginLoader *loader;
-		loader = (GPEPluginLoader *)gpe_object_module_new_object (info->module, NULL);
+		loader = (GPEPluginLoader *) gpe_object_module_new_object (module, NULL);
 
 		if (loader == NULL || !GPE_IS_PLUGIN_LOADER (loader))
 		{
 			g_warning ("Loader object is not a valid GPEPluginLoader instance");
-
 			if (loader != NULL && G_IS_OBJECT (loader))
 				g_object_unref (loader);
+			module = NULL;
+			loader = NULL;
 		}
-		else
-		{
-			info->loader = loader;
-		}
+
+		g_type_module_unuse (G_TYPE_MODULE (module));
 	}
+	else
+	{
+		g_warning ("Plugin loader module `%s' could not be loaded", loader_basename);
+		g_object_unref (module);
+		module = NULL;
+		loader = NULL;
+	}
+
+	return add_loader (engine, loader_id, module, loader);
 }
 
 static GPEPluginLoader *
@@ -476,33 +467,8 @@ get_plugin_loader (GPEEngine     *engine,
 			loader_id);
 
 	if (loader_info == NULL)
-	{
-		gchar *loader_dir;
+		loader_info = load_plugin_loader (engine, loader_id);
 
-		loader_dir = gpe_dirs_get_plugin_loaders_dir ();
-
-		/* loader could not be found in the hash, try to find it by
-		   scanning */
-		load_dir_real (engine,
-			       loader_dir,
-			       LOADER_EXT,
-			       (LoadDirCallback)load_loader,
-			       NULL);
-		g_free (loader_dir);
-
-		loader_info = (LoaderInfo *)g_hash_table_lookup (
-				engine->priv->loaders,
-				loader_id);
-	}
-
-	if (loader_info == NULL)
-	{
-		/* cache non-existent so we don't scan again */
-		add_loader (engine, loader_id, NULL);
-		return NULL;
-	}
-
-	ensure_loader (loader_info);
 	return loader_info->loader;
 }
 
