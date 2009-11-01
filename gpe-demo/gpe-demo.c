@@ -105,17 +105,13 @@ create_main_window ()
 int
 main (int argc, char **argv)
 {
-	static const GPEPathInfo paths[] = {
-		{ "./plugins/",
-		  "./plugins/" },
-		{ GPE_PREFIX "/lib/gpe-demo/plugins/",
-		  GPE_PREFIX "/share/gpe-demo/plugins/" },
-		{ NULL },
-	};
-
 	gtk_init (&argc, &argv);
 
-	engine = gpe_engine_new ("GPEDemo", paths);
+	engine = gpe_engine_new ("GPEDemo");
+	gpe_engine_add_plugin_directory (engine, "./plugins/", "./plugins");
+	gpe_engine_add_plugin_directory (engine,
+					 GPE_PREFIX "/lib/gpe-demo/plugins/",
+					 GPE_PREFIX "/share/gpe-demo/plugins/");
 
 	n_windows = 0;
 	main_window = create_main_window ();

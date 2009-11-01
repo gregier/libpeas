@@ -58,7 +58,6 @@ static guint signals[LAST_SIGNAL];
 enum
 {
 	PROP_0,
-	PROP_PATH_INFOS,
 	PROP_APP_NAME
 };
 
@@ -66,7 +65,7 @@ G_DEFINE_TYPE(GPEEngine, gpe_engine, G_TYPE_OBJECT)
 
 struct _GPEEnginePrivate
 {
-	const GPEPathInfo *paths;
+	GPtrArray *pathinfos;
 	gchar *app_name;
 
 	GList *plugin_list;
@@ -150,14 +149,27 @@ load_dir_real (GPEEngine         *engine,
 }
 
 void
+gpe_engine_add_plugin_directory	(GPEEngine      *engine,
+				 const gchar    *module_dir,
+				 const gchar    *data_dir)
+{
+	GPEPathInfo *pathinfo = g_slice_new (GPEPathInfo);
+	pathinfo->module_dir = g_strdup (module_dir);
+	pathinfo->data_dir = g_strdup (data_dir);
+	g_ptr_array_add (engine->priv->pathinfos, pathinfo);
+
+	load_dir_real (engine, pathinfo);
+}
+
+void
 gpe_engine_rescan_plugins (GPEEngine *engine)
 {
-	const GPEPathInfo *pathinfo;
+	guint i;
 
 	g_return_if_fail (GPE_IS_ENGINE (engine));
 
-	for (pathinfo = engine->priv->paths; pathinfo->module_dir != NULL; pathinfo++)
-		load_dir_real (engine, pathinfo);
+	for (i = 0; i < engine->priv->pathinfos->len; i++)
+		load_dir_real (engine, (GPEPathInfo *) engine->priv->pathinfos->pdata[i]);
 }
 
 static guint
@@ -208,6 +220,15 @@ add_loader (GPEEngine        *engine,
 }
 
 static void
+gpe_path_info_free (GPEPathInfo *pathinfo)
+{
+	g_free (pathinfo->module_dir);
+	if (pathinfo->data_dir)
+		g_free (pathinfo->data_dir);
+	g_slice_free (GPEPathInfo, pathinfo);
+}
+
+static void
 gpe_engine_init (GPEEngine *engine)
 {
 	if (!g_module_supported ())
@@ -227,12 +248,11 @@ gpe_engine_init (GPEEngine *engine)
 						       equal_lowercase,
 						       (GDestroyNotify)g_free,
 						       (GDestroyNotify)loader_destroy);
-}
 
-static void
-gpe_engine_constructed (GObject *object)
-{
-	gpe_engine_rescan_plugins (GPE_ENGINE (object));
+	/* path infos for plugin loading. */
+	engine->priv->pathinfos = g_ptr_array_new ();
+	g_ptr_array_set_free_func (engine->priv->pathinfos,
+				   (GDestroyNotify) gpe_path_info_free);
 }
 
 static void
@@ -260,9 +280,6 @@ gpe_engine_set_property (GObject      *object,
 
         switch (prop_id)
         {
-                case PROP_PATH_INFOS:
-                        engine->priv->paths = (const GPEPathInfo *) g_value_get_pointer (value);
-			break;
 		case PROP_APP_NAME:
 			engine->priv->app_name = g_value_dup_string (value);
 			break;
@@ -319,6 +336,7 @@ gpe_engine_finalize (GObject *object)
 
 	g_list_free (engine->priv->plugin_list);
 	g_list_free (engine->priv->object_list);
+	g_ptr_array_free (engine->priv->pathinfos, TRUE);
 
 	G_OBJECT_CLASS (gpe_engine_parent_class)->finalize (object);
 }
@@ -329,19 +347,12 @@ gpe_engine_class_init (GPEEngineClass *klass)
 	GType the_type = G_TYPE_FROM_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->constructed = gpe_engine_constructed;
 	object_class->set_property = gpe_engine_set_property;
 	object_class->get_property = gpe_engine_get_property;
 	object_class->finalize = gpe_engine_finalize;
 	klass->activate_plugin = gpe_engine_activate_plugin_real;
 	klass->deactivate_plugin = gpe_engine_deactivate_plugin_real;
 	klass->plugin_deactivated = dummy;
-
-        g_object_class_install_property (object_class, PROP_PATH_INFOS,
-                                         g_param_spec_pointer ("path-infos",
-                                                               "Path Infos",
-                                                               "Information on the paths where to find plugins",
-                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
         g_object_class_install_property (object_class, PROP_APP_NAME,
                                          g_param_spec_string ("app-name",
@@ -751,10 +762,9 @@ gpe_engine_remove_object (GPEEngine *engine,
 }
 
 GPEEngine *
-gpe_engine_new (const gchar *app_name, const GPEPathInfo *paths)
+gpe_engine_new (const gchar *app_name)
 {
 	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE,
 					 "app-name", app_name,
-					 "path-infos", paths,
 					 NULL));
 }

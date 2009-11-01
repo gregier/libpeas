@@ -27,7 +27,6 @@
 #include <gtk/gtk.h>
 #include "gpe-plugin-info.h"
 #include "gpe-plugin.h"
-#include "gpe-path-info.h"
 
 G_BEGIN_DECLS
 
@@ -67,13 +66,17 @@ struct _GPEEngineClass
 
 GType		 gpe_engine_get_type			(void) G_GNUC_CONST;
 
-GPEEngine	*gpe_engine_new				(const gchar    *app_name,
-							 const GPEPathInfo *paths);
+GPEEngine	*gpe_engine_new				(const gchar    *app_name);
 
 void		 gpe_engine_garbage_collect		(GPEEngine      *engine);
 
-/* plugin list management */
+/* plugin directories management */
+void		 gpe_engine_add_plugin_directory	(GPEEngine      *engine,
+							 const gchar    *module_dir,
+							 const gchar    *data_dir);
 void		 gpe_engine_rescan_plugins		(GPEEngine      *engine);
+
+/* plugin list management */
 const GList	*gpe_engine_get_plugin_list 		(GPEEngine      *engine);
 void		 gpe_engine_set_active_plugins		(GPEEngine      *engine,
 							 const gchar   **plugin_names);

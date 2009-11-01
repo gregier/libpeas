@@ -26,8 +26,13 @@
 
 #include "gpe-plugin-info.h"
 #include "gpe-plugin.h"
-#include "gpe-path-info.h"
 
+typedef struct _GPEPathInfo GPEPathInfo;
+
+struct _GPEPathInfo {
+	gchar *module_dir;
+	gchar *data_dir;
+};
 
 struct _GPEPluginInfo
 {

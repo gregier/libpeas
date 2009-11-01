@@ -18,7 +18,6 @@ libgpe_2_0_la_LIBADD = $(GPE_LIBS)
 INST_H_FILES =			\
 	gpe-plugin.h		\
 	gpe-plugin-info.h	\
-	gpe-path-info.h		\
 	gpe-engine.h
 
 NOINST_H_FILES =		\
