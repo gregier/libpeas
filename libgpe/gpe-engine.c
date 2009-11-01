@@ -89,103 +89,75 @@ dummy (GPEEngine *engine, GPEPluginInfo *info)
 }
 
 static void
-string_ascii_tolower (gchar *string)
+load_plugin_info (GPEEngine          *engine,
+		  const gchar        *filename,
+		  const GPEPathInfo  *pathinfo)
 {
-	gchar *c;
-	for (c = string; *c != '\0'; c++)
-		*c = g_ascii_tolower (*c);
+	GPEPluginInfo *info;
+
+	info = _gpe_plugin_info_new (filename, pathinfo, engine->priv->app_name);
+
+	if (info == NULL)
+		return;
+
+	/* If a plugin with this name has already been loaded
+	 * drop this one (user plugins override system plugins) */
+	if (gpe_engine_get_plugin_info (engine, gpe_plugin_info_get_module_name (info)) != NULL)
+		_gpe_plugin_info_unref (info);
+	else
+		engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list, info);
 }
 
-static gboolean
-load_dir_real (GPEEngine *engine,
-	       const gchar        *dir,
-	       const gchar        *suffix,
-	       LoadDirCallback     callback,
-	       gpointer            userdata)
+static void
+load_dir_real (GPEEngine         *engine,
+	       const GPEPathInfo *pathinfo)
 {
 	GError *error = NULL;
 	GDir *d;
 	const gchar *dirent;
-	gboolean ret = TRUE;
+	gchar *plugin_extension;
 
-	g_return_val_if_fail (dir != NULL, TRUE);
+	/* Compute the extension of the plugin files. */
+	plugin_extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
+	g_strdown (plugin_extension);
 
-	g_debug ("Loading %s...", dir);
+	g_debug ("Loading %s/*.%s...", pathinfo->module_dir, plugin_extension);
 
-	d = g_dir_open (dir, 0, &error);
+	d = g_dir_open (pathinfo->module_dir, 0, &error);
 	if (!d)
 	{
 		g_warning ("%s", error->message);
 		g_error_free (error);
-		return TRUE;
+		return;
 	}
 
 	while ((dirent = g_dir_read_name (d)))
 	{
 		gchar *filename;
 
-		if (!g_str_has_suffix (dirent, suffix))
+		if (!g_str_has_suffix (dirent, plugin_extension))
 			continue;
 
-		filename = g_build_filename (dir, dirent, NULL);
+		filename = g_build_filename (pathinfo->module_dir, dirent, NULL);
 
-		ret = callback (engine, filename, userdata);
+		load_plugin_info (engine, filename, pathinfo);
 
 		g_free (filename);
-
-		if (!ret)
-			break;
 	}
 
 	g_dir_close (d);
-	return ret;
+	g_free (plugin_extension);
 }
 
-static gboolean
-load_plugin_info (GPEEngine    *engine,
-		  const gchar  *filename,
-		  gpointer      userdata)
-{
-	GPEPluginInfo *info;
-
-	info = _gpe_plugin_info_new (filename, (GPEPathInfo *) userdata, engine->priv->app_name);
-
-	if (info == NULL)
-		return TRUE;
-
-	/* If a plugin with this name has already been loaded
-	 * drop this one (user plugins override system plugins) */
-	if (gpe_engine_get_plugin_info (engine, gpe_plugin_info_get_module_name (info)) != NULL)
-	{
-		_gpe_plugin_info_unref (info);
-
-		return TRUE;
-	}
-
-	engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list, info);
-
-	return TRUE;
-}
-
-static void
-load_all_plugins (GPEEngine *engine)
+void
+gpe_engine_rescan_plugins (GPEEngine *engine)
 {
 	const GPEPathInfo *pathinfo;
-	gchar *plugin_extension;
 
-	plugin_extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
-	string_ascii_tolower (plugin_extension);
-
-	g_debug ("extension: %s", plugin_extension);
+	g_return_if_fail (GPE_IS_ENGINE (engine));
 
 	for (pathinfo = engine->priv->paths; pathinfo->module_dir != NULL; pathinfo++)
-	{
-		load_dir_real (engine,
-			       pathinfo->module_dir,
-			       plugin_extension,
-			       load_plugin_info,
-			       (gpointer) pathinfo);
-	}
+		load_dir_real (engine, pathinfo);
 }
 
 static guint
@@ -260,7 +232,7 @@ gpe_engine_init (GPEEngine *engine)
 static void
 gpe_engine_constructed (GObject *object)
 {
-	load_all_plugins (GPE_ENGINE (object));
+	gpe_engine_rescan_plugins (GPE_ENGINE (object));
 }
 
 static void
@@ -415,7 +387,7 @@ load_plugin_loader (GPEEngine *engine,
 	/* Let's build the expected filename of the requested plugin loader */
 	loader_dirname = gpe_dirs_get_plugin_loaders_dir ();
 	loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, LOADER_EXT);
-	string_ascii_tolower (loader_basename);
+	g_strdown (loader_basename);
 
 	g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
 
@@ -744,12 +716,6 @@ gpe_engine_set_active_plugins (GPEEngine    *engine,
 		else if (is_active && !to_activate)
 			g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
 	}
-}
-
-void
-gpe_engine_rescan_plugins (GPEEngine *engine)
-{
-	load_all_plugins (engine);
 }
 
 void
