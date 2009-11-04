@@ -58,10 +58,14 @@ struct _GPEEngineClass
 	void	 (* deactivate_plugin)			(GPEEngine      *engine,
 							 GPEPluginInfo  *info);
 
-	/* called when done deactivating the plugin, but before the plugin
-	 * gets unloaded. */
-	void	 (* plugin_deactivated)			(GPEEngine      *engine,
-							 GPEPluginInfo  *info);
+	void	 (* activate_plugin_on_object)		(GPEEngine	*engine,
+							 GPEPluginInfo  *info,
+							 GObject	*object);
+
+	void	 (* deactivate_plugin_on_object)	(GPEEngine	*engine,
+							 GPEPluginInfo  *info,
+							 GObject	*object);
+
 };
 
 GType		 gpe_engine_get_type			(void) G_GNUC_CONST;

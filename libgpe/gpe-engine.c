@@ -84,12 +84,6 @@ static void	gpe_engine_deactivate_plugin_real	 (GPEEngine     *engine,
 typedef gboolean (*LoadDirCallback) (GPEEngine *engine, const gchar *filename, gpointer userdata);
 
 static void
-dummy (GPEEngine *engine, GPEPluginInfo *info)
-{
-	/* Empty */
-}
-
-static void
 load_plugin_info (GPEEngine          *engine,
 		  const gchar        *filename,
 		  const GPEPathInfo  *pathinfo)
@@ -352,6 +346,22 @@ gpe_engine_finalize (GObject *object)
 }
 
 static void
+gpe_engine_activate_plugin_on_object (GPEEngine     *engine,
+				      GPEPluginInfo *info,
+				      GObject       *object)
+{
+	gpe_plugin_activate (info->plugin, object);
+}
+
+static void
+gpe_engine_deactivate_plugin_on_object (GPEEngine     *engine,
+					GPEPluginInfo *info,
+					GObject       *object)
+{
+	gpe_plugin_deactivate (info->plugin, object);
+}
+
+static void
 gpe_engine_class_init (GPEEngineClass *klass)
 {
 	GType the_type = G_TYPE_FROM_CLASS (klass);
@@ -362,7 +372,8 @@ gpe_engine_class_init (GPEEngineClass *klass)
 	object_class->finalize = gpe_engine_finalize;
 	klass->activate_plugin = gpe_engine_activate_plugin_real;
 	klass->deactivate_plugin = gpe_engine_deactivate_plugin_real;
-	klass->plugin_deactivated = dummy;
+	klass->activate_plugin_on_object = gpe_engine_activate_plugin_on_object;
+	klass->deactivate_plugin_on_object = gpe_engine_deactivate_plugin_on_object;
 
         g_object_class_install_property (object_class, PROP_APP_NAME,
                                          g_param_spec_string ("app-name",
@@ -552,7 +563,7 @@ gpe_engine_activate_plugin_real (GPEEngine     *engine,
 		return;
 
 	for (item = engine->priv->object_list; item != NULL; item = item->next)
-		gpe_plugin_activate (info->plugin, G_OBJECT (item->data));
+		GPE_ENGINE_GET_CLASS (engine)->activate_plugin_on_object (engine, info, G_OBJECT (item->data));
 }
 
 gboolean
@@ -584,10 +595,7 @@ gpe_engine_deactivate_plugin_real (GPEEngine     *engine,
 		return;
 
 	for (item = engine->priv->object_list; item != NULL; item = item->next)
-		gpe_plugin_deactivate (info->plugin, G_OBJECT (item->data));
-
-	/* let engine subclasses perform required cleanups. */
-	GPE_ENGINE_GET_CLASS (engine)->plugin_deactivated (engine, info);
+		GPE_ENGINE_GET_CLASS (engine)->deactivate_plugin_on_object (engine, info, G_OBJECT (item->data));
 
 	/* first unref the plugin (the loader still has one) */
 	g_object_unref (info->plugin);
@@ -633,7 +641,7 @@ gpe_engine_activate_plugins (GPEEngine *engine,
 			continue;
 
 		if (load_plugin (engine, info))
-			gpe_plugin_activate (info->plugin, target_object);
+			GPE_ENGINE_GET_CLASS (engine)->activate_plugin_on_object (engine, info, target_object);
 	}
 
 	/* also call update_ui after activation */
@@ -658,7 +666,7 @@ gpe_engine_deactivate_plugins (GPEEngine *engine,
 			continue;
 
 		/* call deactivate for the plugin for this window */
-		gpe_plugin_deactivate (info->plugin, target_object);
+		GPE_ENGINE_GET_CLASS (engine)->deactivate_plugin_on_object (engine, info, target_object);
 	}
 }
 
