@@ -132,7 +132,10 @@ new_plugin_from_info (GPEPluginLoaderPython *loader,
 		return NULL;
 	}
 
-	pygobject_construct (pygobject, NULL);
+	pygobject_construct (pygobject,
+			     "install-dir", gpe_plugin_info_get_module_dir (info),
+			     "data-dir", gpe_plugin_info_get_data_dir (info),
+			     NULL);
 
 	if (pygobject->obj == NULL)
 	{
