@@ -1,0 +1,12 @@
+/html
+/xml
+/libgpeui-decl-list.txt
+/libgpeui-decl.txt
+/libgpeui-undeclared.txt
+/libgpeui-undocumented.txt
+/libgpeui-unused.txt
+/libgpeui.args
+/libgpeui.hierarchy
+/libgpeui.interfaces
+/libgpeui.prerequisites
+/libgpeui.signals

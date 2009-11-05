@@ -1,0 +1,16 @@
+<SECTION>
+<FILE>gpe-plugin-manager</FILE>
+GPEPluginManagerPrivate
+<TITLE>GPEPluginManager</TITLE>
+GPEPluginManager
+gpe_plugin_manager_new
+<SUBSECTION Standard>
+GPE_PLUGIN_MANAGER
+GPE_IS_PLUGIN_MANAGER
+GPE_TYPE_PLUGIN_MANAGER
+gpe_plugin_manager_get_type
+GPE_PLUGIN_MANAGER_CLASS
+GPE_IS_PLUGIN_MANAGER_CLASS
+GPE_PLUGIN_MANAGER_GET_CLASS
+</SECTION>
+

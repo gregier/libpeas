@@ -1,0 +1,128 @@
+<!-- ##### SECTION Title ##### -->
+GPEPlugin
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### USER_FUNCTION GPEFunc ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@target_object: 
+
+
+<!-- ##### STRUCT GPEPlugin ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GPEPlugin:data-dir ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GPEPlugin:install-dir ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gpe_plugin_get_install_dir ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gpe_plugin_get_data_dir ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gpe_plugin_activate ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@target_object: 
+
+
+<!-- ##### FUNCTION gpe_plugin_deactivate ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@target_object: 
+
+
+<!-- ##### FUNCTION gpe_plugin_update_ui ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@target_object: 
+
+
+<!-- ##### FUNCTION gpe_plugin_is_configurable ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gpe_plugin_create_configure_dialog ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### MACRO GPE_REGISTER_TYPE_WITH_CODE ##### -->
+<para>
+
+</para>
+
+@PARENT_TYPE: 
+@PluginName: 
+@plugin_name: 
+@CODE: 
+
+
+<!-- ##### MACRO GPE_REGISTER_TYPE ##### -->
+<para>
+
+</para>
+
+@PARENT_TYPE: 
+@PluginName: 
+@plugin_name: 
+
+

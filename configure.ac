@@ -222,6 +222,10 @@ AC_SUBST(LOADER_LIBTOOL_FLAGS)
 
 AC_CONFIG_FILES([
 Makefile
+docs/Makefile
+docs/reference/Makefile
+docs/reference/libgpe/Makefile
+docs/reference/libgpeui/Makefile
 libgpe/Makefile
 libgpeui/Makefile
 loaders/Makefile

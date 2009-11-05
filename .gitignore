@@ -3,6 +3,7 @@
 *.la
 *.o
 *~
+*.stamp
 .*.sw[nop]
 .deps
 .libs
