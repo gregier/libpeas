@@ -253,6 +253,14 @@ error:
 	return NULL;
 }
 
+/**
+ * gpe_plugin_info_is_active:
+ * @info: a #GPEPluginInfo
+ *
+ * Check if the plugin is active.
+ *
+ * Returns: %TRUE if the plugin is active.
+ */
 gboolean
 gpe_plugin_info_is_active (GPEPluginInfo *info)
 {
@@ -261,6 +269,14 @@ gpe_plugin_info_is_active (GPEPluginInfo *info)
 	return info->available && info->plugin != NULL;
 }
 
+/**
+ * gpe_plugin_info_is_available:
+ * @info: a #GPEPluginInfo
+ *
+ * Check if the plugin is available.
+ *
+ * Returns: %TRUE if the plugin is available.
+ */
 gboolean
 gpe_plugin_info_is_available (GPEPluginInfo *info)
 {
@@ -269,6 +285,14 @@ gpe_plugin_info_is_available (GPEPluginInfo *info)
 	return info->available != FALSE;
 }
 
+/**
+ * gpe_plugin_info_is_configurable:
+ * @info: a #GPEPluginInfo
+ *
+ * check if the plugin is configurable.
+ *
+ * Returns: %TRUE if the plugin is configurable.
+ */
 gboolean
 gpe_plugin_info_is_configurable (GPEPluginInfo *info)
 {
@@ -280,6 +304,12 @@ gpe_plugin_info_is_configurable (GPEPluginInfo *info)
 	return gpe_plugin_is_configurable (info->plugin);
 }
 
+/**
+ * gpe_plugin_info_get_module_name:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the module name.
+ */
 const gchar *
 gpe_plugin_info_get_module_name (GPEPluginInfo *info)
 {
@@ -288,6 +318,12 @@ gpe_plugin_info_get_module_name (GPEPluginInfo *info)
 	return info->module_name;
 }
 
+/**
+ * gpe_plugin_info_get_module_dir:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the module directory.
+ */
 const gchar *
 gpe_plugin_info_get_module_dir (GPEPluginInfo *info)
 {
@@ -296,6 +332,12 @@ gpe_plugin_info_get_module_dir (GPEPluginInfo *info)
 	return info->module_dir;
 }
 
+/**
+ * gpe_plugin_info_get_data_dir:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the data dir of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_data_dir (GPEPluginInfo *info)
 {
@@ -304,6 +346,12 @@ gpe_plugin_info_get_data_dir (GPEPluginInfo *info)
 	return info->data_dir;
 }
 
+/**
+ * gpe_plugin_info_get_name:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the name of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_name (GPEPluginInfo *info)
 {
@@ -312,6 +360,12 @@ gpe_plugin_info_get_name (GPEPluginInfo *info)
 	return info->name;
 }
 
+/**
+ * gpe_plugin_info_get_description:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the description of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_description (GPEPluginInfo *info)
 {
@@ -320,6 +374,12 @@ gpe_plugin_info_get_description (GPEPluginInfo *info)
 	return info->desc;
 }
 
+/**
+ * gpe_plugin_info_get_icon_name:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the icon name of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_icon_name (GPEPluginInfo *info)
 {
@@ -335,6 +395,12 @@ gpe_plugin_info_get_icon_name (GPEPluginInfo *info)
 		return "libgpe-plugin";
 }
 
+/**
+ * gpe_plugin_info_get_authors:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets a NULL-terminated array of strings with the authors of the plugin.
+ */
 const gchar **
 gpe_plugin_info_get_authors (GPEPluginInfo *info)
 {
@@ -343,6 +409,12 @@ gpe_plugin_info_get_authors (GPEPluginInfo *info)
 	return (const gchar **) info->authors;
 }
 
+/**
+ * gpe_plugin_info_get_website:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the website of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_website (GPEPluginInfo *info)
 {
@@ -351,6 +423,12 @@ gpe_plugin_info_get_website (GPEPluginInfo *info)
 	return info->website;
 }
 
+/**
+ * gpe_plugin_info_get_copyright:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the copyright of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_copyright (GPEPluginInfo *info)
 {
@@ -359,6 +437,12 @@ gpe_plugin_info_get_copyright (GPEPluginInfo *info)
 	return info->copyright;
 }
 
+/**
+ * gpe_plugin_info_get_version:
+ * @info: a #GPEPluginInfo
+ *
+ * Gets the version of the plugin.
+ */
 const gchar *
 gpe_plugin_info_get_version (GPEPluginInfo *info)
 {

@@ -37,22 +37,6 @@ GPEPluginInfo
 
 </para>
 
-@refcount: 
-@plugin: 
-@file: 
-@module_dir: 
-@data_dir: 
-@module_name: 
-@loader: 
-@dependencies: 
-@name: 
-@desc: 
-@icon_name: 
-@authors: 
-@copyright: 
-@website: 
-@version: 
-@available: 
 
 <!-- ##### FUNCTION gpe_plugin_info_get_type ##### -->
 <para>

@@ -720,6 +720,15 @@ gpe_engine_configure_plugin (GPEEngine     *engine,
 	gtk_widget_show (conf_dlg);
 }
 
+/**
+ * gpe_engine_get_active_plugins:
+ * @engine: a #GPEEngine
+ *
+ * Returns the active plugins or %NULL. Remember to free the array with g_strfreev().
+ *
+ * Returns: a NULL-terminated array of strings with the active plugins or %NULL
+ *          if there are no active plugins. This must be freed with g_strfreev().
+ */
 gchar **
 gpe_engine_get_active_plugins (GPEEngine *engine)
 {
@@ -752,6 +761,13 @@ string_in_strv (const gchar  *needle,
 	return FALSE;
 }
 
+/**
+ * gpe_engine_set_active_plugins:
+ * @engine: a #GPEEngine
+ * @plugin_names: a NULL-terminated array of strings
+ *
+ * Sets the plugins to be activated by @engine.
+ */
 void
 gpe_engine_set_active_plugins (GPEEngine    *engine,
 			       const gchar **plugin_names)
@@ -812,6 +828,15 @@ gpe_engine_remove_object (GPEEngine *engine,
 	gpe_engine_deactivate_plugins (engine, object);
 }
 
+/**
+ * gpe_engine_new:
+ * @app_name: the name of the app
+ * @base_module_dir: the base dir for the module
+ *
+ * Returns a new #GPEEngine object.
+ *
+ * Returns: a newly created #GPEEngine object.
+ */
 GPEEngine *
 gpe_engine_new (const gchar *app_name,
 		const gchar *base_module_dir)

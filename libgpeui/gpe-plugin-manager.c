@@ -955,6 +955,14 @@ gpe_plugin_manager_finalize (GObject *object)
 	G_OBJECT_CLASS (gpe_plugin_manager_parent_class)->finalize (object);
 }
 
+/**
+ * gpe_plugin_manager_new:
+ * @engine: a #GPEEngine
+ *
+ * Creates a new manager with the given engine.
+ *
+ * Returns: the new #GPEPluginManager
+ */
 GtkWidget *
 gpe_plugin_manager_new (GPEEngine *engine)
 {
