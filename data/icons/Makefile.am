@@ -10,11 +10,16 @@ scalableicons_DATA = scalable/libgpe-plugin.svg
 
 
 noinst_DATA = \
-	16x16/libgpe-plugin.svg
-	22x22/libgpe-plugin.svg
+	16x16/libgpe-plugin.svg		\
+	22x22/libgpe-plugin.svg		\
 	32x32/libgpe-plugin.svg
 
-EXTRA_DIST = $(noinst_DATA)
+EXTRA_DIST = \
+	$(icons16x16_DATA)		\
+	$(icons22x22_DATA)		\
+	$(icons32x32_DATA)		\
+	$(scalableicons_DATA)		\
+	$(noinst_DATA)
 
 
 gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
