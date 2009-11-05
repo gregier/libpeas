@@ -45,9 +45,7 @@ struct _GPEPluginLoaderInterface {
 						 const gchar		*module_dir);
 
 	GPEPlugin	*(*load)		(GPEPluginLoader 	*loader,
-						 GPEPluginInfo	        *info,
-						 const gchar       	*path,
-						 const gchar		*datadir);
+						 GPEPluginInfo	        *info);
 
 	void		 (*unload)		(GPEPluginLoader 	*loader,
 						 GPEPluginInfo       	*info);
@@ -63,9 +61,7 @@ void		 gpe_plugin_loader_add_module_directory	(GPEPluginLoader	*loader,
 							 const gchar		*module_dir);
 
 GPEPlugin	*gpe_plugin_loader_load			(GPEPluginLoader 	*loader,
-							 GPEPluginInfo 		*info,
-							 const gchar		*path,
-							 const gchar		*datadir);
+							 GPEPluginInfo 		*info);
 void		 gpe_plugin_loader_unload		(GPEPluginLoader 	*loader,
 							 GPEPluginInfo		*info);
 void		 gpe_plugin_loader_garbage_collect	(GPEPluginLoader 	*loader);

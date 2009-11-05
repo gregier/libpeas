@@ -103,9 +103,7 @@ gpe_plugin_loader_add_module_directory (GPEPluginLoader *loader,
 
 GPEPlugin *
 gpe_plugin_loader_load (GPEPluginLoader *loader,
-			GPEPluginInfo   *info,
-			const gchar      *path,
-			const gchar      *datadir)
+			GPEPluginInfo   *info)
 {
 	GPEPluginLoaderInterface *iface;
 
@@ -114,7 +112,7 @@ gpe_plugin_loader_load (GPEPluginLoader *loader,
 	iface = GPE_PLUGIN_LOADER_GET_INTERFACE (loader);
 	g_return_val_if_fail (iface->load != NULL, NULL);
 
-	return iface->load (loader, info, path, datadir);
+	return iface->load (loader, info);
 }
 
 void

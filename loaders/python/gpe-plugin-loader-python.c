@@ -52,7 +52,6 @@ typedef struct
 {
 	PyObject *type;
 	PyObject *instance;
-	gchar    *path;
 } PythonInfo;
 
 static void	 gpe_plugin_loader_iface_init			(gpointer		g_iface,
@@ -164,13 +163,11 @@ static GPEPlugin *
 add_python_info (GPEPluginLoaderPython *loader,
 		 GPEPluginInfo         *info,
 		 PyObject              *module,
-		 const gchar           *path,
 		 PyObject              *type)
 {
 	PythonInfo *pyinfo;
 
 	pyinfo = g_new (PythonInfo, 1);
-	pyinfo->path = g_strdup (path);
 	pyinfo->type = type;
 
 	Py_INCREF (pyinfo->type);
@@ -197,9 +194,7 @@ gpe_plugin_loader_iface_add_module_directory (GPEPluginLoader *loader,
 
 static GPEPlugin *
 gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
-			      GPEPluginInfo   *info,
-			      const gchar     *path,
-			      const gchar     *datadir)
+			      GPEPluginInfo   *info)
 {
 	GPEPluginLoaderPython *pyloader = GPE_PLUGIN_LOADER_PYTHON (loader);
 	PyObject *main_module, *main_locals, *pytype;
@@ -229,16 +224,7 @@ gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
 	}
 
 	/* If we have a special path, we register it */
-	if (path != NULL)
-	{
-		PyObject *sys_path = PySys_GetObject ("path");
-		PyObject *pypath = PyString_FromString (path);
-
-		if (PySequence_Contains (sys_path, pypath) == 0)
-			PyList_Insert (sys_path, 0, pypath);
-
-		Py_DECREF (pypath);
-	}
+	gpe_plugin_loader_python_add_module_path (pyloader, gpe_plugin_info_get_module_dir (info));
 
 	main_locals = PyModule_GetDict (main_module);
 
@@ -267,7 +253,7 @@ gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
 	pytype = find_python_plugin_type (info, pymodule);
 
 	if (pytype)
-		return add_python_info (pyloader, info, pymodule, path, pytype);
+		return add_python_info (pyloader, info, pymodule, pytype);
 
 	return NULL;
 }
@@ -363,21 +349,16 @@ static gboolean
 gpe_plugin_loader_python_add_module_path (GPEPluginLoaderPython *self,
 					  const gchar           *module_path)
 {
-	PyObject *sys, *pathlist, *pathstring;
+	PyObject *pathlist, *pathstring;
 
 	g_return_val_if_fail (GPE_IS_PLUGIN_LOADER_PYTHON (self), FALSE);
 	g_return_val_if_fail (module_path != NULL, FALSE);
 
-	sys = PyImport_ImportModule ("sys");
-	if (sys == NULL)
-	{
-		g_warning ("Error adding module path: could not import sys.");
-		return FALSE;
-	}
-
-	pathlist = PyDict_GetItemString (PyModule_GetDict (sys), "path");
+	pathlist = PySys_GetObject ("path");
 	pathstring = PyString_FromString (module_path);
-	PyList_Insert(pathlist, 0, pathstring);
+
+	if (PySequence_Contains (pathlist, pathstring) == 0)
+		PyList_Insert (pathlist, 0, pathstring);
 	Py_DECREF (pathstring);
 	return TRUE;
 }
@@ -641,7 +622,6 @@ destroy_python_info (PythonInfo *info)
 	Py_XDECREF (info->type);
 	pyg_gil_state_release (state);
 
-	g_free (info->path);
 	g_free (info);
 }
 

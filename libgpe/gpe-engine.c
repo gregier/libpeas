@@ -517,8 +517,6 @@ load_plugin (GPEEngine     *engine,
 	     GPEPluginInfo *info)
 {
 	GPEPluginLoader *loader;
-	const gchar *path;
-	const gchar *data_dir;
 
 	if (gpe_plugin_info_is_active (info))
 		return TRUE;
@@ -535,12 +533,7 @@ load_plugin (GPEEngine     *engine,
 		return FALSE;
 	}
 
-	path = gpe_plugin_info_get_module_dir (info);
-	data_dir = gpe_plugin_info_get_data_dir (info);
-	g_return_val_if_fail (path != NULL, FALSE);
-	g_return_val_if_fail (data_dir != NULL, FALSE);
-
-	info->plugin = gpe_plugin_loader_load (loader, info, path, data_dir);
+	info->plugin = gpe_plugin_loader_load (loader, info);
 
 	if (info->plugin == NULL)
 	{

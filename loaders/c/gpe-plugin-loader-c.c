@@ -48,9 +48,7 @@ gpe_plugin_loader_iface_add_module_directory (GPEPluginLoader *loader,
 
 static GPEPlugin *
 gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
-			      GPEPluginInfo   *info,
-			      const gchar     *path,
-			      const gchar     *datadir)
+			      GPEPluginInfo   *info)
 {
 	GPEPluginLoaderC *cloader = GPE_PLUGIN_LOADER_C (loader);
 	GPEObjectModule *module;
@@ -64,7 +62,7 @@ gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
 	{
 		/* For now we force all modules to be resident */
 		module = gpe_object_module_new (module_name,
-						path,
+						gpe_plugin_info_get_module_dir (info),
 						"register_gpe_plugin",
 						TRUE);
 
@@ -82,8 +80,8 @@ gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
 	}
 
 	result = (GPEPlugin *) gpe_object_module_new_object (module,
-							     "install-dir", path,
-							     "data-dir", datadir,
+							     "install-dir", gpe_plugin_info_get_module_dir (info),
+							     "data-dir", gpe_plugin_info_get_data_dir (info),
 							     NULL);
 
 	if (!result)
