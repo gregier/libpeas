@@ -23,8 +23,9 @@
 #define __GPE_PLUGIN_H__
 
 #include <glib-object.h>
-
 #include <gtk/gtk.h>
+
+#include "gpe-plugin-info.h"
 
 /* TODO: add a .h file that includes all the .h files normally needed to
  * develop a plugin */
@@ -94,7 +95,7 @@ struct _GPEPluginClass
  */
 GType 		 gpe_plugin_get_type 			(void) G_GNUC_CONST;
 
-gchar 		*gpe_plugin_get_install_dir		(GPEPlugin *plugin);
+GPEPluginInfo	*gpe_plugin_get_info			(GPEPlugin *plugin);
 gchar 		*gpe_plugin_get_data_dir		(GPEPlugin *plugin);
 
 void 		 gpe_plugin_activate			(GPEPlugin *plugin,

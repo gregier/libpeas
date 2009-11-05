@@ -79,10 +79,7 @@ gpe_plugin_loader_iface_load (GPEPluginLoader *loader,
 		return NULL;
 	}
 
-	result = (GPEPlugin *) gpe_object_module_new_object (module,
-							     "install-dir", gpe_plugin_info_get_module_dir (info),
-							     "data-dir", gpe_plugin_info_get_data_dir (info),
-							     NULL);
+	result = (GPEPlugin *) gpe_object_module_new_object (module, "plugin-info", info, NULL);
 
 	if (!result)
 	{
