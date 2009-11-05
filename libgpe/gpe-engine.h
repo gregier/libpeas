@@ -83,6 +83,7 @@ void		 gpe_engine_rescan_plugins		(GPEEngine      *engine);
 
 /* plugin list management */
 const GList	*gpe_engine_get_plugin_list 		(GPEEngine      *engine);
+gchar		**gpe_engine_get_active_plugins		(GPEEngine      *engine);
 void		 gpe_engine_set_active_plugins		(GPEEngine      *engine,
 							 const gchar   **plugin_names);
 

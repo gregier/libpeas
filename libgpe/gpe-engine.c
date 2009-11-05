@@ -721,6 +721,27 @@ gpe_engine_configure_plugin (GPEEngine     *engine,
 	gtk_widget_show (conf_dlg);
 }
 
+gchar **
+gpe_engine_get_active_plugins (GPEEngine *engine)
+{
+	GArray *array = g_array_new (TRUE, FALSE, sizeof (gchar *));
+	GList *pl;
+
+	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
+	{
+		GPEPluginInfo *info = (GPEPluginInfo*) pl->data;
+		gchar *module_name;
+
+		if (gpe_plugin_info_is_active (info))
+		{
+			module_name = g_strdup (gpe_plugin_info_get_module_name (info));
+			g_array_append_val (array, module_name);
+		}
+	}
+
+	return (gchar **) g_array_free (array, FALSE);
+}
+
 static gboolean
 string_in_strv (const gchar  *needle,
 		const gchar **haystack)
