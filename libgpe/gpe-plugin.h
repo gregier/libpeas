@@ -45,10 +45,12 @@ G_BEGIN_DECLS
  * Main object structure
  */
 typedef struct _GPEPlugin GPEPlugin;
+typedef struct _GPEPluginPrivate GPEPluginPrivate;
 
 struct _GPEPlugin
 {
 	GObject parent;
+	GPEPluginPrivate *priv;
 };
 
 /*

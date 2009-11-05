@@ -33,8 +33,6 @@ enum {
 	PROP_DATA_DIR
 };
 
-typedef struct _GPEPluginPrivate GPEPluginPrivate;
-
 struct _GPEPluginPrivate
 {
 	gchar *install_dir;
@@ -70,47 +68,51 @@ gpe_plugin_get_property (GObject    *object,
 				 GValue     *value,
 				 GParamSpec *pspec)
 {
+	GPEPlugin *plugin = GPE_PLUGIN (object);
+
 	switch (prop_id)
 	{
 		case PROP_INSTALL_DIR:
-			g_value_take_string (value, gpe_plugin_get_install_dir (GPE_PLUGIN (object)));
+			g_value_take_string (value, gpe_plugin_get_install_dir (plugin));
 			break;
 		case PROP_DATA_DIR:
-			g_value_take_string (value, gpe_plugin_get_data_dir (GPE_PLUGIN (object)));
+			g_value_take_string (value, gpe_plugin_get_data_dir (plugin));
 			break;
 		default:
-			g_return_if_reached ();
+                        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+			break;
 	}
 }
 
 static void
 gpe_plugin_set_property (GObject      *object,
-				 guint         prop_id,
-				 const GValue *value,
-				 GParamSpec   *pspec)
+			 guint         prop_id,
+			 const GValue *value,
+			 GParamSpec   *pspec)
 {
-	GPEPluginPrivate *priv = GPE_PLUGIN_GET_PRIVATE (object);
+	GPEPlugin *plugin = GPE_PLUGIN (object);
 
 	switch (prop_id)
 	{
 		case PROP_INSTALL_DIR:
-			priv->install_dir = g_value_dup_string (value);
+			plugin->priv->install_dir = g_value_dup_string (value);
 			break;
 		case PROP_DATA_DIR:
-			priv->data_dir = g_value_dup_string (value);
+			plugin->priv->data_dir = g_value_dup_string (value);
 			break;
 		default:
-			g_return_if_reached ();
+                        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+			break;
 	}
 }
 
 static void
 gpe_plugin_finalize (GObject *object)
 {
-	GPEPluginPrivate *priv = GPE_PLUGIN_GET_PRIVATE (object);
+	GPEPlugin *plugin = GPE_PLUGIN (object);
 
-	g_free (priv->install_dir);
-	g_free (priv->data_dir);
+	g_free (plugin->priv->install_dir);
+	g_free (plugin->priv->data_dir);
 
 	G_OBJECT_CLASS (gpe_plugin_parent_class)->finalize (object);
 }
@@ -153,7 +155,7 @@ gpe_plugin_class_init (GPEPluginClass *klass)
 static void
 gpe_plugin_init (GPEPlugin *plugin)
 {
-	/* Empty */
+	plugin->priv = GPE_PLUGIN_GET_PRIVATE (plugin);
 }
 
 /**
@@ -170,7 +172,7 @@ gpe_plugin_get_install_dir (GPEPlugin *plugin)
 {
 	g_return_val_if_fail (GPE_IS_PLUGIN (plugin), NULL);
 
-	return g_strdup (GPE_PLUGIN_GET_PRIVATE (plugin)->install_dir);
+	return g_strdup (plugin->priv->install_dir);
 }
 
 /**
@@ -188,7 +190,7 @@ gpe_plugin_get_data_dir (GPEPlugin *plugin)
 {
 	g_return_val_if_fail (GPE_IS_PLUGIN (plugin), NULL);
 
-	return g_strdup (GPE_PLUGIN_GET_PRIVATE (plugin)->data_dir);
+	return g_strdup (plugin->priv->data_dir);
 }
 
 /**
