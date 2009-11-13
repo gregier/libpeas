@@ -89,8 +89,6 @@ static void	gpe_engine_activate_plugin_real		 (GPEEngine     *engine,
 static void	gpe_engine_deactivate_plugin_real	 (GPEEngine     *engine,
 							  GPEPluginInfo *info);
 
-typedef gboolean (*LoadDirCallback) (GPEEngine *engine, const gchar *filename, gpointer userdata);
-
 static void
 load_plugin_info (GPEEngine          *engine,
 		  const gchar        *filename,
@@ -718,53 +716,6 @@ gpe_engine_deactivate_plugin (GPEEngine     *engine,
 	return !gpe_plugin_info_is_active (info);
 }
 
-static void
-gpe_engine_activate_plugins (GPEEngine *engine,
-			     GObject   *target_object)
-{
-	GList *pl;
-
-	g_return_if_fail (GPE_IS_ENGINE (engine));
-	g_return_if_fail (G_IS_OBJECT (target_object));
-
-	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
-	{
-		GPEPluginInfo *info = (GPEPluginInfo*)pl->data;
-
-		/* check if the plugin hasn't been activated yet. */
-		if (!gpe_plugin_info_is_active (info))
-			continue;
-
-		if (load_plugin (engine, info))
-			GPE_ENGINE_GET_CLASS (engine)->activate_plugin_on_object (engine, info, target_object);
-	}
-
-	/* also call update_ui after activation */
-	gpe_engine_update_plugins_ui (engine, target_object);
-}
-
-static void
-gpe_engine_deactivate_plugins (GPEEngine *engine,
-			       GObject   *target_object)
-{
-	GList *pl;
-
-	g_return_if_fail (GPE_IS_ENGINE (engine));
-	g_return_if_fail (G_IS_OBJECT (target_object));
-
-	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
-	{
-		GPEPluginInfo *info = (GPEPluginInfo*)pl->data;
-
-		/* check if the plugin is actually active */
-		if (!gpe_plugin_info_is_active (info))
-			continue;
-
-		/* call deactivate for the plugin for this window */
-		GPE_ENGINE_GET_CLASS (engine)->deactivate_plugin_on_object (engine, info, target_object);
-	}
-}
-
 /**
  * gpe_engine_update_plugins_ui:
  * @engine: A #GPEEngine.
@@ -924,6 +875,8 @@ void
 gpe_engine_add_object (GPEEngine *engine,
 		       GObject   *object)
 {
+	GList *pl;
+
 	g_return_if_fail (GPE_IS_ENGINE (engine));
 	g_return_if_fail (G_IS_OBJECT (object));
 
@@ -932,8 +885,22 @@ gpe_engine_add_object (GPEEngine *engine,
 		return;
 
 	/* Activate the plugin on object, and add it to the list of managed objects */
-	gpe_engine_activate_plugins (engine, object);
+	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
+	{
+		GPEPluginInfo *info = (GPEPluginInfo*) pl->data;
+
+		/* check if the plugin is actually active */
+		if (!gpe_plugin_info_is_active (info))
+			continue;
+
+		GPE_ENGINE_GET_CLASS (engine)->activate_plugin_on_object (engine, info, object);
+	}
+
 	engine->priv->object_list = g_list_prepend (engine->priv->object_list, object);
+
+	/* also call update_ui after activation */
+	gpe_engine_update_plugins_ui (engine, object);
+
 }
 
 /**
@@ -949,6 +916,8 @@ void
 gpe_engine_remove_object (GPEEngine *engine,
 			  GObject   *object)
 {
+	GList *pl;
+
 	g_return_if_fail (GPE_IS_ENGINE (engine));
 	g_return_if_fail (G_IS_OBJECT (object));
 
@@ -958,7 +927,18 @@ gpe_engine_remove_object (GPEEngine *engine,
 
 	/* Remove the object to the list of managed objects, and deactivate the plugin on it */
 	engine->priv->object_list = g_list_delete_link (engine->priv->object_list, item);
-	gpe_engine_deactivate_plugins (engine, object);
+
+	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
+	{
+		GPEPluginInfo *info = (GPEPluginInfo*) pl->data;
+
+		/* check if the plugin is actually active */
+		if (!gpe_plugin_info_is_active (info))
+			continue;
+
+		/* call deactivate for the plugin for this window */
+		GPE_ENGINE_GET_CLASS (engine)->deactivate_plugin_on_object (engine, info, object);
+	}
 }
 
 /**
