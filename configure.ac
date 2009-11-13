@@ -26,6 +26,8 @@ AC_SUBST(GPE_MINOR_VERSION, gpe_minor_version)
 AC_DEFINE(GPE_MICRO_VERSION, gpe_micro_version, [Gedit Plugins Engine micro version])
 AC_SUBST(GPE_MICRO_VERSION, gpe_micro_version)
 
+AC_SUBST(GPE_VERSION, gpe_version)
+
 GPE_API_VERSION=2.20
 AC_SUBST(GPE_API_VERSION)
 
@@ -225,6 +227,7 @@ Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/libgpe/Makefile
+docs/reference/libgpe/version.xml
 docs/reference/libgpeui/Makefile
 libgpe/Makefile
 libgpeui/Makefile

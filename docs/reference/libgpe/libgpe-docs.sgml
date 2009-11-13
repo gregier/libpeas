@@ -3,23 +3,22 @@
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
   <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
   <bookinfo>
     <title>GPE Reference Manual</title>
+    <releaseinfo>
+      for libgpe &version;
+    </releaseinfo>
   </bookinfo>
 
-  <chapter>
-    <title>GPE</title>
+  <part label="I">
+    <title>API Reference</title>
     <xi:include href="xml/gpe-engine.xml"/>
     <xi:include href="xml/gpe-plugin.xml"/>
     <xi:include href="xml/gpe-plugin-info.xml"/>
-
-  </chapter>
-  <chapter id="object-tree">
-    <title>Object Hierarchy</title>
-     <xi:include href="xml/tree_index.sgml"/>
-  </chapter>
+  </part>
   <index id="api-index-full">
     <title>API Index</title>
     <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
