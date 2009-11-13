@@ -36,12 +36,19 @@ G_BEGIN_DECLS
 #define GPE_IS_ENGINE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GPE_TYPE_ENGINE))
 #define GPE_ENGINE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS((obj), GPE_TYPE_ENGINE, GPEEngineClass))
 
+/**
+ * GPEEngine:
+ *
+ * Engine at the heart of the GPE plugin system.
+ */
 typedef struct _GPEEngine		GPEEngine;
 typedef struct _GPEEnginePrivate	GPEEnginePrivate;
 
 struct _GPEEngine
 {
 	GObject parent;
+
+	/*< private >*/
 	GPEEnginePrivate *priv;
 };
 
@@ -88,7 +95,7 @@ void		 gpe_engine_set_active_plugins		(GPEEngine      *engine,
 
 /* plugin info */
 GPEPluginInfo	*gpe_engine_get_plugin_info		(GPEEngine      *engine,
-							 const gchar    *name);
+							 const gchar    *plugin_name);
 
 /* plugin load and unloading (overall, for all windows) */
 gboolean 	 gpe_engine_activate_plugin 		(GPEEngine      *engine,
@@ -102,7 +109,7 @@ void	 	 gpe_engine_configure_plugin		(GPEEngine      *engine,
 
 /* plugin activation/deactivation per target_object */
 void		 gpe_engine_update_plugins_ui		(GPEEngine      *engine,
-							 GObject        *target_object);
+							 GObject        *object);
 
 /* object management */
 void		 gpe_engine_add_object			(GPEEngine     *engine,

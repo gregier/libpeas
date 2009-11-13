@@ -31,6 +31,13 @@
 #include "gpe-plugin-info-priv.h"
 #include "gpe-plugin.h"
 
+/**
+ * SECTION:gpe-plugin-info
+ * @short_description: Information about a plugin.
+ *
+ * A #GPEPluginInfo contains all the information available about a plugin.
+ **/
+
 GPEPluginInfo *
 _gpe_plugin_info_ref (GPEPluginInfo *info)
 {
@@ -87,9 +94,10 @@ gpe_plugin_info_get_type (void)
 }
 
 /**
- * gpe_plugin_info_new:
- * @filename: the filename where to read the plugin information
- * @pathinfo: a #GPEPathInfo.
+ * _gpe_plugin_info_new:
+ * @filename: The filename where to read the plugin information.
+ * @pathinfo: A #GPEPathInfo.
+ * @app_name: The application name.
  *
  * Creates a new #GPEPluginInfo from a file on the disk.
  *
@@ -255,7 +263,7 @@ error:
 
 /**
  * gpe_plugin_info_is_active:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Check if the plugin is active.
  *
@@ -271,9 +279,11 @@ gpe_plugin_info_is_active (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_is_available:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
- * Check if the plugin is available.
+ * Check if the plugin is available.  A plugin is marked as not available when
+ * there is no loader available to load it, or when there has been an error
+ * when trying to load it previously.
  *
  * Returns: %TRUE if the plugin is available.
  */
@@ -287,9 +297,9 @@ gpe_plugin_info_is_available (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_is_configurable:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
- * check if the plugin is configurable.
+ * Check if the plugin is configurable.
  *
  * Returns: %TRUE if the plugin is configurable.
  */
@@ -306,7 +316,7 @@ gpe_plugin_info_is_configurable (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_module_name:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the module name.
  */
@@ -320,7 +330,7 @@ gpe_plugin_info_get_module_name (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_module_dir:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the module directory.
  */
@@ -334,7 +344,7 @@ gpe_plugin_info_get_module_dir (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_data_dir:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the data dir of the plugin.
  */
@@ -348,7 +358,7 @@ gpe_plugin_info_get_data_dir (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_name:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the name of the plugin.
  */
@@ -362,7 +372,7 @@ gpe_plugin_info_get_name (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_description:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the description of the plugin.
  */
@@ -376,7 +386,7 @@ gpe_plugin_info_get_description (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_icon_name:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the icon name of the plugin.
  */
@@ -397,7 +407,7 @@ gpe_plugin_info_get_icon_name (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_authors:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets a NULL-terminated array of strings with the authors of the plugin.
  */
@@ -411,7 +421,7 @@ gpe_plugin_info_get_authors (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_website:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the website of the plugin.
  */
@@ -425,7 +435,7 @@ gpe_plugin_info_get_website (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_copyright:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the copyright of the plugin.
  */
@@ -439,7 +449,7 @@ gpe_plugin_info_get_copyright (GPEPluginInfo *info)
 
 /**
  * gpe_plugin_info_get_version:
- * @info: a #GPEPluginInfo
+ * @info: A #GPEPluginInfo.
  *
  * Gets the version of the plugin.
  */

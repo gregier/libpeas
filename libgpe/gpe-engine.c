@@ -35,7 +35,16 @@
 #include "gpe-plugin.h"
 #include "gpe-dirs.h"
 
-#define LOADER_EXT	G_MODULE_SUFFIX
+/**
+ * SECTION:gpe-engine
+ * @short_description: Engine at the heart of the GPE plugin system.
+ * @see_also: #GPEPluginInfo
+ *
+ * The #GPEEngine is the object which manages the plugins.  Its role is twofold:
+ * First it will fetch all the information about the available plugins from all
+ * the registered plugin directories, and second it will provide you an API to
+ * load, control and unload the plugins from within your application.
+ **/
 
 typedef struct
 {
@@ -143,6 +152,22 @@ load_dir_real (GPEEngine         *engine,
 	g_free (plugin_extension);
 }
 
+/**
+ * gpe_engine_add_plugin_directory:
+ * @engine: A #GPEEngine.
+ * @module_dir: The new module directory.
+ * @data_dir: The new data directory.
+ *
+ * Add a directory to the list of directories where the plugins are to be
+ * found.  A "directory" actually consists on a couple of both a module
+ * directory (where the shared libraries or language modules are) and a data
+ * directory (where the plugin data is).
+ *
+ * The #GPEPlugin will be able to use get a correct @data_dir depending on
+ * where it is installing, hence allowing to keep the plugin agnostic when it
+ * comes to installation location (the same plugin can be installed both in
+ * the system path or in the user's home directory).
+ */
 void
 gpe_engine_add_plugin_directory	(GPEEngine      *engine,
 				 const gchar    *module_dir,
@@ -156,6 +181,16 @@ gpe_engine_add_plugin_directory	(GPEEngine      *engine,
 	load_dir_real (engine, pathinfo);
 }
 
+/**
+ * gpe_engine_rescan_plugins:
+ * @engine: A #GPEEngine.
+ *
+ * Rescan all the registered directories to find new or updated plugins.
+ *
+ * Calling this function will make the newly installed plugin infos to be
+ * loaded by the engine, so the new plugins can actually be used without
+ * restarting the application.
+ */
 void
 gpe_engine_rescan_plugins (GPEEngine *engine)
 {
@@ -257,6 +292,15 @@ loader_garbage_collect (const char *id, LoaderInfo *info)
 		gpe_plugin_loader_garbage_collect (info->loader);
 }
 
+/**
+ * gpe_engine_garbage_collect:
+ * @engine: A #GPEEngine.
+ *
+ * This function triggers garbage collection on all the loaders currently
+ * owned by the #GPEEngine.  This can be used to force the loaders to destroy
+ * managed objects that still hold references to objects that are about to
+ * disappear.
+ */
 void
 gpe_engine_garbage_collect (GPEEngine *engine)
 {
@@ -374,13 +418,32 @@ gpe_engine_class_init (GPEEngineClass *klass)
 	klass->activate_plugin_on_object = gpe_engine_activate_plugin_on_object;
 	klass->deactivate_plugin_on_object = gpe_engine_deactivate_plugin_on_object;
 
+	/**
+	 * GPEEngine:app-name:
+	 *
+	 * The application name. Filename extension and section header for
+	 * #GPEPluginInfo files are actually derived from this value.
+	 *
+	 * For instance, if app-name is "Gedit", then info files will have
+	 * the .gedit-plugin extension, and the engine will look for a
+	 * "Gedit Plugin" section in it to load the plugin data.
+	 */
         g_object_class_install_property (object_class, PROP_APP_NAME,
                                          g_param_spec_string ("app-name",
                                                               "Application Name",
                                                               "The application name",
-							      "libgpe",
+							      "GPE",
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
+	/**
+	 * GPEEngine:base-module-dir:
+	 *
+	 * The base application directory for binding modules lookup.
+	 *
+	 * Each loader module will load its modules from a subdirectory of
+	 * the base module directory. For instance, the python loader will
+	 * look for python modules in "${base-module-dir}/python/".
+	 */
         g_object_class_install_property (object_class, PROP_BASE_MODULE_DIR,
                                          g_param_spec_string ("base-module-dir",
 							      "Base module dir",
@@ -388,6 +451,14 @@ gpe_engine_class_init (GPEEngineClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
+	/**
+	 * GPEEngine::activate-plugin:
+	 * @engine: A #GPEEngine.
+	 * @info: A #GPEPluginInfo.
+	 *
+	 * The activate-plugin signal is emitted when a plugin is being
+	 * activated.
+	 */
 	signals[ACTIVATE_PLUGIN] =
 		g_signal_new ("activate-plugin",
 			      the_type,
@@ -399,6 +470,14 @@ gpe_engine_class_init (GPEEngineClass *klass)
 			      1,
 			      GPE_TYPE_PLUGIN_INFO | G_SIGNAL_TYPE_STATIC_SCOPE);
 
+	/**
+	 * GPEEngine::deactivate-plugin:
+	 * @engine: A #GPEEngine.
+	 * @info: A #GPEPluginInfo.
+	 *
+	 * The activate-plugin signal is emitted when a plugin is being
+	 * deactivated.
+	 */
 	signals[DEACTIVATE_PLUGIN] =
 		g_signal_new ("deactivate-plugin",
 			      the_type,
@@ -424,7 +503,7 @@ load_plugin_loader (GPEEngine *engine,
 
 	/* Let's build the expected filename of the requested plugin loader */
 	loader_dirname = gpe_dirs_get_plugin_loaders_dir ();
-	loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, LOADER_EXT);
+	loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, G_MODULE_SUFFIX);
 	g_strdown (loader_basename);
 
 	g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
@@ -501,12 +580,19 @@ compare_plugin_info_and_name (GPEPluginInfo *info,
 	return strcmp (gpe_plugin_info_get_module_name (info), module_name);
 }
 
+/**
+ * gpe_engine_get_plugin_info:
+ * @engine: A #GPEEngine.
+ * @plugin_name: A plugin name.
+ *
+ * Returns the #GPEPluginInfo corresponding with a given plugin name.
+ */
 GPEPluginInfo *
 gpe_engine_get_plugin_info (GPEEngine   *engine,
-			    const gchar *name)
+			    const gchar *plugin_name)
 {
 	GList *l = g_list_find_custom (engine->priv->plugin_list,
-				       name,
+				       plugin_name,
 				       (GCompareFunc) compare_plugin_info_and_name);
 
 	return l == NULL ? NULL : (GPEPluginInfo *) l->data;
@@ -558,6 +644,14 @@ gpe_engine_activate_plugin_real (GPEEngine     *engine,
 		GPE_ENGINE_GET_CLASS (engine)->activate_plugin_on_object (engine, info, G_OBJECT (item->data));
 }
 
+/**
+ * gpe_engine_activate_plugin:
+ * @engine: A #GPEEngine.
+ * @info: A #GPEPluginInfo.
+ *
+ * Activates the plugin corresponding to @info on all the objects registered
+ * against @engine, loading it if it's not already available.
+ */
 gboolean
 gpe_engine_activate_plugin (GPEEngine     *engine,
 			    GPEPluginInfo *info)
@@ -601,6 +695,15 @@ gpe_engine_deactivate_plugin_real (GPEEngine     *engine,
 	info->plugin = NULL;
 }
 
+/**
+ * gpe_engine_deactivate_plugin:
+ * @engine: A #GPEEngine.
+ * @info: A #GPEPluginInfo.
+ *
+ * Deactivates the plugin corresponding to @info on all the objects registered
+ * against @engine, eventually unloading it when it has been completely
+ * deactivated.
+ */
 gboolean
 gpe_engine_deactivate_plugin (GPEEngine     *engine,
 			      GPEPluginInfo *info)
@@ -662,14 +765,22 @@ gpe_engine_deactivate_plugins (GPEEngine *engine,
 	}
 }
 
+/**
+ * gpe_engine_update_plugins_ui:
+ * @engine: A #GPEEngine.
+ * @object: A registered #GObject.
+ *
+ * Triggers an update of all the plugins user interfaces to take into
+ * account state changes due to a plugin or an user action.
+ */
 void
 gpe_engine_update_plugins_ui (GPEEngine *engine,
-			      GObject   *target_object)
+			      GObject   *object)
 {
 	GList *pl;
 
 	g_return_if_fail (GPE_IS_ENGINE (engine));
-	g_return_if_fail (G_IS_OBJECT (target_object));
+	g_return_if_fail (G_IS_OBJECT (object));
 
 	/* call update_ui for all active plugins */
 	for (pl = engine->priv->plugin_list; pl; pl = pl->next)
@@ -679,10 +790,19 @@ gpe_engine_update_plugins_ui (GPEEngine *engine,
 		if (!gpe_plugin_info_is_active (info))
 			continue;
 
-		gpe_plugin_update_ui (info->plugin, target_object);
+		gpe_plugin_update_ui (info->plugin, object);
 	}
 }
 
+/**
+ * gpe_engine_configure_plugin:
+ * @engine: A #GPEEngine.
+ * @info: A #GPEPluginInfo.
+ * @parent: A parent #GtkWindow for the newly created dialog.
+ *
+ * Created a configuration dialog for the plugin related to @info,
+ * and show it transient to @parent.
+ */
 void
 gpe_engine_configure_plugin (GPEEngine     *engine,
 			     GPEPluginInfo *info,
@@ -715,12 +835,13 @@ gpe_engine_configure_plugin (GPEEngine     *engine,
 
 /**
  * gpe_engine_get_active_plugins:
- * @engine: a #GPEEngine
+ * @engine: A #GPEEngine.
  *
- * Returns the active plugins or %NULL. Remember to free the array with g_strfreev().
+ * Returns the list of the names of all the active plugins, or %NULL if there
+ * is no active plugin. Please note that the returned array is a newly
+ * allocated one: you will need to free it using g_strfreev().
  *
- * Returns: a NULL-terminated array of strings with the active plugins or %NULL
- *          if there are no active plugins. This must be freed with g_strfreev().
+ * Returns: A newly-allocated NULL-terminated array of strings, or %NULL.
  */
 gchar **
 gpe_engine_get_active_plugins (GPEEngine *engine)
@@ -756,10 +877,12 @@ string_in_strv (const gchar  *needle,
 
 /**
  * gpe_engine_set_active_plugins:
- * @engine: a #GPEEngine
- * @plugin_names: a NULL-terminated array of strings
+ * @engine: A #GPEEngine.
+ * @plugin_names: A NULL-terminated array of plugin names.
  *
- * Sets the plugins to be activated by @engine.
+ * Sets the list of active plugins for @engine. When this function is called,
+ * the #GPEEngine will activate all the plugins whose names are in
+ * @plugin_names, and deactivate all other active plugins.
  */
 void
 gpe_engine_set_active_plugins (GPEEngine    *engine,
@@ -789,6 +912,14 @@ gpe_engine_set_active_plugins (GPEEngine    *engine,
 	}
 }
 
+/**
+ * gpe_engine_add_object:
+ * @engine: A #GPEEngine.
+ * @object: A #GObject to register.
+ *
+ * Register an object against the #GPEEngine. The activate() method of all
+ * the active plugins will be called on every registered object.
+ */
 void
 gpe_engine_add_object (GPEEngine *engine,
 		       GObject   *object)
@@ -805,6 +936,15 @@ gpe_engine_add_object (GPEEngine *engine,
 	engine->priv->object_list = g_list_prepend (engine->priv->object_list, object);
 }
 
+/**
+ * gpe_engine_remove_object:
+ * @engine: A #GPEEngine.
+ * @object: A #GObject to register.
+ *
+ * Unregister an object against the #GPEEngine. The deactivate() method of
+ * all the active plugins will be called on the object while he is being
+ * unregistered.
+ */
 void
 gpe_engine_remove_object (GPEEngine *engine,
 			  GObject   *object)
@@ -823,10 +963,11 @@ gpe_engine_remove_object (GPEEngine *engine,
 
 /**
  * gpe_engine_new:
- * @app_name: the name of the app
- * @base_module_dir: the base dir for the module
+ * @app_name: The name of the app
+ * @base_module_dir: The base directory for language modules
  *
  * Returns a new #GPEEngine object.
+ * See the properties description for more information about the parameters.
  *
  * Returns: a newly created #GPEEngine object.
  */

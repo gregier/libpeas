@@ -2,7 +2,8 @@
  * gpe-plugin.h
  * This file is part of libgpe
  *
- * Copyright (C) 2002-2005 Paolo Maggi
+ * Copyright (C) 2002-2008 Paolo Maggi
+ * Copyright (C) 2009 Steve Frécinaux
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -26,6 +27,25 @@
 #include "gpe-plugin.h"
 #include "gpe-plugin-info-priv.h"
 #include "gpe-dirs.h"
+
+/**
+ * SECTION:gpe-plugin
+ * @short_description: Base class for plugins
+ * @see_also: #GPEPluginInfo
+ *
+ * A #GPEPlugin is an object which represents an actual loaded plugin.
+ *
+ * As a plugin writer, you will need to inherit from this class to perform
+ * the actions you want to using the available hooks.  It will also provide
+ * you a few useful pieces of information, like the location where all your
+ * data lives.
+ *
+ * As an application developper, you might want to provide a subclass of
+ * #GPEPlugin for tighter integration with your application.  But you should
+ * not use this class at all in your application code apart from that, as all
+ * the actions that can be performed by plugins will be proxied by the
+ * #GPEEngine.
+ **/
 
 /* properties */
 enum {
@@ -157,7 +177,7 @@ gpe_plugin_init (GPEPlugin *plugin)
 
 /**
  * gpe_plugin_get_info:
- * @plugin: a #GPEPlugin
+ * @plugin: A #GPEPlugin.
  *
  * Get information relative to @plugin.
  *
@@ -173,12 +193,12 @@ gpe_plugin_get_info (GPEPlugin *plugin)
 
 /**
  * gpe_plugin_get_data_dir:
- * @plugin: a #GPEPlugin
+ * @plugin: A #GPEPlugin.
  *
  * Get the path of the directory where the plugin should look for
  * its data files.
  *
- * Return value: a newly allocated string with the path of the
+ * Return value: A newly allocated string with the path of the
  * directory where the plugin should look for its data files
  */
 gchar *
@@ -191,59 +211,62 @@ gpe_plugin_get_data_dir (GPEPlugin *plugin)
 
 /**
  * gpe_plugin_activate:
- * @plugin: a #GPEPlugin
- * @target_object: a #GObject
+ * @plugin: A #GPEPlugin.
+ * @object: The #GObject on which the plugin should be activated.
  *
- * Activates the plugin.
+ * Activates the plugin on an object.  An instance of #GPEPlugin will be
+ * activated once for each object registered against the #GPEEngine which
+ * controls this #GPEPlugin.  For instance, a typical GUI application like
+ * gedit will activate the plugin once for each of its main windows.
  */
 void
 gpe_plugin_activate (GPEPlugin *plugin,
-			     GObject          *target_object)
+		     GObject   *object)
 {
 	g_return_if_fail (GPE_IS_PLUGIN (plugin));
-	g_return_if_fail (G_IS_OBJECT (target_object));
+	g_return_if_fail (G_IS_OBJECT (object));
 
-	GPE_PLUGIN_GET_CLASS (plugin)->activate (plugin, target_object);
+	GPE_PLUGIN_GET_CLASS (plugin)->activate (plugin, object);
 }
 
 /**
  * gpe_plugin_deactivate:
- * @plugin: a #GPEPlugin
- * @target_object: a #GObject
+ * @plugin: A #GPEPlugin.
+ * @object: A #GObject.
  *
- * Deactivates the plugin.
+ * Deactivates the plugin on the given object.
  */
 void
-gpe_plugin_deactivate	(GPEPlugin *plugin,
-				 GObject          *target_object)
+gpe_plugin_deactivate (GPEPlugin *plugin,
+		       GObject   *object)
 {
 	g_return_if_fail (GPE_IS_PLUGIN (plugin));
-	g_return_if_fail (G_IS_OBJECT (target_object));
+	g_return_if_fail (G_IS_OBJECT (object));
 
-	GPE_PLUGIN_GET_CLASS (plugin)->deactivate (plugin, target_object);
+	GPE_PLUGIN_GET_CLASS (plugin)->deactivate (plugin, object);
 }
 
 /**
  * gpe_plugin_update_ui:
- * @plugin: a #GPEPlugin
- * @target_object: a #GObject
+ * @plugin: A #GPEPlugin.
+ * @object: A #GObject.
  *
  * Triggers an update of the user interface to take into account state changes
- * caused by the plugin.
+ * due to a plugin or an user action.
  */
 void
-gpe_plugin_update_ui	(GPEPlugin *plugin,
-				 GObject          *target_object)
+gpe_plugin_update_ui (GPEPlugin *plugin,
+		      GObject   *object)
 {
 	g_return_if_fail (GPE_IS_PLUGIN (plugin));
-	g_return_if_fail (G_IS_OBJECT (target_object));
+	g_return_if_fail (G_IS_OBJECT (object));
 
-	GPE_PLUGIN_GET_CLASS (plugin)->update_ui (plugin, target_object);
+	GPE_PLUGIN_GET_CLASS (plugin)->update_ui (plugin, object);
 }
 
 /**
  * gpe_plugin_is_configurable:
- * @plugin: a #GPEPlugin
+ * @plugin: A #GPEPlugin
  *
  * Whether the plugin is configurable.
  *
@@ -259,11 +282,11 @@ gpe_plugin_is_configurable (GPEPlugin *plugin)
 
 /**
  * gpe_plugin_create_configure_dialog:
- * @plugin: a #GPEPlugin
+ * @plugin: A #GPEPlugin
  *
  * Creates the configure dialog widget for the plugin.
  *
- * Returns: the configure dialog widget for the plugin.
+ * Returns: The configure dialog widget for the plugin.
  */
 GtkWidget *
 gpe_plugin_create_configure_dialog (GPEPlugin *plugin)

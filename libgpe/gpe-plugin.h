@@ -42,8 +42,10 @@ G_BEGIN_DECLS
 #define GPE_IS_PLUGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GPE_TYPE_PLUGIN))
 #define GPE_PLUGIN_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GPE_TYPE_PLUGIN, GPEPluginClass))
 
-/*
- * Main object structure
+/**
+ * GPEPlugin:
+ *
+ * Base class for plugins.
  */
 typedef struct _GPEPlugin GPEPlugin;
 typedef struct _GPEPluginPrivate GPEPluginPrivate;
@@ -57,9 +59,17 @@ struct _GPEPlugin
 /*
  * Class definition
  */
-typedef void (*GPEFunc) (GPEPlugin *plugin, GObject *target_object);
-
 typedef struct _GPEPluginClass GPEPluginClass;
+
+/**
+ * GPEFunc:
+ * @plugin: A #GPEPlugin;
+ * @object: The target #GObject on which the handler is to be executed.
+ *
+ * The type of the handler methods of #GPEPlugin.
+ */
+typedef void (*GPEFunc) (GPEPlugin *plugin, GObject *object);
+
 
 struct _GPEPluginClass
 {
@@ -111,8 +121,18 @@ GtkWidget	*gpe_plugin_create_configure_dialog	(GPEPlugin *plugin);
 
 /**
  * GPE_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE):
+ * @PARENT_TYPE: The GPEPlugin subclass used as the parent type.
+ * @PluginName: The name of the new plugin class, in CamelCase.
+ * @plugin_name: The name of the new plugin class, in lower_case.
+ * @CODE: Custom code that gets inserted in the *_get_type() function.
  *
- * Utility macro used to register plugins with additional code.
+ * A convenience macro for plugin implementations, which declares a subclass
+ * of PARENT_TYPE (see G_DEFINE_DYNAMIC_TYPE_EXTENDED()) and a registration
+ * function.  The resulting #GType is to be registered in a #GTypeModule.
+ *
+ * @CODE will be included in the resulting *_get_type() function, and will
+ * usually consist of G_IMPLEMENT_INTERFACE() calls and eventually on
+ * additional type registration
  */
 #define GPE_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE)	\
 	G_DEFINE_DYNAMIC_TYPE_EXTENDED (PluginName,				\
@@ -138,8 +158,13 @@ register_gpe_plugin (GTypeModule *type_module)					\
 
 /**
  * GPE_REGISTER_TYPE(PARENT_TYPE, PluginName, plugin_name):
+ * @PARENT_TYPE: The GPEPlugin subclass used as the parent type.
+ * @PluginName: The name of the new plugin class, in CamelCase.
+ * @plugin_name: The name of the new plugin class, in lower_case.
  *
- * Utility macro used to register plugins.
+ * A convenience macro for plugin implementations, which declares a subclass
+ * of PARENT_TYPE (see G_DEFINE_DYNAMIC_TYPE_EXTENDED()) and a registration
+ * function.  The resulting #GType is to be registered in a #GTypeModule.
  */
 #define GPE_REGISTER_TYPE(PARENT_TYPE, PluginName, plugin_name)		\
 	GPE_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, ;)

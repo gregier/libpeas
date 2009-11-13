@@ -1,6 +1,5 @@
 <SECTION>
 <FILE>gpe-engine</FILE>
-GPEEnginePrivate
 <TITLE>GPEEngine</TITLE>
 GPEEngine
 gpe_engine_new
@@ -29,9 +28,9 @@ GPE_ENGINE_GET_CLASS
 
 <SECTION>
 <FILE>gpe-plugin</FILE>
-GPEFunc
 <TITLE>GPEPlugin</TITLE>
 GPEPlugin
+GPEFunc
 gpe_plugin_get_install_dir
 gpe_plugin_get_data_dir
 gpe_plugin_activate
@@ -52,18 +51,9 @@ GPE_PLUGIN_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>gpe-dirs</FILE>
-gpe_dirs_get_data_dir
-gpe_dirs_get_lib_dir
-gpe_dirs_get_plugin_loaders_dir
-</SECTION>
-
-<SECTION>
 <FILE>gpe-plugin-info</FILE>
-GPE_TYPE_PLUGIN_INFO
-GPE_PLUGIN_INFO
+<TITLE>GPEPluginInfo</TITLE>
 GPEPluginInfo
-gpe_plugin_info_get_type
 gpe_plugin_info_is_active
 gpe_plugin_info_is_available
 gpe_plugin_info_is_configurable
@@ -77,5 +67,9 @@ gpe_plugin_info_get_authors
 gpe_plugin_info_get_website
 gpe_plugin_info_get_copyright
 gpe_plugin_info_get_version
+<SUBSECTION Standard>
+GPE_PLUGIN_INFO
+GPE_TYPE_PLUGIN_INFO
+gpe_plugin_info_get_type
 </SECTION>
 
