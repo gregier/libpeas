@@ -82,6 +82,69 @@ PKG_CHECK_MODULES(GPE, [
 ])
 
 dnl ================================================================
+dnl GObject Introspection
+dnl ================================================================
+
+GOBJECT_INTROSPECTION_REQUIRED=0.6.5
+
+AC_ARG_ENABLE(introspection,
+	      AS_HELP_STRING([--enable-introspection[=@<:@no/auto/yes@:>@]], [Enable GObject introspection]),
+	      [enable_introspection=$enableval],
+	      [enable_introspection=auto])
+
+AC_ARG_WITH(girdir,
+	    AS_HELP_STRING([--with-girdir=DIR],[Installation path for .gir files @<:@auto@:>@]),
+            [ac_with_girdir=$withval],
+            [ac_with_girdir=""])
+
+AC_ARG_WITH(typelibdir,
+            AS_HELP_STRING([--with-typelibdir=DIR],[Installation path for .typelib files @<:@auto@:>@]),
+            [ac_with_typelibdir=$withval],
+            [ac_with_typelibdir=""])
+
+AC_MSG_CHECKING([for GObject introspection availabilty.])
+
+if test "x$enable_introspection" = "xno"; then
+	found_introspection="no (disabled, use --enable-introspection to enable)"
+elif test "x$enable_introspection" = "xyes"; then
+	PKG_CHECK_EXISTS([gobject-introspection-1.0],,
+			 AC_MSG_ERROR([gobject-introspection-1.0 is not installed]))
+	PKG_CHECK_EXISTS([gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED],
+			 [found_introspection=yes],
+			 AC_MSG_ERROR([You need to have gobject-introspection >= $1 installed to build libgpe]))
+else
+	PKG_CHECK_EXISTS([gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED],
+			 [found_introspection=yes],
+			 [found_introspection=no])
+fi
+
+AC_MSG_RESULT([$found_introspection])
+
+if test "x$found_introspection" = "xyes"; then
+	G_IR_SCANNER=`$PKG_CONFIG --variable=g_ir_scanner gobject-introspection-1.0`
+	AC_SUBST(G_IR_SCANNER)
+	G_IR_COMPILER=`$PKG_CONFIG --variable=g_ir_compiler gobject-introspection-1.0`
+	AC_SUBST(G_IR_COMPILER)
+	G_IR_GENERATE=`$PKG_CONFIG --variable=g_ir_generate gobject-introspection-1.0`
+	AC_SUBST(G_IR_GENERATE)
+
+	test "${ac_with_girdir}" = "" && ac_with_girdir=`$PKG_CONFIG --variable=girdir gobject-introspection-1.0`
+	girdir=$ac_with_girdir
+	AC_MSG_NOTICE([installing .gir files in $girdir])
+	AC_SUBST(girdir)
+
+	test "${ac_with_typelibdir}" = "" && ac_with_typelibdir="$($PKG_CONFIG --variable=typelibdir gobject-introspection-1.0)"
+	typelibdir=$ac_with_typelibdir
+	AC_MSG_NOTICE([installing .typelib files in $typelibdir])
+	AC_SUBST(typelibdir)
+
+	AC_DEFINE(ENABLE_INTROSPECTION,1,[Define to compile with GObject Introspection support])
+fi
+
+AM_CONDITIONAL([ENABLE_INTROSPECTION],[test "x$found_introspection" = "xyes"])
+
+
+dnl ================================================================
 dnl Python
 dnl ================================================================
 

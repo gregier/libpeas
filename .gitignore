@@ -2,6 +2,8 @@
 *.lo
 *.la
 *.o
+*.gir
+*.typelib
 *~
 *.stamp
 .*.sw[nop]
