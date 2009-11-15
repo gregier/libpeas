@@ -246,9 +246,9 @@ gpe_engine_init (GPEEngine *engine)
 }
 
 static void
-gpe_engine_constructed (GPEEngine *engine)
+gpe_engine_constructed (GObject *object)
 {
-	gpe_engine_rescan_plugins (engine);
+	gpe_engine_rescan_plugins (GPE_ENGINE (object));
 }
 
 static void
