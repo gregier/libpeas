@@ -67,16 +67,17 @@ enum
 {
 	PROP_0,
 	PROP_APP_NAME,
-	PROP_BASE_MODULE_DIR
+	PROP_BASE_MODULE_DIR,
+	PROP_SEARCH_PATHS
 };
 
 G_DEFINE_TYPE(GPEEngine, gpe_engine, G_TYPE_OBJECT)
 
 struct _GPEEnginePrivate
 {
-	GPtrArray *pathinfos;
 	gchar *app_name;
 	gchar *base_module_dir;
+	gchar **search_paths;
 
 	GList *plugin_list;
 	GHashTable *loaders;
@@ -90,13 +91,14 @@ static void	gpe_engine_deactivate_plugin_real	 (GPEEngine     *engine,
 							  GPEPluginInfo *info);
 
 static void
-load_plugin_info (GPEEngine          *engine,
-		  const gchar        *filename,
-		  const GPEPathInfo  *pathinfo)
+load_plugin_info (GPEEngine   *engine,
+		  const gchar *filename,
+		  const gchar *module_dir,
+		  const gchar *data_dir)
 {
 	GPEPluginInfo *info;
 
-	info = _gpe_plugin_info_new (filename, pathinfo, engine->priv->app_name);
+	info = _gpe_plugin_info_new (filename, engine->priv->app_name, module_dir, data_dir);
 
 	if (info == NULL)
 		return;
@@ -110,8 +112,9 @@ load_plugin_info (GPEEngine          *engine,
 }
 
 static void
-load_dir_real (GPEEngine         *engine,
-	       const GPEPathInfo *pathinfo)
+load_dir_real (GPEEngine   *engine,
+	       const gchar *module_dir,
+	       const gchar *data_dir)
 {
 	GError *error = NULL;
 	GDir *d;
@@ -122,9 +125,9 @@ load_dir_real (GPEEngine         *engine,
 	plugin_extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
 	g_strdown (plugin_extension);
 
-	g_debug ("Loading %s/*.%s...", pathinfo->module_dir, plugin_extension);
+	g_debug ("Loading %s/*.%s...", module_dir, plugin_extension);
 
-	d = g_dir_open (pathinfo->module_dir, 0, &error);
+	d = g_dir_open (module_dir, 0, &error);
 	if (!d)
 	{
 		g_warning ("%s", error->message);
@@ -139,44 +142,15 @@ load_dir_real (GPEEngine         *engine,
 		if (!g_str_has_suffix (dirent, plugin_extension))
 			continue;
 
-		filename = g_build_filename (pathinfo->module_dir, dirent, NULL);
+		filename = g_build_filename (module_dir, dirent, NULL);
 
-		load_plugin_info (engine, filename, pathinfo);
+		load_plugin_info (engine, filename, module_dir, data_dir);
 
 		g_free (filename);
 	}
 
 	g_dir_close (d);
 	g_free (plugin_extension);
-}
-
-/**
- * gpe_engine_add_plugin_directory:
- * @engine: A #GPEEngine.
- * @module_dir: The new module directory.
- * @data_dir: The new data directory.
- *
- * Add a directory to the list of directories where the plugins are to be
- * found.  A "directory" actually consists on a couple of both a module
- * directory (where the shared libraries or language modules are) and a data
- * directory (where the plugin data is).
- *
- * The #GPEPlugin will be able to use get a correct @data_dir depending on
- * where it is installing, hence allowing to keep the plugin agnostic when it
- * comes to installation location (the same plugin can be installed both in
- * the system path or in the user's home directory).
- */
-void
-gpe_engine_add_plugin_directory	(GPEEngine      *engine,
-				 const gchar    *module_dir,
-				 const gchar    *data_dir)
-{
-	GPEPathInfo *pathinfo = g_slice_new (GPEPathInfo);
-	pathinfo->module_dir = g_strdup (module_dir);
-	pathinfo->data_dir = g_strdup (data_dir);
-	g_ptr_array_add (engine->priv->pathinfos, pathinfo);
-
-	load_dir_real (engine, pathinfo);
 }
 
 /**
@@ -193,11 +167,13 @@ void
 gpe_engine_rescan_plugins (GPEEngine *engine)
 {
 	guint i;
+	gchar **sp;
 
 	g_return_if_fail (GPE_IS_ENGINE (engine));
 
-	for (i = 0; i < engine->priv->pathinfos->len; i++)
-		load_dir_real (engine, (GPEPathInfo *) engine->priv->pathinfos->pdata[i]);
+	sp = engine->priv->search_paths;
+	for (i = 0; sp[i] != NULL; i += 2)
+		load_dir_real (engine, sp[i], sp[i+1]);
 }
 
 static guint
@@ -248,15 +224,6 @@ add_loader (GPEEngine        *engine,
 }
 
 static void
-gpe_path_info_free (GPEPathInfo *pathinfo)
-{
-	g_free (pathinfo->module_dir);
-	if (pathinfo->data_dir)
-		g_free (pathinfo->data_dir);
-	g_slice_free (GPEPathInfo, pathinfo);
-}
-
-static void
 gpe_engine_init (GPEEngine *engine)
 {
 	if (!g_module_supported ())
@@ -276,11 +243,12 @@ gpe_engine_init (GPEEngine *engine)
 						       equal_lowercase,
 						       (GDestroyNotify)g_free,
 						       (GDestroyNotify)loader_destroy);
+}
 
-	/* path infos for plugin loading. */
-	engine->priv->pathinfos = g_ptr_array_new ();
-	g_ptr_array_set_free_func (engine->priv->pathinfos,
-				   (GDestroyNotify) gpe_path_info_free);
+static void
+gpe_engine_constructed (GPEEngine *engine)
+{
+	gpe_engine_rescan_plugins (engine);
 }
 
 static void
@@ -323,6 +291,9 @@ gpe_engine_set_property (GObject      *object,
 		case PROP_BASE_MODULE_DIR:
 			engine->priv->base_module_dir = g_value_dup_string (value);
 			break;
+		case PROP_SEARCH_PATHS:
+			engine->priv->search_paths = g_value_dup_boxed (value);
+			break;
                 default:
                         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
                         break;
@@ -344,6 +315,9 @@ gpe_engine_get_property (GObject    *object,
 			break;
 		case PROP_BASE_MODULE_DIR:
 			g_value_set_string (value, engine->priv->base_module_dir);
+			break;
+		case PROP_SEARCH_PATHS:
+			g_value_set_boxed (value, engine->priv->search_paths);
 			break;
                 default:
                         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -379,7 +353,7 @@ gpe_engine_finalize (GObject *object)
 
 	g_list_free (engine->priv->plugin_list);
 	g_list_free (engine->priv->object_list);
-	g_ptr_array_free (engine->priv->pathinfos, TRUE);
+	g_strfreev (engine->priv->search_paths);
 	g_free (engine->priv->app_name);
 	g_free (engine->priv->base_module_dir);
 
@@ -410,6 +384,7 @@ gpe_engine_class_init (GPEEngineClass *klass)
 
 	object_class->set_property = gpe_engine_set_property;
 	object_class->get_property = gpe_engine_get_property;
+	object_class->constructed = gpe_engine_constructed;
 	object_class->finalize = gpe_engine_finalize;
 	klass->activate_plugin = gpe_engine_activate_plugin_real;
 	klass->deactivate_plugin = gpe_engine_deactivate_plugin_real;
@@ -448,6 +423,45 @@ gpe_engine_class_init (GPEEngineClass *klass)
 							      "The base application dir for binding modules lookup",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
+
+	/**
+	 * GPEEngine:search-paths:
+	 *
+	 * The list of path where to look for plugins.
+	 *
+	 * A so-called "search path" actually consists on a couple of both a
+	 * module directory (where the shared libraries or language modules
+	 * lie) and a data directory (where the plugin data is).
+	 *
+	 * The #GPEPlugin will be able to use a correct data dir depending on
+	 * where it is installed, hence allowing to keep the plugin agnostic
+	 * when it comes to installation location: the same plugin can be
+	 * installed both in the system path or in the user's home directory,
+	 * without taking other special care than using
+	 * egg_plugin_get_data_dir() when looking for its data files.
+	 *
+	 * Concretely, this property contains a NULL-terminated array of
+	 * strings, whose even-indexed strings are module directories, and
+	 * odd-indexed ones are the associated data directories.  Here is an
+	 * example of such an array:
+	 * |[
+	 * gchar const * const search_paths[] = {
+	 *         // Plugins in ~/.config
+	 *         g_build_filename (g_get_user_config_dir (), "example/plugins", NULL),
+	 *         g_build_filename (g_get_user_config_dir (), "example/plugins", NULL),
+	 *         // System plugins
+	 *         EXAMPLE_PREFIX "/lib/example/plugins/",
+	 *         EXAMPLE_PREFIX "/share/example/plugins/",
+	 *         NULL
+	 * };
+	 * ]|
+	 */
+        g_object_class_install_property (object_class, PROP_SEARCH_PATHS,
+                                         g_param_spec_boxed ("search-paths",
+							     "Search paths",
+							     "The list of paths where to look for plugins",
+							     G_TYPE_STRV,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
 
 	/**
 	 * GPEEngine::activate-plugin:
@@ -945,6 +959,7 @@ gpe_engine_remove_object (GPEEngine *engine,
  * gpe_engine_new:
  * @app_name: The name of the app
  * @base_module_dir: The base directory for language modules
+ * @search_paths: The paths where to look for plugins
  *
  * Returns a new #GPEEngine object.
  * See the properties description for more information about the parameters.
@@ -953,10 +968,12 @@ gpe_engine_remove_object (GPEEngine *engine,
  */
 GPEEngine *
 gpe_engine_new (const gchar *app_name,
-		const gchar *base_module_dir)
+		const gchar *base_module_dir,
+		const gchar **search_paths)
 {
 	return GPE_ENGINE (g_object_new (GPE_TYPE_ENGINE,
 					 "app-name", app_name,
 					 "base-module-dir", base_module_dir,
+					 "search-paths", search_paths,
 					 NULL));
 }

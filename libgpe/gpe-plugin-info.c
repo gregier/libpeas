@@ -96,17 +96,19 @@ gpe_plugin_info_get_type (void)
 /**
  * _gpe_plugin_info_new:
  * @filename: The filename where to read the plugin information.
- * @pathinfo: A #GPEPathInfo.
  * @app_name: The application name.
+ * @module_dir: The module directory.
+ * @data_dir: The data directory.
  *
  * Creates a new #GPEPluginInfo from a file on the disk.
  *
  * Return value: a newly created #GPEPluginInfo.
  */
 GPEPluginInfo *
-_gpe_plugin_info_new (const gchar       *file,
-		      const GPEPathInfo *pathinfo,
-		      const gchar       *app_name)
+_gpe_plugin_info_new (const gchar *file,
+		      const gchar *app_name,
+		      const gchar *module_dir,
+		      const gchar *data_dir)
 {
 	GPEPluginInfo *info;
 	GKeyFile *plugin_file = NULL;
@@ -240,8 +242,8 @@ _gpe_plugin_info_new (const gchar       *file,
 	g_free (section_header);
 	g_key_file_free (plugin_file);
 
-	info->module_dir = g_strdup (pathinfo->module_dir);
-	info->data_dir = g_build_filename (pathinfo->data_dir, info->module_name, NULL);
+	info->module_dir = g_strdup (module_dir);
+	info->data_dir = g_build_filename (data_dir, info->module_name, NULL);
 
 	/* If we know nothing about the availability of the plugin,
 	   set it as available */

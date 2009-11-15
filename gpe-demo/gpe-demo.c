@@ -105,13 +105,19 @@ create_main_window ()
 int
 main (int argc, char **argv)
 {
+	gchar const * const search_paths[] = {
+		g_build_filename (g_get_user_config_dir (), "gpe-demo/plugins", NULL),
+		g_build_filename (g_get_user_config_dir (), "gpe-demo/plugins", NULL),
+		GPE_PREFIX "/lib/gpe-demo/plugins/",
+		GPE_PREFIX "/share/gpe-demo/plugins/",
+		NULL
+	};
+
 	gtk_init (&argc, &argv);
 
-	engine = gpe_engine_new ("GPEDemo", GPE_PREFIX "/lib/gpe-demo/");
-	gpe_engine_add_plugin_directory (engine, "./plugins/", "./plugins");
-	gpe_engine_add_plugin_directory (engine,
-					 GPE_PREFIX "/lib/gpe-demo/plugins/",
-					 GPE_PREFIX "/share/gpe-demo/plugins/");
+	engine = gpe_engine_new ("GPEDemo",
+				 GPE_PREFIX "/lib/gpe-demo/",
+				 (const gchar **) search_paths);
 
 	n_windows = 0;
 	main_window = create_main_window ();

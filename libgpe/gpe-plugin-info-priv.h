@@ -26,13 +26,6 @@
 #include "gpe-plugin-info.h"
 #include "gpe-plugin.h"
 
-typedef struct _GPEPathInfo GPEPathInfo;
-
-struct _GPEPathInfo {
-	gchar *module_dir;
-	gchar *data_dir;
-};
-
 struct _GPEPluginInfo
 {
 	gint               refcount;
@@ -61,8 +54,9 @@ struct _GPEPluginInfo
 };
 
 GPEPluginInfo	*_gpe_plugin_info_new		(const gchar       *file,
-						 const GPEPathInfo *pathinfo,
-						 const gchar       *app_name);
+						 const gchar       *app_name,
+						 const gchar       *module_dir,
+						 const gchar       *data_dir);
 GPEPluginInfo	*_gpe_plugin_info_ref		(GPEPluginInfo *info);
 void		 _gpe_plugin_info_unref		(GPEPluginInfo *info);
 

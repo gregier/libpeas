@@ -77,14 +77,12 @@ struct _GPEEngineClass
 GType		 gpe_engine_get_type			(void) G_GNUC_CONST;
 
 GPEEngine	*gpe_engine_new				(const gchar    *app_name,
-							 const gchar    *base_module_dir);
+							 const gchar    *base_module_dir,
+							 const gchar   **search_paths);
 
 void		 gpe_engine_garbage_collect		(GPEEngine      *engine);
 
-/* plugin directories management */
-void		 gpe_engine_add_plugin_directory	(GPEEngine      *engine,
-							 const gchar    *module_dir,
-							 const gchar    *data_dir);
+/* plugin info management */
 void		 gpe_engine_rescan_plugins		(GPEEngine      *engine);
 
 /* plugin list management */
