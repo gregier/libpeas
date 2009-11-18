@@ -1,1 +1,1 @@
-SUBDIRS=libgpe libgpeui
+SUBDIRS = libpeas libpeasui

@@ -1,0 +1,19 @@
+# time plugin
+plugindir = $(prefix)/lib/peas-demo/plugins
+
+INCLUDES = \
+	-I$(top_srcdir) 	\
+	$(PEAS_CFLAGS)
+
+plugin_LTLIBRARIES = libhelloworld.la
+
+libhelloworld_la_SOURCES = \
+	peasdemo-hello-world-plugin.h	\
+	peasdemo-hello-world-plugin.c
+
+libhelloworld_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libhelloworld_la_LIBADD  = $(PEAS_LIBS)
+
+plugin_DATA = helloworld.peasdemo-plugin
+
+EXTRA_DIST = $(plugin_DATA)

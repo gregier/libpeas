@@ -2,6 +2,7 @@
 *.lo
 *.la
 *.o
+*.pyc
 *.gir
 *.typelib
 *~
@@ -24,10 +25,10 @@ Makefile.in
 /config.sub
 /configure
 /configure.lineno
-/data/libgpe-2.0.pc
-/data/libgpeui-2.0.pc
+/data/libpeas-2.0.pc
+/data/libpeasui-2.0.pc
 /depcomp
-/gpe-demo/gpe-demo
+/peas-demo/peas-demo
 /gnome-doc-utils.make
 /gtk-doc.make
 /install-sh
@@ -37,8 +38,8 @@ Makefile.in
 /intltool-merge.in
 /intltool-update
 /intltool-update.in
-/loaders/python/bindings/libgpe.defs
-/loaders/python/bindings/libgpe.c
+/loaders/python/bindings/libpeas.defs
+/loaders/python/bindings/libpeas.c
 /libtool
 /ltmain.sh
 /m4

@@ -2,34 +2,34 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 
-m4_define(gpe_major_version,  2)
-m4_define(gpe_minor_version, 28)
-m4_define(gpe_micro_version,  0)
-m4_define(gpe_interface_age,  0)
+m4_define(peas_major_version,  2)
+m4_define(peas_minor_version, 28)
+m4_define(peas_micro_version,  0)
+m4_define(peas_interface_age,  0)
 
-m4_define(gpe_binary_age, [m4_eval(100 * gpe_minor_version + gpe_micro_version)])
-m4_define(gpe_version, [gpe_major_version.gpe_minor_version.gpe_micro_version])
+m4_define(peas_binary_age, [m4_eval(100 * peas_minor_version + peas_micro_version)])
+m4_define(peas_version, [peas_major_version.peas_minor_version.peas_micro_version])
 
 dnl libtool version related macros
-m4_define(gpe_lt_current, [m4_eval(100 * gpe_minor_version + gpe_micro_version - gpe_interface_age)])
-m4_define(gpe_lt_revision, [gpe_interface_age])
-m4_define(gpe_lt_age, [m4_eval(gpe_binary_age - gpe_interface_age)])
+m4_define(peas_lt_current, [m4_eval(100 * peas_minor_version + peas_micro_version - peas_interface_age)])
+m4_define(peas_lt_revision, [peas_interface_age])
+m4_define(peas_lt_age, [m4_eval(peas_binary_age - peas_interface_age)])
 
-AC_INIT(libgpe, gpe_version, http://bugzilla.gnome.org/enter_bug.cgi?product=gedit)
-AC_CONFIG_SRCDIR(libgpe/gpe-plugin.c)
+AC_INIT(libpeas, peas_version, http://bugzilla.gnome.org/enter_bug.cgi?product=gedit)
+AC_CONFIG_SRCDIR(libpeas/peas-plugin.c)
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_DEFINE(GPE_MAJOR_VERSION, gpe_major_version, [Gedit Plugins Engine major version])
-AC_SUBST(GPE_MAJOR_VERSION, gpe_major_version)
-AC_DEFINE(GPE_MINOR_VERSION, gpe_minor_version, [Gedit Plugins Engine minor version])
-AC_SUBST(GPE_MINOR_VERSION, gpe_minor_version)
-AC_DEFINE(GPE_MICRO_VERSION, gpe_micro_version, [Gedit Plugins Engine micro version])
-AC_SUBST(GPE_MICRO_VERSION, gpe_micro_version)
+AC_DEFINE(PEAS_MAJOR_VERSION, peas_major_version, [Gedit Plugins Engine major version])
+AC_SUBST(PEAS_MAJOR_VERSION, peas_major_version)
+AC_DEFINE(PEAS_MINOR_VERSION, peas_minor_version, [Gedit Plugins Engine minor version])
+AC_SUBST(PEAS_MINOR_VERSION, peas_minor_version)
+AC_DEFINE(PEAS_MICRO_VERSION, peas_micro_version, [Gedit Plugins Engine micro version])
+AC_SUBST(PEAS_MICRO_VERSION, peas_micro_version)
 
-AC_SUBST(GPE_VERSION, gpe_version)
+AC_SUBST(PEAS_VERSION, peas_version)
 
-GPE_API_VERSION=2.20
-AC_SUBST(GPE_API_VERSION)
+PEAS_API_VERSION=2.20
+AC_SUBST(PEAS_API_VERSION)
 
 AM_INIT_AUTOMAKE([1.8 dist-bzip2 no-dist-gzip -Wno-portability])
 
@@ -64,7 +64,7 @@ dnl ================================================================
 dnl Gettext stuff.
 dnl ================================================================
 
-GETTEXT_PACKAGE=gpe
+GETTEXT_PACKAGE=libpeas
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 
@@ -74,7 +74,7 @@ dnl ================================================================
 dnl Start of pkg-config checks
 dnl ================================================================
 
-PKG_CHECK_MODULES(GPE, [
+PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gthread-2.0 >= 2.16.0
 	gio-2.0 >= 2.16.0
@@ -111,7 +111,7 @@ elif test "x$enable_introspection" = "xyes"; then
 			 AC_MSG_ERROR([gobject-introspection-1.0 is not installed]))
 	PKG_CHECK_EXISTS([gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED],
 			 [found_introspection=yes],
-			 AC_MSG_ERROR([You need to have gobject-introspection >= $1 installed to build libgpe]))
+			 AC_MSG_ERROR([You need to have gobject-introspection >= $1 installed to build libpeas]))
 else
 	PKG_CHECK_EXISTS([gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED],
 			 [found_introspection=yes],
@@ -254,9 +254,9 @@ dnl ================================================================
 dnl Libtool
 dnl ================================================================
 
-LT_CURRENT=gpe_lt_current
-LT_REVISION=gpe_lt_revision
-LT_AGE=gpe_lt_age
+LT_CURRENT=peas_lt_current
+LT_REVISION=peas_lt_revision
+LT_AGE=peas_lt_age
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
@@ -289,23 +289,23 @@ AC_CONFIG_FILES([
 Makefile
 docs/Makefile
 docs/reference/Makefile
-docs/reference/libgpe/Makefile
-docs/reference/libgpe/version.xml
-docs/reference/libgpeui/Makefile
-libgpe/Makefile
-libgpeui/Makefile
+docs/reference/libpeas/Makefile
+docs/reference/libpeas/version.xml
+docs/reference/libpeasui/Makefile
+libpeas/Makefile
+libpeasui/Makefile
 loaders/Makefile
 loaders/c/Makefile
 loaders/python/Makefile
 loaders/python/bindings/Makefile
 data/Makefile
-data/libgpe-2.0.pc
-data/libgpeui-2.0.pc
+data/libpeas-2.0.pc
+data/libpeasui-2.0.pc
 data/icons/Makefile
-gpe-demo/Makefile
-gpe-demo/plugins/Makefile
-gpe-demo/plugins/helloworld/Makefile
-gpe-demo/plugins/pythonhello/Makefile
+peas-demo/Makefile
+peas-demo/plugins/Makefile
+peas-demo/plugins/helloworld/Makefile
+peas-demo/plugins/pythonhello/Makefile
 po/Makefile.in
 ])
 

@@ -1,0 +1,41 @@
+(define-boxed PluginInfo
+  (in-module "Peas")
+  (c-name "PeasPluginInfo")
+  (gtype-id "PEAS_TYPE_PLUGIN_INFO")
+  (copy-func "peas_plugin_info_ref")
+  (release-func "peas_plugin_info_unref")
+)
+
+(define-virtual activate
+  (of-object "PeasPlugin")
+  (return-type "none")
+  (parameters
+    '("GObject*" "object")
+  )
+)
+
+(define-virtual deactivate
+  (of-object "PeasPlugin")
+  (return-type "none")
+  (parameters
+    '("GObject*" "object")
+  )
+)
+
+(define-virtual update_ui
+  (of-object "PeasPlugin")
+  (return-type "none")
+  (parameters
+    '("GObject*" "object")
+  )
+)
+
+(define-virtual create_configure_dialog
+  (of-object "PeasPlugin")
+  (return-type "GtkWidget*")
+)
+
+(define-virtual is_configurable
+  (of-object "PeasPlugin")
+  (return-type "gboolean")
+)

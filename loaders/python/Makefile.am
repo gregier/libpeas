@@ -2,29 +2,29 @@
 
 SUBDIRS=bindings
 
-loaderdir = $(libdir)/libgpe-2.0/loaders
+loaderdir = $(libdir)/libpeas-2.0/loaders
 
 INCLUDES = \
 	-I$(top_srcdir)			\
-	$(GPE_CFLAGS)			\
+	$(PEAS_CFLAGS)			\
 	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED_CFLAGS)	\
 	$(PYGTK_CFLAGS)			\
 	$(PYTHON_CFLAGS)		\
-	-DGPE_PYEXECDIR=\""$(pyexecdir)"\" \
-	-DGPE_LOCALEDIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
+	-DPEAS_PYEXECDIR=\""$(pyexecdir)"\" \
+	-DPEAS_LOCALEDIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 
 loader_LTLIBRARIES = libpythonloader.la
 
 libpythonloader_la_SOURCES = \
-	gpe-plugin-loader-python.c 	\
-	gpe-plugin-loader-python.h
+	peas-plugin-loader-python.c 	\
+	peas-plugin-loader-python.h
 
 libpythonloader_la_LDFLAGS = \
 	$(LOADER_LIBTOOL_FLAGS)
 
 libpythonloader_la_LIBADD = \
-	$(GPE_LIBS)			\
+	$(PEAS_LIBS)			\
 	$(PYTHON_LIB_LOC)		\
 	$(PYTHON_LIBS)			\
 	$(PYTHON_EXTRA_LIBS)		\

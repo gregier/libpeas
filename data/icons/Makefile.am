@@ -3,16 +3,16 @@ icons22x22dir = $(pkgdatadir)/icons/hicolor/22x22/actions
 icons32x32dir = $(pkgdatadir)/icons/hicolor/32x32/actions
 scalableiconsdir = $(pkgdatadir)/icons/hicolor/scalable/actions
 
-icons16x16_DATA = 16x16/libgpe-plugin.png
-icons22x22_DATA = 22x22/libgpe-plugin.png
-icons32x32_DATA = 32x32/libgpe-plugin.png
-scalableicons_DATA = scalable/libgpe-plugin.svg
+icons16x16_DATA = 16x16/libpeas-plugin.png
+icons22x22_DATA = 22x22/libpeas-plugin.png
+icons32x32_DATA = 32x32/libpeas-plugin.png
+scalableicons_DATA = scalable/libpeas-plugin.svg
 
 
 noinst_DATA = \
-	16x16/libgpe-plugin.svg		\
-	22x22/libgpe-plugin.svg		\
-	32x32/libgpe-plugin.svg
+	16x16/libpeas-plugin.svg		\
+	22x22/libpeas-plugin.svg		\
+	32x32/libpeas-plugin.svg
 
 EXTRA_DIST = \
 	$(icons16x16_DATA)		\

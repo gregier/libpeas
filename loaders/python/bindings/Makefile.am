@@ -1,55 +1,55 @@
 BINDINGS_HDRS = \
-	$(top_srcdir)/libgpe/gpe-plugin.h		\
-	$(top_srcdir)/libgpe/gpe-plugin-info.h		\
-	$(top_srcdir)/libgpe/gpe-engine.h
+	$(top_srcdir)/libpeas/peas-plugin.h		\
+	$(top_srcdir)/libpeas/peas-plugin-info.h		\
+	$(top_srcdir)/libpeas/peas-engine.h
 
 pyexec_LTLIBRARIES = \
-	libgpe.la
+	libpeas.la
 
-libgpe_la_SOURCES = \
-	libgpemodule.c
+libpeas_la_SOURCES = \
+	libpeasmodule.c
 
-nodist_libgpe_la_SOURCES = \
-	libgpe.c
+nodist_libpeas_la_SOURCES = \
+	libpeas.c
 
-libgpe_la_LDFLAGS = \
+libpeas_la_LDFLAGS = \
 	-module -avoid-version 				\
-	-export-symbol-regex initlibgpe
+	-export-symbol-regex initlibpeas
 
-libgpe_la_LIBADD = \
-	$(top_builddir)/libgpe/libgpe-2.0.la 		\
+libpeas_la_LIBADD = \
+	$(top_builddir)/libpeas/libpeas-2.0.la 		\
 	$(PYTHON_LIB_LOC)				\
 	$(PYTHON_LIBS)					\
 	$(PYTHON_EXTRA_LIBS)				\
 	$(PYGTK_LIBS)
 
-libgpe_la_CFLAGS = 					\
+libpeas_la_CFLAGS = 					\
 	-I$(top_srcdir)					\
 	-I$(top_builddir)				\
-	$(GPE_CFLAGS)					\
+	$(PEAS_CFLAGS)					\
 	$(NO_STRICT_ALIASING_CFLAGS)			\
 	$(PYGTK_CFLAGS)					\
 	$(PYTHON_CFLAGS)				\
 	$(AM_CFLAGS)
 
-libgpe.defs: $(BINDINGS_HDRS) libgpe.defs.extra
-	$(AM_V_GEN) ( $(PYGTK_H2DEF) -n GPE $(BINDINGS_HDRS); cat $@.extra ) > $@
+libpeas.defs: $(BINDINGS_HDRS) libpeas.defs.extra
+	$(AM_V_GEN) ( $(PYGTK_H2DEF) -n Peas $(BINDINGS_HDRS); cat $@.extra ) > $@
 
-libgpe.c: libgpe.defs libgpe.override
+libpeas.c: libpeas.defs libpeas.override
 	$(AM_V_GEN) ( cd $(srcdir) && $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
-		--override libgpe.override \
-		--prefix pygpe $< ) > $@
+		--override libpeas.override \
+		--prefix pypeas $< ) > $@
 
 defsdir = $(datadir)/pygtk/2.0/defs
-defs_DATA = libgpe.defs
+defs_DATA = libpeas.defs
 
 BUILT_SOURCES = \
-	libgpe.c
+	libpeas.c
 
 EXTRA_DIST = \
-	libgpe.override	\
-	libgpe.defs.extra
+	libpeas.override	\
+	libpeas.defs.extra
 
 CLEANFILES = $(BUILT_SOURCES)
 
