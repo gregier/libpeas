@@ -463,9 +463,11 @@ static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
   PyObject *mdict, *gettext, *install, *gettext_args;
+  char *argv[] = { "libpeas", NULL };
+#ifdef HAVE_SIGACTION
   struct sigaction old_sigint;
   gint res;
-  char *argv[] = { "libpeas", NULL };
+#endif
 
   if (loader->priv->init_failed)
     {
@@ -491,6 +493,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   /* CHECK: can't we use Py_InitializeEx instead of Py_Initialize in order
      to avoid to manage signal handlers ? - Paolo (Dec. 31, 2006) */
 
+#ifdef HAVE_SIGACTION
   /* Save old handler */
   res = sigaction (SIGINT, NULL, &old_sigint);
   if (res != 0)
@@ -500,10 +503,12 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
       return FALSE;
     }
+#endif
 
   /* Python initialization */
   Py_Initialize ();
 
+#ifdef HAVE_SIGACTION
   /* Restore old handler */
   res = sigaction (SIGINT, &old_sigint, NULL);
   if (res != 0)
@@ -513,6 +518,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
       goto python_init_error;
     }
+#endif
 
   PySys_SetArgv (1, argv);
 
