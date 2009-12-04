@@ -33,22 +33,22 @@ extern PyMethodDef pypeas_functions[];
 DL_EXPORT(void)
 initlibpeas (void)
 {
-    PyObject *m, *d;
-    PyObject *tuple;
+  PyObject *m, *d;
+  PyObject *tuple;
 
-    m = Py_InitModule ("libpeas", pypeas_functions);
-    d = PyModule_GetDict (m);
+  m = Py_InitModule ("libpeas", pypeas_functions);
+  d = PyModule_GetDict (m);
 
-    init_pygobject_check (2, 16, 2);
-    init_pygtk ();
+  init_pygobject_check (2, 16, 2);
+  init_pygtk ();
 
-    pypeas_register_classes (d);
+  pypeas_register_classes (d);
 
-    /* pygio version */
-    tuple = Py_BuildValue ("(iii)",
-			   PEAS_MAJOR_VERSION,
-			   PEAS_MINOR_VERSION,
-			   PEAS_MICRO_VERSION);
-    PyDict_SetItemString (d, "version", tuple); 
-    Py_DECREF (tuple);
+  /* libpeas version */
+  tuple = Py_BuildValue ("(iii)",
+                         PEAS_MAJOR_VERSION,
+                         PEAS_MINOR_VERSION,
+                         PEAS_MICRO_VERSION);
+  PyDict_SetItemString (d, "version", tuple); 
+  Py_DECREF (tuple);
 }

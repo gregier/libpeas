@@ -47,132 +47,131 @@
  * #PeasEngine.
  **/
 
+G_DEFINE_TYPE (PeasPlugin, peas_plugin, G_TYPE_OBJECT);
+
 /* properties */
 enum {
-	PROP_0,
-	PROP_PLUGIN_INFO,
-	PROP_DATA_DIR
+  PROP_0,
+  PROP_PLUGIN_INFO,
+  PROP_DATA_DIR
 };
 
-struct _PeasPluginPrivate
-{
-	PeasPluginInfo *info;
+struct _PeasPluginPrivate {
+  PeasPluginInfo *info;
 };
-
-#define PEAS_PLUGIN_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), PEAS_TYPE_PLUGIN, PeasPluginPrivate))
-
-G_DEFINE_TYPE(PeasPlugin, peas_plugin, G_TYPE_OBJECT)
 
 static void
-dummy (PeasPlugin *plugin, GObject *target_object)
+dummy (PeasPlugin *plugin,
+       GObject    *object)
 {
-	/* Empty */
+  /* Empty */
 }
 
 static GtkWidget *
-create_configure_dialog	(PeasPlugin *plugin)
+create_configure_dialog (PeasPlugin *plugin)
 {
-	return NULL;
+  return NULL;
 }
 
 static gboolean
 is_configurable (PeasPlugin *plugin)
 {
-	return (PEAS_PLUGIN_GET_CLASS (plugin)->create_configure_dialog !=
-		create_configure_dialog);
+  return PEAS_PLUGIN_GET_CLASS (plugin)->create_configure_dialog != create_configure_dialog;
 }
 
 static void
 peas_plugin_get_property (GObject    *object,
-			 guint       prop_id,
-			 GValue     *value,
-			 GParamSpec *pspec)
+                          guint       prop_id,
+                          GValue     *value,
+                          GParamSpec *pspec)
 {
-	PeasPlugin *plugin = PEAS_PLUGIN (object);
+  PeasPlugin *plugin = PEAS_PLUGIN (object);
 
-	switch (prop_id)
-	{
-		case PROP_PLUGIN_INFO:
-			g_value_set_boxed (value, peas_plugin_get_info (plugin));
-			break;
-		case PROP_DATA_DIR:
-			g_value_take_string (value, peas_plugin_get_data_dir (plugin));
-			break;
-		default:
-                        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-			break;
-	}
+  switch (prop_id)
+    {
+    case PROP_PLUGIN_INFO:
+      g_value_set_boxed (value, peas_plugin_get_info (plugin));
+      break;
+    case PROP_DATA_DIR:
+      g_value_take_string (value, peas_plugin_get_data_dir (plugin));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
 }
 
 static void
 peas_plugin_set_property (GObject      *object,
-			 guint         prop_id,
-			 const GValue *value,
-			 GParamSpec   *pspec)
+                          guint         prop_id,
+                          const GValue *value,
+                          GParamSpec   *pspec)
 {
-	PeasPlugin *plugin = PEAS_PLUGIN (object);
+  PeasPlugin *plugin = PEAS_PLUGIN (object);
 
-	switch (prop_id)
-	{
-		case PROP_PLUGIN_INFO:
-			plugin->priv->info = g_value_get_boxed (value);
-			_peas_plugin_info_ref (plugin->priv->info);
-			break;
-		default:
-                        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-			break;
-	}
-}
-
-static void
-peas_plugin_finalize (GObject *object)
-{
-	PeasPlugin *plugin = PEAS_PLUGIN (object);
-
-	_peas_plugin_info_unref (plugin->priv->info);
-
-	G_OBJECT_CLASS (peas_plugin_parent_class)->finalize (object);
-}
-
-static void
-peas_plugin_class_init (PeasPluginClass *klass)
-{
-    	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	klass->activate = dummy;
-	klass->deactivate = dummy;
-	klass->update_ui = dummy;
-
-	klass->create_configure_dialog = create_configure_dialog;
-	klass->is_configurable = is_configurable;
-
-	object_class->get_property = peas_plugin_get_property;
-	object_class->set_property = peas_plugin_set_property;
-	object_class->finalize = peas_plugin_finalize;
-
-	g_object_class_install_property (object_class,
-					 PROP_PLUGIN_INFO,
-					 g_param_spec_boxed ("plugin-info",
-							     "Plugin Information",
-							     "Information relative to the current plugin",
-							      PEAS_TYPE_PLUGIN_INFO,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
-
-	g_object_class_install_property (object_class,
-					 PROP_DATA_DIR,
-					 g_param_spec_string ("data-dir",
-							      "Data Directory",
-							      "The full path of the directory where the plugin should look for its data files",
-							      NULL,
-							      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
-
-	g_type_class_add_private (klass, sizeof (PeasPluginPrivate));
+  switch (prop_id)
+    {
+    case PROP_PLUGIN_INFO:
+      plugin->priv->info = g_value_dup_boxed (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
 }
 
 static void
 peas_plugin_init (PeasPlugin *plugin)
 {
-	plugin->priv = PEAS_PLUGIN_GET_PRIVATE (plugin);
+  plugin->priv = G_TYPE_INSTANCE_GET_PRIVATE (plugin, PEAS_TYPE_PLUGIN, PeasPluginPrivate);
+}
+
+static void
+peas_plugin_finalize (GObject *object)
+{
+  PeasPlugin *plugin = PEAS_PLUGIN (object);
+
+  _peas_plugin_info_unref (plugin->priv->info);
+
+  G_OBJECT_CLASS (peas_plugin_parent_class)->finalize (object);
+}
+
+static void
+peas_plugin_class_init (PeasPluginClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  klass->activate = dummy;
+  klass->deactivate = dummy;
+  klass->update_ui = dummy;
+
+  klass->create_configure_dialog = create_configure_dialog;
+  klass->is_configurable = is_configurable;
+
+  object_class->get_property = peas_plugin_get_property;
+  object_class->set_property = peas_plugin_set_property;
+  object_class->finalize = peas_plugin_finalize;
+
+  g_object_class_install_property (object_class,
+                                   PROP_PLUGIN_INFO,
+                                   g_param_spec_boxed ("plugin-info",
+                                                       "Plugin Information",
+                                                       "Information relative to the current plugin",
+                                                       PEAS_TYPE_PLUGIN_INFO,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT_ONLY |
+                                                       G_PARAM_STATIC_STRINGS));
+
+  g_object_class_install_property (object_class,
+                                   PROP_DATA_DIR,
+                                   g_param_spec_string ("data-dir",
+                                                        "Data Directory",
+                                                        "The full path of the directory where the plugin should look for its data files",
+                                                        NULL,
+                                                        G_PARAM_READABLE |
+                                                        G_PARAM_STATIC_STRINGS));
+
+  g_type_class_add_private (klass, sizeof (PeasPluginPrivate));
 }
 
 /**
@@ -186,9 +185,9 @@ peas_plugin_init (PeasPlugin *plugin)
 PeasPluginInfo *
 peas_plugin_get_info (PeasPlugin *plugin)
 {
-	g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
+  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
 
-	return plugin->priv->info;
+  return plugin->priv->info;
 }
 
 /**
@@ -204,9 +203,9 @@ peas_plugin_get_info (PeasPlugin *plugin)
 gchar *
 peas_plugin_get_data_dir (PeasPlugin *plugin)
 {
-	g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
+  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
 
-	return g_strdup (peas_plugin_info_get_data_dir (plugin->priv->info));
+  return g_strdup (peas_plugin_info_get_data_dir (plugin->priv->info));
 }
 
 /**
@@ -221,12 +220,12 @@ peas_plugin_get_data_dir (PeasPlugin *plugin)
  */
 void
 peas_plugin_activate (PeasPlugin *plugin,
-		     GObject   *object)
+                      GObject    *object)
 {
-	g_return_if_fail (PEAS_IS_PLUGIN (plugin));
-	g_return_if_fail (G_IS_OBJECT (object));
+  g_return_if_fail (PEAS_IS_PLUGIN (plugin));
+  g_return_if_fail (G_IS_OBJECT (object));
 
-	PEAS_PLUGIN_GET_CLASS (plugin)->activate (plugin, object);
+  PEAS_PLUGIN_GET_CLASS (plugin)->activate (plugin, object);
 }
 
 /**
@@ -238,12 +237,12 @@ peas_plugin_activate (PeasPlugin *plugin,
  */
 void
 peas_plugin_deactivate (PeasPlugin *plugin,
-		       GObject   *object)
+                        GObject    *object)
 {
-	g_return_if_fail (PEAS_IS_PLUGIN (plugin));
-	g_return_if_fail (G_IS_OBJECT (object));
+  g_return_if_fail (PEAS_IS_PLUGIN (plugin));
+  g_return_if_fail (G_IS_OBJECT (object));
 
-	PEAS_PLUGIN_GET_CLASS (plugin)->deactivate (plugin, object);
+  PEAS_PLUGIN_GET_CLASS (plugin)->deactivate (plugin, object);
 }
 
 /**
@@ -256,12 +255,12 @@ peas_plugin_deactivate (PeasPlugin *plugin,
  */
 void
 peas_plugin_update_ui (PeasPlugin *plugin,
-		      GObject   *object)
+                       GObject    *object)
 {
-	g_return_if_fail (PEAS_IS_PLUGIN (plugin));
-	g_return_if_fail (G_IS_OBJECT (object));
+  g_return_if_fail (PEAS_IS_PLUGIN (plugin));
+  g_return_if_fail (G_IS_OBJECT (object));
 
-	PEAS_PLUGIN_GET_CLASS (plugin)->update_ui (plugin, object);
+  PEAS_PLUGIN_GET_CLASS (plugin)->update_ui (plugin, object);
 }
 
 /**
@@ -275,9 +274,9 @@ peas_plugin_update_ui (PeasPlugin *plugin,
 gboolean
 peas_plugin_is_configurable (PeasPlugin *plugin)
 {
-	g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), FALSE);
+  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), FALSE);
 
-	return PEAS_PLUGIN_GET_CLASS (plugin)->is_configurable (plugin);
+  return PEAS_PLUGIN_GET_CLASS (plugin)->is_configurable (plugin);
 }
 
 /**
@@ -291,7 +290,7 @@ peas_plugin_is_configurable (PeasPlugin *plugin)
 GtkWidget *
 peas_plugin_create_configure_dialog (PeasPlugin *plugin)
 {
-	g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
+  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
 
-	return PEAS_PLUGIN_GET_CLASS (plugin)->create_configure_dialog (plugin);
+  return PEAS_PLUGIN_GET_CLASS (plugin)->create_configure_dialog (plugin);
 }

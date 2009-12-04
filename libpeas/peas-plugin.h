@@ -47,19 +47,9 @@ G_BEGIN_DECLS
  *
  * Base class for plugins.
  */
-typedef struct _PeasPlugin PeasPlugin;
+typedef struct _PeasPlugin        PeasPlugin;
+typedef struct _PeasPluginClass   PeasPluginClass;
 typedef struct _PeasPluginPrivate PeasPluginPrivate;
-
-struct _PeasPlugin
-{
-	GObject parent;
-	PeasPluginPrivate *priv;
-};
-
-/*
- * Class definition
- */
-typedef struct _PeasPluginClass PeasPluginClass;
 
 /**
  * PeasFunc:
@@ -68,56 +58,56 @@ typedef struct _PeasPluginClass PeasPluginClass;
  *
  * The type of the handler methods of #PeasPlugin.
  */
-typedef void (*PeasFunc) (PeasPlugin *plugin, GObject *object);
+typedef void (*PeasFunc) (PeasPlugin *plugin,
+                          GObject    *object);
 
+struct _PeasPlugin {
+  GObject parent;
+  PeasPluginPrivate *priv;
+};
 
-struct _PeasPluginClass
-{
-	GObjectClass parent_class;
+struct _PeasPluginClass {
+  GObjectClass parent_class;
 
-	/* Virtual public methods */
+  /* Virtual public methods */
+  void        (*activate)                 (PeasPlugin *plugin,
+                                           GObject    *object);
+  void        (*deactivate)               (PeasPlugin *plugin,
+                                           GObject    *object);
 
-	void 		(*activate)		(PeasPlugin *plugin,
-						 GObject   *target_object);
-	void 		(*deactivate)		(PeasPlugin *plugin,
-						 GObject   *target_object);
+  /* FIXME: those two following functions are too UI-centric */
+  void        (*update_ui)                (PeasPlugin *plugin,
+                                           GObject    *object);
+  GtkWidget  *(*create_configure_dialog)  (PeasPlugin *plugin);
 
-	void 		(*update_ui)		(PeasPlugin *plugin,
-						 GObject   *target_object);
+  /* Plugins should usually not override this, it's handled automatically
+   * by the PeasPluginClass */
+  gboolean    (*is_configurable)          (PeasPlugin *plugin);
 
-	GtkWidget 	*(*create_configure_dialog)
-						(PeasPlugin *plugin);
-
-	/* Plugins should not override this, it's handled automatically by
-	   the PeasPluginClass */
-	gboolean 	(*is_configurable)
-						(PeasPlugin *plugin);
-
-	/* Padding for future expansion */
-	void		(*_peas_reserved1)	(void);
-	void		(*_peas_reserved2)	(void);
-	void		(*_peas_reserved3)	(void);
-	void		(*_peas_reserved4)	(void);
+  /* Padding for future expansion */
+  void        (*_peas_reserved1)          (void);
+  void        (*_peas_reserved2)          (void);
+  void        (*_peas_reserved3)          (void);
+  void        (*_peas_reserved4)          (void);
 };
 
 /*
  * Public methods
  */
-GType 		 peas_plugin_get_type 			(void) G_GNUC_CONST;
+GType peas_plugin_get_type (void)  G_GNUC_CONST;
 
-PeasPluginInfo	*peas_plugin_get_info			(PeasPlugin *plugin);
-gchar 		*peas_plugin_get_data_dir		(PeasPlugin *plugin);
+PeasPluginInfo   *peas_plugin_get_info                (PeasPlugin *plugin);
+gchar            *peas_plugin_get_data_dir            (PeasPlugin *plugin);
 
-void 		 peas_plugin_activate			(PeasPlugin *plugin,
-							 GObject   *target_object);
-void 		 peas_plugin_deactivate			(PeasPlugin *plugin,
-							 GObject   *target_object);
+void              peas_plugin_activate                (PeasPlugin *plugin,
+                                                       GObject    *object);
+void              peas_plugin_deactivate              (PeasPlugin *plugin,
+                                                       GObject    *object);
+void              peas_plugin_update_ui               (PeasPlugin *plugin,
+                                                       GObject    *object);
 
-void 		 peas_plugin_update_ui			(PeasPlugin *plugin,
-							 GObject   *target_object);
-
-gboolean	 peas_plugin_is_configurable		(PeasPlugin *plugin);
-GtkWidget	*peas_plugin_create_configure_dialog	(PeasPlugin *plugin);
+gboolean          peas_plugin_is_configurable         (PeasPlugin *plugin);
+GtkWidget        *peas_plugin_create_configure_dialog (PeasPlugin *plugin);
 
 /**
  * PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE):
@@ -134,26 +124,26 @@ GtkWidget	*peas_plugin_create_configure_dialog	(PeasPlugin *plugin);
  * usually consist of G_IMPLEMENT_INTERFACE() calls and eventually on
  * additional type registration
  */
-#define PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE)	\
-	G_DEFINE_DYNAMIC_TYPE_EXTENDED (PluginName,				\
-					plugin_name,				\
-					PARENT_TYPE,				\
-					0,					\
-					CODE)					\
-										\
-/* This is not very nice, but G_DEFINE_DYNAMIC wants it and our old macro	\
- * did not support it */							\
-static void									\
-plugin_name##_class_finalize (PluginName##Class *klass)				\
-{										\
-}										\
-										\
-G_MODULE_EXPORT GType								\
-register_peas_plugin (GTypeModule *type_module)					\
-{										\
-	plugin_name##_register_type (type_module);				\
-										\
-	return plugin_name##_get_type();					\
+#define PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE) \
+        G_DEFINE_DYNAMIC_TYPE_EXTENDED (PluginName,                           \
+                                        plugin_name,                          \
+                                        PARENT_TYPE,                          \
+                                        0,                                    \
+                                        CODE)                                 \
+                                                                              \
+/* This is not very nice, but G_DEFINE_DYNAMIC wants it and our old macro     \
+ * did not support it */                                                      \
+static void                                                                   \
+plugin_name##_class_finalize (PluginName##Class *klass)                       \
+{                                                                             \
+}                                                                             \
+                                                                              \
+G_MODULE_EXPORT GType                                                         \
+register_peas_plugin (GTypeModule *type_module)                               \
+{                                                                             \
+        plugin_name##_register_type (type_module);                            \
+                                                                              \
+        return plugin_name##_get_type();                                      \
 }
 
 /**
@@ -166,9 +156,9 @@ register_peas_plugin (GTypeModule *type_module)					\
  * of PARENT_TYPE (see G_DEFINE_DYNAMIC_TYPE_EXTENDED()) and a registration
  * function.  The resulting #GType is to be registered in a #GTypeModule.
  */
-#define PEAS_REGISTER_TYPE(PARENT_TYPE, PluginName, plugin_name)		\
-	PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, ;)
+#define PEAS_REGISTER_TYPE(PARENT_TYPE, PluginName, plugin_name)              \
+        PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, ;)
 
 G_END_DECLS
 
-#endif  /* __PEAS_PLUGIN_H__ */
+#endif /* __PEAS_PLUGIN_H__ */

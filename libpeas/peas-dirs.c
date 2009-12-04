@@ -24,51 +24,51 @@
 gchar *
 peas_dirs_get_data_dir (void)
 {
-	gchar *data_dir;
+  gchar *data_dir;
 
 #ifndef G_OS_WIN32
-	data_dir = g_build_filename (DATADIR, "libpeas-2.0", NULL);
+  data_dir = g_build_filename (DATADIR, "libpeas-2.0", NULL);
 #else
-	gchar *win32_dir;
+  gchar *win32_dir;
 
-	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+  win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
 
-	data_dir = g_build_filename (win32_dir, "share", "libpeas-2.0", NULL);
-	g_free (win32_dir);
+  data_dir = g_build_filename (win32_dir, "share", "libpeas-2.0", NULL);
+  g_free (win32_dir);
 #endif
 
-	return data_dir;
+  return data_dir;
 }
 
 gchar *
 peas_dirs_get_lib_dir (void)
 {
-	gchar *lib_dir;
+  gchar *lib_dir;
 
 #ifndef G_OS_WIN32
-	lib_dir = g_build_filename (LIBDIR, "libpeas-2.0",  NULL);
+  lib_dir = g_build_filename (LIBDIR, "libpeas-2.0", NULL);
 #else
-	gchar *win32_dir;
+  gchar *win32_dir;
 
-	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+  win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
 
-	data_dir = g_build_filename (win32_dir, "lib", "libpeas-2.0", NULL);
-	g_free (win32_dir);
+  data_dir = g_build_filename (win32_dir, "lib", "libpeas-2.0", NULL);
+  g_free (win32_dir);
 #endif
 
-	return lib_dir;
+  return lib_dir;
 }
 
 gchar *
 peas_dirs_get_plugin_loaders_dir (void)
 {
-	gchar *lib_dir;
-	gchar *loader_dir;
-	
-	lib_dir = peas_dirs_get_lib_dir ();
-	loader_dir = g_build_filename (lib_dir, "loaders", NULL);
+  gchar *lib_dir;
+  gchar *loader_dir;
 
-	g_free (lib_dir);
-	
-	return loader_dir;
+  lib_dir = peas_dirs_get_lib_dir ();
+  loader_dir = g_build_filename (lib_dir, "loaders", NULL);
+
+  g_free (lib_dir);
+
+  return loader_dir;
 }

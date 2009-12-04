@@ -24,120 +24,122 @@
 static void
 peas_plugin_loader_base_init (gpointer g_class)
 {
-	static gboolean initialized = FALSE;
+  static gboolean initialized = FALSE;
 
-	if (G_UNLIKELY (!initialized))
-	{
-		/* create interface signals here. */
-		initialized = TRUE;
-	}
+  if (G_UNLIKELY (!initialized))
+    {
+      /* create interface signals here. */
+      initialized = TRUE;
+    }
 }
 
 GType
 peas_plugin_loader_get_type (void)
 {
-	static GType type = 0;
+  static GType type = 0;
 
-	if (G_UNLIKELY (type == 0))
-	{
-		static const GTypeInfo info =
-		{
-			sizeof (PeasPluginLoaderInterface),
-			peas_plugin_loader_base_init,   /* base_init */
-			NULL,   /* base_finalize */
-			NULL,   /* class_init */
-			NULL,   /* class_finalize */
-			NULL,   /* class_data */
-			0,
-			0,      /* n_preallocs */
-			NULL    /* instance_init */
-		};
+  if (G_UNLIKELY (type == 0))
+    {
+      static const GTypeInfo info = {
+        sizeof (PeasPluginLoaderInterface),
+        peas_plugin_loader_base_init,     /* base_init */
+        NULL,                             /* base_finalize */
+        NULL,                             /* class_init */
+        NULL,                             /* class_finalize */
+        NULL,                             /* class_data */
+        0,
+        0,                                /* n_preallocs */
+        NULL                              /* instance_init */
+      };
 
-		type = g_type_register_static (G_TYPE_INTERFACE, "PeasPluginLoader", &info, 0);
-	}
+      type = g_type_register_static (G_TYPE_INTERFACE,
+                                     "PeasPluginLoader",
+                                     &info,
+                                     0);
+    }
 
-	return type;
+  return type;
 }
 
 const gchar *
 peas_plugin_loader_type_get_id (GType type)
 {
-	GTypeClass *klass;
-	PeasPluginLoaderInterface *iface;
+  GTypeClass *klass;
+  PeasPluginLoaderInterface *iface;
 
-	klass = g_type_class_ref (type);
+  klass = g_type_class_ref (type);
 
-	if (klass == NULL)
-	{
-		g_warning ("Could not get class info for plugin loader");
-		return NULL;
-	}
+  if (klass == NULL)
+    {
+      g_warning ("Could not get class info for plugin loader");
+      return NULL;
+    }
 
-	iface = g_type_interface_peek (klass, PEAS_TYPE_PLUGIN_LOADER);
+  iface = g_type_interface_peek (klass, PEAS_TYPE_PLUGIN_LOADER);
 
-	if (iface == NULL)
-	{
-		g_warning ("Could not get plugin loader interface");
-		g_type_class_unref (klass);
+  if (iface == NULL)
+    {
+      g_warning ("Could not get plugin loader interface");
+      g_type_class_unref (klass);
 
-		return NULL;
-	}
+      return NULL;
+    }
 
-	g_return_val_if_fail (iface->get_id != NULL, NULL);
-	return iface->get_id ();
+  g_return_val_if_fail (iface->get_id != NULL, NULL);
+  return iface->get_id ();
 }
 
 void
 peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
-					const gchar     *module_dir)
+                                         const gchar      *module_dir)
 {
-	PeasPluginLoaderInterface *iface;
+  PeasPluginLoaderInterface *iface;
 
-	g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
+  g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
 
-	iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
-	g_return_if_fail (iface->add_module_directory != NULL);
+  iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
+  g_return_if_fail (iface->add_module_directory != NULL);
 
-	iface->add_module_directory (loader, module_dir);
+  iface->add_module_directory (loader, module_dir);
 }
 
 PeasPlugin *
 peas_plugin_loader_load (PeasPluginLoader *loader,
-			PeasPluginInfo   *info)
+                         PeasPluginInfo   *info)
 {
-	PeasPluginLoaderInterface *iface;
+  PeasPluginLoaderInterface *iface;
 
-	g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), NULL);
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), NULL);
 
-	iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
-	g_return_val_if_fail (iface->load != NULL, NULL);
+  iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
+  g_return_val_if_fail (iface->load != NULL, NULL);
 
-	return iface->load (loader, info);
+  return iface->load (loader, info);
 }
 
 void
 peas_plugin_loader_unload (PeasPluginLoader *loader,
-			   PeasPluginInfo   *info)
+                           PeasPluginInfo   *info)
 {
-	PeasPluginLoaderInterface *iface;
+  PeasPluginLoaderInterface *iface;
 
-	g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
+  g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
 
-	iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
-	g_return_if_fail (iface->unload != NULL);
+  iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
+  g_return_if_fail (iface->unload != NULL);
 
-	iface->unload (loader, info);
+  iface->unload (loader, info);
 }
 
 void
 peas_plugin_loader_garbage_collect (PeasPluginLoader *loader)
 {
-	PeasPluginLoaderInterface *iface;
+  PeasPluginLoaderInterface *iface;
 
-	g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
+  g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
 
-	iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
+  iface = PEAS_PLUGIN_LOADER_GET_INTERFACE (loader);
 
-	if (iface->garbage_collect != NULL)
-		iface->garbage_collect (loader);
+  if (iface->garbage_collect != NULL)
+    iface->garbage_collect (loader);
 }

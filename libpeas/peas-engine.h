@@ -41,80 +41,69 @@ G_BEGIN_DECLS
  *
  * Engine at the heart of the Peas plugin system.
  */
-typedef struct _PeasEngine		PeasEngine;
-typedef struct _PeasEnginePrivate	PeasEnginePrivate;
+typedef struct _PeasEngine        PeasEngine;
+typedef struct _PeasEngineClass   PeasEngineClass;
+typedef struct _PeasEnginePrivate PeasEnginePrivate;
 
-struct _PeasEngine
-{
-	GObject parent;
+struct _PeasEngine {
+  GObject parent;
 
-	/*< private >*/
-	PeasEnginePrivate *priv;
+  /*< private > */
+  PeasEnginePrivate *priv;
 };
 
-typedef struct _PeasEngineClass		PeasEngineClass;
+struct _PeasEngineClass {
+  GObjectClass parent_class;
 
-struct _PeasEngineClass
-{
-	GObjectClass parent_class;
+  void     (*activate_plugin)             (PeasEngine     *engine,
+                                           PeasPluginInfo *info);
 
-	void	 (* activate_plugin)			(PeasEngine      *engine,
-							 PeasPluginInfo  *info);
+  void     (*deactivate_plugin)           (PeasEngine     *engine,
+                                           PeasPluginInfo *info);
 
-	void	 (* deactivate_plugin)			(PeasEngine      *engine,
-							 PeasPluginInfo  *info);
+  void     (*activate_plugin_on_object)   (PeasEngine     *engine,
+                                           PeasPluginInfo *info,
+                                           GObject        *object);
 
-	void	 (* activate_plugin_on_object)		(PeasEngine	*engine,
-							 PeasPluginInfo  *info,
-							 GObject	*object);
-
-	void	 (* deactivate_plugin_on_object)	(PeasEngine	*engine,
-							 PeasPluginInfo  *info,
-							 GObject	*object);
-
+  void     (*deactivate_plugin_on_object) (PeasEngine     *engine,
+                                           PeasPluginInfo *info,
+                                           GObject        *object);
 };
 
-GType		 peas_engine_get_type			(void) G_GNUC_CONST;
+GType             peas_engine_get_type            (void) G_GNUC_CONST;
+PeasEngine       *peas_engine_new                 (const gchar     *app_name,
+                                                   const gchar     *base_module_dir,
+                                                   const gchar    **search_paths);
 
-PeasEngine	*peas_engine_new				(const gchar    *app_name,
-							 const gchar    *base_module_dir,
-							 const gchar   **search_paths);
-
-void		 peas_engine_garbage_collect		(PeasEngine      *engine);
-
-/* plugin info management */
-void		 peas_engine_rescan_plugins		(PeasEngine      *engine);
-
-/* plugin list management */
-const GList	*peas_engine_get_plugin_list 		(PeasEngine      *engine);
-gchar		**peas_engine_get_active_plugins		(PeasEngine      *engine);
-void		 peas_engine_set_active_plugins		(PeasEngine      *engine,
-							 const gchar   **plugin_names);
-
-/* plugin info */
-PeasPluginInfo	*peas_engine_get_plugin_info		(PeasEngine      *engine,
-							 const gchar    *plugin_name);
+/* plugin management */
+void              peas_engine_rescan_plugins      (PeasEngine      *engine);
+const GList      *peas_engine_get_plugin_list     (PeasEngine      *engine);
+gchar           **peas_engine_get_active_plugins  (PeasEngine      *engine);
+void              peas_engine_set_active_plugins  (PeasEngine      *engine,
+                                                   const gchar    **plugin_names);
+PeasPluginInfo   *peas_engine_get_plugin_info     (PeasEngine      *engine,
+                                                   const gchar     *plugin_name);
 
 /* plugin load and unloading (overall, for all windows) */
-gboolean 	 peas_engine_activate_plugin 		(PeasEngine      *engine,
-							 PeasPluginInfo  *info);
-gboolean 	 peas_engine_deactivate_plugin		(PeasEngine      *engine,
-							 PeasPluginInfo  *info);
-
-void	 	 peas_engine_configure_plugin		(PeasEngine      *engine,
-							 PeasPluginInfo  *info,
-							 GtkWindow      *parent);
+gboolean          peas_engine_activate_plugin     (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info);
+gboolean          peas_engine_deactivate_plugin   (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info);
+void              peas_engine_configure_plugin    (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info,
+                                                   GtkWindow       *parent);
+void              peas_engine_garbage_collect     (PeasEngine      *engine);
 
 /* plugin activation/deactivation per target_object */
-void		 peas_engine_update_plugins_ui		(PeasEngine      *engine,
-							 GObject        *object);
+void              peas_engine_update_plugins_ui   (PeasEngine      *engine,
+                                                   GObject         *object);
 
 /* object management */
-void		 peas_engine_add_object			(PeasEngine     *engine,
-							 GObject       *object);
-void		 peas_engine_remove_object		(PeasEngine     *engine,
-							 GObject       *object);
+void              peas_engine_add_object          (PeasEngine      *engine,
+                                                   GObject         *object);
+void              peas_engine_remove_object       (PeasEngine      *engine,
+                                                   GObject         *object);
 
 G_END_DECLS
 
-#endif  /* __PEAS_ENGINE_H__ */
+#endif /* __PEAS_ENGINE_H__ */

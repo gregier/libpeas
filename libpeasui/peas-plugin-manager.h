@@ -37,39 +37,26 @@ G_BEGIN_DECLS
 #define PEAS_IS_PLUGIN_MANAGER_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_MANAGER))
 #define PEAS_PLUGIN_MANAGER_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_PLUGIN_MANAGER, PeasPluginManagerClass))
 
-/* Private structure type */
-typedef struct _PeasPluginManagerPrivate PeasPluginManagerPrivate;
-
-/*
- * Main object structure
- */
-typedef struct _PeasPluginManager PeasPluginManager;
+typedef struct _PeasPluginManager         PeasPluginManager;
+typedef struct _PeasPluginManagerClass    PeasPluginManagerClass;
+typedef struct _PeasPluginManagerPrivate  PeasPluginManagerPrivate;
 
 struct _PeasPluginManager
 {
-	GtkVBox vbox;
+  GtkVBox vbox;
 
-	/*< private > */
-	PeasPluginManagerPrivate *priv;
+  /*< private > */
+  PeasPluginManagerPrivate *priv;
 };
-
-/*
- * Class definition
- */
-typedef struct _PeasPluginManagerClass PeasPluginManagerClass;
 
 struct _PeasPluginManagerClass
 {
-	GtkVBoxClass parent_class;
+  GtkVBoxClass parent_class;
 };
 
-/*
- * Public methods
- */
-GType		 peas_plugin_manager_get_type		(void) G_GNUC_CONST;
-
-GtkWidget	*peas_plugin_manager_new			(PeasEngine *engine);
+GType       peas_plugin_manager_get_type  (void)  G_GNUC_CONST;
+GtkWidget  *peas_plugin_manager_new       (PeasEngine *engine);
 
 G_END_DECLS
 
-#endif  /* __PEAS_PLUGIN_MANAGER_H__  */
+#endif /* __PEAS_PLUGIN_MANAGER_H__  */

@@ -27,30 +27,29 @@
 
 G_BEGIN_DECLS
 
-#define PEAS_TYPE_PLUGIN_INFO			(peas_plugin_info_get_type ())
-#define PEAS_PLUGIN_INFO(obj)			((PeasPluginInfo *) (obj))
+#define PEAS_TYPE_PLUGIN_INFO   (peas_plugin_info_get_type ())
+#define PEAS_PLUGIN_INFO(obj)   ((PeasPluginInfo *) (obj))
 
-typedef struct _PeasPluginInfo			PeasPluginInfo;
+typedef struct _PeasPluginInfo PeasPluginInfo;
 
-GType		 peas_plugin_info_get_type		(void) G_GNUC_CONST;
+GType         peas_plugin_info_get_type         (void) G_GNUC_CONST;
 
-gboolean 	 peas_plugin_info_is_active		(PeasPluginInfo *info);
-gboolean 	 peas_plugin_info_is_available		(PeasPluginInfo *info);
-gboolean	 peas_plugin_info_is_configurable	(PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_active        (PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_available     (PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_configurable  (PeasPluginInfo *info);
 
-const gchar	*peas_plugin_info_get_module_name	(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_module_dir		(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_data_dir		(PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_module_name  (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_module_dir   (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_data_dir     (PeasPluginInfo *info);
 
-const gchar	*peas_plugin_info_get_name		(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_description	(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_icon_name		(PeasPluginInfo *info);
-const gchar    **peas_plugin_info_get_authors		(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_website		(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_copyright		(PeasPluginInfo *info);
-const gchar	*peas_plugin_info_get_version		(PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_name         (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_description  (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_icon_name    (PeasPluginInfo *info);
+const gchar **peas_plugin_info_get_authors      (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_website      (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_copyright    (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_version      (PeasPluginInfo *info);
 
 G_END_DECLS
 
 #endif /* __PEAS_PLUGIN_INFO_H__ */
-

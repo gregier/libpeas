@@ -26,32 +26,32 @@
 
 G_BEGIN_DECLS
 
-#define PEAS_TYPE_PLUGIN_LOADER_C		(peas_plugin_loader_c_get_type ())
-#define PEAS_PLUGIN_LOADER_C(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_PLUGIN_LOADER_C, PeasPluginLoaderC))
-#define PEAS_PLUGIN_LOADER_C_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), PEAS_TYPE_PLUGIN_LOADER_C, PeasPluginLoaderCClass))
-#define PEAS_PLUGIN_IS_LOADER_C(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_PLUGIN_LOADER_C))
-#define PEAS_PLUGIN_IS_LOADER_C_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_LOADER_C))
-#define PEAS_PLUGIN_LOADER_C_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_PLUGIN_LOADER_C, PeasPluginLoaderCClass))
+#define PEAS_TYPE_PLUGIN_LOADER_C            (peas_plugin_loader_c_get_type ())
+#define PEAS_PLUGIN_LOADER_C(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_PLUGIN_LOADER_C, PeasPluginLoaderC))
+#define PEAS_PLUGIN_LOADER_C_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PEAS_TYPE_PLUGIN_LOADER_C, PeasPluginLoaderCClass))
+#define PEAS_PLUGIN_IS_LOADER_C(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_PLUGIN_LOADER_C))
+#define PEAS_PLUGIN_IS_LOADER_C_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_LOADER_C))
+#define PEAS_PLUGIN_LOADER_C_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_PLUGIN_LOADER_C, PeasPluginLoaderCClass))
 
-typedef struct _PeasPluginLoaderC		PeasPluginLoaderC;
-typedef struct _PeasPluginLoaderCClass		PeasPluginLoaderCClass;
-typedef struct _PeasPluginLoaderCPrivate		PeasPluginLoaderCPrivate;
+typedef struct _PeasPluginLoaderC         PeasPluginLoaderC;
+typedef struct _PeasPluginLoaderCClass    PeasPluginLoaderCClass;
+typedef struct _PeasPluginLoaderCPrivate  PeasPluginLoaderCPrivate;
 
 struct _PeasPluginLoaderC {
-	GObject parent;
+  GObject parent;
 
-	PeasPluginLoaderCPrivate *priv;
+  PeasPluginLoaderCPrivate *priv;
 };
 
 struct _PeasPluginLoaderCClass {
-	GObjectClass parent_class;
+  GObjectClass parent_class;
 };
 
-GType peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
-PeasPluginLoaderC *peas_plugin_loader_c_new(void);
+GType                   peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
+PeasPluginLoaderC      *peas_plugin_loader_c_new      (void);
 
 /* All the loaders must implement this function */
-G_MODULE_EXPORT GType register_peas_plugin_loader (GTypeModule * module);
+G_MODULE_EXPORT GType   register_peas_plugin_loader   (GTypeModule *module);
 
 G_END_DECLS
 

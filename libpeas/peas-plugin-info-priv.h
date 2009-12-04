@@ -26,39 +26,38 @@
 #include "peas-plugin-info.h"
 #include "peas-plugin.h"
 
-struct _PeasPluginInfo
-{
-	gint               refcount;
+struct _PeasPluginInfo {
+  gint refcount;
 
-	PeasPlugin         *plugin;
-	gchar             *file;
-	gchar             *module_dir;
-	gchar             *data_dir;
+  PeasPlugin *plugin;
+  gchar *file;
+  gchar *module_dir;
+  gchar *data_dir;
 
-	gchar             *module_name;
-	gchar		  *loader;
-	gchar            **dependencies;
+  gchar *module_name;
+  gchar *loader;
+  gchar **dependencies;
 
-	gchar             *name;
-	gchar             *desc;
-	gchar             *icon_name;
-	gchar            **authors;
-	gchar             *copyright;
-	gchar             *website;
-	gchar             *version;
+  gchar *name;
+  gchar *desc;
+  gchar *icon_name;
+  gchar **authors;
+  gchar *copyright;
+  gchar *website;
+  gchar *version;
 
-	/* A plugin is unavailable if it is not possible to activate it
-	   due to an error loading the plugin module (e.g. for Python plugins
-	   when the interpreter has not been correctly initializated) */
-	gint               available : 1;
+  /* A plugin is unavailable if it is not possible to activate it
+     due to an error loading the plugin module (e.g. for Python plugins
+     when the interpreter has not been correctly initializated) */
+  gint available : 1;
 };
 
-PeasPluginInfo	*_peas_plugin_info_new		(const gchar       *file,
-						 const gchar       *app_name,
-						 const gchar       *module_dir,
-						 const gchar       *data_dir);
-PeasPluginInfo	*_peas_plugin_info_ref		(PeasPluginInfo *info);
-void		 _peas_plugin_info_unref		(PeasPluginInfo *info);
+PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,
+                                         const gchar    *app_name,
+                                         const gchar    *module_dir,
+                                         const gchar    *data_dir);
+PeasPluginInfo *_peas_plugin_info_ref   (PeasPluginInfo *info);
+void            _peas_plugin_info_unref (PeasPluginInfo *info);
 
 
 #endif /* __PEAS_PLUGIN_INFO_PRIV_H__ */

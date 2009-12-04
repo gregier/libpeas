@@ -26,289 +26,284 @@
 
 #include "peas-object-module.h"
 
+G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
+
 typedef GType (*PeasObjectModuleRegisterFunc) (GTypeModule *);
 
 enum {
-	PROP_0,
-	PROP_MODULE_NAME,
-	PROP_PATH,
-	PROP_TYPE_REGISTRATION,
-	PROP_RESIDENT
+  PROP_0,
+  PROP_MODULE_NAME,
+  PROP_PATH,
+  PROP_TYPE_REGISTRATION,
+  PROP_RESIDENT
 };
 
-struct _PeasObjectModulePrivate
-{
-	GModule *library;
+struct _PeasObjectModulePrivate {
+  GModule *library;
 
-	GType type;
-	gchar *path;
-	gchar *module_name;
-	gchar *type_registration;
+  GType type;
+  gchar *path;
+  gchar *module_name;
+  gchar *type_registration;
 
-	gboolean resident;
+  gboolean resident;
 };
-
-G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
 
 static gboolean
 peas_object_module_load (GTypeModule *gmodule)
 {
-	PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
-	PeasObjectModuleRegisterFunc register_func;
-	gchar *path;
+  PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
+  PeasObjectModuleRegisterFunc register_func;
+  gchar *path;
 
-	path = g_module_build_path (module->priv->path, module->priv->module_name);
-	g_return_val_if_fail (path != NULL, FALSE);
+  path = g_module_build_path (module->priv->path, module->priv->module_name);
+  g_return_val_if_fail (path != NULL, FALSE);
 
-	module->priv->library = g_module_open (path,
-					       G_MODULE_BIND_LAZY);
-	g_free (path);
+  module->priv->library = g_module_open (path, G_MODULE_BIND_LAZY);
+  g_free (path);
 
-	if (module->priv->library == NULL)
-	{
-		g_warning ("%s: %s", module->priv->module_name, g_module_error());
+  if (module->priv->library == NULL)
+    {
+      g_warning ("%s: %s", module->priv->module_name, g_module_error ());
 
-		return FALSE;
-	}
+      return FALSE;
+    }
 
-	/* extract symbols from the lib */
-	if (!g_module_symbol (module->priv->library, module->priv->type_registration,
-			      (void *) &register_func))
-	{
-		g_warning ("%s: %s", module->priv->module_name, g_module_error());
-		g_module_close (module->priv->library);
+  /* extract symbols from the lib */
+  if (!g_module_symbol (module->priv->library,
+                        module->priv->type_registration,
+                        (void *) &register_func))
+    {
+      g_warning ("%s: %s", module->priv->module_name, g_module_error ());
+      g_module_close (module->priv->library);
 
-		return FALSE;
-	}
+      return FALSE;
+    }
 
-	/* symbol can still be NULL even though g_module_symbol
-	 * returned TRUE */
-	if (register_func == NULL)
-	{
-		g_warning ("Symbol '%s' should not be NULL", module->priv->type_registration);
-		g_module_close (module->priv->library);
+  /* symbol can still be NULL even though g_module_symbol
+   * returned TRUE */
+  if (register_func == NULL)
+    {
+      g_warning ("Symbol '%s' should not be NULL",
+                 module->priv->type_registration);
+      g_module_close (module->priv->library);
 
-		return FALSE;
-	}
+      return FALSE;
+    }
 
-	module->priv->type = register_func (gmodule);
+  module->priv->type = register_func (gmodule);
 
-	if (module->priv->type == 0)
-	{
-		g_warning ("Invalid object contained by module %s", module->priv->module_name);
-		return FALSE;
-	}
+  if (module->priv->type == 0)
+    {
+      g_warning ("Invalid object contained by module %s",
+                 module->priv->module_name);
+      return FALSE;
+    }
 
-	if (module->priv->resident)
-	{
-		g_module_make_resident (module->priv->library);
-	}
+  if (module->priv->resident)
+    g_module_make_resident (module->priv->library);
 
-	return TRUE;
+  return TRUE;
 }
 
 static void
 peas_object_module_unload (GTypeModule *gmodule)
 {
-	PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
+  PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
 
-	g_module_close (module->priv->library);
+  g_module_close (module->priv->library);
 
-	module->priv->library = NULL;
-	module->priv->type = 0;
+  module->priv->library = NULL;
+  module->priv->type = 0;
 }
 
 static void
 peas_object_module_init (PeasObjectModule *module)
 {
-	module->priv = G_TYPE_INSTANCE_GET_PRIVATE (module,
-						    PEAS_TYPE_OBJECT_MODULE,
-						    PeasObjectModulePrivate);
+  module->priv = G_TYPE_INSTANCE_GET_PRIVATE (module,
+                                              PEAS_TYPE_OBJECT_MODULE,
+                                              PeasObjectModulePrivate);
 }
 
 static void
 peas_object_module_finalize (GObject *object)
 {
-	PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
 
-	g_free (module->priv->path);
-	g_free (module->priv->module_name);
-	g_free (module->priv->type_registration);
+  g_free (module->priv->path);
+  g_free (module->priv->module_name);
+  g_free (module->priv->type_registration);
 
-	G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
+  G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
 }
 
 static void
 peas_object_module_get_property (GObject    *object,
-			        guint       prop_id,
-			        GValue     *value,
-			        GParamSpec *pspec)
+                                 guint       prop_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
 {
-	PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
 
-	switch (prop_id)
-	{
-		case PROP_MODULE_NAME:
-			g_value_set_string (value, module->priv->module_name);
-			break;
-		case PROP_PATH:
-			g_value_set_string (value, module->priv->path);
-			break;
-		case PROP_TYPE_REGISTRATION:
-			g_value_set_string (value, module->priv->type_registration);
-			break;
-		case PROP_RESIDENT:
-			g_value_set_boolean (value, module->priv->resident);
-			break;
-		default:
-			g_return_if_reached ();
-	}
+  switch (prop_id)
+    {
+    case PROP_MODULE_NAME:
+      g_value_set_string (value, module->priv->module_name);
+      break;
+    case PROP_PATH:
+      g_value_set_string (value, module->priv->path);
+      break;
+    case PROP_TYPE_REGISTRATION:
+      g_value_set_string (value, module->priv->type_registration);
+      break;
+    case PROP_RESIDENT:
+      g_value_set_boolean (value, module->priv->resident);
+      break;
+    default:
+      g_return_if_reached ();
+    }
 }
 
 static void
 peas_object_module_set_property (GObject      *object,
-				guint         prop_id,
-				const GValue *value,
-				GParamSpec   *pspec)
+                                 guint         prop_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
 {
-	PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
 
-	switch (prop_id)
-	{
-		case PROP_MODULE_NAME:
-			module->priv->module_name = g_value_dup_string (value);
-			g_type_module_set_name (G_TYPE_MODULE (object),
-						module->priv->module_name);
-			break;
-		case PROP_PATH:
-			module->priv->path = g_value_dup_string (value);
-			break;
-		case PROP_TYPE_REGISTRATION:
-			module->priv->type_registration = g_value_dup_string (value);
-			break;
-		case PROP_RESIDENT:
-			module->priv->resident = g_value_get_boolean (value);
-			break;
-		default:
-			g_return_if_reached ();
-	}
+  switch (prop_id)
+    {
+    case PROP_MODULE_NAME:
+      module->priv->module_name = g_value_dup_string (value);
+      g_type_module_set_name (G_TYPE_MODULE (object),
+                              module->priv->module_name);
+      break;
+    case PROP_PATH:
+      module->priv->path = g_value_dup_string (value);
+      break;
+    case PROP_TYPE_REGISTRATION:
+      module->priv->type_registration = g_value_dup_string (value);
+      break;
+    case PROP_RESIDENT:
+      module->priv->resident = g_value_get_boolean (value);
+      break;
+    default:
+      g_return_if_reached ();
+    }
 }
 
 static void
 peas_object_module_class_init (PeasObjectModuleClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	GTypeModuleClass *module_class = G_TYPE_MODULE_CLASS (klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  GTypeModuleClass *module_class = G_TYPE_MODULE_CLASS (klass);
 
-	object_class->set_property = peas_object_module_set_property;
-	object_class->get_property = peas_object_module_get_property;
-	object_class->finalize = peas_object_module_finalize;
+  object_class->set_property = peas_object_module_set_property;
+  object_class->get_property = peas_object_module_get_property;
+  object_class->finalize = peas_object_module_finalize;
 
-	module_class->load = peas_object_module_load;
-	module_class->unload = peas_object_module_unload;
+  module_class->load = peas_object_module_load;
+  module_class->unload = peas_object_module_unload;
 
-	g_object_class_install_property (object_class,
-					 PROP_MODULE_NAME,
-					 g_param_spec_string ("module-name",
-							      "Module Name",
-							      "The module to load for this object",
-							      NULL,
-							      G_PARAM_READWRITE |
-							      G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class,
+                                   PROP_MODULE_NAME,
+                                   g_param_spec_string ("module-name",
+                                                        "Module Name",
+                                                        "The module to load for this object",
+                                                        NULL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY));
 
-	g_object_class_install_property (object_class,
-					 PROP_PATH,
-					 g_param_spec_string ("path",
-							      "Path",
-							      "The path to use when loading this module",
-							      NULL,
-							      G_PARAM_READWRITE |
-							      G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class,
+                                   PROP_PATH,
+                                   g_param_spec_string ("path",
+                                                        "Path",
+                                                        "The path to use when loading this module",
+                                                        NULL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY));
 
-	g_object_class_install_property (object_class,
-					 PROP_TYPE_REGISTRATION,
-					 g_param_spec_string ("type-registration",
-							      "Type Registration",
-							      "The name of the type registration function",
-							      NULL,
-							      G_PARAM_READWRITE |
-							      G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class,
+                                   PROP_TYPE_REGISTRATION,
+                                   g_param_spec_string ("type-registration",
+                                                        "Type Registration",
+                                                        "The name of the type registration function",
+                                                        NULL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY));
 
-	g_object_class_install_property (object_class,
-					 PROP_RESIDENT,
-					 g_param_spec_boolean ("resident",
-							       "Resident",
-							       "Whether the module is resident",
-							       FALSE,
-							       G_PARAM_READWRITE |
-							       G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class,
+                                   PROP_RESIDENT,
+                                   g_param_spec_boolean ("resident",
+                                                         "Resident",
+                                                         "Whether the module is resident",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT_ONLY));
 
-	g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
+  g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
 }
 
 PeasObjectModule *
 peas_object_module_new (const gchar *module_name,
-		       const gchar *path,
-		       const gchar *type_registration,
-		       gboolean     resident)
+                        const gchar *path,
+                        const gchar *type_registration,
+                        gboolean     resident)
 {
-	return (PeasObjectModule *)g_object_new (PEAS_TYPE_OBJECT_MODULE,
-						  "module-name",
-						  module_name,
-						  "path",
-						  path,
-						  "type-registration",
-						  type_registration,
-						  "resident",
-						  resident,
-						  NULL);
+  return (PeasObjectModule *) g_object_new (PEAS_TYPE_OBJECT_MODULE,
+                                            "module-name", module_name,
+                                            "path", path,
+                                            "type-registration", type_registration,
+                                            "resident", resident,
+                                            NULL);
 }
 
 GObject *
 peas_object_module_new_object (PeasObjectModule *module,
-			      const gchar            *first_property_name,
-			      ...)
+                               const gchar      *first_property_name,
+                               ...)
 {
-	va_list var_args;
-	GObject *result;
+  va_list var_args;
+  GObject *result;
 
-	g_return_val_if_fail (module->priv->type != 0, NULL);
+  g_return_val_if_fail (module->priv->type != 0, NULL);
 
-	va_start (var_args, first_property_name);
-	result = g_object_new_valist (module->priv->type, first_property_name, var_args);
-	va_end (var_args);
+  va_start (var_args, first_property_name);
+  result = g_object_new_valist (module->priv->type, first_property_name, var_args);
+  va_end (var_args);
 
-	return result;
+  return result;
 }
 
 const gchar *
 peas_object_module_get_path (PeasObjectModule *module)
 {
-	g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-	return module->priv->path;
+  return module->priv->path;
 }
 
 const gchar *
 peas_object_module_get_module_name (PeasObjectModule *module)
 {
-	g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-	return module->priv->module_name;
+  return module->priv->module_name;
 }
 
 const gchar *
 peas_object_module_get_type_registration (PeasObjectModule *module)
 {
-	g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-	return module->priv->type_registration;
+  return module->priv->type_registration;
 }
 
 GType
 peas_object_module_get_object_type (PeasObjectModule *module)
 {
-	g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), 0);
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), 0);
 
-	return module->priv->type;
+  return module->priv->type;
 }

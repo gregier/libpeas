@@ -31,49 +31,45 @@
 
 G_BEGIN_DECLS
 
-#define PEAS_TYPE_OBJECT_MODULE			(peas_object_module_get_type ())
-#define PEAS_OBJECT_MODULE(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_OBJECT_MODULE, PeasObjectModule))
-#define PEAS_OBJECT_MODULE_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), PEAS_TYPE_OBJECT_MODULE, PeasObjectModuleClass))
-#define PEAS_IS_OBJECT_MODULE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_OBJECT_MODULE))
-#define PEAS_IS_OBJECT_MODULE_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_OBJECT_MODULE))
-#define PEAS_OBJECT_MODULE_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_OBJECT_MODULE, PeasObjectModuleClass))
+#define PEAS_TYPE_OBJECT_MODULE             (peas_object_module_get_type ())
+#define PEAS_OBJECT_MODULE(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_OBJECT_MODULE, PeasObjectModule))
+#define PEAS_OBJECT_MODULE_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), PEAS_TYPE_OBJECT_MODULE, PeasObjectModuleClass))
+#define PEAS_IS_OBJECT_MODULE(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_OBJECT_MODULE))
+#define PEAS_IS_OBJECT_MODULE_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_OBJECT_MODULE))
+#define PEAS_OBJECT_MODULE_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_OBJECT_MODULE, PeasObjectModuleClass))
 
-typedef struct _PeasObjectModule 	PeasObjectModule;
-typedef struct _PeasObjectModulePrivate	PeasObjectModulePrivate;
+typedef struct _PeasObjectModule        PeasObjectModule;
+typedef struct _PeasObjectModuleClass   PeasObjectModuleClass;
+typedef struct _PeasObjectModulePrivate PeasObjectModulePrivate;
 
-struct _PeasObjectModule
-{
-	GTypeModule parent;
+struct _PeasObjectModule {
+  GTypeModule parent;
 
-	PeasObjectModulePrivate *priv;
+  PeasObjectModulePrivate *priv;
 };
 
-typedef struct _PeasObjectModuleClass PeasObjectModuleClass;
+struct _PeasObjectModuleClass {
+  GTypeModuleClass parent_class;
 
-struct _PeasObjectModuleClass
-{
-	GTypeModuleClass parent_class;
-
-	/* Virtual class methods */
-	void		 (* garbage_collect)	();
+  /* Virtual class methods */
+  void (*garbage_collect) ();
 };
 
-GType		 peas_object_module_get_type			(void) G_GNUC_CONST;
+GType               peas_object_module_get_type               (void) G_GNUC_CONST;
+PeasObjectModule   *peas_object_module_new                    (const gchar      *module_name,
+                                                               const gchar      *path,
+                                                               const gchar      *type_registration,
+                                                               gboolean          resident);
 
-PeasObjectModule  *peas_object_module_new				(const gchar *module_name,
-								 const gchar *path,
-								 const gchar *type_registration,
-								 gboolean     resident);
+GType               peas_object_module_get_object_type        (PeasObjectModule *module);
+GObject            *peas_object_module_new_object             (PeasObjectModule *module,
+                                                               const gchar      *first_property_name,
+                                                               ...);
 
-GObject		*peas_object_module_new_object			(PeasObjectModule *module,
-								 const gchar	   *first_property_name,
-								 ...);
-
-GType		 peas_object_module_get_object_type		(PeasObjectModule *module);
-const gchar	*peas_object_module_get_path			(PeasObjectModule *module);
-const gchar	*peas_object_module_get_module_name		(PeasObjectModule *module);
-const gchar 	*peas_object_module_get_type_registration	(PeasObjectModule *module);
+const gchar        *peas_object_module_get_path               (PeasObjectModule *module);
+const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);
+const gchar        *peas_object_module_get_type_registration  (PeasObjectModule *module);
 
 G_END_DECLS
 
-#endif
+#endif /* __PEAS_OBJECT_MODULE_H__ */
