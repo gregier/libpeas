@@ -50,19 +50,13 @@ typedef struct {
   PyObject *instance;
 } PythonInfo;
 
-static void       peas_plugin_loader_iface_init             (gpointer                g_iface,
-                                                             gpointer                iface_data);
 static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
                                                              const gchar            *module_path);
 
 /* We retreive this to check for correct class hierarchy */
 static PyTypeObject *PyPeasPlugin_Type;
 
-PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderPython,
-                                  peas_plugin_loader_python,
-                                  G_TYPE_OBJECT,
-                                  peas_plugin_loader_iface_init);
-
+PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python);
 
 static PyObject *
 find_python_plugin_type (PeasPluginInfo *info,
@@ -175,15 +169,9 @@ add_python_info (PeasPluginLoaderPython *loader,
   return new_plugin_from_info (loader, info);
 }
 
-static const gchar *
-peas_plugin_loader_iface_get_id (void)
-{
-  return "Python";
-}
-
 static void
-peas_plugin_loader_iface_add_module_directory (PeasPluginLoader *loader,
-                                               const gchar      *module_dir)
+peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
+                                                const gchar      *module_dir)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
 
@@ -192,8 +180,8 @@ peas_plugin_loader_iface_add_module_directory (PeasPluginLoader *loader,
 }
 
 static PeasPlugin *
-peas_plugin_loader_iface_load (PeasPluginLoader *loader,
-                               PeasPluginInfo   *info)
+peas_plugin_loader_python_load (PeasPluginLoader *loader,
+                                PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *main_module, *main_locals, *pytype;
@@ -259,8 +247,8 @@ peas_plugin_loader_iface_load (PeasPluginLoader *loader,
 }
 
 static void
-peas_plugin_loader_iface_unload (PeasPluginLoader *loader,
-                                 PeasPluginInfo   *info)
+peas_plugin_loader_python_unload (PeasPluginLoader *loader,
+                                  PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PythonInfo *pyinfo;
@@ -289,7 +277,7 @@ run_gc (PeasPluginLoaderPython *loader)
 }
 
 static void
-peas_plugin_loader_iface_garbage_collect (PeasPluginLoader *loader)
+peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader;
 
@@ -308,19 +296,6 @@ peas_plugin_loader_iface_garbage_collect (PeasPluginLoader *loader)
 
   if (pyloader->priv->idle_gc == 0)
     pyloader->priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
-}
-
-static void
-peas_plugin_loader_iface_init (gpointer g_iface,
-                               gpointer iface_data)
-{
-  PeasPluginLoaderInterface *iface = (PeasPluginLoaderInterface *) g_iface;
-
-  iface->get_id = peas_plugin_loader_iface_get_id;
-  iface->add_module_directory = peas_plugin_loader_iface_add_module_directory;
-  iface->load = peas_plugin_loader_iface_load;
-  iface->unload = peas_plugin_loader_iface_unload;
-  iface->garbage_collect = peas_plugin_loader_iface_garbage_collect;
 }
 
 static void
@@ -657,8 +632,14 @@ static void
 peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  PeasPluginLoaderClass *loader_class = PEAS_PLUGIN_LOADER_CLASS (klass);
 
   object_class->finalize = peas_plugin_loader_python_finalize;
+
+  loader_class->add_module_directory = peas_plugin_loader_python_add_module_directory;
+  loader_class->load = peas_plugin_loader_python_load;
+  loader_class->unload = peas_plugin_loader_python_unload;
+  loader_class->garbage_collect = peas_plugin_loader_python_garbage_collect;
 
   g_type_class_add_private (object_class,
                             sizeof (PeasPluginLoaderPythonPrivate));

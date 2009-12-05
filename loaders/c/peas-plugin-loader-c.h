@@ -38,13 +38,13 @@ typedef struct _PeasPluginLoaderCClass    PeasPluginLoaderCClass;
 typedef struct _PeasPluginLoaderCPrivate  PeasPluginLoaderCPrivate;
 
 struct _PeasPluginLoaderC {
-  GObject parent;
+  PeasPluginLoader parent;
 
   PeasPluginLoaderCPrivate *priv;
 };
 
 struct _PeasPluginLoaderCClass {
-  GObjectClass parent_class;
+  PeasPluginLoaderClass parent_class;
 };
 
 GType                   peas_plugin_loader_c_get_type (void) G_GNUC_CONST;

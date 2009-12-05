@@ -28,30 +28,18 @@ struct _PeasPluginLoaderCPrivate
   GHashTable *loaded_plugins;
 };
 
-static void peas_plugin_loader_iface_init (gpointer g_iface,
-                                           gpointer iface_data);
-
-PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderC,
-                                  peas_plugin_loader_c,
-                                  G_TYPE_OBJECT,
-                                  peas_plugin_loader_iface_init);
-
-static const gchar *
-peas_plugin_loader_iface_get_id (void)
-{
-  return "C";
-}
+PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderC, peas_plugin_loader_c);
 
 void
-peas_plugin_loader_iface_add_module_directory (PeasPluginLoader *loader,
-                                               const gchar      *module_dir)
+peas_plugin_loader_c_add_module_directory (PeasPluginLoader *loader,
+                                           const gchar      *module_dir)
 {
   /* This is a no-op for C modules... */
 }
 
 static PeasPlugin *
-peas_plugin_loader_iface_load (PeasPluginLoader * loader,
-                               PeasPluginInfo   *info)
+peas_plugin_loader_c_load (PeasPluginLoader * loader,
+                           PeasPluginInfo   *info)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
@@ -103,8 +91,8 @@ peas_plugin_loader_iface_load (PeasPluginLoader * loader,
 }
 
 static void
-peas_plugin_loader_iface_unload (PeasPluginLoader *loader,
-                                 PeasPluginInfo   *info)
+peas_plugin_loader_c_unload (PeasPluginLoader *loader,
+                             PeasPluginInfo   *info)
 {
   /* this is a no-op, since the type module will be properly unused as
      the last reference to the plugin dies. When the plugin is activated
@@ -112,15 +100,15 @@ peas_plugin_loader_iface_unload (PeasPluginLoader *loader,
 }
 
 static void
-peas_plugin_loader_iface_init (gpointer g_iface,
-                               gpointer iface_data)
+peas_plugin_loader_c_init (PeasPluginLoaderC *self)
 {
-  PeasPluginLoaderInterface *iface = (PeasPluginLoaderInterface *) g_iface;
+  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
+                                            PEAS_TYPE_PLUGIN_LOADER_C,
+                                            PeasPluginLoaderCPrivate);
 
-  iface->get_id = peas_plugin_loader_iface_get_id;
-  iface->add_module_directory = peas_plugin_loader_iface_add_module_directory;
-  iface->load = peas_plugin_loader_iface_load;
-  iface->unload = peas_plugin_loader_iface_unload;
+  /* loaded_plugins maps PeasPluginInfo to a PeasObjectModule */
+  self->priv->loaded_plugins = g_hash_table_new (g_direct_hash,
+                                                 g_direct_equal);
 }
 
 static void
@@ -157,8 +145,13 @@ static void
 peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  PeasPluginLoaderClass *loader_class = PEAS_PLUGIN_LOADER_CLASS (klass);
 
   object_class->finalize = peas_plugin_loader_c_finalize;
+
+  loader_class->add_module_directory = peas_plugin_loader_c_add_module_directory;
+  loader_class->load = peas_plugin_loader_c_load;
+  loader_class->unload = peas_plugin_loader_c_unload;
 
   g_type_class_add_private (object_class, sizeof (PeasPluginLoaderCPrivate));
 }
@@ -166,18 +159,6 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
 static void
 peas_plugin_loader_c_class_finalize (PeasPluginLoaderCClass * klass)
 {
-}
-
-static void
-peas_plugin_loader_c_init (PeasPluginLoaderC *self)
-{
-  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
-                                            PEAS_TYPE_PLUGIN_LOADER_C,
-                                            PeasPluginLoaderCPrivate);
-
-  /* loaded_plugins maps PeasPluginInfo to a PeasObjectModule */
-  self->priv->loaded_plugins = g_hash_table_new (g_direct_hash,
-                                                 g_direct_equal);
 }
 
 PeasPluginLoaderC *

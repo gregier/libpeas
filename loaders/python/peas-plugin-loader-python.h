@@ -40,13 +40,13 @@ typedef struct _PeasPluginLoaderPythonClass        PeasPluginLoaderPythonClass;
 typedef struct _PeasPluginLoaderPythonPrivate      PeasPluginLoaderPythonPrivate;
 
 struct _PeasPluginLoaderPython {
-  GObject parent;
+  PeasPluginLoader parent;
 
   PeasPluginLoaderPythonPrivate *priv;
 };
 
 struct _PeasPluginLoaderPythonClass {
-  GObjectClass parent_class;
+  PeasPluginLoaderClass parent_class;
 };
 
 GType                   peas_plugin_loader_python_get_type  (void) G_GNUC_CONST;

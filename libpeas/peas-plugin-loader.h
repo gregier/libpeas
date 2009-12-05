@@ -30,17 +30,20 @@ G_BEGIN_DECLS
 
 #define PEAS_TYPE_PLUGIN_LOADER                (peas_plugin_loader_get_type ())
 #define PEAS_PLUGIN_LOADER(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_PLUGIN_LOADER, PeasPluginLoader))
+#define PEAS_PLUGIN_LOADER_CLASS(klass)        (G_TYPE_CHECK_CLASS_CAST((klass), PEAS_TYPE_PLUGIN_LOADER, PeasPluginLoaderClass))
 #define PEAS_IS_PLUGIN_LOADER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_PLUGIN_LOADER))
-#define PEAS_PLUGIN_LOADER_GET_INTERFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), PEAS_TYPE_PLUGIN_LOADER, PeasPluginLoaderInterface))
+#define PEAS_IS_PLUGIN_LOADER_CLASS(klass)     (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_LOADER))
+#define PEAS_PLUGIN_LOADER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_PLUGIN_LOADER, PeasPluginLoaderClass))
 
-typedef struct _PeasPluginLoader          PeasPluginLoader;  /* dummy object */
-typedef struct _PeasPluginLoaderInterface PeasPluginLoaderInterface;
+typedef struct _PeasPluginLoader      PeasPluginLoader;
+typedef struct _PeasPluginLoaderClass PeasPluginLoaderClass;
 
-struct _PeasPluginLoaderInterface
-{
-  GTypeInterface parent;
+struct _PeasPluginLoader {
+  GObject parent;
+};
 
-  const gchar  *(*get_id) (void);
+struct _PeasPluginLoaderClass {
+  GObjectClass parent;
 
   void          (*add_module_directory)   (PeasPluginLoader *loader,
                                            const gchar      *module_dir);
@@ -55,8 +58,6 @@ struct _PeasPluginLoaderInterface
 
 GType         peas_plugin_loader_get_type             (void);
 
-const gchar  *peas_plugin_loader_type_get_id          (GType type);
-
 void          peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
                                                        const gchar      *module_dir);
 
@@ -67,16 +68,14 @@ void          peas_plugin_loader_unload               (PeasPluginLoader *loader,
 void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader);
 
 /**
- * PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name, PARENT_TYPE, loader_interface_init):
+ * PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name):
  *
  * Utility macro used to register plugin loaders.
  */
-#define PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name, PARENT_TYPE, loader_iface_init) \
-        G_DEFINE_DYNAMIC_TYPE_EXTENDED (PluginLoaderName,                    \
-                                        plugin_loader_name,                  \
-                                        PARENT_TYPE,                         \
-                                        0,                                   \
-                                        G_IMPLEMENT_INTERFACE(PEAS_TYPE_PLUGIN_LOADER, loader_iface_init)); \
+#define PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name) \
+        G_DEFINE_DYNAMIC_TYPE (PluginLoaderName,                             \
+                               plugin_loader_name,                           \
+                               PEAS_TYPE_PLUGIN_LOADER);                     \
                                                                              \
 G_MODULE_EXPORT GType                                                        \
 register_peas_plugin_loader (GTypeModule *type_module)                       \
