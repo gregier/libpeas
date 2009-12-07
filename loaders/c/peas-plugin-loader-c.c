@@ -30,7 +30,7 @@ struct _PeasPluginLoaderCPrivate
 
 PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderC, peas_plugin_loader_c);
 
-void
+static void
 peas_plugin_loader_c_add_module_directory (PeasPluginLoader *loader,
                                            const gchar      *module_dir)
 {
@@ -159,12 +159,4 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
 static void
 peas_plugin_loader_c_class_finalize (PeasPluginLoaderCClass * klass)
 {
-}
-
-PeasPluginLoaderC *
-peas_plugin_loader_c_new ()
-{
-  GObject *loader = g_object_new (PEAS_TYPE_PLUGIN_LOADER_C, NULL);
-
-  return PEAS_PLUGIN_LOADER_C (loader);
 }

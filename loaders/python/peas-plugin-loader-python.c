@@ -649,11 +649,3 @@ static void
 peas_plugin_loader_python_class_finalize (PeasPluginLoaderPythonClass *klass)
 {
 }
-
-PeasPluginLoaderPython *
-peas_plugin_loader_python_new ()
-{
-  GObject *loader = g_object_new (PEAS_TYPE_PLUGIN_LOADER_PYTHON, NULL);
-
-  return PEAS_PLUGIN_LOADER_PYTHON (loader);
-}

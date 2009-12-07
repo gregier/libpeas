@@ -48,7 +48,6 @@ struct _PeasPluginLoaderCClass {
 };
 
 GType                   peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
-PeasPluginLoaderC      *peas_plugin_loader_c_new      (void);
 
 /* All the loaders must implement this function */
 G_MODULE_EXPORT GType   register_peas_plugin_loader   (GTypeModule *module);
