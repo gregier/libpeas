@@ -4,7 +4,9 @@ loaderdir = $(libdir)/libpeas-2.0/loaders
 
 INCLUDES = \
 	-I$(top_srcdir)			\
-	$(PEAS_CFLAGS)
+	$(PEAS_CFLAGS)			\
+	$(WARN_CFLAGS)			\
+	$(DISABLE_DEPRECATED_CFLAGS)
 
 loader_LTLIBRARIES = libcloader.la
 
