@@ -315,7 +315,9 @@ echo "
 
 Configuration:
 
-	Source code location:	${srcdir}
-	Compiler:		${CC}
-	Python support:		${enable_python}
+        Source code location          : ${srcdir}
+        Compiler                      : ${CC}
+        Installation prefix           : ${prefix}
+        GObject Introspection support : ${found_introspection}
+        Python support                : ${enable_python}
 "
