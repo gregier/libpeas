@@ -143,6 +143,51 @@ fi
 
 AM_CONDITIONAL([ENABLE_INTROSPECTION],[test "x$found_introspection" = "xyes"])
 
+dnl ================================================================
+dnl Seed Javascript Engine
+dnl ================================================================
+
+SEED_REQUIRED=2.28.0
+
+AC_ARG_ENABLE(seed,
+	      AC_HELP_STRING([--enable-seed],[Enable Seed support]),
+	      [enable_seed=$enableval],
+	      [enable_seed=auto])
+
+AC_MSG_CHECKING([for Seed JS availability.])
+
+if test "x$enable_seed" = "xno"; then
+	found_seed="no (disabled, use --enable-seed to enable)"
+elif test "x$found_introspection" != "xyes"; then
+	found_seed="no (disabled, enable introspection first)"
+elif test "x$enable_seed" = "xyes"; then
+	if test "$found_introspection" != "yes"; then
+		AC_MSG_ERROR([GObject introspection support must be enabled for Seed support])
+	fi
+
+	PKG_CHECK_EXISTS([seed],,
+			 AC_MSG_ERROR([seed is not installed]))
+	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
+			 [found_seed=yes],
+			 AC_MSG_ERROR([You need to have seed >= $1 installed to build libpeas]))
+else
+	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
+			 [found_seed=yes],
+			 [found_seed=no])
+fi
+
+AC_MSG_RESULT([$found_seed])
+
+if test "$found_seed" = "yes"; then
+	SEED_CFLAGS=`$PKG_CONFIG --cflags seed`
+	SEED_LIBS=`$PKG_CONFIG --libs seed`
+	AC_SUBST(SEED_CFLAGS)
+	AC_SUBST(SEED_LIBS)
+
+	AC_DEFINE(ENABLE_SEED,1,[Define to compile with Seed support])
+fi
+
+AM_CONDITIONAL([ENABLE_SEED],[test "x$found_seed" = "xyes"])
 
 dnl ================================================================
 dnl Python
@@ -298,6 +343,7 @@ loaders/Makefile
 loaders/c/Makefile
 loaders/python/Makefile
 loaders/python/bindings/Makefile
+loaders/seed/Makefile
 data/Makefile
 data/libpeas-2.0.pc
 data/libpeasui-2.0.pc
@@ -306,6 +352,7 @@ peas-demo/Makefile
 peas-demo/plugins/Makefile
 peas-demo/plugins/helloworld/Makefile
 peas-demo/plugins/pythonhello/Makefile
+peas-demo/plugins/seedhello/Makefile
 po/Makefile.in
 ])
 
@@ -319,5 +366,6 @@ Configuration:
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
         GObject Introspection support : ${found_introspection}
+        Seed JS support               : ${found_seed}
         Python support                : ${enable_python}
 "

@@ -60,7 +60,7 @@ Peas-2.0.gir: $(G_IR_SCANNER) libpeas-2.0.la Makefile
 		-o $@
 
 Peas-2.0.typelib: $(gir_DATA) $(G_IR_COMPILER)
-	$(AM_V_GEN) $(G_IR_COMPILER) $<	-o $@ --shared-library=libpeas.la
+	$(AM_V_GEN) $(G_IR_COMPILER) $<	-o $@ --shared-library=libpeas-2.0
 
 CLEANFILES = \
 	$(gir_DATA)		\
