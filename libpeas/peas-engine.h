@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 
 /**
  * PeasEngine:
+ * @parent: the parent object.
  *
  * Engine at the heart of the Peas plugin system.
  */

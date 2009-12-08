@@ -4,7 +4,6 @@
 PeasEngine
 peas_engine_new
 peas_engine_garbage_collect
-peas_engine_add_plugin_directory
 peas_engine_rescan_plugins
 peas_engine_get_plugin_list
 peas_engine_get_active_plugins
@@ -31,7 +30,7 @@ PEAS_ENGINE_GET_CLASS
 <TITLE>PeasPlugin</TITLE>
 PeasPlugin
 PeasFunc
-peas_plugin_get_install_dir
+peas_plugin_get_info
 peas_plugin_get_data_dir
 peas_plugin_activate
 peas_plugin_deactivate

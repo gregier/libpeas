@@ -297,6 +297,8 @@ peas_plugin_info_is_configurable (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the module name.
+ *
+ * Returns: the module name.
  */
 const gchar *
 peas_plugin_info_get_module_name (PeasPluginInfo *info)
@@ -311,6 +313,8 @@ peas_plugin_info_get_module_name (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the module directory.
+ *
+ * Returns: the module directory.
  */
 const gchar *
 peas_plugin_info_get_module_dir (PeasPluginInfo *info)
@@ -325,6 +329,8 @@ peas_plugin_info_get_module_dir (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the data dir of the plugin.
+ *
+ * Returns: the plugin's data dir.
  */
 const gchar *
 peas_plugin_info_get_data_dir (PeasPluginInfo *info)
@@ -339,6 +345,8 @@ peas_plugin_info_get_data_dir (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the name of the plugin.
+ *
+ * Returns: the plugin's name.
  */
 const gchar *
 peas_plugin_info_get_name (PeasPluginInfo *info)
@@ -353,6 +361,8 @@ peas_plugin_info_get_name (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the description of the plugin.
+ *
+ * Returns: the plugin's description.
  */
 const gchar *
 peas_plugin_info_get_description (PeasPluginInfo *info)
@@ -367,6 +377,8 @@ peas_plugin_info_get_description (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the icon name of the plugin.
+ *
+ * Returns: the plugin's icon name.
  */
 const gchar *
 peas_plugin_info_get_icon_name (PeasPluginInfo *info)
@@ -388,6 +400,8 @@ peas_plugin_info_get_icon_name (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets a NULL-terminated array of strings with the authors of the plugin.
+ *
+ * Returns: the plugin's author list.
  */
 const gchar **
 peas_plugin_info_get_authors (PeasPluginInfo *info)
@@ -402,6 +416,8 @@ peas_plugin_info_get_authors (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the website of the plugin.
+ *
+ * Returns: the plugin's associated website.
  */
 const gchar *
 peas_plugin_info_get_website (PeasPluginInfo *info)
@@ -416,6 +432,8 @@ peas_plugin_info_get_website (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the copyright of the plugin.
+ *
+ * Returns: the plugin's copyright information.
  */
 const gchar *
 peas_plugin_info_get_copyright (PeasPluginInfo *info)
@@ -430,6 +448,8 @@ peas_plugin_info_get_copyright (PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the version of the plugin.
+ *
+ * Returns: the plugin's version.
  */
 const gchar *
 peas_plugin_info_get_version (PeasPluginInfo *info)

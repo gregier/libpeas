@@ -44,6 +44,7 @@ G_BEGIN_DECLS
 
 /**
  * PeasPlugin:
+ * @parent: the parent object.
  *
  * Base class for plugins.
  */
@@ -63,6 +64,8 @@ typedef void (*PeasFunc) (PeasPlugin *plugin,
 
 struct _PeasPlugin {
   GObject parent;
+
+  /*< private >*/
   PeasPluginPrivate *priv;
 };
 

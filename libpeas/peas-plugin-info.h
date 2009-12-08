@@ -30,6 +30,11 @@ G_BEGIN_DECLS
 #define PEAS_TYPE_PLUGIN_INFO   (peas_plugin_info_get_type ())
 #define PEAS_PLUGIN_INFO(obj)   ((PeasPluginInfo *) (obj))
 
+/**
+ * PeasPluginInfo:
+ *
+ * Boxed type for the information relative to a plugin.
+ */
 typedef struct _PeasPluginInfo PeasPluginInfo;
 
 GType         peas_plugin_info_get_type         (void) G_GNUC_CONST;

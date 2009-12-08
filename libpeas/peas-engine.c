@@ -415,7 +415,7 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                         G_PARAM_STATIC_STRINGS));
 
   /**
-   * PeasEngine:base-module-dir:
+   * PeasEngine::base-module-dir:
    *
    * The base application directory for binding modules lookup.
    *
@@ -610,7 +610,7 @@ compare_plugin_info_and_name (PeasPluginInfo *info,
  * @engine: A #PeasEngine.
  * @plugin_name: A plugin name.
  *
- * Returns the #PeasPluginInfo corresponding with a given plugin name.
+ * Returns: the #PeasPluginInfo corresponding with a given plugin name.
  */
 PeasPluginInfo *
 peas_engine_get_plugin_info (PeasEngine  *engine,
@@ -678,6 +678,8 @@ peas_engine_activate_plugin_real (PeasEngine     *engine,
  *
  * Activates the plugin corresponding to @info on all the objects registered
  * against @engine, loading it if it's not already available.
+ *
+ * Returns: whether the plugin has been successfuly activated.
  */
 gboolean
 peas_engine_activate_plugin (PeasEngine     *engine,
@@ -731,6 +733,8 @@ peas_engine_deactivate_plugin_real (PeasEngine     *engine,
  * Deactivates the plugin corresponding to @info on all the objects registered
  * against @engine, eventually unloading it when it has been completely
  * deactivated.
+ *
+ * Returns: whether the plugin has been successfuly deactivated.
  */
 gboolean
 peas_engine_deactivate_plugin (PeasEngine     *engine,
