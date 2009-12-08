@@ -1,5 +1,4 @@
-# time plugin
-plugindir = $(prefix)/lib/peas-demo/plugins
+plugindir = $(prefix)/lib/peas-demo/plugins/helloworld
 
 INCLUDES = \
 	-I$(top_srcdir) 	\

@@ -1,5 +1,4 @@
-# time plugin
-plugindir = $(prefix)/lib/peas-demo/plugins
+plugindir = $(prefix)/lib/peas-demo/plugins/pythonhello
 
 plugin_PYTHON = \
 	pythonhello.py

@@ -115,21 +115,19 @@ load_plugin_info (PeasEngine  *engine,
 
 static void
 load_dir_real (PeasEngine  *engine,
+               const gchar *extension,
                const gchar *module_dir,
-               const gchar *data_dir)
+               const gchar *data_dir,
+               unsigned int recursions)
 {
   GError *error = NULL;
   GDir *d;
   const gchar *dirent;
-  gchar *plugin_extension;
 
-  /* Compute the extension of the plugin files. */
-  plugin_extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
-  g_strdown (plugin_extension);
-
-  g_debug ("Loading %s/*.%s...", module_dir, plugin_extension);
+  g_debug ("Loading %s/*%s...", module_dir, extension);
 
   d = g_dir_open (module_dir, 0, &error);
+
   if (!d)
     {
       g_warning ("%s", error->message);
@@ -139,20 +137,18 @@ load_dir_real (PeasEngine  *engine,
 
   while ((dirent = g_dir_read_name (d)))
     {
-      gchar *filename;
+      gchar *filename = g_build_filename (module_dir, dirent, NULL);
 
-      if (!g_str_has_suffix (dirent, plugin_extension))
-        continue;
+      if (g_str_has_suffix (dirent, extension))
+        load_plugin_info (engine, filename, module_dir, data_dir);
 
-      filename = g_build_filename (module_dir, dirent, NULL);
-
-      load_plugin_info (engine, filename, module_dir, data_dir);
+      else if (recursions > 0 && g_file_test (filename, G_FILE_TEST_IS_DIR))
+        load_dir_real (engine, extension, filename, data_dir, recursions - 1);
 
       g_free (filename);
     }
 
   g_dir_close (d);
-  g_free (plugin_extension);
 }
 
 /**
@@ -168,14 +164,22 @@ load_dir_real (PeasEngine  *engine,
 void
 peas_engine_rescan_plugins (PeasEngine *engine)
 {
+  gchar *extension;
   guint i;
   gchar **sp;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
+  /* Compute the extension of the plugin files. */
+  extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
+  g_strdown (extension);
+
+  /* Go and read everything from the provided search paths */
   sp = engine->priv->search_paths;
   for (i = 0; sp[i] != NULL; i += 2)
-    load_dir_real (engine, sp[i], sp[i + 1]);
+    load_dir_real (engine, extension, sp[i], sp[i + 1], 1);
+
+  g_free (extension);
 }
 
 static guint
