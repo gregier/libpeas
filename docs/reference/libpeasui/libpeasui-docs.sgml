@@ -3,26 +3,20 @@
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
   <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
   <bookinfo>
-    <title>libpeasui Reference Manual</title>
+    <title>Peas UI Reference Manual</title>
     <releaseinfo>
-      for libpeasui [VERSION]
-      The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://[SERVER]/libpeasui/index.html">http://[SERVER]/libpeasui/</ulink>.
+      for libpeasui &version;
     </releaseinfo>
   </bookinfo>
 
-  <chapter>
-    <title>[Insert title here]</title>
-        <xi:include href="xml/peas-plugin-manager.xml"/>
-
-  </chapter>
-  <chapter id="object-tree">
-    <title>Object Hierarchy</title>
-     <xi:include href="xml/tree_index.sgml"/>
-  </chapter>
+  <part label="I">
+    <title>API Reference</title>
+    <xi:include href="xml/peas-ui-plugin-manager.xml"/>
+  </part>
   <index id="api-index-full">
     <title>API Index</title>
     <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>

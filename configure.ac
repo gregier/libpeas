@@ -338,6 +338,7 @@ docs/reference/Makefile
 docs/reference/libpeas/Makefile
 docs/reference/libpeas/version.xml
 docs/reference/libpeasui/Makefile
+docs/reference/libpeasui/version.xml
 libpeas/Makefile
 libpeasui/Makefile
 loaders/Makefile
