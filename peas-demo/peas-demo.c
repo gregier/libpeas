@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 #include <libpeas/peas-engine.h>
-#include <libpeasui/peas-plugin-manager.h>
+#include <libpeasui/peas-ui-plugin-manager.h>
 
 PeasEngine *engine;
 GtkWidget *main_window;
@@ -29,7 +29,7 @@ create_plugin_manager (GtkButton *button,
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Plugin Manager");
 
-  manager = peas_plugin_manager_new (engine);
+  manager = peas_ui_plugin_manager_new (engine);
   gtk_container_add (GTK_CONTAINER (window), manager);
 
   gtk_widget_show_all (window);

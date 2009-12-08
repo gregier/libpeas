@@ -13,11 +13,11 @@ libpeasui_2_0_la_LDFLAGS = \
 
 libpeasui_2_0_la_LIBADD = $(PEAS_LIBS)
 
-INST_H_FILES =			\
-	peas-plugin-manager.h
+INST_H_FILES =				\
+	peas-ui-plugin-manager.h
 
-libpeasui_2_0_la_SOURCES = 	\
-	peas-plugin-manager.c	\
+libpeasui_2_0_la_SOURCES = 		\
+	peas-ui-plugin-manager.c	\
 	$(INST_H_FILES)
 
 headerdir = $(prefix)/include/libpeas-2.0/libpeasui

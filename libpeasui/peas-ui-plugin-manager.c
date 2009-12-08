@@ -26,12 +26,12 @@
 #endif
 
 #include <string.h>
-
 #include <glib/gi18n.h>
 
-#include "peas-plugin-manager.h"
 #include <libpeas/peas-engine.h>
 #include <libpeas/peas-plugin.h>
+
+#include "peas-ui-plugin-manager.h"
 
 #define PLUGIN_MANAGER_NAME_TITLE _("Plugin")
 #define PLUGIN_MANAGER_ACTIVE_TITLE _("Enabled")
@@ -43,7 +43,7 @@ enum {
   N_COLUMNS
 };
 
-struct _PeasPluginManagerPrivate {
+struct _PeasUIPluginManagerPrivate {
   PeasEngine *engine;
 
   GtkWidget *tree;
@@ -58,22 +58,22 @@ enum {
   PROP_ENGINE
 };
 
-G_DEFINE_TYPE (PeasPluginManager, peas_plugin_manager, GTK_TYPE_VBOX);
+G_DEFINE_TYPE (PeasUIPluginManager, peas_ui_plugin_manager, GTK_TYPE_VBOX);
 
-static PeasPluginInfo  *plugin_manager_get_selected_plugin  (PeasPluginManager *pm);
-static void             plugin_manager_toggle_active        (PeasPluginManager *pm,
-                                                             GtkTreeIter       *iter,
-                                                             GtkTreeModel      *model);
-static void             peas_plugin_manager_constructed     (GObject           *object);
-static void             peas_plugin_manager_finalize        (GObject           *object);
+static PeasPluginInfo  *plugin_manager_get_selected_plugin  (PeasUIPluginManager *pm);
+static void             plugin_manager_toggle_active        (PeasUIPluginManager *pm,
+                                                             GtkTreeIter         *iter,
+                                                             GtkTreeModel        *model);
+static void             peas_ui_plugin_manager_constructed  (GObject             *object);
+static void             peas_ui_plugin_manager_finalize     (GObject             *object);
 
 static void
-peas_plugin_manager_set_property (GObject      *object,
-                                  guint         prop_id,
-                                  const GValue *value,
-                                  GParamSpec   *pspec)
+peas_ui_plugin_manager_set_property (GObject      *object,
+                                     guint         prop_id,
+                                     const GValue *value,
+                                     GParamSpec   *pspec)
 {
-  PeasPluginManager *pm = PEAS_PLUGIN_MANAGER (object);
+  PeasUIPluginManager *pm = PEAS_UI_PLUGIN_MANAGER (object);
 
   switch (prop_id)
     {
@@ -88,12 +88,12 @@ peas_plugin_manager_set_property (GObject      *object,
 }
 
 static void
-peas_plugin_manager_get_property (GObject    *object,
-                                  guint       prop_id,
-                                  GValue     *value,
-                                  GParamSpec *pspec)
+peas_ui_plugin_manager_get_property (GObject    *object,
+                                     guint       prop_id,
+                                     GValue     *value,
+                                     GParamSpec *pspec)
 {
-  PeasPluginManager *pm = PEAS_PLUGIN_MANAGER (object);
+  PeasUIPluginManager *pm = PEAS_UI_PLUGIN_MANAGER (object);
 
   switch (prop_id)
     {
@@ -107,14 +107,14 @@ peas_plugin_manager_get_property (GObject    *object,
 }
 
 static void
-peas_plugin_manager_class_init (PeasPluginManagerClass *klass)
+peas_ui_plugin_manager_class_init (PeasUIPluginManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->set_property = peas_plugin_manager_set_property;
-  object_class->get_property = peas_plugin_manager_get_property;
-  object_class->constructed = peas_plugin_manager_constructed;
-  object_class->finalize = peas_plugin_manager_finalize;
+  object_class->set_property = peas_ui_plugin_manager_set_property;
+  object_class->get_property = peas_ui_plugin_manager_get_property;
+  object_class->constructed = peas_ui_plugin_manager_constructed;
+  object_class->finalize = peas_ui_plugin_manager_finalize;
 
   g_object_class_install_property (object_class, PROP_ENGINE,
                                    g_param_spec_object ("engine",
@@ -125,12 +125,12 @@ peas_plugin_manager_class_init (PeasPluginManagerClass *klass)
                                                         G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_STRINGS));
 
-  g_type_class_add_private (object_class, sizeof (PeasPluginManagerPrivate));
+  g_type_class_add_private (object_class, sizeof (PeasUIPluginManagerPrivate));
 }
 
 static void
-about_button_cb (GtkWidget         *button,
-                 PeasPluginManager *pm)
+about_button_cb (GtkWidget           *button,
+                 PeasUIPluginManager *pm)
 {
   PeasPluginInfo *info;
 
@@ -169,8 +169,8 @@ about_button_cb (GtkWidget         *button,
 }
 
 static void
-configure_button_cb (GtkWidget         *button,
-                     PeasPluginManager *pm)
+configure_button_cb (GtkWidget           *button,
+                     PeasUIPluginManager *pm)
 {
   PeasPluginInfo *info;
   GtkWindow *toplevel;
@@ -240,7 +240,7 @@ plugin_manager_view_icon_cell_cb (GtkTreeViewColumn *tree_column,
 static void
 active_toggled_cb (GtkCellRendererToggle *cell,
                    gchar                 *path_str,
-                   PeasPluginManager     *pm)
+                   PeasUIPluginManager   *pm)
 {
   GtkTreeIter iter;
   GtkTreePath *path;
@@ -263,7 +263,7 @@ static void
 cursor_changed_cb (GtkTreeView *view,
                    gpointer     data)
 {
-  PeasPluginManager *pm = data;
+  PeasUIPluginManager *pm = data;
   PeasPluginInfo *info;
 
   info = plugin_manager_get_selected_plugin (pm);
@@ -280,7 +280,7 @@ row_activated_cb (GtkTreeView       *tree_view,
                   GtkTreeViewColumn *column,
                   gpointer           data)
 {
-  PeasPluginManager *pm = data;
+  PeasUIPluginManager *pm = data;
   GtkTreeIter iter;
   GtkTreeModel *model;
 
@@ -296,7 +296,7 @@ row_activated_cb (GtkTreeView       *tree_view,
 }
 
 static void
-plugin_manager_populate_lists (PeasPluginManager *pm)
+plugin_manager_populate_lists (PeasUIPluginManager *pm)
 {
   const GList *plugins;
   GtkListStore *model;
@@ -341,10 +341,10 @@ plugin_manager_populate_lists (PeasPluginManager *pm)
 }
 
 static gboolean
-plugin_manager_set_active (PeasPluginManager *pm,
-                           GtkTreeIter       *iter,
-                           GtkTreeModel      *model,
-                           gboolean           active)
+plugin_manager_set_active (PeasUIPluginManager *pm,
+                           GtkTreeIter         *iter,
+                           GtkTreeModel        *model,
+                           gboolean             active)
 {
   PeasPluginInfo *info;
   gboolean res = TRUE;
@@ -370,9 +370,9 @@ plugin_manager_set_active (PeasPluginManager *pm,
 }
 
 static void
-plugin_manager_toggle_active (PeasPluginManager *pm,
-                              GtkTreeIter       *iter,
-                              GtkTreeModel      *model)
+plugin_manager_toggle_active (PeasUIPluginManager *pm,
+                              GtkTreeIter         *iter,
+                              GtkTreeModel        *model)
 {
   gboolean active;
 
@@ -384,7 +384,7 @@ plugin_manager_toggle_active (PeasPluginManager *pm,
 }
 
 static PeasPluginInfo *
-plugin_manager_get_selected_plugin (PeasPluginManager *pm)
+plugin_manager_get_selected_plugin (PeasUIPluginManager *pm)
 {
   PeasPluginInfo *info = NULL;
   GtkTreeModel *model;
@@ -404,7 +404,7 @@ plugin_manager_get_selected_plugin (PeasPluginManager *pm)
 }
 
 static void
-plugin_manager_set_active_all (PeasPluginManager *pm,
+plugin_manager_set_active_all (PeasUIPluginManager *pm,
                                gboolean           active)
 {
   GtkTreeModel *model;
@@ -462,8 +462,8 @@ name_search_cb (GtkTreeModel *model,
 }
 
 static void
-enable_plugin_menu_cb (GtkMenu           *menu,
-                       PeasPluginManager *pm)
+enable_plugin_menu_cb (GtkMenu             *menu,
+                       PeasUIPluginManager *pm)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -480,21 +480,21 @@ enable_plugin_menu_cb (GtkMenu           *menu,
 }
 
 static void
-enable_all_menu_cb (GtkMenu           *menu,
-                    PeasPluginManager *pm)
+enable_all_menu_cb (GtkMenu             *menu,
+                    PeasUIPluginManager *pm)
 {
   plugin_manager_set_active_all (pm, TRUE);
 }
 
 static void
-disable_all_menu_cb (GtkMenu           *menu,
-                     PeasPluginManager *pm)
+disable_all_menu_cb (GtkMenu             *menu,
+                     PeasUIPluginManager *pm)
 {
   plugin_manager_set_active_all (pm, FALSE);
 }
 
 static GtkWidget *
-create_tree_popup_menu (PeasPluginManager *pm)
+create_tree_popup_menu (PeasUIPluginManager *pm)
 {
   GtkWidget *menu;
   GtkWidget *item;
@@ -543,8 +543,8 @@ create_tree_popup_menu (PeasPluginManager *pm)
 }
 
 static void
-tree_popup_menu_detach (PeasPluginManager *pm,
-                        GtkMenu           *menu)
+tree_popup_menu_detach (PeasUIPluginManager *pm,
+                        GtkMenu             *menu)
 {
   pm->priv->popup_menu = NULL;
 }
@@ -612,9 +612,9 @@ menu_position_under_tree_view (GtkMenu  *menu,
 }
 
 static void
-show_tree_popup_menu (GtkTreeView       *tree,
-                      PeasPluginManager *pm,
-                      GdkEventButton    *event)
+show_tree_popup_menu (GtkTreeView         *tree,
+                      PeasUIPluginManager *pm,
+                      GdkEventButton      *event)
 {
   if (pm->priv->popup_menu)
     gtk_widget_destroy (pm->priv->popup_menu);
@@ -642,9 +642,9 @@ show_tree_popup_menu (GtkTreeView       *tree,
 }
 
 static gboolean
-button_press_event_cb (GtkWidget         *tree,
-                       GdkEventButton    *event,
-                       PeasPluginManager *pm)
+button_press_event_cb (GtkWidget           *tree,
+                       GdkEventButton      *event,
+                       PeasUIPluginManager *pm)
 {
   /* We want the treeview selection to be updated before showing the menu.
    * This code is evil, thanks to Federico Mena Quintero's black magic.
@@ -674,8 +674,8 @@ button_press_event_cb (GtkWidget         *tree,
 }
 
 static gboolean
-popup_menu_cb (GtkTreeView       *tree,
-               PeasPluginManager *pm)
+popup_menu_cb (GtkTreeView         *tree,
+               PeasUIPluginManager *pm)
 {
   show_tree_popup_menu (tree, pm, NULL);
   return TRUE;
@@ -697,7 +697,7 @@ model_name_sort_func (GtkTreeModel *model,
 }
 
 static void
-plugin_manager_construct_tree (PeasPluginManager *pm)
+plugin_manager_construct_tree (PeasUIPluginManager *pm)
 {
   GtkTreeViewColumn *column;
   GtkCellRenderer *cell;
@@ -768,9 +768,9 @@ plugin_manager_construct_tree (PeasPluginManager *pm)
 }
 
 static void
-plugin_toggled_cb (PeasEngine        *engine,
-                   PeasPluginInfo    *info,
-                   PeasPluginManager *pm)
+plugin_toggled_cb (PeasEngine          *engine,
+                   PeasPluginInfo      *info,
+                   PeasUIPluginManager *pm)
 {
   GtkTreeSelection *selection;
   GtkTreeModel *model;
@@ -802,7 +802,7 @@ plugin_toggled_cb (PeasEngine        *engine,
 
   if (!info_found)
     {
-      g_warning ("PeasPluginManager: plugin '%s' not found in the tree model",
+      g_warning ("PeasUIPluginManager: plugin '%s' not found in the tree model",
                  peas_plugin_info_get_name (info));
       return;
     }
@@ -812,13 +812,13 @@ plugin_toggled_cb (PeasEngine        *engine,
 }
 
 static void
-peas_plugin_manager_init (PeasPluginManager *pm)
+peas_ui_plugin_manager_init (PeasUIPluginManager *pm)
 {
   GtkWidget *label;
   GtkWidget *viewport;
   GtkWidget *hbuttonbox;
 
-  pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm, PEAS_TYPE_PLUGIN_MANAGER, PeasPluginManagerPrivate);
+  pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm, PEAS_UI_TYPE_PLUGIN_MANAGER, PeasUIPluginManagerPrivate);
 
   gtk_box_set_spacing (GTK_BOX (pm), 6);
 
@@ -862,9 +862,9 @@ peas_plugin_manager_init (PeasPluginManager *pm)
 }
 
 static void
-peas_plugin_manager_constructed (GObject *object)
+peas_ui_plugin_manager_constructed (GObject *object)
 {
-  PeasPluginManager *pm = PEAS_PLUGIN_MANAGER (object);
+  PeasUIPluginManager *pm = PEAS_UI_PLUGIN_MANAGER (object);
 
   /* When we create the manager, we always rescan the plugins directory */
   peas_engine_rescan_plugins (pm->priv->engine);
@@ -890,9 +890,9 @@ peas_plugin_manager_constructed (GObject *object)
 }
 
 static void
-peas_plugin_manager_finalize (GObject *object)
+peas_ui_plugin_manager_finalize (GObject *object)
 {
-  PeasPluginManager *pm = PEAS_PLUGIN_MANAGER (object);
+  PeasUIPluginManager *pm = PEAS_UI_PLUGIN_MANAGER (object);
 
   g_signal_handlers_disconnect_by_func (pm->priv->engine,
                                         plugin_toggled_cb, pm);
@@ -902,20 +902,21 @@ peas_plugin_manager_finalize (GObject *object)
 
   g_object_unref (pm->priv->engine);
 
-  G_OBJECT_CLASS (peas_plugin_manager_parent_class)->finalize (object);
+  G_OBJECT_CLASS (peas_ui_plugin_manager_parent_class)->finalize (object);
 }
 
 /**
- * peas_plugin_manager_new:
+ * peas_ui_plugin_manager_new:
  * @engine: a #PeasEngine
  *
  * Creates a new manager with the given engine.
  *
- * Returns: the new #PeasPluginManager
+ * Returns: the new #PeasUIPluginManager
  */
 GtkWidget *
-peas_plugin_manager_new (PeasEngine *engine)
+peas_ui_plugin_manager_new (PeasEngine *engine)
 {
-  return
-    GTK_WIDGET (g_object_new (PEAS_TYPE_PLUGIN_MANAGER, "engine", engine, NULL));
+  return GTK_WIDGET (g_object_new (PEAS_UI_TYPE_PLUGIN_MANAGER,
+                                   "engine", engine,
+                                   NULL));
 }
