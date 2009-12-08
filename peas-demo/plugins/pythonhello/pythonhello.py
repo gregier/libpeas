@@ -15,7 +15,7 @@ class PythonHelloPlugin(libpeas.Plugin):
         window.get_child().pack_start(window._pythonhello_label)
 
     def do_deactivate(self, window):
-        print "PythonHelloPlugin.do_activate", repr(window)
+        print "PythonHelloPlugin.do_deactivate", repr(window)
         window.get_child().remove(window._pythonhello_label)
         window._pythonhello_label.destroy()
 
