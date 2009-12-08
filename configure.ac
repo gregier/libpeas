@@ -326,7 +326,7 @@ if test "x$enable_deprecations" = "xyes"; then
 fi
 
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
-LOADER_LIBTOOL_FLAGS="-module -avoid-version"
+LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex register_peas_plugin_loader"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(LOADER_LIBTOOL_FLAGS)
 

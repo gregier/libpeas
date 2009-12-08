@@ -27,7 +27,7 @@
 
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER);
 
-SeedEngine *seed = NULL;
+static SeedEngine *seed = NULL;
 
 static void
 peas_plugin_loader_seed_add_module_directory (PeasPluginLoader *loader,
