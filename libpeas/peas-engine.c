@@ -415,7 +415,7 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                         G_PARAM_STATIC_STRINGS));
 
   /**
-   * PeasEngine::base-module-dir:
+   * PeasEngine:base-module-dir:
    *
    * The base application directory for binding modules lookup.
    *
@@ -940,7 +940,7 @@ peas_engine_add_object (PeasEngine *engine,
 /**
  * peas_engine_remove_object:
  * @engine: A #PeasEngine.
- * @object: A #GObject to register.
+ * @object: A #GObject to unregister.
  *
  * Unregister an object against the #PeasEngine. The deactivate() method of
  * all the active plugins will be called on the object while he is being
