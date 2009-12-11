@@ -23,7 +23,6 @@
 #define __PEAS_ENGINE_H__
 
 #include <glib.h>
-#include <gtk/gtk.h>
 #include "peas-plugin-info.h"
 #include "peas-plugin.h"
 

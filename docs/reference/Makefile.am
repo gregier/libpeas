@@ -70,15 +70,17 @@ expand_content_files=
 # CFLAGS and LDFLAGS for compiling gtkdoc-scangobj with your library.
 # Only needed if you are using gtkdoc-scangobj to dynamically query widget
 # signals and properties.
-GTKDOC_CFLAGS=	\
+GTKDOC_CFLAGS = \
 	-I$(top_srcdir)			\
 	-I$(top_builddir)		\
-	$(PEAS_CFLAGS)
+	$(PEAS_CFLAGS)			\
+	$(PEASUI_CFLAGS)
 
-GTKDOC_LIBS=	\
+GTKDOC_LIBS = \
 	$(top_builddir)/libpeas/libpeas-2.0.la		\
 	$(top_builddir)/libpeasui/libpeasui-2.0.la	\
-	$(PEAS_LIBS)
+	$(PEAS_LIBS)					\
+	$(PEASUI_LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make

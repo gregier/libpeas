@@ -1,6 +1,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gmodule.h>
+#include <gtk/gtk.h>
 
 #include <libpeasui/peas-ui-configurable.h>
 

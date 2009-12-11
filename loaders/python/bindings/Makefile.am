@@ -37,7 +37,6 @@ libpeas.defs: $(BINDINGS_HDRS) libpeas.defs.extra
 
 libpeas.c: libpeas.defs libpeas.override
 	$(AM_V_GEN) ( $(PYGTK_CODEGEN) \
-		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
 		--override $(srcdir)/libpeas.override \
 		--prefix pypeas \
 		libpeas.defs ) > $@

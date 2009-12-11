@@ -57,7 +57,6 @@ peas_plugin_info_get_module_dir
 peas_plugin_info_get_data_dir
 peas_plugin_info_get_name
 peas_plugin_info_get_description
-peas_plugin_info_get_icon_name
 peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright
@@ -86,6 +85,7 @@ PEAS_UI_CONFIGURABLE_GET_IFACE
 <SECTION>
 <FILE>peas-ui-plugin-info</FILE>
 <TITLE>PeasPluginInfo Extension</TITLE>
+peas_ui_plugin_info_get_icon_name
 peas_ui_plugin_info_is_configurable
 peas_ui_plugin_info_create_configure_dialog
 </SECTION>
