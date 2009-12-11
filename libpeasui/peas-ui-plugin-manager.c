@@ -33,6 +33,22 @@
 
 #include "peas-ui-plugin-manager.h"
 
+/**
+ * SECTION:peas-ui-plugin-manager
+ * @short_description: Management GUI for plugins.
+ *
+ * The #PeasUIPluginManager is a widget that can be used to manage plugins,
+ * i.e. activate or deactivate them, and see some pieces of information.
+ *
+ * <inlinegraphic fileref="peas-ui-plugin-manager.png" format="PNG" />
+ *
+ * The only thing you need to do as an application writer if you wish to use
+ * the manager to configure * your plugins is to instantiate it using
+ * peas_ui_plugin_manager_new() and pack it into another widget or a window
+ * (as in the screenshot above).
+ *
+ **/
+
 #define PLUGIN_MANAGER_NAME_TITLE _("Plugin")
 #define PLUGIN_MANAGER_ACTIVE_TITLE _("Enabled")
 
@@ -907,9 +923,9 @@ peas_ui_plugin_manager_finalize (GObject *object)
 
 /**
  * peas_ui_plugin_manager_new:
- * @engine: a #PeasEngine
+ * @engine: a #PeasEngine.
  *
- * Creates a new manager with the given engine.
+ * Creates a new plugin manager for the given #PeasEngine.
  *
  * Returns: the new #PeasUIPluginManager
  */
