@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 
 m4_define(peas_major_version,  2)
-m4_define(peas_minor_version, 28)
+m4_define(peas_minor_version, 29)
 m4_define(peas_micro_version,  0)
 m4_define(peas_interface_age,  0)
 

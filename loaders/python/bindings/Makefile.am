@@ -33,18 +33,20 @@ libpeas_la_CFLAGS = 					\
 	$(AM_CFLAGS)
 
 libpeas.defs: $(BINDINGS_HDRS) libpeas.defs.extra
-	$(AM_V_GEN) ( $(PYGTK_H2DEF) -n Peas $(BINDINGS_HDRS); cat $@.extra ) > $@
+	$(AM_V_GEN) ( $(PYGTK_H2DEF) -n Peas $(BINDINGS_HDRS); cat $(srcdir)/libpeas.defs.extra ) > $@
 
 libpeas.c: libpeas.defs libpeas.override
-	$(AM_V_GEN) ( cd $(srcdir) && $(PYGTK_CODEGEN) \
+	$(AM_V_GEN) ( $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
-		--override libpeas.override \
-		--prefix pypeas $< ) > $@
+		--override $(srcdir)/libpeas.override \
+		--prefix pypeas \
+		libpeas.defs ) > $@
 
 defsdir = $(datadir)/pygtk/2.0/defs
 defs_DATA = libpeas.defs
 
 BUILT_SOURCES = \
+	libpeas.defs	\
 	libpeas.c
 
 EXTRA_DIST = \

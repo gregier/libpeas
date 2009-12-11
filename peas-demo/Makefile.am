@@ -2,6 +2,13 @@ SUBDIRS=plugins
 
 bin_PROGRAMS = peas-demo
 
+INCLUDES =								\
+	-I$(top_srcdir)							\
+	-I$(srcdir)							\
+	$(PEAS_CFLAGS)							\
+	$(WARN_CFLAGS)							\
+	$(DISABLE_DEPRECATED_CFLAGS)
+
 peas_demo_SOURCES = \
 	peas-demo.c
 

@@ -7,3 +7,4 @@ libpeas/peas-object-module.c
 libpeas/peas-plugin.c
 libpeas/peas-plugin-info.c
 libpeas/peas-plugin-loader.c
+libpeasui/peas-ui-plugin-manager.c
