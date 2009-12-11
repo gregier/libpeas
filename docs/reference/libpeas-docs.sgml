@@ -7,15 +7,24 @@
 ]>
 <book id="index">
   <bookinfo>
-    <title>Peas UI Reference Manual</title>
+    <title>Peas Reference Manual</title>
     <releaseinfo>
-      for libpeasui &version;
+      for libpeas &version; and libpeasui &version;
     </releaseinfo>
   </bookinfo>
 
   <part label="I">
     <title>API Reference</title>
-    <xi:include href="xml/peas-ui-plugin-manager.xml"/>
+    <chapter>
+      <title>Core Classes</title>
+      <xi:include href="xml/peas-engine.xml"/>
+      <xi:include href="xml/peas-plugin.xml"/>
+      <xi:include href="xml/peas-plugin-info.xml"/>
+    </chapter>
+    <chapter>
+      <title>UI Components</title>
+      <xi:include href="xml/peas-ui-plugin-manager.xml"/>
+    </chapter>
   </part>
   <index id="api-index-full">
     <title>API Index</title>
