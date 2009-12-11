@@ -27,6 +27,7 @@
 #include "peas-plugin.h"
 
 struct _PeasPluginInfo {
+  /*< private >*/
   gint refcount;
 
   PeasPlugin *plugin;

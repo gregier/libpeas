@@ -32,6 +32,7 @@
 #include <libpeas/peas-plugin.h>
 
 #include "peas-ui-plugin-manager.h"
+#include "peas-ui-plugin-info.h"
 
 /**
  * SECTION:peas-ui-plugin-manager
@@ -190,14 +191,29 @@ configure_button_cb (GtkWidget           *button,
 {
   PeasPluginInfo *info;
   GtkWindow *toplevel;
+  GtkWidget *conf_dlg;
+  GtkWindowGroup *wg;
 
   info = plugin_manager_get_selected_plugin (pm);
-
   g_return_if_fail (info != NULL);
 
-  toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
+  conf_dlg = peas_ui_plugin_info_create_configure_dialog (info);
+  g_return_if_fail (conf_dlg != NULL);
 
-  peas_engine_configure_plugin (pm->priv->engine, info, toplevel);
+  toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
+  gtk_window_set_transient_for (GTK_WINDOW (conf_dlg), toplevel);
+
+  wg = gtk_window_get_group (toplevel);
+  if (wg == NULL)
+    {
+      wg = gtk_window_group_new ();
+      gtk_window_group_add_window (wg, toplevel);
+    }
+
+  gtk_window_group_add_window (wg, GTK_WINDOW (conf_dlg));
+
+  gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
+  gtk_widget_show (conf_dlg);
 }
 
 static void
@@ -287,7 +303,7 @@ cursor_changed_cb (GtkTreeView *view,
   gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->about_button),
                             info != NULL);
   gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-                            info != NULL && peas_plugin_info_is_configurable (info));
+                            info != NULL && peas_ui_plugin_info_is_configurable (info));
 }
 
 static void
@@ -352,7 +368,7 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
                           INFO_COLUMN, &info, -1);
 
       gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-                                peas_plugin_info_is_configurable (info));
+                                peas_ui_plugin_info_is_configurable (info));
     }
 }
 
@@ -532,7 +548,7 @@ create_tree_popup_menu (PeasUIPluginManager *pm)
                                     GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   g_signal_connect (item, "activate", G_CALLBACK (configure_button_cb), pm);
-  gtk_widget_set_sensitive (item, peas_plugin_info_is_configurable (info));
+  gtk_widget_set_sensitive (item, peas_ui_plugin_info_is_configurable (info));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
   item = gtk_check_menu_item_new_with_mnemonic (_("A_ctivate"));

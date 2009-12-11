@@ -23,7 +23,9 @@
     </chapter>
     <chapter>
       <title>UI Components</title>
+      <xi:include href="xml/peas-ui-configurable.xml"/>
       <xi:include href="xml/peas-ui-plugin-manager.xml"/>
+      <xi:include href="xml/peas-ui-plugin-info.xml"/>
     </chapter>
   </part>
   <index id="api-index-full">

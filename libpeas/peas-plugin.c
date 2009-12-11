@@ -67,18 +67,6 @@ dummy (PeasPlugin *plugin,
   /* Empty */
 }
 
-static GtkWidget *
-create_configure_dialog (PeasPlugin *plugin)
-{
-  return NULL;
-}
-
-static gboolean
-is_configurable (PeasPlugin *plugin)
-{
-  return PEAS_PLUGIN_GET_CLASS (plugin)->create_configure_dialog != create_configure_dialog;
-}
-
 static void
 peas_plugin_get_property (GObject    *object,
                           guint       prop_id,
@@ -144,9 +132,6 @@ peas_plugin_class_init (PeasPluginClass *klass)
   klass->activate = dummy;
   klass->deactivate = dummy;
   klass->update_ui = dummy;
-
-  klass->create_configure_dialog = create_configure_dialog;
-  klass->is_configurable = is_configurable;
 
   object_class->get_property = peas_plugin_get_property;
   object_class->set_property = peas_plugin_set_property;
@@ -263,34 +248,3 @@ peas_plugin_update_ui (PeasPlugin *plugin,
   PEAS_PLUGIN_GET_CLASS (plugin)->update_ui (plugin, object);
 }
 
-/**
- * peas_plugin_is_configurable:
- * @plugin: A #PeasPlugin
- *
- * Whether the plugin is configurable.
- *
- * Returns: TRUE if the plugin is configurable:
- */
-gboolean
-peas_plugin_is_configurable (PeasPlugin *plugin)
-{
-  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), FALSE);
-
-  return PEAS_PLUGIN_GET_CLASS (plugin)->is_configurable (plugin);
-}
-
-/**
- * peas_plugin_create_configure_dialog:
- * @plugin: A #PeasPlugin
- *
- * Creates the configure dialog widget for the plugin.
- *
- * Returns: The configure dialog widget for the plugin.
- */
-GtkWidget *
-peas_plugin_create_configure_dialog (PeasPlugin *plugin)
-{
-  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
-
-  return PEAS_PLUGIN_GET_CLASS (plugin)->create_configure_dialog (plugin);
-}

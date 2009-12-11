@@ -14,9 +14,13 @@ libpeasui_2_0_la_LDFLAGS = \
 libpeasui_2_0_la_LIBADD = $(PEAS_LIBS)
 
 INST_H_FILES =				\
+	peas-ui-configurable.h		\
+	peas-ui-plugin-info.h		\
 	peas-ui-plugin-manager.h
 
 libpeasui_2_0_la_SOURCES = 		\
+	peas-ui-configurable.c		\
+	peas-ui-plugin-info.c		\
 	peas-ui-plugin-manager.c	\
 	$(INST_H_FILES)
 

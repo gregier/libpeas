@@ -274,25 +274,6 @@ peas_plugin_info_is_available (PeasPluginInfo *info)
 }
 
 /**
- * peas_plugin_info_is_configurable:
- * @info: A #PeasPluginInfo.
- *
- * Check if the plugin is configurable.
- *
- * Returns: %TRUE if the plugin is configurable.
- */
-gboolean
-peas_plugin_info_is_configurable (PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, FALSE);
-
-  if (info->plugin == NULL || !info->available)
-    return FALSE;
-
-  return peas_plugin_is_configurable (info->plugin);
-}
-
-/**
  * peas_plugin_info_get_module_name:
  * @info: A #PeasPluginInfo.
  *

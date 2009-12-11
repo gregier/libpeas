@@ -90,9 +90,6 @@ gboolean          peas_engine_activate_plugin     (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
 gboolean          peas_engine_deactivate_plugin   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
-void              peas_engine_configure_plugin    (PeasEngine      *engine,
-                                                   PeasPluginInfo  *info,
-                                                   GtkWindow       *parent);
 void              peas_engine_garbage_collect     (PeasEngine      *engine);
 
 /* plugin activation/deactivation per target_object */

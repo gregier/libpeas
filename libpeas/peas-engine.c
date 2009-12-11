@@ -780,42 +780,6 @@ peas_engine_update_plugins_ui (PeasEngine *engine,
 }
 
 /**
- * peas_engine_configure_plugin:
- * @engine: A #PeasEngine.
- * @info: A #PeasPluginInfo.
- * @parent: A parent #GtkWindow for the newly created dialog.
- *
- * Created a configuration dialog for the plugin related to @info,
- * and show it transient to @parent.
- */
-void
-peas_engine_configure_plugin (PeasEngine     *engine,
-                              PeasPluginInfo *info,
-                              GtkWindow      *parent)
-{
-  GtkWidget *conf_dlg;
-  GtkWindowGroup *wg;
-
-  g_return_if_fail (info != NULL);
-
-  conf_dlg = peas_plugin_create_configure_dialog (info->plugin);
-  g_return_if_fail (conf_dlg != NULL);
-  gtk_window_set_transient_for (GTK_WINDOW (conf_dlg), parent);
-
-  wg = gtk_window_get_group (parent);
-  if (wg == NULL)
-    {
-      wg = gtk_window_group_new ();
-      gtk_window_group_add_window (wg, parent);
-    }
-
-  gtk_window_group_add_window (wg, GTK_WINDOW (conf_dlg));
-
-  gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
-  gtk_widget_show (conf_dlg);
-}
-
-/**
  * peas_engine_get_active_plugins:
  * @engine: A #PeasEngine.
  *
