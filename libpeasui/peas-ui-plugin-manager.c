@@ -165,7 +165,7 @@ about_button_cb (GtkWidget           *button,
                                   "authors", peas_plugin_info_get_authors (info),
                                   "comments", peas_plugin_info_get_description (info),
                                   "website", peas_plugin_info_get_website (info),
-                                  "logo-icon-name", peas_plugin_info_get_icon_name (info),
+                                  "logo-icon-name", peas_ui_plugin_info_get_icon_name (info),
                                   "version", peas_plugin_info_get_version (info),
                                   NULL);
 
@@ -263,7 +263,7 @@ plugin_manager_view_icon_cell_cb (GtkTreeViewColumn *tree_column,
     return;
 
   g_object_set (G_OBJECT (cell),
-                "icon-name", peas_plugin_info_get_icon_name (info),
+                "icon-name", peas_ui_plugin_info_get_icon_name (info),
                 "sensitive", peas_plugin_info_is_available (info),
                 NULL);
 }

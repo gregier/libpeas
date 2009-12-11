@@ -27,8 +27,9 @@
 
 G_BEGIN_DECLS
 
-gboolean    peas_ui_plugin_info_is_configurable          (PeasPluginInfo *info);
-GtkWidget  *peas_ui_plugin_info_create_configure_dialog  (PeasPluginInfo *info);
+const gchar  *peas_ui_plugin_info_get_icon_name            (PeasPluginInfo *info);
+gboolean      peas_ui_plugin_info_is_configurable          (PeasPluginInfo *info);
+GtkWidget    *peas_ui_plugin_info_create_configure_dialog  (PeasPluginInfo *info);
 
 G_END_DECLS
 
