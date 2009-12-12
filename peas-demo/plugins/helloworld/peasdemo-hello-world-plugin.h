@@ -7,12 +7,12 @@
 
 G_BEGIN_DECLS
 
-#define PeasDEMO_TYPE_HELLO_WORLD_PLUGIN         (peasdemo_hello_world_plugin_get_type ())
-#define PeasDEMO_HELLO_WORLD_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN, PeasDemoHelloWorldPlugin))
-#define PeasDEMO_HELLO_WORLD_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN, PeasDemoHelloWorldPlugin))
-#define PeasDEMO_IS_HELLO_WORLD_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN))
-#define PeasDEMO_IS_HELLO_WORLD_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN))
-#define PeasDEMO_HELLO_WORLD_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN, PeasDemoHelloWorldPluginClass))
+#define PEASDEMO_TYPE_HELLO_WORLD_PLUGIN         (peasdemo_hello_world_plugin_get_type ())
+#define PEASDEMO_HELLO_WORLD_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN, PeasDemoHelloWorldPlugin))
+#define PEASDEMO_HELLO_WORLD_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN, PeasDemoHelloWorldPlugin))
+#define PEASDEMO_IS_HELLO_WORLD_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN))
+#define PEASDEMO_IS_HELLO_WORLD_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN))
+#define PEASDEMO_HELLO_WORLD_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), PeasDEMO_TYPE_HELLO_WORLD_PLUGIN, PeasDemoHelloWorldPluginClass))
 
 typedef struct _PeasDemoHelloWorldPlugin       PeasDemoHelloWorldPlugin;
 typedef struct _PeasDemoHelloWorldPluginClass  PeasDemoHelloWorldPluginClass;
