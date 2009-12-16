@@ -592,6 +592,15 @@ get_plugin_loader (PeasEngine     *engine,
   return loader_info->loader;
 }
 
+/**
+ * peas_engine_get_plugin_list:
+ * @engine: A #PeasEngine.
+ *
+ * Returns the list of #PeasPluginInfo known to the engine.
+ *
+ * Returns: a #GList of #PeasPluginInfo. Note that the list
+ * belongs to the engine and should not be freed.
+ **/
 const GList *
 peas_engine_get_plugin_list (PeasEngine *engine)
 {
