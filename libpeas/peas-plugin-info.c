@@ -54,6 +54,8 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   if (info->plugin != NULL)
     g_object_unref (info->plugin);
 
+  if (info->keys != NULL)
+    g_hash_table_destroy (info->keys);
   g_free (info->file);
   g_free (info->module_dir);
   g_free (info->data_dir);
@@ -92,6 +94,82 @@ peas_plugin_info_get_type (void)
   return the_type;
 }
 
+static void
+value_free (gpointer data)
+{
+  GValue *value = (GValue *) data;
+
+  g_value_unset (value);
+  g_free (value);
+}
+
+static void
+parse_extra_keys (PeasPluginInfo   *info,
+                  GKeyFile         *plugin_file,
+                  const gchar      *section_header,
+                  const gchar     **keys)
+{
+  guint i;
+
+  for (i = 0; keys[i] != NULL; i++)
+    {
+      GValue *value = NULL;
+      gboolean b;
+      GError *error = NULL;
+
+      if (g_str_equal (keys[i], "IAge") ||
+          g_str_equal (keys[i], "Module") ||
+          g_str_equal (keys[i], "Depends") ||
+          g_str_equal (keys[i], "Loader") ||
+          g_str_equal (keys[i], "Name") ||
+          g_str_has_prefix (keys[i], "Name[") ||
+          g_str_equal (keys[i], "Description") ||
+          g_str_has_prefix (keys[i], "Description[") ||
+          g_str_equal (keys[i], "Icon") ||
+          g_str_equal (keys[i], "Authors") ||
+          g_str_equal (keys[i], "Copyright") ||
+          g_str_equal (keys[i], "Website") ||
+          g_str_equal (keys[i], "Version"))
+        continue;
+
+      b = g_key_file_get_boolean (plugin_file, section_header, keys[i], &error);
+      if (b == FALSE)
+        {
+          if (error != NULL)
+            {
+              gchar *str;
+              g_error_free (error);
+              error = NULL;
+              str = g_key_file_get_string (plugin_file, section_header, keys[i], NULL);
+              if (str != NULL)
+                {
+                  value = g_new0 (GValue, 1);
+                  g_value_init (value, G_TYPE_STRING);
+                  g_value_take_string (value, str);
+                }
+            }
+          else
+            {
+              value = g_new0 (GValue, 1);
+              g_value_init (value, G_TYPE_BOOLEAN);
+              g_value_set_boolean (value, b);
+            }
+        }
+
+      if (!value)
+        continue;
+
+      if (info->keys == NULL)
+        {
+          info->keys = g_hash_table_new_full (g_direct_hash,
+                                              g_str_equal,
+                                              g_free,
+                                              value_free);
+        }
+      g_hash_table_insert (info->keys, g_strdup (keys[i]), value);
+    }
+}
+
 /**
  * _peas_plugin_info_new:
  * @filename: The filename where to read the plugin information.
@@ -113,12 +191,15 @@ _peas_plugin_info_new (const gchar *filename,
   GKeyFile *plugin_file = NULL;
   gchar *section_header;
   gchar *str;
+  gchar **keys;
+  int integer;
 
   g_return_val_if_fail (filename != NULL, NULL);
   g_return_val_if_fail (app_name != NULL, NULL);
 
   info = g_new0 (PeasPluginInfo, 1);
   info->refcount = 1;
+  info->visible = TRUE;
   info->file = g_strdup (filename);
 
   section_header = g_strdup_printf ("%s Plugin", app_name);
@@ -133,9 +214,8 @@ _peas_plugin_info_new (const gchar *filename,
   if (!g_key_file_has_key (plugin_file, section_header, "IAge", NULL))
     goto error;
 
-  /* Check IAge=2 */
-  if (g_key_file_get_integer (plugin_file, section_header, "IAge", NULL) != 2)
-    goto error;
+  integer = g_key_file_get_integer (plugin_file, section_header, "IAge", NULL);
+  info->iage = integer <= 0 ? 0 : integer;
 
   /* Get module name */
   str = g_key_file_get_string (plugin_file, section_header, "Module", NULL);
@@ -214,6 +294,11 @@ _peas_plugin_info_new (const gchar *filename,
   str = g_key_file_get_string (plugin_file, section_header, "Version", NULL);
   if (str)
     info->version = str;
+
+  /* Get extra keys */
+  keys = g_key_file_get_keys (plugin_file, section_header, NULL, NULL);
+  parse_extra_keys (info, plugin_file, section_header, (const char **) keys);
+  g_strfreev (keys);
 
   g_free (section_header);
   g_key_file_free (plugin_file);
@@ -457,4 +542,76 @@ peas_plugin_info_get_version (PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->version;
+}
+
+/**
+ * peas_plugin_info_get_iage:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets the interface age of the plugin.
+ *
+ * Returns: the interface age of the plugin or %0 if not known.
+ **/
+gint
+peas_plugin_info_get_iage (PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, 0);
+
+  return info->iage;
+}
+
+/**
+ * peas_plugin_info_get_keys:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets a hash table of string keys present and #GValue values,
+ * present in the plugin information file, but not handled
+ * by libpeas. Note that libpeas only handles booleans and
+ * strings, and that strings that are recognised as booleans,
+ * as done by #g_key_file_get_boolean, will be of boolean type.
+ *
+ * Returns: a #GHashTable of string keys and #GValue values. Do
+ * not free or destroy any data in this hashtable.
+ **/
+const GHashTable *
+peas_plugin_info_get_keys (PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+
+  return info->keys;
+}
+
+/**
+ * peas_plugin_info_set_visible:
+ * @info: A #PeasPluginInfo.
+ * @visible: visibility of the plugin
+ *
+ * Sets whether the plugin should be visible in the
+ * plugin manager.
+ *
+ **/
+void
+peas_plugin_info_set_visible (PeasPluginInfo *info,
+                              gboolean        visible)
+{
+  g_return_if_fail (info != NULL);
+
+  info->visible = visible;
+}
+
+/**
+ * peas_plugin_info_get_visible:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets the visibility of the plugin.
+ *
+ * Returns: %TRUE if the plugin should be visible, %FALSE
+ * if not.
+ **/
+gboolean
+peas_plugin_info_get_visible (PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, TRUE);
+
+  return info->visible;
 }

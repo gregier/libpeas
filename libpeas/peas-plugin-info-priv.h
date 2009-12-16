@@ -45,6 +45,9 @@ struct _PeasPluginInfo {
   gchar *copyright;
   gchar *website;
   gchar *version;
+  guint iage;
+  gboolean visible;
+  GHashTable *keys;
 
   /* A plugin is unavailable if it is not possible to activate it
      due to an error loading the plugin module (e.g. for Python plugins

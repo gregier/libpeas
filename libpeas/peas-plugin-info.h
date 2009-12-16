@@ -55,6 +55,13 @@ const gchar  *peas_plugin_info_get_website      (PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_copyright    (PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_version      (PeasPluginInfo *info);
 
+gint          peas_plugin_info_get_iage         (PeasPluginInfo *info);
+const GHashTable *
+              peas_plugin_info_get_keys         (PeasPluginInfo *info);
+void          peas_plugin_info_set_visible      (PeasPluginInfo *info,
+                                                 gboolean        visible);
+gboolean      peas_plugin_info_get_visible      (PeasPluginInfo *info);
+
 G_END_DECLS
 
 #endif /* __PEAS_PLUGIN_INFO_H__ */
