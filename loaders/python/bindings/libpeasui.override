@@ -1,0 +1,14 @@
+%%
+modulename libpeasui
+%%
+ignore-glob
+  *_get_type
+%%
+import gtk.VBox as PyGtkVBox_Type
+%%
+headers
+#define NO_IMPORT
+#include "pygobject.h"
+#include <pygtk/pygtk.h>
+
+#include <libpeasui/peas-ui-plugin-manager.h>

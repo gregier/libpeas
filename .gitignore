@@ -40,6 +40,8 @@ Makefile.in
 /intltool-update.in
 /loaders/python/bindings/libpeas.defs
 /loaders/python/bindings/libpeas.c
+/loaders/python/bindings/libpeasui.defs
+/loaders/python/bindings/libpeasui.c
 /libtool
 /ltmain.sh
 /m4
