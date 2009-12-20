@@ -26,10 +26,10 @@
 #endif
 
 #include <string.h>
-#include <glib/gi18n.h>
 
 #include <libpeas/peas-engine.h>
 #include <libpeas/peas-plugin.h>
+#include <libpeas/peas-i18n.h>
 
 #include "peas-ui-plugin-manager.h"
 

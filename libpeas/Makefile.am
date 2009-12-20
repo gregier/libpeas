@@ -22,12 +22,14 @@ INST_H_FILES =			\
 
 NOINST_H_FILES =		\
 	peas-dirs.h		\
+	peas-i18n.h		\
 	peas-object-module.h	\
 	peas-plugin-info-priv.h	\
 	peas-plugin-loader.h
 
 C_FILES =			\
 	peas-dirs.c		\
+	peas-i18n.c		\
 	peas-object-module.c	\
 	peas-plugin.c		\
 	peas-plugin-info.c	\

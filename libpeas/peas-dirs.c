@@ -19,6 +19,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "peas-dirs.h"
 
 gchar *
@@ -72,3 +76,24 @@ peas_dirs_get_plugin_loaders_dir (void)
 
   return loader_dir;
 }
+
+gchar *
+peas_dirs_get_locale_dir (void)
+{
+  gchar *locale_dir;
+
+#ifdef G_OS_WIN32
+  gchar *win32_dir;
+
+  win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+
+  locale_dir = g_build_filename (win32_dir, "share", "locale", NULL);
+
+  g_free (win32_dir);
+#else
+  locale_dir = g_build_filename (DATADIR, "locale", NULL);
+#endif
+
+  return locale_dir;
+}
+

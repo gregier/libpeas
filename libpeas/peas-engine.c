@@ -26,8 +26,7 @@
 
 #include <string.h>
 
-#include <glib/gi18n.h>
-
+#include "peas-i18n.h"
 #include "peas-engine.h"
 #include "peas-plugin-info-priv.h"
 #include "peas-plugin-loader.h"
