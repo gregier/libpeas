@@ -4,6 +4,7 @@ INCLUDES =								\
 	-I$(top_srcdir)							\
 	-I$(srcdir)							\
 	$(PEAS_CFLAGS)							\
+	$(IGE_MAC_CFLAGS)						\
 	$(WARN_CFLAGS)							\
 	$(DISABLE_DEPRECATED_CFLAGS)					\
 	-DDATADIR=\""$(datadir)"\"					\
@@ -13,7 +14,7 @@ libpeas_2_0_la_LDFLAGS = \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
-libpeas_2_0_la_LIBADD = $(PEAS_LIBS)
+libpeas_2_0_la_LIBADD = $(PEAS_LIBS) $(IGE_MAC_LIBS)
 
 INST_H_FILES =			\
 	peas-plugin.h		\

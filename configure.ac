@@ -61,6 +61,25 @@ AC_CHECK_FUNC(sigaction)
 dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
 AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS -I m4")
 
+dnl check for native osx
+AC_MSG_CHECKING([for native Mac OS X])
+
+gdk_windowing=`$PKG_CONFIG --variable=target gdk-2.0`
+
+if test "$gdk_windowing" = "quartz"; then
+	os_osx=yes
+else
+	os_osx=no
+fi
+AC_MSG_RESULT([$os_osx])
+AM_CONDITIONAL(OS_OSX, test "$os_osx" = "yes")
+
+if test "$os_osx" = "yes"; then
+	AC_DEFINE([OS_OSX],[1],[Defined if os is Mac OSX])
+
+	PKG_CHECK_MODULES(IGE_MAC, ige-mac-integration)
+fi
+
 dnl ================================================================
 dnl Gettext stuff.
 dnl ================================================================

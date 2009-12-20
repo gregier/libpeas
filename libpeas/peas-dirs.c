@@ -23,6 +23,10 @@
 #include <config.h>
 #endif
 
+#ifdef OS_OSX
+#include <ige-mac-bundle.h>
+#endif
+
 #include "peas-dirs.h"
 
 gchar *
@@ -32,6 +36,19 @@ peas_dirs_get_data_dir (void)
 
 #ifndef G_OS_WIN32
   data_dir = g_build_filename (DATADIR, "libpeas-2.0", NULL);
+#elif defined (OS_OSX)
+  IgeMacBundle *bundle = ige_mac_bundle_get_default ();
+
+  if (ige_mac_bundle_get_is_app_bundle (bundle))
+    {
+      const gchar *bundle_data_dir = ige_mac_bundle_get_datadir (bundle);
+
+      data_dir = g_build_filename (bundle_data_dir, "libpeas-2.0", NULL);
+    }
+  else
+    {
+      data_dir = g_build_filename (DATADIR, "libpeas-2.0", NULL);
+    }
 #else
   gchar *win32_dir;
 
@@ -51,6 +68,19 @@ peas_dirs_get_lib_dir (void)
 
 #ifndef G_OS_WIN32
   lib_dir = g_build_filename (LIBDIR, "libpeas-2.0", NULL);
+#elif defined (OS_OSX)
+  IgeMacBundle *bundle = ige_mac_bundle_get_default ();
+
+  if (ige_mac_bundle_get_is_app_bundle (bundle))
+    {
+      const gchar *path = ige_mac_bundle_get_resourcesdir (bundle);
+
+      lib_dir = g_build_filename (path, "lib", "libpeas-2.0", NULL);
+    }
+  else
+    {
+      lib_dir = g_build_filename (LIBDIR, "libpeas-2.0", NULL);
+    }
 #else
   gchar *win32_dir;
 
@@ -90,6 +120,17 @@ peas_dirs_get_locale_dir (void)
   locale_dir = g_build_filename (win32_dir, "share", "locale", NULL);
 
   g_free (win32_dir);
+#elif defined (OS_OSX)
+  IgeMacBundle *bundle = ige_mac_bundle_get_default ();
+
+  if (ige_mac_bundle_get_is_app_bundle (bundle))
+    {
+      locale_dir = g_strdup (ige_mac_bundle_get_localedir (bundle));
+    }
+  else
+    {
+      locale_dir = g_build_filename (DATADIR, "locale", NULL);
+    }
 #else
   locale_dir = g_build_filename (DATADIR, "locale", NULL);
 #endif
