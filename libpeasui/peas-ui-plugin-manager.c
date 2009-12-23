@@ -327,12 +327,15 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
       PeasPluginInfo *info;
       info = (PeasPluginInfo *) plugins->data;
 
-      gtk_list_store_append (model, &iter);
-      gtk_list_store_set (model, &iter,
-                          ACTIVE_COLUMN, peas_plugin_info_is_active (info),
-                          AVAILABLE_COLUMN,
-                          peas_plugin_info_is_available (info), INFO_COLUMN,
-                          info, -1);
+      if (peas_plugin_info_get_visible (info))
+        {
+          gtk_list_store_append (model, &iter);
+          gtk_list_store_set (model, &iter,
+                              ACTIVE_COLUMN, peas_plugin_info_is_active (info),
+                              AVAILABLE_COLUMN, peas_plugin_info_is_available (info),
+                              INFO_COLUMN, info,
+                              -1);
+        }
 
       plugins = plugins->next;
     }
