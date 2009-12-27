@@ -113,8 +113,13 @@ int
 main (int argc, char **argv)
 {
   gchar const * const search_paths[] = {
+    /* Uninstalled plugins */
+    "./plugins/",
+    "./plugins/",
+    /* User-installed plugins */
     g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL),
     g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL),
+    /* System-wide plugins */
     PEAS_PREFIX "/lib/peas-demo/plugins/",
     PEAS_PREFIX "/share/peas-demo/plugins/",
     NULL

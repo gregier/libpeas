@@ -24,6 +24,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #include "peas-object-module.h"
 
 G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
@@ -58,6 +60,14 @@ peas_object_module_load (GTypeModule *gmodule)
 
   path = g_module_build_path (module->priv->path, module->priv->module_name);
   g_return_val_if_fail (path != NULL, FALSE);
+
+  /* g_module_build_path() will add G_MODULE_SUFFIX to the path, but otoh
+   * g_module_open() will only try to load the libtool archive if there is no
+   * suffix specified. So we remove G_MODULE_SUFFIX here (this allows
+   * uninstalled builds to load plugins as well, as there is only the .la file
+   * in the build directory) */
+  if (G_MODULE_SUFFIX[0] != '\0' && g_str_has_suffix (path, "." G_MODULE_SUFFIX))
+    path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
 
   module->priv->library = g_module_open (path, G_MODULE_BIND_LAZY);
   g_free (path);
