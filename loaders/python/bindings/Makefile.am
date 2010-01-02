@@ -4,6 +4,7 @@ PEAS_BINDINGS_HDRS = \
 	$(top_srcdir)/libpeas/peas-engine.h
 
 PEAS_UI_BINDINGS_HDRS = \
+	$(top_srcdir)/libpeasui/peas-ui-configurable.h	\
 	$(top_srcdir)/libpeasui/peas-ui-plugin-manager.h
 
 pyexec_LTLIBRARIES = \
@@ -66,12 +67,13 @@ libpeas.c: libpeas.defs libpeas.override
 		--prefix pypeas \
 		libpeas.defs ) > $@
 
-libpeasui.defs: $(PEAS_UI_BINDINGS_HDRS)
+libpeasui.defs: $(PEAS_UI_BINDINGS_HDRS) libpeasui.defs.extra
 	$(AM_V_GEN) ( $(PYGTK_H2DEF) \
 		--modulename peas_ui \
 		--namespace PeasUI \
 		$(PEAS_UI_BINDINGS_HDRS) \
-		| sed 's/PEASUI/PEAS_UI/' ) > $@
+		| sed 's/PEASUI/PEAS_UI/'; \
+		cat $(srcdir)/libpeasui.defs.extra ) > $@
 
 libpeasui.c: libpeasui.defs libpeasui.override
 	$(AM_V_GEN) ( $(PYGTK_CODEGEN) \

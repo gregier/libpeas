@@ -4,6 +4,8 @@ modulename libpeasui
 ignore-glob
   *_get_type
 %%
+import gobject.GObject as PyGObject_Type
+import gtk.Widget as PyGtkWidget_Type
 import gtk.VBox as PyGtkVBox_Type
 %%
 headers
@@ -11,4 +13,9 @@ headers
 #include "pygobject.h"
 #include <pygtk/pygtk.h>
 
+#include <libpeasui/peas-ui-configurable.h>
 #include <libpeasui/peas-ui-plugin-manager.h>
+
+/* Ugly workaround for pygtk codegen's silliness */
+#define PEAS_UI_CONFIGURABLE_CLASS PEAS_UI_CONFIGURABLE_IFACE
+#define PeasUIConfigurableClass PeasUIConfigurableIface

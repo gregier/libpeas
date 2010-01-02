@@ -31,6 +31,7 @@ G_BEGIN_DECLS
  */
 #define PEAS_UI_TYPE_CONFIGURABLE              (peas_ui_configurable_get_type ())
 #define PEAS_UI_CONFIGURABLE(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_UI_TYPE_CONFIGURABLE, PeasUIConfigurable))
+#define PEAS_UI_CONFIGURABLE_IFACE(obj)        (G_TYPE_CHECK_CLASS_CAST ((obj), PEAS_UI_TYPE_CONFIGURABLE, PeasUIConfigurableIface))
 #define PEAS_UI_IS_CONFIGURABLE(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_UI_TYPE_CONFIGURABLE))
 #define PEAS_UI_CONFIGURABLE_GET_IFACE(obj)    (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PEAS_UI_TYPE_CONFIGURABLE, PeasUIConfigurableIface))
 
