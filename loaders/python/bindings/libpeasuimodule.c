@@ -30,6 +30,48 @@
 void pypeasui_register_classes (PyObject *d);
 extern PyMethodDef pypeasui_functions[];
 
+static PyObject *
+build_version_tuple (void)
+{
+  return Py_BuildValue ("(iii)",
+                        PEAS_MAJOR_VERSION,
+                        PEAS_MINOR_VERSION,
+                        PEAS_MICRO_VERSION);
+}
+
+
+
+/* C equivalent of
+ *    import libpeas
+ *    assert(libpeas.version > (MAJ, MIN, MIC))
+ */
+static gboolean
+pypeasui_init_libpeas (void)
+{
+  PyObject *libpeas, *mdict, *libpeas_version, *required_version;
+
+  libpeas = PyImport_ImportModule ("libpeas");
+  if (libpeas == NULL)
+    {
+      PyErr_SetString (PyExc_ImportError, "Could not import libpeas.");
+      return FALSE;
+    }
+
+  mdict = PyModule_GetDict (libpeas);
+  libpeas_version = PyDict_GetItemString (mdict, "version");
+  if (!libpeas_version)
+    {
+      PyErr_SetString (PyExc_ImportError, "Could not retrieve libpeas version.");
+      return;
+    }
+
+  required_version = build_version_tuple ();
+  if (PyObject_Compare (libpeas_version, required_version) < 0)
+    PyErr_SetString (PyExc_ImportError, "libpeas version is too old.");
+
+  Py_DECREF (required_version);
+}
+
 DL_EXPORT(void)
 initlibpeasui (void)
 {
@@ -42,13 +84,14 @@ initlibpeasui (void)
   init_pygobject_check (2, 16, 2);
   init_pygtk ();
 
+  pypeasui_init_libpeas ();
+  if (PyErr_Occurred ())
+    return;
+
   pypeasui_register_classes (d);
 
-  /* libpeas version */
-  tuple = Py_BuildValue ("(iii)",
-                         PEAS_MAJOR_VERSION,
-                         PEAS_MINOR_VERSION,
-                         PEAS_MICRO_VERSION);
+  /* libpeasui version */
+  tuple = build_version_tuple ();
   PyDict_SetItemString (d, "version", tuple);
   Py_DECREF (tuple);
 }
