@@ -1,10 +1,11 @@
 lib_LTLIBRARIES = libpeasui-2.0.la
 
-INCLUDES =								\
-	-I$(top_srcdir)							\
-	-I$(srcdir)							\
-	$(PEAS_CFLAGS)							\
-	$(WARN_CFLAGS)							\
+INCLUDES = \
+	-I$(top_srcdir)			\
+	-I$(srcdir)			\
+	$(PEAS_CFLAGS)			\
+	$(PEASUI_CFLAGS)		\
+	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED_CFLAGS)
 
 libpeasui_2_0_la_LDFLAGS = \
@@ -13,12 +14,17 @@ libpeasui_2_0_la_LDFLAGS = \
 
 libpeasui_2_0_la_LIBADD = \
 	$(PEAS_LIBS)							\
+	$(PEASUI_LIBS)							\
 	$(top_builddir)/libpeas/libpeas-2.0.la
 
-INST_H_FILES =				\
+INST_H_FILES = \
+	peas-ui-configurable.h		\
+	peas-ui-plugin-info.h		\
 	peas-ui-plugin-manager.h
 
-libpeasui_2_0_la_SOURCES = 		\
+libpeasui_2_0_la_SOURCES = \
+	peas-ui-configurable.c		\
+	peas-ui-plugin-info.c		\
 	peas-ui-plugin-manager.c	\
 	$(INST_H_FILES)
 

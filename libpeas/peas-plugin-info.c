@@ -359,25 +359,6 @@ peas_plugin_info_is_available (PeasPluginInfo *info)
 }
 
 /**
- * peas_plugin_info_is_configurable:
- * @info: A #PeasPluginInfo.
- *
- * Check if the plugin is configurable.
- *
- * Returns: %TRUE if the plugin is configurable.
- */
-gboolean
-peas_plugin_info_is_configurable (PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, FALSE);
-
-  if (info->plugin == NULL || !info->available)
-    return FALSE;
-
-  return peas_plugin_is_configurable (info->plugin);
-}
-
-/**
  * peas_plugin_info_get_module_name:
  * @info: A #PeasPluginInfo.
  *
@@ -455,29 +436,6 @@ peas_plugin_info_get_description (PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->desc;
-}
-
-/**
- * peas_plugin_info_get_icon_name:
- * @info: A #PeasPluginInfo.
- *
- * Gets the icon name of the plugin.
- *
- * Returns: the plugin's icon name.
- */
-const gchar *
-peas_plugin_info_get_icon_name (PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, NULL);
-
-  /* use the libpeas-plugin icon as a default if the plugin does not
-     have its own */
-  if (info->icon_name != NULL &&
-      gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
-                               info->icon_name))
-    return info->icon_name;
-  else
-    return "libpeas-plugin";
 }
 
 /**

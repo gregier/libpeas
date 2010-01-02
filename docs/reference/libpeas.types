@@ -1,4 +1,5 @@
 peas_plugin_get_type
 peas_engine_get_type
 peas_plugin_info_get_type
+peas_ui_configurable_get_type
 peas_ui_plugin_manager_get_type

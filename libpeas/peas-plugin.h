@@ -23,7 +23,6 @@
 #define __PEAS_PLUGIN_H__
 
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include "peas-plugin-info.h"
 
@@ -81,11 +80,6 @@ struct _PeasPluginClass {
   /* FIXME: those two following functions are too UI-centric */
   void        (*update_ui)                (PeasPlugin *plugin,
                                            GObject    *object);
-  GtkWidget  *(*create_configure_dialog)  (PeasPlugin *plugin);
-
-  /* Plugins should usually not override this, it's handled automatically
-   * by the PeasPluginClass */
-  gboolean    (*is_configurable)          (PeasPlugin *plugin);
 
   /* Padding for future expansion */
   void        (*_peas_reserved1)          (void);
@@ -108,9 +102,6 @@ void              peas_plugin_deactivate              (PeasPlugin *plugin,
                                                        GObject    *object);
 void              peas_plugin_update_ui               (PeasPlugin *plugin,
                                                        GObject    *object);
-
-gboolean          peas_plugin_is_configurable         (PeasPlugin *plugin);
-GtkWidget        *peas_plugin_create_configure_dialog (PeasPlugin *plugin);
 
 /**
  * PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE):

@@ -23,7 +23,6 @@
 #include <Python.h>
 #include <pyglib.h>
 #include <pygobject.h>
-#include <pygtk/pygtk.h>
 
 #include "config.h"
 
@@ -40,7 +39,6 @@ initlibpeas (void)
   d = PyModule_GetDict (m);
 
   init_pygobject_check (2, 16, 2);
-  init_pygtk ();
 
   pypeas_register_classes (d);
 

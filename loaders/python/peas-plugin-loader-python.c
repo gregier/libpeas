@@ -29,7 +29,6 @@
 
 #include <Python.h>
 #include <pygobject.h>
-#include <pygtk/pygtk.h>
 #include <signal.h>
 #include "config.h"
 
@@ -338,78 +337,15 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
   return TRUE;
 }
 
-/* C equivalent of
- *    import pygtk
- *    pygtk.require ("2.0")
- */
-static gboolean
-peas_check_pygtk2 (void)
-{
-  PyObject *pygtk, *mdict, *require;
-
-  /* pygtk.require("2.0") */
-  pygtk = PyImport_ImportModule ("pygtk");
-  if (pygtk == NULL)
-    {
-      g_warning
-        ("Error initializing Python interpreter: could not import pygtk.");
-      return FALSE;
-    }
-
-  mdict = PyModule_GetDict (pygtk);
-  require = PyDict_GetItemString (mdict, "require");
-  PyObject_CallObject (require,
-                       Py_BuildValue ("(S)", PyString_FromString ("2.0")));
-
-  if (PyErr_Occurred ())
-    {
-      g_warning
-        ("Error initializing Python interpreter: pygtk 2 is required.");
-      return FALSE;
-    }
-
-  return TRUE;
-}
-
-/* Note: the following two functions are needed because
- * init_pyobject and init_pygtk which are *macros* which in case
- * case of error set the PyErr and then make the calling
- * function return behind our back.
+/* Note: the following function is needed because init_pyobject is a *macro*
+ * which in case of error set the PyErr and then make the calling function
+ * return behind our back.
  * It's up to the caller to check the result with PyErr_Occurred ()
  */
 static void
 peas_init_pygobject (void)
 {
   init_pygobject_check (2, 11, 5);      /* FIXME: get from config */
-}
-
-static void
-peas_init_pygtk (void)
-{
-  PyObject *gtk, *mdict, *version, *required_version;
-
-  init_pygtk ();
-
-  /* there isn't init_pygtk_check(), do the version
-   * check ourselves */
-  gtk = PyImport_ImportModule ("gtk");
-  mdict = PyModule_GetDict (gtk);
-  version = PyDict_GetItemString (mdict, "pygtk_version");
-  if (!version)
-    {
-      PyErr_SetString (PyExc_ImportError, "PyGObject version too old");
-      return;
-    }
-
-  required_version = Py_BuildValue ("(iii)", 2, 4, 0);  /* FIXME */
-  if (PyObject_Compare (version, required_version) == -1)
-    {
-      PyErr_SetString (PyExc_ImportError, "PyGObject version too old");
-      Py_DECREF (required_version);
-      return;
-    }
-
-  Py_DECREF (required_version);
 }
 
 static void
@@ -524,28 +460,12 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   peas_plugin_loader_python_add_module_path (loader, PEAS_PYEXECDIR);
 
-  if (!peas_check_pygtk2 ())
-    {
-      /* Warning message already printed in check_pygtk2 */
-      goto python_init_error;
-    }
-
   /* import gobject */
   peas_init_pygobject ();
   if (PyErr_Occurred ())
     {
       g_warning
         ("Error initializing Python interpreter: could not import pygobject.");
-
-      goto python_init_error;
-    }
-
-  /* import gtk */
-  peas_init_pygtk ();
-  if (PyErr_Occurred ())
-    {
-      g_warning
-        ("Error initializing Python interpreter: could not import pygtk.");
 
       goto python_init_error;
     }

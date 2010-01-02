@@ -11,7 +11,6 @@ peas_engine_set_active_plugins
 peas_engine_get_plugin_info
 peas_engine_activate_plugin
 peas_engine_deactivate_plugin
-peas_engine_configure_plugin
 peas_engine_update_plugins_ui
 peas_engine_add_object
 peas_engine_remove_object
@@ -35,8 +34,6 @@ peas_plugin_get_data_dir
 peas_plugin_activate
 peas_plugin_deactivate
 peas_plugin_update_ui
-peas_plugin_is_configurable
-peas_plugin_create_configure_dialog
 PEAS_REGISTER_TYPE_WITH_CODE
 PEAS_REGISTER_TYPE
 <SUBSECTION Standard>
@@ -55,13 +52,11 @@ PEAS_PLUGIN_GET_CLASS
 PeasPluginInfo
 peas_plugin_info_is_active
 peas_plugin_info_is_available
-peas_plugin_info_is_configurable
 peas_plugin_info_get_module_name
 peas_plugin_info_get_module_dir
 peas_plugin_info_get_data_dir
 peas_plugin_info_get_name
 peas_plugin_info_get_description
-peas_plugin_info_get_icon_name
 peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright
@@ -70,6 +65,29 @@ peas_plugin_info_get_version
 PEAS_PLUGIN_INFO
 PEAS_TYPE_PLUGIN_INFO
 peas_plugin_info_get_type
+</SECTION>
+
+<SECTION>
+<FILE>peas-ui-configurable</FILE>
+<TITLE>PeasUIConfigurable</TITLE>
+PeasUIConfigurable
+PeasUIConfigurableIface
+peas_ui_configurable_is_configurable
+peas_ui_configurable_create_configure_dialog
+<SUBSECTION Standard>
+PEAS_UI_CONFIGURABLE
+PEAS_UI_IS_CONFIGURABLE
+PEAS_UI_TYPE_CONFIGURABLE
+peas_ui_configurable_get_type
+PEAS_UI_CONFIGURABLE_GET_IFACE
+</SECTION>
+
+<SECTION>
+<FILE>peas-ui-plugin-info</FILE>
+<TITLE>PeasPluginInfo Extension</TITLE>
+peas_ui_plugin_info_get_icon_name
+peas_ui_plugin_info_is_configurable
+peas_ui_plugin_info_create_configure_dialog
 </SECTION>
 
 <SECTION>

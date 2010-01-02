@@ -1,11 +1,22 @@
 #include <glib.h>
+#include <glib-object.h>
 #include <gmodule.h>
+#include <gtk/gtk.h>
+
+#include <libpeasui/peas-ui-configurable.h>
 
 #include "peasdemo-hello-world-plugin.h"
 
 #define WINDOW_DATA_KEY "PeasDemoHelloWorldPluginWindowData"
 
-PEAS_REGISTER_TYPE(PEAS_TYPE_PLUGIN, PeasDemoHelloWorldPlugin, peasdemo_hello_world_plugin)
+static void peas_ui_configurable_iface_init (PeasUIConfigurableIface *iface);
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldPlugin,
+                                peasdemo_hello_world_plugin,
+                                PEAS_TYPE_PLUGIN,
+                                0,
+                                G_IMPLEMENT_INTERFACE (PEAS_UI_TYPE_CONFIGURABLE,
+                                                       peas_ui_configurable_iface_init))
 
 typedef struct {
   GtkWidget *label;
@@ -91,6 +102,32 @@ peasdemo_hello_world_plugin_deactivate (PeasPlugin *plugin,
 }
 
 static void
+on_configure_dialog_response (GtkDialog *dialog,
+                              gint       response_id,
+                              gpointer   user_data)
+{
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static GtkWidget *
+peasdemo_hello_world_plugin_create_configure_dialog (PeasUIConfigurable *configurable)
+{
+  GtkWidget *dialog;
+
+  g_debug (G_STRFUNC);
+
+  dialog = gtk_message_dialog_new (NULL,
+                                   0,
+                                   GTK_MESSAGE_INFO,
+                                   GTK_BUTTONS_OK,
+                                   "This is a configuration dialog for the HelloWorld plugin.");
+  g_signal_connect (dialog, "response",
+                    G_CALLBACK (on_configure_dialog_response), NULL);
+
+  return dialog;
+}
+
+static void
 peasdemo_hello_world_plugin_class_init (PeasDemoHelloWorldPluginClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -100,4 +137,23 @@ peasdemo_hello_world_plugin_class_init (PeasDemoHelloWorldPluginClass *klass)
 
   plugin_class->activate = peasdemo_hello_world_plugin_activate;
   plugin_class->deactivate = peasdemo_hello_world_plugin_deactivate;
+}
+
+static void
+peas_ui_configurable_iface_init (PeasUIConfigurableIface *iface)
+{
+  iface->create_configure_dialog = peasdemo_hello_world_plugin_create_configure_dialog;
+}
+
+static void
+peasdemo_hello_world_plugin_class_finalize (PeasDemoHelloWorldPluginClass *klass)
+{
+}
+
+G_MODULE_EXPORT GType
+register_peas_plugin (GTypeModule *type_module)
+{
+        peasdemo_hello_world_plugin_register_type (type_module);
+
+        return PEASDEMO_TYPE_HELLO_WORLD_PLUGIN;
 }
