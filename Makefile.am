@@ -2,4 +2,4 @@
 ACLOCAL_AMFLAGS = -I m4
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
-SUBDIRS = libpeas loaders libpeasui data peas-demo po docs
+SUBDIRS = libpeas libpeasui loaders data peas-demo po docs
