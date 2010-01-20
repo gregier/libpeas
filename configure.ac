@@ -96,6 +96,8 @@ dnl ================================================================
 
 PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
+	gobject-2.0 >= 2.18.0
+	gmodule-2.0 >= 2.18.0
 ])
 
 PKG_CHECK_MODULES(PEASUI, [
