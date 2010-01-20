@@ -58,7 +58,8 @@ libpeasui_la_CFLAGS = $(AM_CFLAGS) $(PEASUI_CFLAGS)
 libpeas.defs: $(PEAS_BINDINGS_HDRS) libpeas.defs.extra
 	$(AM_V_GEN) ( $(PYGTK_H2DEF) \
 		--namespace Peas \
-		$(PEAS_BINDINGS_HDRS); \
+		$(PEAS_BINDINGS_HDRS) \
+		| sed -e 's/define-object \(Activatable\)/define-interface \1/'; \
 		cat $(srcdir)/libpeas.defs.extra ) > $@
 
 libpeas.c: libpeas.defs libpeas.override
@@ -72,7 +73,8 @@ libpeasui.defs: $(PEAS_UI_BINDINGS_HDRS) libpeasui.defs.extra
 		--modulename peas_ui \
 		--namespace PeasUI \
 		$(PEAS_UI_BINDINGS_HDRS) \
-		| sed 's/PEASUI/PEAS_UI/'; \
+		| sed -e 's/PEASUI/PEAS_UI/' \
+		      -e 's/define-object \(Configurable\)/define-interface \1/'; \
 		cat $(srcdir)/libpeasui.defs.extra ) > $@
 
 libpeasui.c: libpeasui.defs libpeasui.override
