@@ -144,7 +144,6 @@ peas_plugin_class_init (PeasPluginClass *klass)
                                                        "Information relative to the current plugin",
                                                        PEAS_TYPE_PLUGIN_INFO,
                                                        G_PARAM_READWRITE |
-                                                       G_PARAM_CONSTRUCT_ONLY |
                                                        G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,

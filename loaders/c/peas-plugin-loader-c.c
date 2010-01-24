@@ -72,9 +72,7 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
       return NULL;
     }
 
-  result = (PeasPlugin *) peas_object_module_new_object (module,
-                                                         "plugin-info", info,
-                                                         NULL);
+  result = (PeasPlugin *) peas_object_module_new_object (module);
 
   if (!result)
     {
@@ -84,6 +82,8 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
 
       return NULL;
     }
+
+  g_object_set (result, "plugin-info", info, NULL);
 
   g_type_module_unuse (G_TYPE_MODULE (module));
 

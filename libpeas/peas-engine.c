@@ -542,7 +542,7 @@ load_plugin_loader (PeasEngine  *engine,
   /* make sure to load the type definition */
   if (g_type_module_use (G_TYPE_MODULE (module)))
     {
-      loader = (PeasPluginLoader *) peas_object_module_new_object (module, NULL);
+      loader = (PeasPluginLoader *) peas_object_module_new_object (module);
 
       if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
         {

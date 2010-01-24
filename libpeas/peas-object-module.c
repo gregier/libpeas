@@ -30,7 +30,7 @@
 
 G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
 
-typedef GType (*PeasObjectModuleRegisterFunc) (GTypeModule *);
+typedef GObject *(*PeasObjectModuleRegisterFunc) (GTypeModule *);
 
 enum {
   PROP_0,
@@ -43,7 +43,8 @@ enum {
 struct _PeasObjectModulePrivate {
   GModule *library;
 
-  GType type;
+  PeasObjectModuleRegisterFunc register_func;
+
   gchar *path;
   gchar *module_name;
   gchar *type_registration;
@@ -55,7 +56,6 @@ static gboolean
 peas_object_module_load (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
-  PeasObjectModuleRegisterFunc register_func;
   gchar *path;
 
   path = g_module_build_path (module->priv->path, module->priv->module_name);
@@ -82,7 +82,7 @@ peas_object_module_load (GTypeModule *gmodule)
   /* extract symbols from the lib */
   if (!g_module_symbol (module->priv->library,
                         module->priv->type_registration,
-                        (void *) &register_func))
+                        (void *) &module->priv->register_func))
     {
       g_warning ("%s: %s", module->priv->module_name, g_module_error ());
       g_module_close (module->priv->library);
@@ -92,21 +92,12 @@ peas_object_module_load (GTypeModule *gmodule)
 
   /* symbol can still be NULL even though g_module_symbol
    * returned TRUE */
-  if (register_func == NULL)
+  if (module->priv->register_func == NULL)
     {
       g_warning ("Symbol '%s' should not be NULL",
                  module->priv->type_registration);
       g_module_close (module->priv->library);
 
-      return FALSE;
-    }
-
-  module->priv->type = register_func (gmodule);
-
-  if (module->priv->type == 0)
-    {
-      g_warning ("Invalid object contained by module %s",
-                 module->priv->module_name);
       return FALSE;
     }
 
@@ -124,7 +115,7 @@ peas_object_module_unload (GTypeModule *gmodule)
   g_module_close (module->priv->library);
 
   module->priv->library = NULL;
-  module->priv->type = 0;
+  module->priv->register_func = NULL;
 }
 
 static void
@@ -270,20 +261,11 @@ peas_object_module_new (const gchar *module_name,
 }
 
 GObject *
-peas_object_module_new_object (PeasObjectModule *module,
-                               const gchar      *first_property_name,
-                               ...)
+peas_object_module_new_object (PeasObjectModule *module)
 {
-  va_list var_args;
-  GObject *result;
+  g_return_val_if_fail (module->priv->register_func != NULL, NULL);
 
-  g_return_val_if_fail (module->priv->type != 0, NULL);
-
-  va_start (var_args, first_property_name);
-  result = g_object_new_valist (module->priv->type, first_property_name, var_args);
-  va_end (var_args);
-
-  return result;
+  return module->priv->register_func (G_TYPE_MODULE (module));
 }
 
 const gchar *
@@ -308,12 +290,4 @@ peas_object_module_get_type_registration (PeasObjectModule *module)
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
   return module->priv->type_registration;
-}
-
-GType
-peas_object_module_get_object_type (PeasObjectModule *module)
-{
-  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), 0);
-
-  return module->priv->type;
 }

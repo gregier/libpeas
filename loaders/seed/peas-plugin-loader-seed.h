@@ -44,8 +44,8 @@ struct _PeasPluginLoaderSeedClass {
   PeasPluginLoaderClass parent_class;
 };
 
-GType                   peas_plugin_loader_seed_get_type  (void) G_GNUC_CONST;
-G_MODULE_EXPORT GType   register_peas_plugin_loader       (GTypeModule * module);
+GType                    peas_plugin_loader_seed_get_type  (void) G_GNUC_CONST;
+G_MODULE_EXPORT GObject *register_peas_plugin_loader       (GTypeModule *module);
 
 G_END_DECLS
 

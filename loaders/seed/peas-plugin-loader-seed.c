@@ -149,11 +149,11 @@ peas_plugin_loader_seed_class_finalize (PeasPluginLoaderSeedClass *klass)
 {
 }
 
-G_MODULE_EXPORT GType
+G_MODULE_EXPORT GObject *
 register_peas_plugin_loader (GTypeModule *type_module)
 {
   peas_plugin_loader_seed_register_type (type_module);
   peas_seed_plugin_register_type_ext (type_module);
 
-  return peas_plugin_loader_seed_get_type();
+  return g_object_new (PEAS_TYPE_PLUGIN_LOADER_SEED, NULL);
 }

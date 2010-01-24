@@ -132,12 +132,13 @@ plugin_name##_class_finalize (PluginName##Class *klass)                       \
 {                                                                             \
 }                                                                             \
                                                                               \
-G_MODULE_EXPORT GType                                                         \
-register_peas_plugin (GTypeModule *type_module)                               \
+G_MODULE_EXPORT GObject *                                                     \
+register_peas_plugin (GTypeModule   *type_module)                             \
 {                                                                             \
         plugin_name##_register_type (type_module);                            \
                                                                               \
-        return plugin_name##_get_type();                                      \
+        return g_object_new (plugin_name##_get_type(),                        \
+                             NULL);                                           \
 }
 
 /**

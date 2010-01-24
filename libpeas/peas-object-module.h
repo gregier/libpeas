@@ -27,7 +27,6 @@
 
 #include <glib-object.h>
 #include <gmodule.h>
-#include <stdarg.h>
 
 G_BEGIN_DECLS
 
@@ -61,10 +60,7 @@ PeasObjectModule   *peas_object_module_new                    (const gchar      
                                                                const gchar      *type_registration,
                                                                gboolean          resident);
 
-GType               peas_object_module_get_object_type        (PeasObjectModule *module);
-GObject            *peas_object_module_new_object             (PeasObjectModule *module,
-                                                               const gchar      *first_property_name,
-                                                               ...);
+GObject            *peas_object_module_new_object             (PeasObjectModule *module);
 
 const gchar        *peas_object_module_get_path               (PeasObjectModule *module);
 const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);

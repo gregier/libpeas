@@ -47,10 +47,10 @@ struct _PeasPluginLoaderCClass {
   PeasPluginLoaderClass parent_class;
 };
 
-GType                   peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
+GType                    peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
 
 /* All the loaders must implement this function */
-G_MODULE_EXPORT GType   register_peas_plugin_loader   (GTypeModule *module);
+G_MODULE_EXPORT GObject *register_peas_plugin_loader   (GTypeModule *module);
 
 G_END_DECLS
 

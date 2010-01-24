@@ -78,12 +78,13 @@ void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader)
                                plugin_loader_name,                           \
                                PEAS_TYPE_PLUGIN_LOADER);                     \
                                                                              \
-G_MODULE_EXPORT GType                                                        \
-register_peas_plugin_loader (GTypeModule *type_module)                       \
+G_MODULE_EXPORT GObject *                                                    \
+register_peas_plugin_loader (GTypeModule   *type_module)                     \
 {                                                                            \
         plugin_loader_name##_register_type (type_module);                    \
                                                                              \
-        return plugin_loader_name##_get_type();                              \
+        return g_object_new (plugin_loader_name##_get_type(),                \
+                             NULL);                                          \
 }
 
 G_END_DECLS
