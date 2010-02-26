@@ -1,0 +1,63 @@
+# Chinese (China) translation for libpeas.
+# Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libpeas package.
+# Aron Xu <happyaron.xu@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-21 19:14+0000\n"
+"PO-Revision-Date: 2010-02-26 14:26+0800\n"
+"Last-Translator: Aron Xu <happyaron.xu@gmail.com>\n"
+"Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. *
+#. * SECTION:peas-ui-plugin-manager
+#. * @short_description: Management GUI for plugins.
+#. *
+#. * The #PeasUIPluginManager is a widget that can be used to manage plugins,
+#. * i.e. activate or deactivate them, and see some pieces of information.
+#. *
+#. * <inlinegraphic fileref="peas-ui-plugin-manager.png" format="PNG" />
+#. *
+#. * The only thing you need to do as an application writer if you wish to use
+#. * the manager to configure * your plugins is to instantiate it using
+#. * peas_ui_plugin_manager_new() and pack it into another widget or a window
+#. * (as in the screenshot above).
+#. *
+#. *
+#: ../libpeasui/peas-ui-plugin-manager.c:53
+msgid "Plugin"
+msgstr "插件"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:54
+msgid "Enabled"
+msgstr "已启用"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:543
+msgid "_About"
+msgstr "关于(_A)"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:549
+msgid "C_onfigure"
+msgstr "配置(_O)"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:557
+msgid "A_ctivate"
+msgstr "激活(_C)"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:567
+msgid "Ac_tivate All"
+msgstr "全部激活(_T)"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:571
+msgid "_Deactivate All"
+msgstr "全部停用(_D)"
+
+#: ../libpeasui/peas-ui-plugin-manager.c:860
+msgid "Active _Plugins:"
+msgstr "活动插件(_P)："
