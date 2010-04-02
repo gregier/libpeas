@@ -9,7 +9,7 @@
 
 #define WINDOW_DATA_KEY "PeasDemoHelloWorldPluginWindowData"
 
-static void peas_ui_configurable_iface_init (PeasUIConfigurableIface *iface);
+static void peas_ui_configurable_iface_init (PeasUIConfigurableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldPlugin,
                                 peasdemo_hello_world_plugin,
@@ -140,7 +140,7 @@ peasdemo_hello_world_plugin_class_init (PeasDemoHelloWorldPluginClass *klass)
 }
 
 static void
-peas_ui_configurable_iface_init (PeasUIConfigurableIface *iface)
+peas_ui_configurable_iface_init (PeasUIConfigurableInterface *iface)
 {
   iface->create_configure_dialog = peasdemo_hello_world_plugin_create_configure_dialog;
 }

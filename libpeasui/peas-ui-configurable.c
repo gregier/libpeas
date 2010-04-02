@@ -44,39 +44,10 @@
  * but does not always return a valid #GtkWindow.
  **/
 
-static void peas_ui_configurable_base_init  (gpointer g_class);
-
-GType
-peas_ui_configurable_get_type (void)
-{
-  static volatile gsize the_type = 0;
-
-  if (g_once_init_enter (&the_type))
-    {
-      const GTypeInfo type_info = {
-        sizeof (PeasUIConfigurableIface), /* class_size */
-        peas_ui_configurable_base_init,   /* base_init */
-        NULL,                             /* base_finalize */
-        NULL,                             /* class_init */
-        NULL,                             /* class_finalize */
-        NULL,                             /* class_data */
-        0
-      };
-
-      GType type_id = g_type_register_static (G_TYPE_INTERFACE,
-                                              g_intern_static_string ("PeasUIConfigurable"),
-                                              &type_info, 0);
-
-      g_type_interface_add_prerequisite (type_id, PEAS_TYPE_PLUGIN);
-
-      g_once_init_leave (&the_type, type_id);
-    }
-
-  return the_type;
-}
+G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, PEAS_TYPE_PLUGIN)
 
 static void
-peas_ui_configurable_base_init (gpointer g_class)
+peas_ui_configurable_default_init (PeasUIConfigurableInterface *iface)
 {
 }
 
@@ -95,7 +66,7 @@ peas_ui_configurable_base_init (gpointer g_class)
 gboolean
 peas_ui_configurable_is_configurable (PeasUIConfigurable *configurable)
 {
-  PeasUIConfigurableIface *iface;
+  PeasUIConfigurableInterface *iface;
 
   g_return_val_if_fail (PEAS_UI_IS_CONFIGURABLE (configurable), FALSE);
 
@@ -121,7 +92,7 @@ peas_ui_configurable_is_configurable (PeasUIConfigurable *configurable)
 GtkWidget *
 peas_ui_configurable_create_configure_dialog (PeasUIConfigurable *configurable)
 {
-  PeasUIConfigurableIface *iface;
+  PeasUIConfigurableInterface *iface;
 
   g_return_val_if_fail (PEAS_UI_IS_CONFIGURABLE (configurable), NULL);
   
