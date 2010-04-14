@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-02-15 16:50+0000\n"
-"PO-Revision-Date: 2010-02-15 19:09+0100\n"
+"PO-Revision-Date: 2010-04-14 14:34+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,7 @@ msgstr ""
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
 #. *
 #. * SECTION:peas-ui-plugin-manager
 #. * @short_description: Management GUI for plugins.
@@ -48,21 +49,21 @@ msgstr "_O programu"
 
 #: ../libpeasui/peas-ui-plugin-manager.c:549
 msgid "C_onfigure"
-msgstr "_Nastavitve"
+msgstr "_Nastavi"
 
 #: ../libpeasui/peas-ui-plugin-manager.c:557
 msgid "A_ctivate"
-msgstr "_Zaženi"
+msgstr "_Omogoči"
 
 #: ../libpeasui/peas-ui-plugin-manager.c:567
 msgid "Ac_tivate All"
-msgstr "Zaženi _vse"
+msgstr "Omogoči _vse"
 
 #: ../libpeasui/peas-ui-plugin-manager.c:571
 msgid "_Deactivate All"
-msgstr "_Ustavi vse"
+msgstr "O_nemogoči vse"
 
 #: ../libpeasui/peas-ui-plugin-manager.c:860
 msgid "Active _Plugins:"
-msgstr "Dejavni _vstavki:"
+msgstr "Omogočeni _vstavki:"
 
