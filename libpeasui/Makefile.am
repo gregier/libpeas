@@ -54,7 +54,7 @@ PeasUI-2.0.gir: $(G_IR_SCANNER) libpeasui-2.0.la Makefile
 		-o $@
 
 PeasUI-2.0.typelib: $(gir_DATA) $(G_IR_COMPILER)
-	$(AM_V_GEN) $(G_IR_COMPILER) $<	-o $@ --shared-library=libpeasui-2.0
+	$(AM_V_GEN) $(G_IR_COMPILER) --includedir=$(top_builddir)/libpeas $<	-o $@ --shared-library=libpeasui-2.0
 
 CLEANFILES = \
 	$(gir_DATA)		\
