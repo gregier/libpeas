@@ -6,7 +6,7 @@ INCLUDES = \
 	-I$(top_srcdir)			\
 	$(PEAS_CFLAGS)			\
 	$(WARN_CFLAGS)			\
-	$(DISABLE_DEPRECATED_CFLAGS)
+	$(DISABLE_DEPRECATED)
 
 loader_LTLIBRARIES = libcloader.la
 

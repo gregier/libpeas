@@ -6,7 +6,7 @@ INCLUDES =								\
 	$(PEAS_CFLAGS)							\
 	$(IGE_MAC_CFLAGS)						\
 	$(WARN_CFLAGS)							\
-	$(DISABLE_DEPRECATED_CFLAGS)					\
+	$(DISABLE_DEPRECATED)						\
 	-DDATADIR=\""$(datadir)"\"					\
 	-DLIBDIR=\""$(libdir)"\"
 

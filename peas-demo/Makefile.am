@@ -8,7 +8,7 @@ INCLUDES =								\
 	$(PEAS_CFLAGS)							\
 	$(PEASUI_CFLAGS)						\
 	$(WARN_CFLAGS)							\
-	$(DISABLE_DEPRECATED_CFLAGS)
+	$(DISABLE_DEPRECATED)
 
 peas_demo_SOURCES = \
 	peas-demo.c

@@ -6,7 +6,7 @@ INCLUDES = \
 	$(PEAS_CFLAGS)			\
 	$(PEASUI_CFLAGS)		\
 	$(WARN_CFLAGS)			\
-	$(DISABLE_DEPRECATED_CFLAGS)
+	$(DISABLE_DEPRECATED)
 
 libpeasui_2_0_la_LDFLAGS = \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \

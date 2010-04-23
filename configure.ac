@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.62)
+AC_PREREQ([2.63])
 
 m4_define(peas_major_version,  2)
 m4_define(peas_minor_version, 29)
@@ -15,8 +15,10 @@ m4_define(peas_lt_current, [m4_eval(100 * peas_minor_version + peas_micro_versio
 m4_define(peas_lt_revision, [peas_interface_age])
 m4_define(peas_lt_age, [m4_eval(peas_binary_age - peas_interface_age)])
 
-AC_INIT(libpeas, peas_version, http://bugzilla.gnome.org/enter_bug.cgi?product=gedit)
-AC_CONFIG_SRCDIR(libpeas/peas-plugin.c)
+AC_INIT([libpeas],[peas_version],[http://bugzilla.gnome.org/enter_bug.cgi?product=gedit],[libpeas])
+
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([libpeas/peas-plugin.c])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_DEFINE(PEAS_MAJOR_VERSION, peas_major_version, [Gedit Plugins Engine major version])
@@ -31,37 +33,32 @@ AC_SUBST(PEAS_VERSION, peas_version)
 PEAS_API_VERSION=2.20
 AC_SUBST(PEAS_API_VERSION)
 
-AM_INIT_AUTOMAKE([1.8 dist-bzip2 no-dist-gzip -Wno-portability])
+AM_INIT_AUTOMAKE([1.11 dist-bzip2 no-dist-gzip -Wno-portability])
+AM_MAINTAINER_MODE([enable])
 
-AM_MAINTAINER_MODE
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
+AM_SILENT_RULES([yes])
 
-AC_CONFIG_HEADERS(config.h)
-AC_DISABLE_STATIC
+dnl ================================================================
+dnl Basic checks
+dnl ================================================================
 
-IT_PROG_INTLTOOL([0.40.0])
-
-PKG_PROG_PKG_CONFIG
-
-AC_PROG_LIBTOOL
-
-GNOME_DOC_INIT
-GTK_DOC_CHECK([1.0])
-
-AC_ISC_POSIX
+# Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_MAKE_SET
 
-AC_SYS_LARGEFILE
+# Initialize libtool
+LT_PREREQ([2.2.6])
+LT_INIT([disable-static])
+
 
 AC_CHECK_FUNCS(fsync)
 AC_CHECK_FUNC(sigaction)
 
-dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
-AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS -I m4")
+PKG_PROG_PKG_CONFIG
 
-dnl check for native osx
+dnl ================================================================
+dnl Check for native OSX
+dnl ================================================================
 AC_MSG_CHECKING([for native Mac OS X])
 
 gdk_windowing=`$PKG_CONFIG --variable=target gdk-2.0`
@@ -83,6 +80,8 @@ fi
 dnl ================================================================
 dnl Gettext stuff.
 dnl ================================================================
+
+IT_PROG_INTLTOOL([0.40.0])
 
 GETTEXT_PACKAGE=libpeas
 AC_SUBST(GETTEXT_PACKAGE)
@@ -117,7 +116,7 @@ dnl ================================================================
 SEED_REQUIRED=2.28.0
 
 AC_ARG_ENABLE(seed,
-	      AC_HELP_STRING([--enable-seed],[Enable Seed support]),
+	      AS_HELP_STRING([--enable-seed],[Enable Seed support]),
 	      [enable_seed=$enableval],
 	      [enable_seed=auto])
 
@@ -243,7 +242,7 @@ if test "x$have_python" != "xno"; then
 	save_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS $FLAGS"
 	AC_MSG_CHECKING([whether [$]CC understands $FLAGS])
-	AC_TRY_COMPILE([], [], [compiler_has_option=yes], [compiler_has_option=no])
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[compiler_has_option=yes],[compiler_has_option=no])
 	CFLAGS="$save_CFLAGS"
 	AC_MSG_RESULT($compiler_has_option)
 	if test $compiler_has_option = yes; then
@@ -259,8 +258,11 @@ fi
 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"])
 
+dnl ================================================================
+dnl Documentation
+dnl ================================================================
 
-
+GTK_DOC_CHECK([1.11],[--flavour no-tmpl])
 
 dnl ================================================================
 dnl Libtool
@@ -273,29 +275,21 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
+PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
+LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex register_peas_plugin_loader"
+AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
+AC_SUBST(LOADER_LIBTOOL_FLAGS)
+
 dnl ================================================================
 dnl Misc
 dnl ================================================================
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
 
-GNOME_COMPILE_WARNINGS(yes)
+GNOME_COMPILE_WARNINGS([maximum])
+# Use --enable-maintainer-mode to disabled deprecated symbols
+GNOME_MAINTAINER_MODE_DEFINES
 
-AC_ARG_ENABLE(deprecations,
-              [AS_HELP_STRING([--enable-deprecations],
-                              [warn about deprecated usages [default=no]])],,
-              [enable_deprecations=no])
-
-if test "x$enable_deprecations" = "xyes"; then
-   DISABLE_DEPRECATED_CFLAGS="-DG_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED \
-                              -DGDK_PIXBUF_DISABLE_DEPRECATED -DGNOME_DISABLE_DEPRECATED"
-   AC_SUBST(DISABLE_DEPRECATED_CFLAGS)
-fi
-
-PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
-LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex register_peas_plugin_loader"
-AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
-AC_SUBST(LOADER_LIBTOOL_FLAGS)
 
 AC_CONFIG_FILES([
 Makefile
