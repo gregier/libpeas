@@ -1,3 +1,8 @@
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+
 lib_LTLIBRARIES = libpeas-2.0.la
 
 INCLUDES =								\
@@ -45,28 +50,24 @@ libpeas_2_0_la_SOURCES = 	\
 headerdir = $(prefix)/include/libpeas-2.0/libpeas
 header_DATA = $(INST_H_FILES)
 
-if ENABLE_INTROSPECTION
-gir_DATA = Peas-2.0.gir
-typelib_DATA = Peas-2.0.typelib
+if HAVE_INTROSPECTION
+  introspection_sources = $(libpeas_2_0_la_SOURCES)
 
-Peas-2.0.gir: $(G_IR_SCANNER) libpeas-2.0.la Makefile
-	$(AM_V_GEN) $(G_IR_SCANNER)			\
-		--namespace=Peas				\
-		--nsversion=2.0				\
-		--library=peas-2.0			\
-		--include=GObject-2.0			\
-		--include=Gtk-2.0			\
-		--libtool="$(LIBTOOL)"			\
-		$(PEAS_CFLAGS)				\
-		$(addprefix $(srcdir)/,$(INST_H_FILES)) \
-		$(addprefix $(srcdir)/,$(C_FILES)) 	\
-		-o $@
+  Peas-2.0.gir: libpeas-2.0.la
+  Peas_2_0_gir_INCLUDES = GObject-2.0 Gtk-2.0
+  Peas_2_0_gir_CFLAGS = $(PEAS_CFLAGS)
+  Peas_2_0_gir_LIBS = libpeas-2.0.la
+  Peas_2_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+  INTROSPECTION_GIRS += Peas-2.0.gir
 
-Peas-2.0.typelib: $(gir_DATA) $(G_IR_COMPILER)
-	$(AM_V_GEN) $(G_IR_COMPILER) $<	-o $@ --shared-library=libpeas-2.0
+  girdir = $(datadir)/gir-1.0
+  dist_gir_DATA = $(INTROSPECTION_GIRS)
+
+  typelibdir = $(libdir)/girepository-1.0
+  typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES = \
-	$(gir_DATA)		\
+	$(dist_gir_DATA)		\
 	$(typelib_DATA)
 
 endif
