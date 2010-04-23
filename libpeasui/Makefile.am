@@ -1,9 +1,3 @@
--include $(INTROSPECTION_MAKEFILE)
-INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
-INTROSPECTION_COMPILER_ARGS = --includedir=$(top_builddir)/libpeas
-
-
 lib_LTLIBRARIES = libpeasui-2.0.la
 
 INCLUDES = \
@@ -38,16 +32,20 @@ headerdir = $(prefix)/include/libpeas-2.0/libpeasui
 header_DATA = $(INST_H_FILES)
 
 if HAVE_INTROSPECTION
+  -include $(INTROSPECTION_MAKEFILE)
+  INTROSPECTION_GIRS = PeasUI-2.0.gir
+  INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_builddir)/libpeas
+  INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
+
   introspection_sources = $(libpeasui_2_0_la_SOURCES)
 
-  PeasuUI-2.0.gir: libpeasui-2.0.la
+  PeasUI-2.0.gir: libpeasui-2.0.la
   PeasUI_2_0_gir_INCLUDES = GObject-2.0 Gtk-2.0 Peas-2.0
-  PeasUI_2_0_gir_CFLAGS = $(PEAS_CFLAGS) $(PEASUI_CFLAGS)
+  PeasUI_2_0_gir_CFLAGS = $(PEAS_CFLAGS) $(PEASUI_CFLAGS) -I$(top_srcdir)
   PeasUI_2_0_gir_LIBS = libpeasui-2.0.la
   PeasUI_2_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
-  INTROSPECTION_GIRS += PeasUI-2.0.gir
 
-  girdir = $(datadir)/gir-1.0 ../libpeas
+  girdir = $(datadir)/gir-1.0
   dist_gir_DATA = $(INTROSPECTION_GIRS)
 
   typelibdir = $(libdir)/girepository-1.0

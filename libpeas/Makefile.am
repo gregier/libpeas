@@ -1,8 +1,3 @@
--include $(INTROSPECTION_MAKEFILE)
-INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
-
 lib_LTLIBRARIES = libpeas-2.0.la
 
 INCLUDES =								\
@@ -51,6 +46,9 @@ headerdir = $(prefix)/include/libpeas-2.0/libpeas
 header_DATA = $(INST_H_FILES)
 
 if HAVE_INTROSPECTION
+  -include $(INTROSPECTION_MAKEFILE)
+  INTROSPECTION_GIRS = Peas-2.0.gir
+
   introspection_sources = $(libpeas_2_0_la_SOURCES)
 
   Peas-2.0.gir: libpeas-2.0.la
@@ -58,7 +56,6 @@ if HAVE_INTROSPECTION
   Peas_2_0_gir_CFLAGS = $(PEAS_CFLAGS)
   Peas_2_0_gir_LIBS = libpeas-2.0.la
   Peas_2_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
-  INTROSPECTION_GIRS += Peas-2.0.gir
 
   girdir = $(datadir)/gir-1.0
   dist_gir_DATA = $(INTROSPECTION_GIRS)
