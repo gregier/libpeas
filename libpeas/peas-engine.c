@@ -171,7 +171,8 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 
   /* Compute the extension of the plugin files. */
   extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
-  g_strdown (extension);
+  for (i = 0; extension[i] != '\0'; ++i)
+    extension[i] = g_ascii_tolower (extension[i]);
 
   /* Go and read everything from the provided search paths */
   sp = engine->priv->search_paths;
@@ -520,13 +521,15 @@ load_plugin_loader (PeasEngine  *engine,
 {
   gchar *loader_dirname;
   gchar *loader_basename;
+  guint i;
   PeasObjectModule *module;
   PeasPluginLoader *loader;
 
   /* Let's build the expected filename of the requested plugin loader */
   loader_dirname = peas_dirs_get_plugin_loaders_dir ();
   loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, G_MODULE_SUFFIX);
-  g_strdown (loader_basename);
+  for (i = 0; loader_basename[i] != '\0'; ++i)
+    loader_basename[i] = g_ascii_tolower (loader_basename[i]);
 
   g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
 
