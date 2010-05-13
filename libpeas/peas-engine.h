@@ -25,6 +25,7 @@
 #include <glib.h>
 #include "peas-plugin-info.h"
 #include "peas-plugin.h"
+#include "peas-extension.h"
 
 G_BEGIN_DECLS
 
@@ -90,6 +91,10 @@ gboolean          peas_engine_activate_plugin     (PeasEngine      *engine,
 gboolean          peas_engine_deactivate_plugin   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
 void              peas_engine_garbage_collect     (PeasEngine      *engine);
+
+PeasExtension    *peas_engine_get_extension       (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info,
+                                                   GType            ext_type);
 
 /* plugin activation/deactivation per target_object */
 void              peas_engine_update_plugins_ui   (PeasEngine      *engine,

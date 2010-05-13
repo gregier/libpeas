@@ -19,6 +19,7 @@ libpeas_2_0_la_LIBADD = $(PEAS_LIBS) $(IGE_MAC_LIBS)
 INST_H_FILES =			\
 	peas-plugin.h		\
 	peas-plugin-info.h	\
+	peas-extension.h	\
 	peas-engine.h
 
 NOINST_H_FILES =		\
@@ -35,6 +36,7 @@ C_FILES =			\
 	peas-plugin.c		\
 	peas-plugin-info.c	\
 	peas-plugin-loader.c	\
+	peas-extension.c	\
 	peas-engine.c
 
 libpeas_2_0_la_SOURCES = 	\

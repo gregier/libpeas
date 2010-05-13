@@ -32,6 +32,7 @@
 #include "peas-plugin-loader.h"
 #include "peas-object-module.h"
 #include "peas-plugin.h"
+#include "peas-extension.h"
 #include "peas-dirs.h"
 
 /**
@@ -788,6 +789,20 @@ peas_engine_update_plugins_ui (PeasEngine *engine,
 
       peas_plugin_update_ui (info->plugin, object);
     }
+}
+
+PeasExtension *
+peas_engine_get_extension (PeasEngine *engine,
+                           PeasPluginInfo *info,
+                           GType extension_type)
+{
+  PeasPluginLoader *loader;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (info != NULL, NULL);
+
+  loader = get_plugin_loader (engine, info);
+  return peas_plugin_loader_get_extension (loader, info, extension_type);
 }
 
 /**

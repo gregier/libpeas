@@ -26,6 +26,7 @@
 #include <gmodule.h>
 #include "peas-plugin.h"
 #include "peas-plugin-info.h"
+#include "peas-extension.h"
 
 G_BEGIN_DECLS
 
@@ -53,6 +54,9 @@ struct _PeasPluginLoaderClass {
                                            PeasPluginInfo   *info);
   void          (*unload)                 (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
+  PeasExtension *(*get_extension)         (PeasPluginLoader *loader,
+                                           PeasPluginInfo   *info,
+                                           GType             ext_type);
 
   void          (*garbage_collect)        (PeasPluginLoader *loader);
 };
@@ -66,6 +70,9 @@ PeasPlugin   *peas_plugin_loader_load                 (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
 void          peas_plugin_loader_unload               (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
+PeasExtension *peas_plugin_loader_get_extension       (PeasPluginLoader *loader,
+                                                       PeasPluginInfo   *info,
+                                                       GType             ext_type);
 void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader);
 
 /**
