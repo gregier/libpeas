@@ -54,6 +54,9 @@ struct _PeasPluginLoaderClass {
                                            PeasPluginInfo   *info);
   void          (*unload)                 (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
+  gboolean       (*provides_extension)    (PeasPluginLoader *loader,
+                                           PeasPluginInfo   *info,
+                                           GType             ext_type);
   PeasExtension *(*get_extension)         (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info,
                                            GType             ext_type);
@@ -70,6 +73,10 @@ PeasPlugin   *peas_plugin_loader_load                 (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
 void          peas_plugin_loader_unload               (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
+
+gboolean      peas_plugin_loader_provides_extension   (PeasPluginLoader *loader,
+                                                       PeasPluginInfo   *info,
+                                                       GType             ext_type);
 PeasExtension *peas_plugin_loader_get_extension       (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info,
                                                        GType             ext_type);

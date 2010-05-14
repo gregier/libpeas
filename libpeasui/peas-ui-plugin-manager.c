@@ -85,6 +85,15 @@ static void             plugin_manager_toggle_active        (PeasUIPluginManager
 static void             peas_ui_plugin_manager_constructed  (GObject             *object);
 static void             peas_ui_plugin_manager_finalize     (GObject             *object);
 
+static gboolean
+plugin_is_configurable (PeasUIPluginManager *pm,
+                        PeasPluginInfo      *info)
+{
+  return peas_engine_provides_extension (pm->priv->engine,
+                                         info,
+                                         PEAS_UI_TYPE_CONFIGURABLE);
+}
+
 static void
 peas_ui_plugin_manager_set_property (GObject      *object,
                                      guint         prop_id,
@@ -311,7 +320,7 @@ cursor_changed_cb (GtkTreeView *view,
   gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->about_button),
                             info != NULL);
   gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-                            info != NULL && peas_ui_plugin_info_is_configurable (info));
+                            info != NULL && plugin_is_configurable (pm, info));
 }
 
 static void
@@ -379,7 +388,7 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
                           INFO_COLUMN, &info, -1);
 
       gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-                                peas_ui_plugin_info_is_configurable (info));
+                                plugin_is_configurable (pm, info));
     }
 }
 
@@ -559,7 +568,7 @@ create_tree_popup_menu (PeasUIPluginManager *pm)
                                     GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   g_signal_connect (item, "activate", G_CALLBACK (configure_button_cb), pm);
-  gtk_widget_set_sensitive (item, peas_ui_plugin_info_is_configurable (info));
+  gtk_widget_set_sensitive (item, plugin_is_configurable (pm, info));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
   item = gtk_check_menu_item_new_with_mnemonic (_("A_ctivate"));

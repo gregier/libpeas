@@ -791,6 +791,20 @@ peas_engine_update_plugins_ui (PeasEngine *engine,
     }
 }
 
+gboolean
+peas_engine_provides_extension (PeasEngine *engine,
+                                PeasPluginInfo *info,
+                                GType extension_type)
+{
+  PeasPluginLoader *loader;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
+  g_return_val_if_fail (info != NULL, FALSE);
+
+  loader = get_plugin_loader (engine, info);
+  return peas_plugin_loader_provides_extension (loader, info, extension_type);
+}
+
 PeasExtension *
 peas_engine_get_extension (PeasEngine *engine,
                            PeasPluginInfo *info,

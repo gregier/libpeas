@@ -92,6 +92,9 @@ gboolean          peas_engine_deactivate_plugin   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
 void              peas_engine_garbage_collect     (PeasEngine      *engine);
 
+gboolean          peas_engine_provides_extension  (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info,
+                                                   GType            ext_type);
 PeasExtension    *peas_engine_get_extension       (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            ext_type);

@@ -75,6 +75,21 @@ peas_plugin_loader_unload (PeasPluginLoader *loader,
   klass->unload (loader, info);
 }
 
+gboolean
+peas_plugin_loader_provides_extension (PeasPluginLoader *loader,
+                                       PeasPluginInfo   *info,
+                                       GType             ext_type)
+{
+  PeasPluginLoaderClass *klass;
+
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
+
+  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
+  g_return_val_if_fail (klass->provides_extension != NULL, FALSE);
+
+  return klass->provides_extension (loader, info, ext_type);
+}
+
 PeasExtension *
 peas_plugin_loader_get_extension (PeasPluginLoader *loader,
                                   PeasPluginInfo   *info,

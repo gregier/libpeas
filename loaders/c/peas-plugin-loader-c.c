@@ -102,19 +102,15 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
   return result;
 }
 
-static PeasExtension *
-peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
-                                    PeasPluginInfo   *info,
-                                    GType             exten_type)
+static CreateFunc
+get_create_function (PeasPluginLoaderC *cloader,
+                     PeasPluginInfo    *info,
+                     GType              exten_type)
 {
-  PeasPluginLoaderC *cloader;
   PeasObjectModule *module;
   gchar *symbol_name;
   gpointer symbol;
   gboolean ret;
-  gpointer instance;
-
-  cloader = PEAS_PLUGIN_LOADER_C (loader);
 
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      info);
@@ -124,10 +120,35 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
   ret = g_module_symbol (peas_object_module_get_library (module), symbol_name, &symbol);
   g_free (symbol_name);
 
-  if (!ret || !symbol)
+  if (!ret)
+    return NULL;
+  return (CreateFunc) symbol;
+}
+
+static gboolean
+peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
+                                          PeasPluginInfo   *info,
+                                          GType             exten_type)
+{
+  PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
+
+  return get_create_function (cloader, info, exten_type) != NULL;
+}
+
+static PeasExtension *
+peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
+                                    PeasPluginInfo   *info,
+                                    GType             exten_type)
+{
+  PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
+  CreateFunc create_func;
+  gpointer instance;
+
+  create_func = get_create_function (cloader, info, exten_type);
+  if (!create_func)
     return NULL;
 
-  instance = ((CreateFunc) symbol) ();
+  instance = create_func ();
 
   g_return_val_if_fail (instance != NULL, NULL);
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
@@ -198,6 +219,7 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
   loader_class->add_module_directory = peas_plugin_loader_c_add_module_directory;
   loader_class->load = peas_plugin_loader_c_load;
   loader_class->unload = peas_plugin_loader_c_unload;
+  loader_class->provides_extension = peas_plugin_loader_c_provides_extension;
   loader_class->get_extension = peas_plugin_loader_c_get_extension;
 
   g_type_class_add_private (object_class, sizeof (PeasPluginLoaderCPrivate));

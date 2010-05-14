@@ -36,30 +36,3 @@ peas_ui_plugin_info_get_icon_name (PeasPluginInfo *info)
   else
     return "libpeas-plugin";
 }
-
-/**
- * peas_ui_plugin_info_is_configurable:
- * @info: A #PeasPluginInfo
- *
- * Check if the plugin is configurable, given its #PeasPluginInfo.
- *
- * This function takes a #PeasPluginInfo as its argument and proxies the
- * is_configurable() method call to the #PeasPlugin, handling type checks and
- * casts for us. Calling this function on a #PeasPlugin which doesn't
- * implement #PeasUIConfigurable won't generate an error.
- *
- * Returns: %TRUE if the plugin is configurable.
- */
-gboolean
-peas_ui_plugin_info_is_configurable (PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, FALSE);
-
-  if (!peas_plugin_info_is_active (info))
-    return FALSE;
-
-  if (!PEAS_UI_IS_CONFIGURABLE (info->plugin))
-    return FALSE;
-
-  return peas_ui_configurable_is_configurable (PEAS_UI_CONFIGURABLE (info->plugin));
-}
