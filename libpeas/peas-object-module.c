@@ -291,3 +291,11 @@ peas_object_module_get_type_registration (PeasObjectModule *module)
 
   return module->priv->type_registration;
 }
+
+GModule *
+peas_object_module_get_library (PeasObjectModule *module)
+{
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+
+  return module->priv->library;
+}

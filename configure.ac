@@ -53,6 +53,7 @@ LT_INIT([disable-static])
 
 AC_CHECK_FUNCS(fsync)
 AC_CHECK_FUNC(sigaction)
+AC_CHECK_SIZEOF(time_t, [], [#include <time.h>])
 
 PKG_PROG_PKG_CONFIG
 
@@ -97,6 +98,7 @@ PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gobject-2.0 >= 2.23.6
 	gmodule-2.0 >= 2.18.0
+	gobject-introspection-1.0 >= 0.6
 ])
 
 PKG_CHECK_MODULES(PEASUI, [

@@ -54,7 +54,7 @@ if HAVE_INTROSPECTION
   introspection_sources = $(libpeas_2_0_la_SOURCES)
 
   Peas-2.0.gir: libpeas-2.0.la
-  Peas_2_0_gir_INCLUDES = GObject-2.0 Gtk-2.0
+  Peas_2_0_gir_INCLUDES = GObject-2.0 Gtk-2.0 GModule-2.0
   Peas_2_0_gir_CFLAGS = $(PEAS_CFLAGS)
   Peas_2_0_gir_LIBS = libpeas-2.0.la
   Peas_2_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))

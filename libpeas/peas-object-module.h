@@ -66,6 +66,8 @@ const gchar        *peas_object_module_get_path               (PeasObjectModule 
 const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);
 const gchar        *peas_object_module_get_type_registration  (PeasObjectModule *module);
 
+GModule            *peas_object_module_get_library            (PeasObjectModule *module);
+
 G_END_DECLS
 
 #endif /* __PEAS_OBJECT_MODULE_H__ */
