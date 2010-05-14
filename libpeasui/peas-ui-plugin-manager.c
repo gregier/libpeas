@@ -33,6 +33,7 @@
 
 #include "peas-ui-plugin-manager.h"
 #include "peas-ui-plugin-info.h"
+#include "peas-ui-configurable.h"
 
 /**
  * SECTION:peas-ui-plugin-manager
@@ -190,14 +191,21 @@ configure_button_cb (GtkWidget           *button,
                      PeasUIPluginManager *pm)
 {
   PeasPluginInfo *info;
+  PeasExtension *exten;
   GtkWindow *toplevel;
-  GtkWidget *conf_dlg;
+  GtkWidget *conf_dlg = NULL;
   GtkWindowGroup *wg;
 
   info = plugin_manager_get_selected_plugin (pm);
   g_return_if_fail (info != NULL);
 
-  conf_dlg = peas_ui_plugin_info_create_configure_dialog (info);
+  exten = peas_engine_get_extension (pm->priv->engine, info, PEAS_UI_TYPE_CONFIGURABLE); 
+  g_return_if_fail (exten != NULL);
+
+  g_debug ("Calling create_configure_dialog on %p", exten);
+
+  peas_extension_call (exten, "create_configure_dialog", &conf_dlg);
+  g_object_unref (exten);
   g_return_if_fail (conf_dlg != NULL);
 
   toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));

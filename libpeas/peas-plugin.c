@@ -119,7 +119,8 @@ peas_plugin_finalize (GObject *object)
 {
   PeasPlugin *plugin = PEAS_PLUGIN (object);
 
-  _peas_plugin_info_unref (plugin->priv->info);
+  if (plugin->priv->info)
+    _peas_plugin_info_unref (plugin->priv->info);
 
   G_OBJECT_CLASS (peas_plugin_parent_class)->finalize (object);
 }
