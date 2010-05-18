@@ -3,18 +3,22 @@
 #include <gmodule.h>
 #include <gtk/gtk.h>
 
+#include <libpeas/peas-activatable.h>
 #include <libpeasui/peas-ui-configurable.h>
 
 #include "peasdemo-hello-world-plugin.h"
 
 #define WINDOW_DATA_KEY "PeasDemoHelloWorldPluginWindowData"
 
+static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 static void peas_ui_configurable_iface_init (PeasUIConfigurableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldPlugin,
                                 peasdemo_hello_world_plugin,
                                 PEAS_TYPE_PLUGIN,
                                 0,
+                                G_IMPLEMENT_INTERFACE (PEAS_TYPE_ACTIVATABLE,
+                                                       peas_activatable_iface_init)
                                 G_IMPLEMENT_INTERFACE (PEAS_UI_TYPE_CONFIGURABLE,
                                                        peas_ui_configurable_iface_init))
 
@@ -53,8 +57,8 @@ get_box (GtkWidget *window)
 }
 
 static void
-peasdemo_hello_world_plugin_activate (PeasPlugin *plugin,
-                                      GObject    *object)
+peasdemo_hello_world_plugin_activate (PeasActivatable *activatable,
+                                      GObject         *object)
 {
   GtkWidget *window;
   GtkWidget *label;
@@ -81,8 +85,8 @@ peasdemo_hello_world_plugin_activate (PeasPlugin *plugin,
 }
 
 static void
-peasdemo_hello_world_plugin_deactivate (PeasPlugin *plugin,
-                                        GObject    *object)
+peasdemo_hello_world_plugin_deactivate (PeasActivatable *activatable,
+                                        GObject         *object)
 {
   GtkWidget *window;
   WindowData *data;
@@ -133,9 +137,13 @@ peasdemo_hello_world_plugin_class_init (PeasDemoHelloWorldPluginClass *klass)
   PeasPluginClass *plugin_class = PEAS_PLUGIN_CLASS (klass);
 
   object_class->finalize = peasdemo_hello_world_plugin_finalize;
+}
 
-  plugin_class->activate = peasdemo_hello_world_plugin_activate;
-  plugin_class->deactivate = peasdemo_hello_world_plugin_deactivate;
+static void
+peas_activatable_iface_init (PeasActivatableInterface *iface)
+{
+  iface->activate = peasdemo_hello_world_plugin_activate;
+  iface->deactivate = peasdemo_hello_world_plugin_deactivate;
 }
 
 static void
@@ -156,6 +164,11 @@ register_peas_plugin (GTypeModule   *type_module)
 
         return g_object_new (PEASDEMO_TYPE_HELLO_WORLD_PLUGIN,
                              NULL);
+}
+
+G_MODULE_EXPORT GObject    *create_PeasActivatable ()
+{
+  return g_object_new (PEASDEMO_TYPE_HELLO_WORLD_PLUGIN, NULL);
 }
 
 G_MODULE_EXPORT GObject    *create_PeasUIConfigurable ()
