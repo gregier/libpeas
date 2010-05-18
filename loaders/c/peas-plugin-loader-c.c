@@ -31,7 +31,6 @@ struct _PeasPluginLoaderCPrivate
   GHashTable *loaded_plugins;
 };
 
-/*PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderC, peas_plugin_loader_c);*/
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
 
 G_MODULE_EXPORT GObject *
@@ -49,14 +48,13 @@ peas_plugin_loader_c_add_module_directory (PeasPluginLoader *loader,
   /* This is a no-op for C modules... */
 }
 
-static PeasPlugin *
+static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader * loader,
                            PeasPluginInfo   *info)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
   const gchar *module_name;
-  PeasPlugin *result;
 
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      info);
@@ -74,6 +72,7 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
        * If this changes, we should use weak refs or something */
 
       g_hash_table_insert (cloader->priv->loaded_plugins, info, module);
+      g_debug ("Insert module %s into C module set", module_name);
     }
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
@@ -81,25 +80,16 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
       g_warning ("Could not load plugin module: %s",
                  peas_plugin_info_get_name (info));
 
-      return NULL;
+      return FALSE;
     }
 
-  result = (PeasPlugin *) peas_object_module_new_object (module);
+  {
+    /* FIXME: This weird hack is currently necessary but ought to be removed. */
+    PeasPlugin *result = (PeasPlugin *) peas_object_module_new_object (module);
+    g_object_unref (result);
+  }
 
-  if (!result)
-    {
-      g_warning ("Could not create plugin object: %s",
-                 peas_plugin_info_get_name (info));
-      g_type_module_unuse (G_TYPE_MODULE (module));
-
-      return NULL;
-    }
-
-  g_object_set (result, "plugin-info", info, NULL);
-
-  g_type_module_unuse (G_TYPE_MODULE (module));
-
-  return result;
+  return TRUE;
 }
 
 static CreateFunc
@@ -114,9 +104,11 @@ get_create_function (PeasPluginLoaderC *cloader,
 
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      info);
+
   g_return_val_if_fail (module != NULL, NULL);
 
   symbol_name = g_strdup_printf ("create_%s", g_type_name (exten_type));
+  g_debug ("Resolving symbol %s", symbol_name);
   ret = g_module_symbol (peas_object_module_get_library (module), symbol_name, &symbol);
   g_free (symbol_name);
 
@@ -161,9 +153,13 @@ static void
 peas_plugin_loader_c_unload (PeasPluginLoader *loader,
                              PeasPluginInfo   *info)
 {
-  /* this is a no-op, since the type module will be properly unused as
-     the last reference to the plugin dies. When the plugin is activated
-     again, the library will be reloaded */
+  PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
+  PeasObjectModule *module;
+
+  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
+                                                     info);
+
+  g_type_module_unuse (G_TYPE_MODULE (module));
 }
 
 static void

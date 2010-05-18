@@ -30,7 +30,6 @@ struct _PeasPluginInfo {
   /*< private >*/
   gint refcount;
 
-  PeasPlugin *plugin;
   gchar *file;
   gchar *module_dir;
   gchar *data_dir;
@@ -50,6 +49,7 @@ struct _PeasPluginInfo {
   gboolean visible;
   GHashTable *keys;
 
+  gint active : 1;
   /* A plugin is unavailable if it is not possible to activate it
      due to an error loading the plugin module (e.g. for Python plugins
      when the interpreter has not been correctly initializated) */

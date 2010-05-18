@@ -51,9 +51,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   if (!g_atomic_int_dec_and_test (&info->refcount))
     return;
 
-  if (info->plugin != NULL)
-    g_object_unref (info->plugin);
-
   if (info->keys != NULL)
     g_hash_table_destroy (info->keys);
   g_free (info->file);
@@ -337,7 +334,7 @@ peas_plugin_info_is_active (PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
-  return info->available && info->plugin != NULL;
+  return info->available && info->active;
 }
 
 /**

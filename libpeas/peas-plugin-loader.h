@@ -50,7 +50,7 @@ struct _PeasPluginLoaderClass {
   void          (*add_module_directory)   (PeasPluginLoader *loader,
                                            const gchar      *module_dir);
 
-  PeasPlugin   *(*load)                   (PeasPluginLoader *loader,
+  gboolean      (*load)                   (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
   void          (*unload)                 (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
@@ -69,7 +69,7 @@ GType         peas_plugin_loader_get_type             (void);
 void          peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
                                                        const gchar      *module_dir);
 
-PeasPlugin   *peas_plugin_loader_load                 (PeasPluginLoader *loader,
+gboolean      peas_plugin_loader_load                 (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
 void          peas_plugin_loader_unload               (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);

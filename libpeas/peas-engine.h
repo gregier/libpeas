@@ -61,14 +61,6 @@ struct _PeasEngineClass {
 
   void     (*deactivate_plugin)           (PeasEngine     *engine,
                                            PeasPluginInfo *info);
-
-  void     (*activate_plugin_on_object)   (PeasEngine     *engine,
-                                           PeasPluginInfo *info,
-                                           GObject        *object);
-
-  void     (*deactivate_plugin_on_object) (PeasEngine     *engine,
-                                           PeasPluginInfo *info,
-                                           GObject        *object);
 };
 
 GType             peas_engine_get_type            (void) G_GNUC_CONST;
@@ -99,15 +91,6 @@ PeasExtension    *peas_engine_get_extension       (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            ext_type);
 
-/* plugin activation/deactivation per target_object */
-void              peas_engine_update_plugins_ui   (PeasEngine      *engine,
-                                                   GObject         *object);
-
-/* object management */
-void              peas_engine_add_object          (PeasEngine      *engine,
-                                                   GObject         *object);
-void              peas_engine_remove_object       (PeasEngine      *engine,
-                                                   GObject         *object);
 
 G_END_DECLS
 
