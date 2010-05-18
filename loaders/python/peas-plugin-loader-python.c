@@ -27,6 +27,9 @@
 #define NO_IMPORT_PYGTK
 #endif
 
+/* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
+ * glib-object.h, so we unset it here to avoid a warning. Yep, that's bad. */
+#undef _POSIX_C_SOURCE
 #include <Python.h>
 #include <pygobject.h>
 #include <signal.h>
