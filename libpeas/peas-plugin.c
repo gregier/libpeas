@@ -61,13 +61,6 @@ struct _PeasPluginPrivate {
 };
 
 static void
-dummy (PeasPlugin *plugin,
-       GObject    *object)
-{
-  /* Empty */
-}
-
-static void
 peas_plugin_get_property (GObject    *object,
                           guint       prop_id,
                           GValue     *value,
@@ -130,10 +123,6 @@ peas_plugin_class_init (PeasPluginClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  klass->activate = dummy;
-  klass->deactivate = dummy;
-  klass->update_ui = dummy;
-
   object_class->get_property = peas_plugin_get_property;
   object_class->set_property = peas_plugin_set_property;
   object_class->finalize = peas_plugin_finalize;
@@ -192,59 +181,3 @@ peas_plugin_get_data_dir (PeasPlugin *plugin)
 
   return g_strdup (peas_plugin_info_get_data_dir (plugin->priv->info));
 }
-
-/**
- * peas_plugin_activate:
- * @plugin: A #PeasPlugin.
- * @object: The #GObject on which the plugin should be activated.
- *
- * Activates the plugin on an object.  An instance of #PeasPlugin will be
- * activated once for each object registered against the #PeasEngine which
- * controls this #PeasPlugin.  For instance, a typical GUI application like
- * gedit will activate the plugin once for each of its main windows.
- */
-void
-peas_plugin_activate (PeasPlugin *plugin,
-                      GObject    *object)
-{
-  g_return_if_fail (PEAS_IS_PLUGIN (plugin));
-  g_return_if_fail (G_IS_OBJECT (object));
-
-  PEAS_PLUGIN_GET_CLASS (plugin)->activate (plugin, object);
-}
-
-/**
- * peas_plugin_deactivate:
- * @plugin: A #PeasPlugin.
- * @object: A #GObject.
- *
- * Deactivates the plugin on the given object.
- */
-void
-peas_plugin_deactivate (PeasPlugin *plugin,
-                        GObject    *object)
-{
-  g_return_if_fail (PEAS_IS_PLUGIN (plugin));
-  g_return_if_fail (G_IS_OBJECT (object));
-
-  PEAS_PLUGIN_GET_CLASS (plugin)->deactivate (plugin, object);
-}
-
-/**
- * peas_plugin_update_ui:
- * @plugin: A #PeasPlugin.
- * @object: A #GObject.
- *
- * Triggers an update of the user interface to take into account state changes
- * due to a plugin or an user action.
- */
-void
-peas_plugin_update_ui (PeasPlugin *plugin,
-                       GObject    *object)
-{
-  g_return_if_fail (PEAS_IS_PLUGIN (plugin));
-  g_return_if_fail (G_IS_OBJECT (object));
-
-  PEAS_PLUGIN_GET_CLASS (plugin)->update_ui (plugin, object);
-}
-

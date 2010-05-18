@@ -71,16 +71,6 @@ struct _PeasPlugin {
 struct _PeasPluginClass {
   GObjectClass parent_class;
 
-  /* Virtual public methods */
-  void        (*activate)                 (PeasPlugin *plugin,
-                                           GObject    *object);
-  void        (*deactivate)               (PeasPlugin *plugin,
-                                           GObject    *object);
-
-  /* FIXME: those two following functions are too UI-centric */
-  void        (*update_ui)                (PeasPlugin *plugin,
-                                           GObject    *object);
-
   /* Padding for future expansion */
   void        (*_peas_reserved1)          (void);
   void        (*_peas_reserved2)          (void);
@@ -95,13 +85,6 @@ GType peas_plugin_get_type (void)  G_GNUC_CONST;
 
 PeasPluginInfo   *peas_plugin_get_info                (PeasPlugin *plugin);
 gchar            *peas_plugin_get_data_dir            (PeasPlugin *plugin);
-
-void              peas_plugin_activate                (PeasPlugin *plugin,
-                                                       GObject    *object);
-void              peas_plugin_deactivate              (PeasPlugin *plugin,
-                                                       GObject    *object);
-void              peas_plugin_update_ui               (PeasPlugin *plugin,
-                                                       GObject    *object);
 
 /**
  * PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE):
