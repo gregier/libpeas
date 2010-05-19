@@ -23,6 +23,7 @@
 #define __PEAS_PLUGIN_LOADER_C_H__
 
 #include <libpeas/peas-plugin-loader.h>
+#include <libpeas/peas-object-module.h>
 
 G_BEGIN_DECLS
 
@@ -50,7 +51,7 @@ struct _PeasPluginLoaderCClass {
 GType                    peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
 
 /* All the loaders must implement this function */
-G_MODULE_EXPORT GObject *peas_register_types           (GTypeModule *module);
+G_MODULE_EXPORT void     peas_register_types           (PeasObjectModule *module);
 
 G_END_DECLS
 

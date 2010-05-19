@@ -24,8 +24,6 @@
 #include <libpeas/peas-object-module.h>
 #include <gmodule.h>
 
-typedef gpointer (* CreateFunc) (void);
-
 struct _PeasPluginLoaderCPrivate
 {
   GHashTable *loaded_plugins;
@@ -33,12 +31,22 @@ struct _PeasPluginLoaderCPrivate
 
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
 
-G_MODULE_EXPORT GObject *
-peas_register_types (GTypeModule *type_module)
+static GObject *
+create_object (GType the_type)
 {
-        peas_plugin_loader_c_register_type (type_module);
-        peas_extension_c_register (type_module);
-        return g_object_new (PEAS_TYPE_PLUGIN_LOADER_C, NULL);
+  return g_object_new (the_type, NULL);
+}
+
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+  peas_plugin_loader_c_register_type (G_TYPE_MODULE (module));
+  peas_extension_c_register (G_TYPE_MODULE (module));
+
+  peas_object_module_register_extension (module,
+                                         PEAS_TYPE_PLUGIN_LOADER,
+                                         (PeasCreateFunc) create_object,
+                                         GSIZE_TO_POINTER (PEAS_TYPE_PLUGIN_LOADER_C));
 }
 
 static void
@@ -82,38 +90,9 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
       return FALSE;
     }
 
-  {
-    /* FIXME: This weird hack is currently necessary but ought to be removed. */
-    PeasPlugin *result = (PeasPlugin *) peas_object_module_new_object (module);
-    g_object_unref (result);
-  }
+  peas_object_module_register_types (module);
 
   return TRUE;
-}
-
-static CreateFunc
-get_create_function (PeasPluginLoaderC *cloader,
-                     PeasPluginInfo    *info,
-                     GType              exten_type)
-{
-  PeasObjectModule *module;
-  gchar *symbol_name;
-  gpointer symbol;
-  gboolean ret;
-
-  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     info);
-
-  g_return_val_if_fail (module != NULL, NULL);
-
-  symbol_name = g_strdup_printf ("create_%s", g_type_name (exten_type));
-  g_debug ("Resolving symbol %s", symbol_name);
-  ret = g_module_symbol (peas_object_module_get_library (module), symbol_name, &symbol);
-  g_free (symbol_name);
-
-  if (!ret)
-    return NULL;
-  return (CreateFunc) symbol;
 }
 
 static gboolean
@@ -122,8 +101,13 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
                                           GType             exten_type)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
+  PeasObjectModule *module;
 
-  return get_create_function (cloader, info, exten_type) != NULL;
+  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
+                                                     info);
+  g_return_val_if_fail (module != NULL, FALSE);
+
+  return peas_object_module_provides_object (module, exten_type);
 }
 
 static PeasExtension *
@@ -132,14 +116,14 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
                                     GType             exten_type)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
-  CreateFunc create_func;
+  PeasObjectModule *module;
   gpointer instance;
 
-  create_func = get_create_function (cloader, info, exten_type);
-  if (!create_func)
-    return NULL;
+  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
+                                                     info);
+  g_return_val_if_fail (module != NULL, NULL);
 
-  instance = create_func ();
+  instance = peas_object_module_create_object (module, exten_type);
 
   g_return_val_if_fail (instance != NULL, NULL);
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);

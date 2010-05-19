@@ -5,6 +5,7 @@
 #include <glib-object.h>
 #include <libpeas/peas-plugin.h>
 #include <libpeas/peas-plugin-info.h>
+#include <libpeas/peas-object-module.h>
 
 G_BEGIN_DECLS
 
@@ -27,9 +28,7 @@ struct _PeasDemoHelloWorldPluginClass {
 };
 
 GType                       peasdemo_hello_world_plugin_get_type  (void) G_GNUC_CONST;
-G_MODULE_EXPORT GObject    *peas_register_types                   (GTypeModule *module);
-G_MODULE_EXPORT GObject    *create_PeasUIConfigurable ();
-G_MODULE_EXPORT GObject    *create_PeasActivatable ();
+G_MODULE_EXPORT void        peas_register_types                   (PeasObjectModule *module);
 
 G_END_DECLS
 

@@ -30,7 +30,7 @@
 
 G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
 
-typedef GObject *(*PeasObjectModuleRegisterFunc) (GTypeModule *);
+typedef void     (*PeasObjectModuleRegisterFunc) (PeasObjectModule *);
 
 enum {
   PROP_0,
@@ -39,15 +39,23 @@ enum {
   PROP_RESIDENT
 };
 
+typedef struct {
+  GType iface_type;
+  PeasCreateFunc func;
+  gconstpointer user_data;
+} InterfaceImplementation;
+
 struct _PeasObjectModulePrivate {
   GModule *library;
 
   PeasObjectModuleRegisterFunc register_func;
+  GArray *implementations;
 
   gchar *path;
   gchar *module_name;
 
-  gboolean resident;
+  gboolean types_registered : 1;
+  gboolean resident : 1;
 };
 
 static gboolean
@@ -121,6 +129,8 @@ peas_object_module_init (PeasObjectModule *module)
   module->priv = G_TYPE_INSTANCE_GET_PRIVATE (module,
                                               PEAS_TYPE_OBJECT_MODULE,
                                               PeasObjectModulePrivate);
+
+  module->priv->implementations = g_array_new (FALSE, FALSE, sizeof (InterfaceImplementation));
 }
 
 static void
@@ -130,6 +140,7 @@ peas_object_module_finalize (GObject *object)
 
   g_free (module->priv->path);
   g_free (module->priv->module_name);
+  g_array_free (module->priv->implementations, TRUE);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
 }
@@ -239,12 +250,55 @@ peas_object_module_new (const gchar *module_name,
                                             NULL);
 }
 
-GObject *
-peas_object_module_new_object (PeasObjectModule *module)
+void
+peas_object_module_register_types (PeasObjectModule *module)
 {
-  g_return_val_if_fail (module->priv->register_func != NULL, NULL);
+  g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
+  g_return_if_fail (module->priv->register_func != NULL);
+  g_return_if_fail (module->priv->types_registered == FALSE);
 
-  return module->priv->register_func (G_TYPE_MODULE (module));
+  module->priv->register_func (module);
+  module->priv->types_registered = TRUE;
+}
+
+GObject *
+peas_object_module_create_object (PeasObjectModule *module,
+                                  GType             interface)
+{
+  guint i;
+  InterfaceImplementation *impls;
+
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+
+  if (!module->priv->types_registered)
+    peas_object_module_register_types (module);
+
+  impls = (InterfaceImplementation *) module->priv->implementations->data;
+  for (i = 0; i < module->priv->implementations->len; ++i)
+    if (impls[i].iface_type == interface)
+      return impls[i].func (impls[i].user_data);
+
+  return NULL;
+}
+
+gboolean
+peas_object_module_provides_object (PeasObjectModule *module,
+                                    GType             interface)
+{
+  guint i;
+  InterfaceImplementation *impls;
+
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), FALSE);
+
+  if (!module->priv->types_registered)
+    peas_object_module_register_types (module);
+
+  impls = (InterfaceImplementation *) module->priv->implementations->data;
+  for (i = 0; i < module->priv->implementations->len; ++i)
+    if (impls[i].iface_type == interface)
+      return TRUE;
+
+  return FALSE;
 }
 
 const gchar *
@@ -269,4 +323,16 @@ peas_object_module_get_library (PeasObjectModule *module)
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
   return module->priv->library;
+}
+
+void
+peas_object_module_register_extension (PeasObjectModule *module,
+                                       GType iface_type,
+                                       PeasCreateFunc func,
+                                       gconstpointer user_data)
+{
+  InterfaceImplementation impl = { iface_type, func, user_data };
+  g_array_append_val (module->priv->implementations, impl);
+
+  g_debug ("Registered extension for type '%s'", g_type_name (iface_type));
 }

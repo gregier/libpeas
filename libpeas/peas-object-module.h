@@ -41,6 +41,8 @@ typedef struct _PeasObjectModule        PeasObjectModule;
 typedef struct _PeasObjectModuleClass   PeasObjectModuleClass;
 typedef struct _PeasObjectModulePrivate PeasObjectModulePrivate;
 
+typedef GObject *(*PeasCreateFunc)   (gconstpointer user_data);
+
 struct _PeasObjectModule {
   GTypeModule parent;
 
@@ -59,12 +61,21 @@ PeasObjectModule   *peas_object_module_new                    (const gchar      
                                                                const gchar      *path,
                                                                gboolean          resident);
 
-GObject            *peas_object_module_new_object             (PeasObjectModule *module);
+void                peas_object_module_register_types         (PeasObjectModule *module);
+GObject            *peas_object_module_create_object          (PeasObjectModule *module,
+                                                               GType             interface);
+gboolean            peas_object_module_provides_object        (PeasObjectModule *module,
+                                                               GType             interface);
 
 const gchar        *peas_object_module_get_path               (PeasObjectModule *module);
 const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);
 
 GModule            *peas_object_module_get_library            (PeasObjectModule *module);
+
+void                peas_object_module_register_extension     (PeasObjectModule *module,
+                                                               GType iface_type,
+                                                               PeasCreateFunc func,
+                                                               gconstpointer user_data);
 
 G_END_DECLS
 
