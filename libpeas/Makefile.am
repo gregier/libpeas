@@ -20,6 +20,7 @@ INST_H_FILES =			\
 	peas-plugin.h		\
 	peas-plugin-info.h	\
 	peas-extension.h	\
+	peas-extension-set.h	\
 	peas-activatable.h	\
 	peas-engine.h
 
@@ -40,16 +41,35 @@ C_FILES =			\
 	peas-plugin-info.c	\
 	peas-plugin-loader.c	\
 	peas-extension.c	\
+	peas-extension-set.c	\
 	peas-activatable.c	\
 	peas-engine.c
+
+BUILT_SOURCES = \
+	peas-marshal.c			\
+	peas-marshal.h
 
 libpeas_2_0_la_SOURCES = 	\
 	$(INST_H_FILES)		\
 	$(NOINST_H_FILES)	\
+	$(BUILT_SOURCES)	\
 	$(C_FILES)
 
 headerdir = $(prefix)/include/libpeas-2.0/libpeas
 header_DATA = $(INST_H_FILES)
+
+peas-marshal.c: peas-marshal.list $(GLIB_GENMARSHAL)
+	$(AM_V_GEN) (echo "#include \"peas-marshal.h\"" && $(GLIB_GENMARSHAL) $< --body --prefix=peas_cclosure_marshal) > $@
+
+peas-marshal.h: peas-marshal.list $(GLIB_GENMARSHAL)
+	$(AM_V_GEN) $(GLIB_GENMARSHAL) $< --header --prefix=peas_cclosure_marshal > $@
+
+EXTRA_DIST = peas-marshal.list
+
+CLEANFILES = $(BUILT_SOURCES)
+
+dist-hook:
+	cd $(distdir); rm -f $(BUILT_SOURCES)
 
 if HAVE_INTROSPECTION
   -include $(INTROSPECTION_MAKEFILE)
@@ -69,7 +89,7 @@ if HAVE_INTROSPECTION
   typelibdir = $(libdir)/girepository-1.0
   typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
-CLEANFILES = \
+  CLEANFILES += \
 	$(dist_gir_DATA)		\
 	$(typelib_DATA)
 

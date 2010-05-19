@@ -28,6 +28,8 @@ Makefile.in
 /data/libpeas-2.0.pc
 /data/libpeasui-2.0.pc
 /depcomp
+/libpeas/peas-marshal.h
+/libpeas/peas-marshal.c
 /peas-demo/peas-demo
 /gnome-doc-utils.make
 /gtk-doc.make
