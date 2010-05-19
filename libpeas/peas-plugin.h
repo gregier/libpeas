@@ -86,57 +86,6 @@ GType peas_plugin_get_type (void)  G_GNUC_CONST;
 PeasPluginInfo   *peas_plugin_get_info                (PeasPlugin *plugin);
 gchar            *peas_plugin_get_data_dir            (PeasPlugin *plugin);
 
-/**
- * PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE):
- * @PARENT_TYPE: The PeasPlugin subclass used as the parent type.
- * @PluginName: The name of the new plugin class, in CamelCase.
- * @plugin_name: The name of the new plugin class, in lower_case.
- * @CODE: Custom code that gets inserted in the *_get_type() function.
- *
- * A convenience macro for plugin implementations, which declares a subclass
- * of PARENT_TYPE (see G_DEFINE_DYNAMIC_TYPE_EXTENDED()) and a registration
- * function.  The resulting #GType is to be registered in a #GTypeModule.
- *
- * @CODE will be included in the resulting *_get_type() function, and will
- * usually consist of G_IMPLEMENT_INTERFACE() calls and eventually on
- * additional type registration
- */
-#define PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, CODE) \
-        G_DEFINE_DYNAMIC_TYPE_EXTENDED (PluginName,                           \
-                                        plugin_name,                          \
-                                        PARENT_TYPE,                          \
-                                        0,                                    \
-                                        CODE)                                 \
-                                                                              \
-/* This is not very nice, but G_DEFINE_DYNAMIC wants it and our old macro     \
- * did not support it */                                                      \
-static void                                                                   \
-plugin_name##_class_finalize (PluginName##Class *klass)                       \
-{                                                                             \
-}                                                                             \
-                                                                              \
-G_MODULE_EXPORT GObject *                                                     \
-register_peas_plugin (GTypeModule   *type_module)                             \
-{                                                                             \
-        plugin_name##_register_type (type_module);                            \
-                                                                              \
-        return g_object_new (plugin_name##_get_type(),                        \
-                             NULL);                                           \
-}
-
-/**
- * PEAS_REGISTER_TYPE(PARENT_TYPE, PluginName, plugin_name):
- * @PARENT_TYPE: The PeasPlugin subclass used as the parent type.
- * @PluginName: The name of the new plugin class, in CamelCase.
- * @plugin_name: The name of the new plugin class, in lower_case.
- *
- * A convenience macro for plugin implementations, which declares a subclass
- * of PARENT_TYPE (see G_DEFINE_DYNAMIC_TYPE_EXTENDED()) and a registration
- * function.  The resulting #GType is to be registered in a #GTypeModule.
- */
-#define PEAS_REGISTER_TYPE(PARENT_TYPE, PluginName, plugin_name)              \
-        PEAS_REGISTER_TYPE_WITH_CODE(PARENT_TYPE, PluginName, plugin_name, ;)
-
 G_END_DECLS
 
 #endif /* __PEAS_PLUGIN_H__ */

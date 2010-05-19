@@ -82,25 +82,6 @@ PeasExtension *peas_plugin_loader_get_extension       (PeasPluginLoader *loader,
                                                        GType             ext_type);
 void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader);
 
-/**
- * PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name):
- *
- * Utility macro used to register plugin loaders.
- */
-#define PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name) \
-        G_DEFINE_DYNAMIC_TYPE (PluginLoaderName,                             \
-                               plugin_loader_name,                           \
-                               PEAS_TYPE_PLUGIN_LOADER);                     \
-                                                                             \
-G_MODULE_EXPORT GObject *                                                    \
-register_peas_plugin_loader (GTypeModule   *type_module)                     \
-{                                                                            \
-        plugin_loader_name##_register_type (type_module);                    \
-                                                                             \
-        return g_object_new (plugin_loader_name##_get_type(),                \
-                             NULL);                                          \
-}
-
 G_END_DECLS
 
 #endif /* __PEAS_PLUGIN_LOADER_H__ */
