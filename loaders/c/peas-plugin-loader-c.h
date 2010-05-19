@@ -50,7 +50,7 @@ struct _PeasPluginLoaderCClass {
 GType                    peas_plugin_loader_c_get_type (void) G_GNUC_CONST;
 
 /* All the loaders must implement this function */
-G_MODULE_EXPORT GObject *register_peas_plugin_loader   (GTypeModule *module);
+G_MODULE_EXPORT GObject *peas_register_types           (GTypeModule *module);
 
 G_END_DECLS
 

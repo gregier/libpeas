@@ -57,14 +57,12 @@ struct _PeasObjectModuleClass {
 GType               peas_object_module_get_type               (void) G_GNUC_CONST;
 PeasObjectModule   *peas_object_module_new                    (const gchar      *module_name,
                                                                const gchar      *path,
-                                                               const gchar      *type_registration,
                                                                gboolean          resident);
 
 GObject            *peas_object_module_new_object             (PeasObjectModule *module);
 
 const gchar        *peas_object_module_get_path               (PeasObjectModule *module);
 const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);
-const gchar        *peas_object_module_get_type_registration  (PeasObjectModule *module);
 
 GModule            *peas_object_module_get_library            (PeasObjectModule *module);
 

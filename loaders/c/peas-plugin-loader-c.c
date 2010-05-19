@@ -34,7 +34,7 @@ struct _PeasPluginLoaderCPrivate
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
 
 G_MODULE_EXPORT GObject *
-register_peas_plugin_loader (GTypeModule   *type_module)
+peas_register_types (GTypeModule *type_module)
 {
         peas_plugin_loader_c_register_type (type_module);
         peas_extension_c_register (type_module);
@@ -65,7 +65,6 @@ peas_plugin_loader_c_load (PeasPluginLoader * loader,
       /* For now we force all modules to be resident */
       module = peas_object_module_new (module_name,
                                        peas_plugin_info_get_module_dir (info),
-                                       "register_peas_plugin",
                                        TRUE);
 
       /* Infos are available for all the lifetime of the loader.

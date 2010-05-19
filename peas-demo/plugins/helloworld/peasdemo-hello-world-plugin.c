@@ -158,7 +158,7 @@ peasdemo_hello_world_plugin_class_finalize (PeasDemoHelloWorldPluginClass *klass
 }
 
 G_MODULE_EXPORT GObject *
-register_peas_plugin (GTypeModule   *type_module)
+peas_register_types (GTypeModule *type_module)
 {
         peasdemo_hello_world_plugin_register_type (type_module);
 

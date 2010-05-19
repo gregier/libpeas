@@ -519,7 +519,6 @@ load_plugin_loader (PeasEngine  *engine,
   /* For now all modules are resident */
   module = peas_object_module_new (loader_basename,
                                    loader_dirname,
-                                   "register_peas_plugin_loader",
                                    TRUE);
 
   g_free (loader_dirname);

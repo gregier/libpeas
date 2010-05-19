@@ -278,7 +278,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
-LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex register_peas_plugin_loader"
+LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex peas_register_types"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(LOADER_LIBTOOL_FLAGS)
 

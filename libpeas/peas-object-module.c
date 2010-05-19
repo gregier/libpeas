@@ -36,7 +36,6 @@ enum {
   PROP_0,
   PROP_MODULE_NAME,
   PROP_PATH,
-  PROP_TYPE_REGISTRATION,
   PROP_RESIDENT
 };
 
@@ -47,7 +46,6 @@ struct _PeasObjectModulePrivate {
 
   gchar *path;
   gchar *module_name;
-  gchar *type_registration;
 
   gboolean resident;
 };
@@ -81,7 +79,7 @@ peas_object_module_load (GTypeModule *gmodule)
 
   /* extract symbols from the lib */
   if (!g_module_symbol (module->priv->library,
-                        module->priv->type_registration,
+                        "peas_register_types",
                         (void *) &module->priv->register_func))
     {
       g_warning ("%s: %s", module->priv->module_name, g_module_error ());
@@ -94,8 +92,7 @@ peas_object_module_load (GTypeModule *gmodule)
    * returned TRUE */
   if (module->priv->register_func == NULL)
     {
-      g_warning ("Symbol '%s' should not be NULL",
-                 module->priv->type_registration);
+      g_warning ("Symbol 'peas_register_types' should not be NULL");
       g_module_close (module->priv->library);
 
       return FALSE;
@@ -133,7 +130,6 @@ peas_object_module_finalize (GObject *object)
 
   g_free (module->priv->path);
   g_free (module->priv->module_name);
-  g_free (module->priv->type_registration);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
 }
@@ -153,9 +149,6 @@ peas_object_module_get_property (GObject    *object,
       break;
     case PROP_PATH:
       g_value_set_string (value, module->priv->path);
-      break;
-    case PROP_TYPE_REGISTRATION:
-      g_value_set_string (value, module->priv->type_registration);
       break;
     case PROP_RESIDENT:
       g_value_set_boolean (value, module->priv->resident);
@@ -182,9 +175,6 @@ peas_object_module_set_property (GObject      *object,
       break;
     case PROP_PATH:
       module->priv->path = g_value_dup_string (value);
-      break;
-    case PROP_TYPE_REGISTRATION:
-      module->priv->type_registration = g_value_dup_string (value);
       break;
     case PROP_RESIDENT:
       module->priv->resident = g_value_get_boolean (value);
@@ -226,15 +216,6 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                                                         G_PARAM_CONSTRUCT_ONLY));
 
   g_object_class_install_property (object_class,
-                                   PROP_TYPE_REGISTRATION,
-                                   g_param_spec_string ("type-registration",
-                                                        "Type Registration",
-                                                        "The name of the type registration function",
-                                                        NULL,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY));
-
-  g_object_class_install_property (object_class,
                                    PROP_RESIDENT,
                                    g_param_spec_boolean ("resident",
                                                          "Resident",
@@ -249,13 +230,11 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
 PeasObjectModule *
 peas_object_module_new (const gchar *module_name,
                         const gchar *path,
-                        const gchar *type_registration,
                         gboolean     resident)
 {
   return (PeasObjectModule *) g_object_new (PEAS_TYPE_OBJECT_MODULE,
                                             "module-name", module_name,
                                             "path", path,
-                                            "type-registration", type_registration,
                                             "resident", resident,
                                             NULL);
 }
@@ -282,14 +261,6 @@ peas_object_module_get_module_name (PeasObjectModule *module)
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
   return module->priv->module_name;
-}
-
-const gchar *
-peas_object_module_get_type_registration (PeasObjectModule *module)
-{
-  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
-
-  return module->priv->type_registration;
 }
 
 GModule *
