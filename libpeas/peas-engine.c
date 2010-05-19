@@ -738,6 +738,9 @@ peas_engine_provides_extension (PeasEngine *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
 
+  if (!peas_plugin_info_is_active (info))
+    return FALSE;
+
   loader = get_plugin_loader (engine, info);
   return peas_plugin_loader_provides_extension (loader, info, extension_type);
 }
