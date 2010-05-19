@@ -166,12 +166,16 @@ register_peas_plugin (GTypeModule   *type_module)
                              NULL);
 }
 
-G_MODULE_EXPORT GObject    *create_PeasActivatable ()
+G_MODULE_EXPORT GObject *
+create_PeasActivatable ()
 {
+  g_debug ("%s called", G_STRFUNC);
   return g_object_new (PEASDEMO_TYPE_HELLO_WORLD_PLUGIN, NULL);
 }
 
-G_MODULE_EXPORT GObject    *create_PeasUIConfigurable ()
+G_MODULE_EXPORT GObject *
+create_PeasUIConfigurable ()
 {
+  g_debug ("%s called", G_STRFUNC);
   return g_object_new (PEASDEMO_TYPE_HELLO_WORLD_PLUGIN, NULL);
 }

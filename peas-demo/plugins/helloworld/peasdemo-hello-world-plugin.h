@@ -29,6 +29,7 @@ struct _PeasDemoHelloWorldPluginClass {
 GType                       peasdemo_hello_world_plugin_get_type  (void) G_GNUC_CONST;
 G_MODULE_EXPORT GObject    *register_peas_plugin                  (GTypeModule *module);
 G_MODULE_EXPORT GObject    *create_PeasUIConfigurable ();
+G_MODULE_EXPORT GObject    *create_PeasActivatable ();
 
 G_END_DECLS
 

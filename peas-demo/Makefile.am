@@ -11,6 +11,8 @@ INCLUDES =								\
 	$(DISABLE_DEPRECATED)
 
 peas_demo_SOURCES = \
+	peas-demo-window.c		\
+	peas-demo-window.h		\
 	peas-demo.c
 
 peas_demo_LDADD = \
