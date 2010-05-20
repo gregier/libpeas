@@ -98,7 +98,7 @@ PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gobject-2.0 >= 2.23.6
 	gmodule-2.0 >= 2.18.0
-	gobject-introspection-1.0 >= 0.6
+	gobject-introspection-1.0 >= 0.6.7
 ])
 
 PKG_CHECK_MODULES(PEASUI, [
@@ -109,7 +109,7 @@ dnl ================================================================
 dnl GObject Introspection
 dnl ================================================================
 
-GOBJECT_INTROSPECTION_CHECK([0.6.7])
+GOBJECT_INTROSPECTION_REQUIRE([0.6.7])
 
 dnl ================================================================
 dnl Seed Javascript Engine
@@ -126,24 +126,15 @@ AC_MSG_CHECKING([for Seed JS availability.])
 
 if test "x$enable_seed" = "xno"; then
 	found_seed="no (disabled, use --enable-seed to enable)"
-elif test "x$found_introspection" != "xyes"; then
-	found_seed="no (disabled, enable introspection first)"
-elif test "x$enable_seed" = "xyes"; then
-	if test "$found_introspection" != "yes"; then
-		AC_MSG_ERROR([GObject introspection support must be enabled for Seed support])
-	fi
-
-	PKG_CHECK_EXISTS([seed],,
-			 AC_MSG_ERROR([seed is not installed]))
-	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
-			 [found_seed=yes],
-			 AC_MSG_ERROR([You need to have seed >= $1 installed to build libpeas]))
 else
 	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
 			 [found_seed=yes],
 			 [found_seed=no])
 fi
 
+if test "$enable_seed" = "yes" -a "$found_seed" = "no"; then
+	AC_MSG_ERROR([You need to have seed >= $SEED_REQUIRED installed to build libpeas])
+fi
 AC_MSG_RESULT([$found_seed])
 
 if test "$found_seed" = "yes"; then
@@ -294,7 +285,6 @@ Configuration:
         Source code location          : ${srcdir}
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
-        GObject Introspection support : ${found_introspection}
         Seed JS support               : ${found_seed}
         Python support                : ${enable_python}
 "
