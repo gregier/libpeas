@@ -1,7 +1,5 @@
 # C plugin loader
 
-SUBDIRS=bindings
-
 loaderdir = $(libdir)/libpeas-2.0/loaders
 
 INCLUDES = \

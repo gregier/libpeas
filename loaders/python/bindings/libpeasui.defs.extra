@@ -1,9 +1,0 @@
-(define-virtual is_configurable
-  (of-object "PeasUIConfigurable")
-  (return-type "gboolean")
-)
-
-(define-virtual create_configure_dialog
-  (of-object "PeasUIConfigurable")
-  (return-type "GtkWidget*")
-)
