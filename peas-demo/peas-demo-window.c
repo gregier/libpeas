@@ -60,25 +60,37 @@ on_extension_removed (PeasExtensionSet *set,
   peas_extension_call (exten, "deactivate", dw);
 }
 
+static gboolean
+on_delete_event (GtkWidget *window,
+                 GdkEvent  *event,
+                 gpointer   user_data)
+{
+  DemoWindow *dw = DEMO_WINDOW (window);
+  peas_extension_set_call (dw->exten_set, "deactivate", dw);
+
+  return FALSE;
+}
+
 static void
 demo_window_set_data (DemoWindow *dw,
                       PeasEngine *engine)
 {
   dw->engine = engine;
+  g_object_ref (dw->engine);
+
   dw->exten_set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE);
 
   peas_extension_set_call (dw->exten_set, "activate", dw);
 
   g_signal_connect (dw->exten_set, "extension-added", G_CALLBACK (on_extension_added), dw);
   g_signal_connect (dw->exten_set, "extension-removed", G_CALLBACK (on_extension_removed), dw);
+  g_signal_connect (dw, "delete-event", G_CALLBACK (on_delete_event), NULL);
 }
 
 static void
 demo_window_finalize (GObject *object)
 {
   DemoWindow *dw = DEMO_WINDOW (object);
-
-  peas_extension_set_call (dw->exten_set, "deactivate", dw);
 
   g_object_unref (dw->exten_set);
   g_object_unref (dw->engine);
