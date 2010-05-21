@@ -121,26 +121,18 @@ read_next_argument (GArgument *cur_arg,
     }
 }
 
-gboolean
-peas_method_apply_valist (GObject     *instance,
-                          GType        iface_type,
-                          const gchar *method_name,
-                          va_list      args)
+GICallableInfo *
+peas_method_get_info (GType        iface_type,
+                      const gchar *method_name)
 {
   GIRepository *repo;
   GIBaseInfo *iface_info;
   GIFunctionInfo *func_info;
-  guint n_args, n_in_args, n_out_args;
-  GArgument *in_args, *out_args;
-  GArgument retval;
-  guint i;
-  gboolean ret;
-  GError *error = NULL;
 
   repo = g_irepository_get_default ();
   iface_info = g_irepository_find_by_gtype (repo, iface_type);
   if (iface_info == NULL)
-    return FALSE;
+    return NULL;
 
   switch (g_base_info_get_type (iface_info))
     {
@@ -156,13 +148,29 @@ peas_method_apply_valist (GObject     *instance,
       func_info = NULL;
     }
 
-  if (func_info == NULL)
-    {
-      g_base_info_unref (iface_info);
-      return FALSE;
-    }
+  g_base_info_unref (iface_info);
+  return (GICallableInfo *) func_info;
+}
 
-  n_args = g_callable_info_get_n_args ((GICallableInfo *) func_info);
+gboolean
+peas_method_apply_valist (GObject     *instance,
+                          GType        iface_type,
+                          const gchar *method_name,
+                          va_list      args)
+{
+  GICallableInfo *func_info;
+  guint n_args, n_in_args, n_out_args;
+  GArgument *in_args, *out_args;
+  GArgument retval;
+  guint i;
+  gboolean ret;
+  GError *error = NULL;
+
+  func_info = peas_method_get_info (iface_type, method_name);
+  if (func_info == NULL)
+    return FALSE;
+
+  n_args = g_callable_info_get_n_args (func_info);
   n_in_args = 0;
   n_out_args = 0;
 
@@ -177,7 +185,7 @@ peas_method_apply_valist (GObject     *instance,
       GIArgInfo *arg_info;
       GITypeInfo *arg_type_info;
 
-      arg_info = g_callable_info_get_arg ((GICallableInfo *) func_info, i);
+      arg_info = g_callable_info_get_arg (func_info, i);
       arg_type_info = g_arg_info_get_type (arg_info);
 
       switch (g_arg_info_get_direction (arg_info))
@@ -208,7 +216,6 @@ peas_method_apply_valist (GObject     *instance,
   g_free (in_args);
   g_free (out_args);
   g_base_info_unref ((GIBaseInfo *) func_info);
-  g_base_info_unref (iface_info);
 
   return ret;
 }

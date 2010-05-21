@@ -23,8 +23,13 @@
 #define __PEAS_INTROSPECTION_H__
 
 #include <glib-object.h>
+#include <girepository.h>
 
 G_BEGIN_DECLS
+
+GICallableInfo 
+            *peas_method_get_info                 (GType        iface_type,
+                                                   const gchar *method_name);
 
 gboolean     peas_method_apply_valist             (GObject     *instance,
                                                    GType        iface_type,

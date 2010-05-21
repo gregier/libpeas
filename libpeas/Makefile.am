@@ -75,7 +75,7 @@ if HAVE_INTROSPECTION
   -include $(INTROSPECTION_MAKEFILE)
   INTROSPECTION_GIRS = Peas-2.0.gir
 
-  introspection_sources = $(libpeas_2_0_la_SOURCES)
+  introspection_sources = $(INST_H_FILES) $(C_FILES)
 
   Peas-2.0.gir: libpeas-2.0.la
   Peas_2_0_gir_INCLUDES = GObject-2.0 Gtk-2.0 GModule-2.0
