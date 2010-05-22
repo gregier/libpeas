@@ -1,0 +1,315 @@
+/*
+ * peas-extension-seed.c
+ * This file is part of libpeas
+ *
+ * Copyright (C) 2010 - Steve Frécinaux
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Library General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "peas-extension-seed.h"
+#include <libpeas/peas-introspection.h>
+#include <girepository.h>
+
+G_DEFINE_DYNAMIC_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
+
+enum {
+  PROP_0,
+  PROP_EXTEN_TYPE,
+  PROP_JS_CONTEXT,
+  PROP_JS_OBJECT,
+};
+
+static void
+peas_extension_seed_init (PeasExtensionSeed *sexten)
+{
+}
+
+static void
+peas_extension_seed_set_property (GObject      *object,
+                                  guint         prop_id,
+                                  const GValue *value,
+                                  GParamSpec   *pspec)
+{
+  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
+
+  switch (prop_id)
+    {
+    case PROP_EXTEN_TYPE:
+      sexten->exten_type = g_value_get_gtype (value);
+      break;
+    case PROP_JS_CONTEXT:
+      sexten->js_context = g_value_get_pointer (value);
+      break;
+    case PROP_JS_OBJECT:
+      sexten->js_object = g_value_get_pointer (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
+static void
+peas_extension_seed_constructed (GObject *object)
+{
+  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
+
+  /* We do this here as we can't be sure the context is already set when
+   * the "JS_PLUGIN" property is set. */
+  seed_context_ref (sexten->js_context);
+  seed_value_protect (sexten->js_context, sexten->js_object);
+}
+
+static void
+peas_extension_seed_finalize (GObject *object)
+{
+  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
+
+  seed_value_unprotect (sexten->js_context, sexten->js_object);
+  seed_context_unref (sexten->js_context);
+}
+
+static SeedValue
+read_next_argument (SeedContext ctx,
+                    va_list args,
+                    GITypeInfo *arg_type_info,
+                    SeedException *exc)
+{
+  /* Notes: According to GCC 4.4,
+   *  - int8, uint8, int16, uint16, short and ushort are promoted to int when passed through '...'
+   *  - float is promoted to double when passed through '...'
+   */
+  switch (g_type_info_get_tag (arg_type_info))
+    {
+    case GI_TYPE_TAG_VOID:
+      g_assert_not_reached ();
+      break;
+    case GI_TYPE_TAG_BOOLEAN:
+      return seed_value_from_boolean (ctx, va_arg (args, gboolean), exc);
+    case GI_TYPE_TAG_INT8:
+    case GI_TYPE_TAG_UINT8:
+    case GI_TYPE_TAG_INT16:
+    case GI_TYPE_TAG_UINT16:
+    case GI_TYPE_TAG_SHORT:
+    case GI_TYPE_TAG_USHORT:
+    case GI_TYPE_TAG_INT:
+      return seed_value_from_int (ctx, va_arg (args, gint), exc);
+    case GI_TYPE_TAG_UINT:
+      return seed_value_from_uint (ctx, va_arg (args, guint), exc);
+    case GI_TYPE_TAG_INT32:
+      return seed_value_from_long (ctx, va_arg (args, gint32), exc);
+    case GI_TYPE_TAG_UINT32:
+      return seed_value_from_ulong (ctx, va_arg (args, guint32), exc);
+    case GI_TYPE_TAG_LONG:
+      return seed_value_from_long (ctx, va_arg (args, glong), exc);
+    case GI_TYPE_TAG_ULONG:
+      return seed_value_from_ulong (ctx, va_arg (args, gulong), exc);
+    case GI_TYPE_TAG_INT64:
+      return seed_value_from_int64 (ctx, va_arg (args, gint64), exc);
+    case GI_TYPE_TAG_UINT64:
+      return seed_value_from_uint64 (ctx, va_arg (args, guint64), exc);
+    case GI_TYPE_TAG_FLOAT:
+    case GI_TYPE_TAG_DOUBLE:
+      return seed_value_from_double (ctx, va_arg (args, gdouble), exc);
+      break;
+
+    case GI_TYPE_TAG_SSIZE:
+      return seed_value_from_long (ctx, va_arg (args, gssize), exc);
+    case GI_TYPE_TAG_SIZE:
+      return seed_value_from_ulong (ctx, va_arg (args, gsize), exc);
+    case GI_TYPE_TAG_TIME_T:
+      return seed_value_from_int64 (ctx, va_arg (args, time_t), exc);
+    case GI_TYPE_TAG_GTYPE:
+      /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
+      return seed_value_from_ulong (ctx, va_arg (args, GType), exc);
+
+    case GI_TYPE_TAG_UTF8:
+      return seed_value_from_string (ctx, va_arg (args, gchar *), exc);
+    case GI_TYPE_TAG_FILENAME:
+      return seed_value_from_filename (ctx, va_arg (args, gchar *), exc);
+
+    case GI_TYPE_TAG_INTERFACE:
+      return seed_value_from_object (ctx, va_arg (args, GObject *), exc);
+
+    /* FIXME */
+    case GI_TYPE_TAG_ARRAY:
+    case GI_TYPE_TAG_GLIST:
+    case GI_TYPE_TAG_GSLIST:
+    case GI_TYPE_TAG_GHASH:
+    case GI_TYPE_TAG_ERROR:
+      return seed_make_undefined (ctx);
+
+    default:
+      g_return_val_if_reached (seed_make_undefined (ctx));
+    }
+}
+
+static gboolean
+peas_extension_seed_call (PeasExtension *exten,
+                          const gchar   *method_name,
+                          va_list        args)
+{
+  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
+  SeedValue js_method;
+  GICallableInfo *func_info;
+  guint n_args, n_in_args, n_out_args, i;
+  SeedValue *js_in_args;
+  SeedException exc = NULL;
+  gchar *exc_string;
+
+  g_return_val_if_fail (sexten->js_context != NULL, FALSE);
+  g_return_val_if_fail (sexten->js_object != NULL, FALSE);
+
+  /* Fetch the JS method we want to call */
+  js_method = seed_object_get_property (sexten->js_context,
+                                        sexten->js_object,
+                                        method_name);
+  if (seed_value_is_undefined (sexten->js_context, js_method))
+    {
+      g_warning ("Method %s.%s is not defined",
+                 g_type_name (sexten->exten_type), method_name);
+      return FALSE;
+    }
+
+  /* We want to display an error if the method is defined but is not a function. */
+  if (!seed_value_is_function (sexten->js_context, js_method))
+    {
+      g_warning ("Method %s.%s is not a function",
+                 g_type_name (sexten->exten_type), method_name);
+      return FALSE;
+    }
+
+  /* Prepare the arguments */
+  func_info = peas_method_get_info (sexten->exten_type, method_name);
+  n_args = g_callable_info_get_n_args (func_info);
+  n_in_args = 0;
+  n_out_args = 0;
+
+  js_in_args = g_new0 (SeedValue, n_args);
+
+  for (i = 0; i < n_args && exc == NULL; i++)
+    {
+      GIArgInfo *arg_info;
+      GITypeInfo *arg_type_info;
+
+      arg_info = g_callable_info_get_arg (func_info, i);
+      arg_type_info = g_arg_info_get_type (arg_info);
+
+      switch (g_arg_info_get_direction (arg_info))
+        {
+        case GI_DIRECTION_IN:
+          js_in_args[n_in_args++] = read_next_argument (sexten->js_context,
+                                                            args,
+                                                            arg_type_info,
+                                                            &exc);
+          break;
+        default:
+          seed_make_exception (sexten->js_context,
+                               &exc,
+                               "dir_not_supported",
+                               "Argument direction '%s' not supported yet",
+                               g_arg_info_get_direction (arg_info) == GI_DIRECTION_OUT ? "out" : "inout");
+          break;
+        }
+
+      g_base_info_unref ((GIBaseInfo *) arg_type_info);
+      g_base_info_unref ((GIBaseInfo *) arg_info);
+    }
+
+  if (exc == NULL)
+    {
+      seed_object_call (sexten->js_context,
+                        js_method,
+                        sexten->js_object,
+                        n_in_args,
+                        js_in_args,
+                        &exc);
+    }
+
+  g_free (js_in_args);
+  g_base_info_unref ((GIBaseInfo *) func_info);
+
+  if (exc == NULL)
+    return TRUE;
+
+  exc_string = seed_exception_to_string (sexten->js_context, exc);
+  g_warning ("Seed Exception: %s", exc_string);
+  g_free (exc_string);
+  return FALSE;
+}
+
+static void
+peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
+
+  object_class->set_property = peas_extension_seed_set_property;
+  object_class->constructed = peas_extension_seed_constructed;
+  object_class->finalize = peas_extension_seed_finalize;
+
+  extension_class->call = peas_extension_seed_call;
+
+  g_object_class_install_property (object_class,
+                                   PROP_EXTEN_TYPE,
+                                   g_param_spec_gtype ("extension-type",
+                                                       "The extension type",
+                                                       "The type we need to proxy",
+                                                       G_TYPE_NONE,
+                                                       G_PARAM_WRITABLE |
+                                                       G_PARAM_CONSTRUCT_ONLY));
+
+  g_object_class_install_property (object_class,
+                                   PROP_JS_CONTEXT,
+                                   g_param_spec_pointer ("js-context",
+                                                         "Javascript Context",
+                                                         "A Javascript context from Seed",
+                                                         G_PARAM_WRITABLE |
+                                                         G_PARAM_CONSTRUCT_ONLY));
+
+  g_object_class_install_property (object_class,
+                                   PROP_JS_OBJECT,
+                                   g_param_spec_pointer ("js-object",
+                                                         "Javascript Object",
+                                                         "A Javascript object from Seed",
+                                                         G_PARAM_WRITABLE |
+                                                         G_PARAM_CONSTRUCT_ONLY));
+}
+
+static void
+peas_extension_seed_class_finalize (PeasExtensionSeedClass *klass)
+{
+}
+
+void
+peas_extension_seed_register (GTypeModule *type_module)
+{
+  peas_extension_seed_register_type (type_module);
+}
+
+PeasExtension *
+peas_extension_seed_new (GType       exten_type,
+                         SeedContext js_context,
+                         SeedObject  js_object)
+{
+  g_return_val_if_fail (js_context != NULL, NULL);
+  g_return_val_if_fail (js_object != NULL, NULL);
+
+  return PEAS_EXTENSION (g_object_new (PEAS_TYPE_EXTENSION_SEED,
+                                       "extension-type", exten_type,
+                                       "js-context", js_context,
+                                       "js-object", js_object,
+                                       NULL));
+}

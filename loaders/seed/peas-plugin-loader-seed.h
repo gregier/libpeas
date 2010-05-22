@@ -23,6 +23,7 @@
 #define __PEAS_PLUGIN_LOADER_SEED_H__
 
 #include <libpeas/peas-plugin-loader.h>
+#include <libpeas/peas-object-module.h>
 
 G_BEGIN_DECLS
 
@@ -38,6 +39,8 @@ typedef struct _PeasPluginLoaderSeedClass    PeasPluginLoaderSeedClass;
 
 struct _PeasPluginLoaderSeed {
   PeasPluginLoader parent;
+
+  GHashTable *loaded_plugins;
 };
 
 struct _PeasPluginLoaderSeedClass {
@@ -45,7 +48,7 @@ struct _PeasPluginLoaderSeedClass {
 };
 
 GType                    peas_plugin_loader_seed_get_type  (void) G_GNUC_CONST;
-G_MODULE_EXPORT GObject *register_peas_plugin_loader       (GTypeModule *module);
+G_MODULE_EXPORT void     peas_register_types               (PeasObjectModule *module);
 
 G_END_DECLS
 

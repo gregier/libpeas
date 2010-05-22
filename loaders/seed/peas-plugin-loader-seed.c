@@ -22,10 +22,15 @@
 #include <seed.h>
 
 #include "peas-plugin-loader-seed.h"
-#include "peas-seed-plugin.h"
+#include "peas-extension-seed.h"
 #include "config.h"
 
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER);
+
+typedef struct {
+  SeedContext context;
+  SeedObject extensions;
+} SeedInfo;
 
 static SeedEngine *seed = NULL;
 
@@ -72,16 +77,16 @@ get_script_for_plugin_info (PeasPluginInfo   *info,
   return script;
 }
 
-static PeasPlugin *
+static gboolean
 peas_plugin_loader_seed_load (PeasPluginLoader *loader,
                               PeasPluginInfo   *info)
 {
+  PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
   SeedContext context;
   gchar *script;
-  SeedObject global;
-  SeedValue plugin_object;
   SeedException exc = NULL;
-  PeasPlugin *plugin = NULL;
+  SeedObject global, extensions;
+  SeedInfo *sinfo;
 
   context = seed_context_create (seed->group, NULL);
 
@@ -96,25 +101,94 @@ peas_plugin_loader_seed_load (PeasPluginLoader *loader,
       gchar *exc_string = seed_exception_to_string (context, exc);
       g_warning ("Seed Exception: %s", exc_string);
       g_free (exc_string);
+      seed_context_unref (context);
+      return FALSE;
     }
   else
     {
       global = seed_context_get_global_object (context);
-      plugin_object = seed_object_get_property (context, global, "plugin");
+      extensions = seed_object_get_property (context, global, "extensions");
 
-      if (seed_value_is_object (context, plugin_object))
-        plugin = peas_seed_plugin_new (info, context, plugin_object);
+      if (seed_value_is_object (context, extensions))
+        {
+          sinfo = g_slice_new (SeedInfo);
+          sinfo->context = context;
+          sinfo->extensions = extensions;
+          seed_context_ref (context);
+          seed_value_protect (context, extensions);
+
+          g_hash_table_insert (sloader->loaded_plugins, info, sinfo);
+        }
     }
 
   seed_context_unref (context);
 
-  return plugin;
+  return TRUE;
+}
+
+static gboolean
+peas_plugin_loader_seed_provides_extension  (PeasPluginLoader *loader,
+                                             PeasPluginInfo   *info,
+                                             GType             exten_type)
+{
+  PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
+  SeedInfo *sinfo;
+  SeedObject *extension;
+
+  sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
+  if (!sinfo)
+    return FALSE;
+
+  extension = seed_object_get_property (sinfo->context,
+                                        sinfo->extensions,
+                                        g_type_name (exten_type));
+  return extension != NULL;
+}
+
+static PeasExtension *
+peas_plugin_loader_seed_get_extension (PeasPluginLoader *loader,
+                                       PeasPluginInfo   *info,
+                                       GType             exten_type)
+{
+  PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
+  SeedInfo *sinfo;
+  SeedValue extension;
+
+  sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
+  if (!sinfo)
+    return NULL;
+
+  extension = seed_object_get_property (sinfo->context,
+                                        sinfo->extensions,
+                                        g_type_name (exten_type));
+  if (!extension)
+    return NULL;
+
+  if (!seed_value_is_object (sinfo->context, extension))
+    {
+      g_warning ("Extension %s in plugin %s is not a javascript object.",
+                 g_type_name (exten_type), peas_plugin_info_get_module_name (info));
+      return NULL;
+    }
+
+  return peas_extension_seed_new (exten_type, sinfo->context, extension);
 }
 
 static void
 peas_plugin_loader_seed_unload (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
 {
+  PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
+  SeedInfo *sinfo;
+
+  sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
+  if (!sinfo)
+    return;
+
+  g_hash_table_remove (sloader->loaded_plugins, info);
+  seed_value_unprotect (sinfo->context, sinfo->extensions);
+  seed_context_unref (sinfo->context);
+  g_slice_free (SeedInfo, sinfo);
 }
 
 static void
@@ -131,6 +205,8 @@ peas_plugin_loader_seed_init (PeasPluginLoaderSeed *sloader)
    * is no way to avoid having it shared... */
   if (!seed)
     seed = seed_init (NULL, NULL);
+
+  sloader->loaded_plugins = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 static void
@@ -140,6 +216,8 @@ peas_plugin_loader_seed_class_init (PeasPluginLoaderSeedClass *klass)
 
   loader_class->add_module_directory = peas_plugin_loader_seed_add_module_directory;
   loader_class->load = peas_plugin_loader_seed_load;
+  loader_class->provides_extension = peas_plugin_loader_seed_provides_extension;
+  loader_class->get_extension = peas_plugin_loader_seed_get_extension;
   loader_class->unload = peas_plugin_loader_seed_unload;
   loader_class->garbage_collect = peas_plugin_loader_seed_garbage_collect;
 }
@@ -149,11 +227,17 @@ peas_plugin_loader_seed_class_finalize (PeasPluginLoaderSeedClass *klass)
 {
 }
 
-G_MODULE_EXPORT GObject *
-register_peas_plugin_loader (GTypeModule *type_module)
+static GObject *
+create_plugin_loader (gconstpointer user_data)
 {
-  peas_plugin_loader_seed_register_type (type_module);
-  peas_seed_plugin_register_type_ext (type_module);
-
   return g_object_new (PEAS_TYPE_PLUGIN_LOADER_SEED, NULL);
+}
+
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+  peas_plugin_loader_seed_register_type (G_TYPE_MODULE (module));
+  peas_extension_seed_register (G_TYPE_MODULE (module));
+
+  peas_object_module_register_extension (module, PEAS_TYPE_PLUGIN_LOADER, create_plugin_loader, NULL);
 }

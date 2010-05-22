@@ -4,7 +4,7 @@ var LABEL_STRING = "Seed Says Hello Too!";
 
 print("LABEL_STRING=" +  LABEL_STRING);
 
-plugin = {
+activatable_extension = {
   activate: function(win) {
     print("SeedHelloPlugin.activate");
     win._seedhello_label = new Gtk.Label({ label: LABEL_STRING });
@@ -16,4 +16,15 @@ plugin = {
     win.get_child().remove(win._seedhello_label);
     win._seedhello_label.destroy();
   },
+  update_state: function(win) {
+    print("SeedHelloPlugin.update_state");
+  }
+};
+
+configurable_extension = {
+};
+
+extensions = {
+  'PeasActivatable': activatable_extension,
+  'PeasUIConfigurable': configurable_extension,
 };
