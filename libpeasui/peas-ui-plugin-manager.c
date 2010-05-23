@@ -230,7 +230,7 @@ configure_button_cb (GtkWidget           *button,
   gtk_window_group_add_window (wg, GTK_WINDOW (conf_dlg));
 
   gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
-  gtk_widget_show (conf_dlg);
+  gtk_widget_show_all (conf_dlg);
 }
 
 static void
