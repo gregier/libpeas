@@ -11,15 +11,15 @@ class PythonHelloPlugin(Peas.Plugin, Peas.Activatable):
 
     def do_activate(self, window):
         print "PythonHelloPlugin.do_activate", repr(window)
-#        window._pythonhello_label = Gtk.Label()
-#        window._pythonhello_label.set_text(LABEL_STRING)
-#        window._pythonhello_label.show()
-#        window.get_child().pack_start(window._pythonhello_label)
+        window._pythonhello_label = Gtk.Label()
+        window._pythonhello_label.set_text(LABEL_STRING)
+        window._pythonhello_label.show()
+        window.get_child().pack_start(window._pythonhello_label)
 
     def do_deactivate(self, window):
         print "PythonHelloPlugin.do_deactivate", repr(window)
-#        window.get_child().remove(window._pythonhello_label)
-#        window._pythonhello_label.destroy()
+        window.get_child().remove(window._pythonhello_label)
+        window._pythonhello_label.destroy()
 
     def do_update_state(self, window):
         print "PythonHelloPlugin.do_update_state", repr(window)
