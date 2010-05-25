@@ -31,7 +31,7 @@
  * @short_description: Interface for activatable plugins
  **/
 
-G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, PEAS_TYPE_PLUGIN)
+G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
 
 void
 peas_activatable_default_init (PeasActivatableInterface *iface)

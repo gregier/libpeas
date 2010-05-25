@@ -44,7 +44,7 @@
  * but does not always return a valid #GtkWindow.
  **/
 
-G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, PEAS_TYPE_PLUGIN)
+G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, G_TYPE_OBJECT)
 
 static void
 peas_ui_configurable_default_init (PeasUIConfigurableInterface *iface)
