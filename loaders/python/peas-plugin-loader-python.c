@@ -129,6 +129,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
   PyObject *pyobject;
   PyGObject *pygobject;
   PyObject *emptyarg;
+  PyObject *pyplinfo;
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
@@ -162,7 +163,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
       return NULL;
     }
 
-  pygobject_construct (pygobject, "plugin-info", info, NULL);
+  pygobject_construct (pygobject, NULL);
 
   if (pygobject->obj == NULL)
     {
@@ -181,6 +182,11 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
       pyobject->ob_type->tp_init (pyobject, emptyarg, NULL);
       Py_DECREF (emptyarg);
     }
+
+  /* Set the plugin info as an attribute of the instance */
+  pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);
+  PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo);
+  Py_DECREF (pyplinfo);
 
   return peas_extension_python_new (exten_type, pyobject);
 }
