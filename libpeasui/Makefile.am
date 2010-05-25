@@ -40,7 +40,7 @@ if HAVE_INTROSPECTION
   introspection_sources = $(libpeasui_2_0_la_SOURCES)
 
   PeasUI-2.0.gir: libpeasui-2.0.la
-  PeasUI_2_0_gir_INCLUDES = GObject-2.0 Gtk-2.0 Peas-2.0
+  PeasUI_2_0_gir_INCLUDES = GObject-2.0 $(GTK_TYPELIB) Peas-2.0
   PeasUI_2_0_gir_CFLAGS = $(PEAS_CFLAGS) $(PEASUI_CFLAGS) -I$(top_srcdir)
   PeasUI_2_0_gir_LIBS = libpeasui-2.0.la
   PeasUI_2_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
