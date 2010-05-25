@@ -29,7 +29,6 @@
 
 #include "peas-i18n.h"
 #include "peas-plugin-info-priv.h"
-#include "peas-plugin.h"
 
 /**
  * SECTION:peas-plugin-info

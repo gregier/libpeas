@@ -31,7 +31,6 @@
 #include "peas-plugin-info-priv.h"
 #include "peas-plugin-loader.h"
 #include "peas-object-module.h"
-#include "peas-plugin.h"
 #include "peas-extension.h"
 #include "peas-dirs.h"
 

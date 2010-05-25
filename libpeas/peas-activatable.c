@@ -24,7 +24,6 @@
 #endif
 
 #include "peas-activatable.h"
-#include "peas-plugin.h"
 
 /**
  * SECTION:peas-activatable

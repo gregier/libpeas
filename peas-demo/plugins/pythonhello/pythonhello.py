@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # ex:set ts=4 et sw=4 ai:
 
+import gobject
 from gi.repository import Peas
 from gi.repository import Gtk
 
 LABEL_STRING="Python Says Hello!"
 
-class PythonHelloPlugin(Peas.Plugin, Peas.Activatable):
+class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
     __gtype_name__ = 'PythonHelloPlugin'
 
     def do_activate(self, window):

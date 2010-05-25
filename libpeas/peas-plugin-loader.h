@@ -24,7 +24,6 @@
 
 #include <glib-object.h>
 #include <gmodule.h>
-#include "peas-plugin.h"
 #include "peas-plugin-info.h"
 #include "peas-extension.h"
 

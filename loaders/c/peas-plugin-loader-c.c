@@ -22,6 +22,7 @@
 #include "peas-plugin-loader-c.h"
 #include "peas-extension-c.h"
 #include <libpeas/peas-object-module.h>
+#include <libpeas/peas-extension-base.h>
 #include <gmodule.h>
 
 struct _PeasPluginLoaderCPrivate
@@ -128,6 +129,9 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
   g_return_val_if_fail (instance != NULL, NULL);
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, exten_type), NULL);
+
+  if (PEAS_IS_EXTENSION_BASE (instance))
+    g_object_set (instance, "plugin-info", info, NULL);
 
   return peas_extension_c_new (exten_type, G_OBJECT (instance));
 }

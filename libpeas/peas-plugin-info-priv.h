@@ -24,7 +24,6 @@
 #define __PEAS_PLUGIN_INFO_PRIV_H__
 
 #include "peas-plugin-info.h"
-#include "peas-plugin.h"
 
 struct _PeasPluginInfo {
   /*< private >*/

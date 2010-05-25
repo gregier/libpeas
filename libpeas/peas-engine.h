@@ -24,7 +24,6 @@
 
 #include <glib.h>
 #include "peas-plugin-info.h"
-#include "peas-plugin.h"
 #include "peas-extension.h"
 
 G_BEGIN_DECLS

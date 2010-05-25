@@ -17,8 +17,8 @@ libpeas_2_0_la_LDFLAGS = \
 libpeas_2_0_la_LIBADD = $(PEAS_LIBS) $(IGE_MAC_LIBS)
 
 INST_H_FILES =			\
-	peas-plugin.h		\
 	peas-plugin-info.h	\
+	peas-extension-base.h	\
 	peas-extension.h	\
 	peas-extension-set.h	\
 	peas-activatable.h	\
@@ -37,9 +37,9 @@ C_FILES =			\
 	peas-i18n.c		\
 	peas-object-module.c	\
 	peas-introspection.c	\
-	peas-plugin.c		\
 	peas-plugin-info.c	\
 	peas-plugin-loader.c	\
+	peas-extension-base.c	\
 	peas-extension.c	\
 	peas-extension-set.c	\
 	peas-activatable.c	\

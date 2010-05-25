@@ -23,8 +23,6 @@
 #include <config.h>
 #endif
 
-#include <libpeas/peas-plugin.h>
-
 #include "peas-ui-configurable.h"
 
 /**

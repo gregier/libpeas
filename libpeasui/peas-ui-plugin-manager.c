@@ -28,7 +28,6 @@
 #include <string.h>
 
 #include <libpeas/peas-engine.h>
-#include <libpeas/peas-plugin.h>
 #include <libpeas/peas-i18n.h>
 
 #include "peas-ui-plugin-manager.h"

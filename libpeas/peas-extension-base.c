@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "peas-plugin.h"
+#include "peas-extension-base.h"
 #include "peas-plugin-info-priv.h"
 #include "peas-dirs.h"
 
@@ -33,7 +33,7 @@
  * @short_description: Base class for plugins
  * @see_also: #PeasPluginInfo
  *
- * A #PeasPlugin is an object which represents an actual loaded plugin.
+ * A #PeasExtensionBase is an object which represents an actual loaded plugin.
  *
  * As a plugin writer, you will need to inherit from this class to perform
  * the actions you want to using the available hooks.  It will also provide
@@ -41,13 +41,13 @@
  * data lives.
  *
  * As an application developper, you might want to provide a subclass of
- * #PeasPlugin for tighter integration with your application.  But you should
+ * #PeasExtensionBase for tighter integration with your application.  But you should
  * not use this class at all in your application code apart from that, as all
  * the actions that can be performed by plugins will be proxied by the
  * #PeasEngine.
  **/
 
-G_DEFINE_TYPE (PeasPlugin, peas_plugin, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (PeasExtensionBase, peas_extension_base, G_TYPE_OBJECT);
 
 /* properties */
 enum {
@@ -56,25 +56,21 @@ enum {
   PROP_DATA_DIR
 };
 
-struct _PeasPluginPrivate {
-  PeasPluginInfo *info;
-};
-
 static void
-peas_plugin_get_property (GObject    *object,
-                          guint       prop_id,
-                          GValue     *value,
-                          GParamSpec *pspec)
+peas_extension_base_get_property (GObject    *object,
+                                  guint       prop_id,
+                                  GValue     *value,
+                                  GParamSpec *pspec)
 {
-  PeasPlugin *plugin = PEAS_PLUGIN (object);
+  PeasExtensionBase *extbase = PEAS_EXTENSION_BASE (object);
 
   switch (prop_id)
     {
     case PROP_PLUGIN_INFO:
-      g_value_set_boxed (value, peas_plugin_get_info (plugin));
+      g_value_set_boxed (value, peas_extension_base_get_plugin_info (extbase));
       break;
     case PROP_DATA_DIR:
-      g_value_take_string (value, peas_plugin_get_data_dir (plugin));
+      g_value_take_string (value, peas_extension_base_get_data_dir (extbase));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -83,17 +79,17 @@ peas_plugin_get_property (GObject    *object,
 }
 
 static void
-peas_plugin_set_property (GObject      *object,
-                          guint         prop_id,
-                          const GValue *value,
-                          GParamSpec   *pspec)
+peas_extension_base_set_property (GObject      *object,
+                                  guint         prop_id,
+                                  const GValue *value,
+                                  GParamSpec   *pspec)
 {
-  PeasPlugin *plugin = PEAS_PLUGIN (object);
+  PeasExtensionBase *extbase = PEAS_EXTENSION_BASE (object);
 
   switch (prop_id)
     {
     case PROP_PLUGIN_INFO:
-      plugin->priv->info = g_value_dup_boxed (value);
+      extbase->plugin_info = g_value_dup_boxed (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -102,35 +98,34 @@ peas_plugin_set_property (GObject      *object,
 }
 
 static void
-peas_plugin_init (PeasPlugin *plugin)
+peas_extension_base_init (PeasExtensionBase *extbase)
 {
-  plugin->priv = G_TYPE_INSTANCE_GET_PRIVATE (plugin, PEAS_TYPE_PLUGIN, PeasPluginPrivate);
 }
 
 static void
-peas_plugin_finalize (GObject *object)
+peas_extension_base_finalize (GObject *object)
 {
-  PeasPlugin *plugin = PEAS_PLUGIN (object);
+  PeasExtensionBase *extbase = PEAS_EXTENSION_BASE (object);
 
-  if (plugin->priv->info)
-    _peas_plugin_info_unref (plugin->priv->info);
+  if (extbase->plugin_info != NULL)
+    _peas_plugin_info_unref (extbase->plugin_info);
 
-  G_OBJECT_CLASS (peas_plugin_parent_class)->finalize (object);
+  G_OBJECT_CLASS (peas_extension_base_parent_class)->finalize (object);
 }
 
 static void
-peas_plugin_class_init (PeasPluginClass *klass)
+peas_extension_base_class_init (PeasExtensionBaseClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->get_property = peas_plugin_get_property;
-  object_class->set_property = peas_plugin_set_property;
-  object_class->finalize = peas_plugin_finalize;
+  object_class->get_property = peas_extension_base_get_property;
+  object_class->set_property = peas_extension_base_set_property;
+  object_class->finalize = peas_extension_base_finalize;
 
   g_object_class_install_property (object_class,
                                    PROP_PLUGIN_INFO,
                                    g_param_spec_boxed ("plugin-info",
-                                                       "Plugin Information",
+                                                       "ExtensionBase Information",
                                                        "Information relative to the current plugin",
                                                        PEAS_TYPE_PLUGIN_INFO,
                                                        G_PARAM_READWRITE |
@@ -144,29 +139,27 @@ peas_plugin_class_init (PeasPluginClass *klass)
                                                         NULL,
                                                         G_PARAM_READABLE |
                                                         G_PARAM_STATIC_STRINGS));
-
-  g_type_class_add_private (klass, sizeof (PeasPluginPrivate));
 }
 
 /**
- * peas_plugin_get_info:
- * @plugin: A #PeasPlugin.
+ * peas_extension_base_get_plugin_info:
+ * @extbase: A #PeasExtensionBase.
  *
- * Get information relative to @plugin.
+ * Get information relative to @extbase.
  *
- * Return value: the #PeasPluginInfo relative to the #PeasPlugin.
+ * Return value: the #PeasPluginInfo relative to the #PeasExtensionBase.
  */
 PeasPluginInfo *
-peas_plugin_get_info (PeasPlugin *plugin)
+peas_extension_base_get_plugin_info (PeasExtensionBase *extbase)
 {
-  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
+  g_return_val_if_fail (PEAS_IS_EXTENSION_BASE (extbase), NULL);
 
-  return plugin->priv->info;
+  return extbase->plugin_info;
 }
 
 /**
- * peas_plugin_get_data_dir:
- * @plugin: A #PeasPlugin.
+ * peas_extension_base_get_data_dir:
+ * @extbase: A #PeasExtensionBase.
  *
  * Get the path of the directory where the plugin should look for
  * its data files.
@@ -175,9 +168,9 @@ peas_plugin_get_info (PeasPlugin *plugin)
  * directory where the plugin should look for its data files
  */
 gchar *
-peas_plugin_get_data_dir (PeasPlugin *plugin)
+peas_extension_base_get_data_dir (PeasExtensionBase *extbase)
 {
-  g_return_val_if_fail (PEAS_IS_PLUGIN (plugin), NULL);
+  g_return_val_if_fail (PEAS_IS_EXTENSION_BASE (extbase), NULL);
 
-  return g_strdup (peas_plugin_info_get_data_dir (plugin->priv->info));
+  return g_strdup (peas_plugin_info_get_data_dir (extbase->plugin_info));
 }

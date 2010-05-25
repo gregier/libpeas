@@ -18,7 +18,7 @@ m4_define(peas_lt_age, [m4_eval(peas_binary_age - peas_interface_age)])
 AC_INIT([libpeas],[peas_version],[http://bugzilla.gnome.org/enter_bug.cgi?product=gedit],[libpeas])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_SRCDIR([libpeas/peas-plugin.c])
+AC_CONFIG_SRCDIR([libpeas/peas-engine.c])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_DEFINE(PEAS_MAJOR_VERSION, peas_major_version, [Gedit Plugins Engine major version])
