@@ -343,6 +343,9 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (self), FALSE);
   g_return_val_if_fail (module_path != NULL, FALSE);
 
+  if (!Py_IsInitialized ())
+    return FALSE;
+
   pathlist = PySys_GetObject ("path");
   pathstring = PyString_FromString (module_path);
 
