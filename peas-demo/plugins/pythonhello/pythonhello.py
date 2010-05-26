@@ -15,7 +15,7 @@ class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
         window._pythonhello_label = Gtk.Label()
         window._pythonhello_label.set_text(LABEL_STRING)
         window._pythonhello_label.show()
-        window.get_child().pack_start(window._pythonhello_label)
+        window.get_child().pack_start(window._pythonhello_label, True, True, 0)
 
     def do_deactivate(self, window):
         print "PythonHelloPlugin.do_deactivate", repr(window)
