@@ -105,11 +105,14 @@ AC_MSG_RESULT([$found_seed])
 if test "$found_gtk3" = "yes"; then
 	PKG_CHECK_MODULES(PEASUI, [gtk+-3.0 >= 2.90.0])
 	GTK_TYPELIB=Gtk-3.0
+	GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
 else
-	PKG_CHECK_MODULES(PEASUI, [gtk+-2.0 >= 2.16.0])
 	GTK_TYPELIB=Gtk-2.0
+	GTK_PKG_REQUIREMENT="gtk+-2.0 >= 2.16"
 fi
+PKG_CHECK_MODULES(PEASUI, [$GTK_PKG_REQUIREMENT])
 AC_SUBST(GTK_TYPELIB)
+AC_SUBST(GTK_PKG_REQUIREMENT)
 
 
 dnl ================================================================

@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libpeas
-Description: Gedit's Plugin Engine UI, as a lib
-Requires: glib-2.0 >= 2.14, libpeas-1.0 >= @VERSION@
+Description: libpeas, a plugins library (UI part)
+Requires: glib-2.0 >= 2.14, @GTK_PKG_REQUIREMENT@, libpeas-1.0 >= @VERSION@
 Version: @VERSION@
 Cflags: -I${includedir}/libpeas-1.0
 Libs: -L${libdir} -lpeasui-1.0
