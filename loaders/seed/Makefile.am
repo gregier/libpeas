@@ -12,8 +12,8 @@ INCLUDES = \
 loader_LTLIBRARIES = libseedloader.la
 
 libseedloader_la_SOURCES = \
-	peas-seed-plugin.c		\
-	peas-seed-plugin.h		\
+	peas-extension-seed.c		\
+	peas-extension-seed.h		\
 	peas-plugin-loader-seed.c 	\
 	peas-plugin-loader-seed.h
 

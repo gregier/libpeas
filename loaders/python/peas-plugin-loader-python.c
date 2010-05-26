@@ -20,12 +20,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "peas-extension-python.h"
 #include "peas-plugin-loader-python.h"
-
-#if 0
-#define NO_IMPORT_PYGOBJECT
-#define NO_IMPORT_PYGTK
-#endif
 
 #include <Python.h>
 #include <pygobject.h>
@@ -45,60 +41,97 @@ struct _PeasPluginLoaderPythonPrivate {
 };
 
 typedef struct {
-  PyObject *type;
-  PyObject *instance;
+  PyObject *module;
 } PythonInfo;
+
+static PyObject *PyGObject_Type;
 
 static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
                                                              const gchar            *module_path);
 
-/* We retreive this to check for correct class hierarchy */
-static PyTypeObject *PyPeasPlugin_Type;
+G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER);
 
-PEAS_PLUGIN_LOADER_REGISTER_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python);
-
-static PyObject *
-find_python_plugin_type (PeasPluginInfo *info,
-                         PyObject       *pymodule)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
+  peas_plugin_loader_python_register_type (G_TYPE_MODULE (module));
+  peas_extension_python_register (G_TYPE_MODULE (module));
+
+  peas_object_module_register_extension_type (module,
+                                              PEAS_TYPE_PLUGIN_LOADER,
+                                              PEAS_TYPE_PLUGIN_LOADER_PYTHON);
+}
+
+static PyTypeObject *
+find_python_extension_type (PeasPluginInfo *info,
+                            GType           exten_type,
+                            PyObject       *pymodule)
+{
+  PyObject *pygtype, *pytype;
   PyObject *locals, *key, *value;
   Py_ssize_t pos = 0;
 
   locals = PyModule_GetDict (pymodule);
+
+  pygtype = pyg_type_wrapper_new (exten_type);
+  pytype = PyObject_GetAttrString (pygtype, "pytype");
+  g_return_val_if_fail (pytype != NULL, NULL);
 
   while (PyDict_Next (locals, &pos, &key, &value))
     {
       if (!PyType_Check (value))
         continue;
 
-      if (PyObject_IsSubclass (value, (PyObject *) PyPeasPlugin_Type))
-        return value;
+      if (PyObject_IsSubclass (value, pytype))
+        {
+          Py_DECREF (pygtype);
+          return (PyTypeObject *) value;
+        }
     }
 
-  g_warning ("No PeasPlugin derivative found in Python plugin '%s'",
-             peas_plugin_info_get_name (info));
+  Py_DECREF (pygtype);
+  g_debug ("No %s derivative found in Python plugin '%s'",
+           g_type_name (exten_type), peas_plugin_info_get_name (info));
   return NULL;
 }
 
-static PeasPlugin *
-new_plugin_from_info (PeasPluginLoaderPython *loader,
-                      PeasPluginInfo         *info)
+static gboolean
+peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
+                                              PeasPluginInfo   *info,
+                                              GType             exten_type)
 {
+  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PythonInfo *pyinfo;
+
+  pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
+
+  if (pyinfo == NULL)
+    return FALSE;
+
+  return find_python_extension_type (info, exten_type, pyinfo->module) != NULL;
+}
+
+static PeasExtension *
+peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
+                                         PeasPluginInfo   *info,
+                                         GType             exten_type)
+{
+  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PythonInfo *pyinfo;
   PyTypeObject *pytype;
   PyObject *pyobject;
   PyGObject *pygobject;
-  PeasPlugin *instance;
   PyObject *emptyarg;
+  PyObject *pyplinfo;
 
-  pyinfo = (PythonInfo *) g_hash_table_lookup (loader->priv->loaded_plugins, info);
+  pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
   if (pyinfo == NULL)
     return NULL;
 
-  pytype = (PyTypeObject *) pyinfo->type;
+  pytype = find_python_extension_type (info, exten_type, pyinfo->module);
 
-  if (pytype->tp_new == NULL)
+  if (pytype == NULL || pytype->tp_new == NULL)
     return NULL;
 
   emptyarg = PyTuple_New (0);
@@ -123,12 +156,12 @@ new_plugin_from_info (PeasPluginLoaderPython *loader,
       return NULL;
     }
 
-  pygobject_construct (pygobject, "plugin-info", info, NULL);
+  pygobject_construct (pygobject, NULL);
 
   if (pygobject->obj == NULL)
     {
-      g_error ("Could not create instance for %s (GObject not constructed).",
-               peas_plugin_info_get_name (info));
+      g_error ("Could not create %s instance for %s (GObject not constructed).",
+               g_type_name (exten_type), peas_plugin_info_get_name (info));
       Py_DECREF (pyobject);
 
       return NULL;
@@ -143,29 +176,26 @@ new_plugin_from_info (PeasPluginLoaderPython *loader,
       Py_DECREF (emptyarg);
     }
 
-  instance = PEAS_PLUGIN (pygobject->obj);
-  pyinfo->instance = (PyObject *) pygobject;
+  /* Set the plugin info as an attribute of the instance */
+  pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);
+  PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo);
+  Py_DECREF (pyplinfo);
 
-  /* we return a reference here because the other is owned by python */
-  return PEAS_PLUGIN (g_object_ref (instance));
+  return peas_extension_python_new (exten_type, pyobject);
 }
 
-static PeasPlugin *
+static void
 add_python_info (PeasPluginLoaderPython *loader,
                  PeasPluginInfo         *info,
-                 PyObject               *module,
-                 PyObject               *type)
+                 PyObject               *module)
 {
   PythonInfo *pyinfo;
 
   pyinfo = g_new (PythonInfo, 1);
-  pyinfo->type = type;
-
-  Py_INCREF (pyinfo->type);
+  pyinfo->module = module;
+  Py_INCREF (pyinfo->module);
 
   g_hash_table_insert (loader->priv->loaded_plugins, info, pyinfo);
-
-  return new_plugin_from_info (loader, info);
 }
 
 static void
@@ -178,52 +208,36 @@ peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
   peas_plugin_loader_python_add_module_path (pyloader, module_dir);
 }
 
-static PeasPlugin *
+static gboolean
 peas_plugin_loader_python_load (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PyObject *main_module, *main_locals, *pytype;
   PyObject *pymodule, *fromlist;
   gchar *module_name;
-  PeasPlugin *result;
 
   if (pyloader->priv->init_failed)
     {
-      g_warning ("Cannot load python plugin Python '%s' since libpeas was"
+      g_warning ("Cannot load python plugin Python '%s' since libpeas was "
                  "not able to initialize the Python interpreter.",
                  peas_plugin_info_get_name (info));
-      return NULL;
+      return FALSE;
     }
 
   /* see if py definition for the plugin is already loaded */
-  result = new_plugin_from_info (pyloader, info);
-
-  if (result != NULL)
-    return result;
-
-  main_module = PyImport_AddModule ("libpeas.plugins");
-  if (main_module == NULL)
-    {
-      g_warning ("Could not get libpeas.plugins.");
-      return NULL;
-    }
+  if (g_hash_table_lookup (pyloader->priv->loaded_plugins, info))
+    return TRUE;
 
   /* If we have a special path, we register it */
   peas_plugin_loader_python_add_module_path (pyloader,
                                              peas_plugin_info_get_module_dir (info));
-
-  main_locals = PyModule_GetDict (main_module);
 
   /* we need a fromlist to be able to import modules with a '.' in the
      name. */
   fromlist = PyTuple_New (0);
   module_name = g_strdup (peas_plugin_info_get_module_name (info));
 
-  pymodule = PyImport_ImportModuleEx (module_name,
-                                      main_locals,
-                                      main_locals,
-                                      fromlist);
+  pymodule = PyImport_ImportModuleEx (module_name, NULL, NULL, fromlist);
 
   Py_DECREF (fromlist);
 
@@ -231,18 +245,12 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
     {
       g_free (module_name);
       PyErr_Print ();
-      return NULL;
+      return FALSE;
     }
 
-  PyDict_SetItemString (main_locals, module_name, pymodule);
-  g_free (module_name);
+  add_python_info (pyloader, info, pymodule);
 
-  pytype = find_python_plugin_type (info, pymodule);
-
-  if (pytype)
-    return add_python_info (pyloader, info, pymodule, pytype);
-
-  return NULL;
+  return TRUE;
 }
 
 static void
@@ -259,10 +267,10 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
     return;
 
   state = pyg_gil_state_ensure ();
-  Py_XDECREF (pyinfo->instance);
+  Py_XDECREF (pyinfo->module);
   pyg_gil_state_release (state);
 
-  pyinfo->instance = NULL;
+  pyinfo->module = NULL;
 }
 
 static gboolean
@@ -328,6 +336,9 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (self), FALSE);
   g_return_val_if_fail (module_path != NULL, FALSE);
 
+  if (!Py_IsInitialized ())
+    return FALSE;
+
   pathlist = PySys_GetObject ("path");
   pathstring = PyString_FromString (module_path);
 
@@ -348,57 +359,10 @@ peas_init_pygobject (void)
   init_pygobject_check (2, 11, 5);      /* FIXME: get from config */
 }
 
-static void
-peas_init_libpeas (void)
-{
-  PyObject *libpeas, *mdict, *version, *required_version, *pluginsmodule;
-
-  libpeas = PyImport_ImportModule ("libpeas");
-  if (libpeas == NULL)
-    {
-      PyErr_SetString (PyExc_ImportError, "could not import libpeas module");
-      return;
-    }
-
-  mdict = PyModule_GetDict (libpeas);
-  version = PyDict_GetItemString (mdict, "version");
-  if (!version)
-    {
-      PyErr_SetString (PyExc_ImportError,
-                       "could not get libpeas module version");
-      return;
-    }
-
-  required_version = Py_BuildValue ("(iii)",
-                                    PEAS_MAJOR_VERSION,
-                                    PEAS_MINOR_VERSION, PEAS_MICRO_VERSION);
-
-  if (PyObject_Compare (version, required_version) == -1)
-    {
-      PyErr_SetString (PyExc_ImportError, "libpeas module version too old");
-      Py_DECREF (required_version);
-      return;
-    }
-
-  Py_DECREF (required_version);
-
-  /* Retrieve the Python type for libpeas.Plugin */
-  PyPeasPlugin_Type = (PyTypeObject *) PyDict_GetItemString (mdict, "Plugin");
-  if (PyPeasPlugin_Type == NULL)
-    {
-      PyErr_SetString (PyExc_ImportError, "could not find libpeas.Plugin");
-      return;
-    }
-
-  /* initialize empty libpeas.plugins module */
-  pluginsmodule = Py_InitModule ("libpeas.plugins", NULL);
-  PyDict_SetItemString (mdict, "plugins", pluginsmodule);
-}
-
 static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
-  PyObject *mdict, *gettext, *install, *gettext_args;
+  PyObject *mdict, *gobject, *gettext, *install, *gettext_args;
   char *argv[] = { "libpeas", NULL };
 #ifdef HAVE_SIGACTION
   struct sigaction old_sigint;
@@ -464,21 +428,26 @@ peas_python_init (PeasPluginLoaderPython *loader)
   peas_init_pygobject ();
   if (PyErr_Occurred ())
     {
-      g_warning
-        ("Error initializing Python interpreter: could not import pygobject.");
+      g_warning ("Error initializing Python interpreter: could not "
+                 "import pygobject.");
 
       goto python_init_error;
     }
 
-  /* import libpeas */
-  peas_init_libpeas ();
-  if (PyErr_Occurred ())
+  gobject = PyImport_ImportModule ("gobject");
+  if (gobject == NULL)
     {
-      PyErr_Print ();
+      g_warning ("Error initializing Python interpreter: cound not "
+                 "import gobject.");
+      goto python_init_error;
+    }
 
-      g_warning
-        ("Error initializing Python interpreter: could not import libpeas module.");
-
+  mdict = PyModule_GetDict (gobject);
+  PyGObject_Type = PyDict_GetItemString (mdict, "GObject");
+  if (!PyGObject_Type)
+    {
+      g_warning ("Error initializing Python interpreter: cound not "
+                 "get gobject.GObject");
       goto python_init_error;
     }
 
@@ -486,8 +455,8 @@ peas_python_init (PeasPluginLoaderPython *loader)
   gettext = PyImport_ImportModule ("gettext");
   if (gettext == NULL)
     {
-      g_warning
-        ("Error initializing Python interpreter: could not import gettext.");
+      g_warning ("Error initializing Python interpreter: could not "
+                 "import gettext.");
 
       goto python_init_error;
     }
@@ -505,9 +474,8 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
 python_init_error:
 
-  g_warning
-    ("Please check the installation of all the Python related packages required "
-     "by libpeas and try again.");
+  g_warning ("Please check the installation of all the Python related packages "
+             "required by libpeas and try again.");
 
   PyErr_Clear ();
 
@@ -520,7 +488,7 @@ static void
 destroy_python_info (PythonInfo *info)
 {
   PyGILState_STATE state = pyg_gil_state_ensure ();
-  Py_XDECREF (info->type);
+  Py_XDECREF (info->module);
   pyg_gil_state_release (state);
 
   g_free (info);
@@ -565,6 +533,8 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
   loader_class->add_module_directory = peas_plugin_loader_python_add_module_directory;
   loader_class->load = peas_plugin_loader_python_load;
   loader_class->unload = peas_plugin_loader_python_unload;
+  loader_class->get_extension = peas_plugin_loader_python_get_extension;
+  loader_class->provides_extension = peas_plugin_loader_python_provides_extension;
   loader_class->garbage_collect = peas_plugin_loader_python_garbage_collect;
 
   g_type_class_add_private (object_class,

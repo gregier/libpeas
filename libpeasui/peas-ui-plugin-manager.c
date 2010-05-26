@@ -28,11 +28,11 @@
 #include <string.h>
 
 #include <libpeas/peas-engine.h>
-#include <libpeas/peas-plugin.h>
 #include <libpeas/peas-i18n.h>
 
 #include "peas-ui-plugin-manager.h"
 #include "peas-ui-plugin-info.h"
+#include "peas-ui-configurable.h"
 
 /**
  * SECTION:peas-ui-plugin-manager
@@ -83,6 +83,15 @@ static void             plugin_manager_toggle_active        (PeasUIPluginManager
                                                              GtkTreeModel        *model);
 static void             peas_ui_plugin_manager_constructed  (GObject             *object);
 static void             peas_ui_plugin_manager_finalize     (GObject             *object);
+
+static gboolean
+plugin_is_configurable (PeasUIPluginManager *pm,
+                        PeasPluginInfo      *info)
+{
+  return peas_engine_provides_extension (pm->priv->engine,
+                                         info,
+                                         PEAS_UI_TYPE_CONFIGURABLE);
+}
 
 static void
 peas_ui_plugin_manager_set_property (GObject      *object,
@@ -190,14 +199,21 @@ configure_button_cb (GtkWidget           *button,
                      PeasUIPluginManager *pm)
 {
   PeasPluginInfo *info;
+  PeasExtension *exten;
   GtkWindow *toplevel;
-  GtkWidget *conf_dlg;
+  GtkWidget *conf_dlg = NULL;
   GtkWindowGroup *wg;
 
   info = plugin_manager_get_selected_plugin (pm);
   g_return_if_fail (info != NULL);
 
-  conf_dlg = peas_ui_plugin_info_create_configure_dialog (info);
+  exten = peas_engine_get_extension (pm->priv->engine, info, PEAS_UI_TYPE_CONFIGURABLE); 
+  g_return_if_fail (exten != NULL);
+
+  g_debug ("Calling create_configure_dialog on %p", exten);
+
+  peas_extension_call (exten, "create_configure_dialog", &conf_dlg);
+  g_object_unref (exten);
   g_return_if_fail (conf_dlg != NULL);
 
   toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
@@ -213,7 +229,7 @@ configure_button_cb (GtkWidget           *button,
   gtk_window_group_add_window (wg, GTK_WINDOW (conf_dlg));
 
   gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
-  gtk_widget_show (conf_dlg);
+  gtk_widget_show_all (conf_dlg);
 }
 
 static void
@@ -303,7 +319,7 @@ cursor_changed_cb (GtkTreeView *view,
   gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->about_button),
                             info != NULL);
   gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-                            info != NULL && peas_ui_plugin_info_is_configurable (info));
+                            info != NULL && plugin_is_configurable (pm, info));
 }
 
 static void
@@ -371,7 +387,7 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
                           INFO_COLUMN, &info, -1);
 
       gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-                                peas_ui_plugin_info_is_configurable (info));
+                                plugin_is_configurable (pm, info));
     }
 }
 
@@ -551,7 +567,7 @@ create_tree_popup_menu (PeasUIPluginManager *pm)
                                     GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   g_signal_connect (item, "activate", G_CALLBACK (configure_button_cb), pm);
-  gtk_widget_set_sensitive (item, peas_ui_plugin_info_is_configurable (info));
+  gtk_widget_set_sensitive (item, plugin_is_configurable (pm, info));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
   item = gtk_check_menu_item_new_with_mnemonic (_("A_ctivate"));

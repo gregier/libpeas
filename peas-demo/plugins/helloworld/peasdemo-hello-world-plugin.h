@@ -3,8 +3,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <libpeas/peas-plugin.h>
+#include <libpeas/peas-extension-base.h>
 #include <libpeas/peas-plugin-info.h>
+#include <libpeas/peas-object-module.h>
 
 G_BEGIN_DECLS
 
@@ -19,15 +20,15 @@ typedef struct _PeasDemoHelloWorldPlugin       PeasDemoHelloWorldPlugin;
 typedef struct _PeasDemoHelloWorldPluginClass  PeasDemoHelloWorldPluginClass;
 
 struct _PeasDemoHelloWorldPlugin {
-  PeasPlugin parent_instance;
+  PeasExtensionBase parent_instance;
 };
 
 struct _PeasDemoHelloWorldPluginClass {
-  PeasPluginClass parent_class;
+  PeasExtensionBaseClass parent_class;
 };
 
 GType                       peasdemo_hello_world_plugin_get_type  (void) G_GNUC_CONST;
-G_MODULE_EXPORT GObject    *register_peas_plugin                  (GTypeModule *module);
+G_MODULE_EXPORT void        peas_register_types                   (PeasObjectModule *module);
 
 G_END_DECLS
 

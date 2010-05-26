@@ -24,8 +24,8 @@
 
 #include <glib-object.h>
 #include <gmodule.h>
-#include "peas-plugin.h"
 #include "peas-plugin-info.h"
+#include "peas-extension.h"
 
 G_BEGIN_DECLS
 
@@ -49,10 +49,16 @@ struct _PeasPluginLoaderClass {
   void          (*add_module_directory)   (PeasPluginLoader *loader,
                                            const gchar      *module_dir);
 
-  PeasPlugin   *(*load)                   (PeasPluginLoader *loader,
+  gboolean      (*load)                   (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
   void          (*unload)                 (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
+  gboolean       (*provides_extension)    (PeasPluginLoader *loader,
+                                           PeasPluginInfo   *info,
+                                           GType             ext_type);
+  PeasExtension *(*get_extension)         (PeasPluginLoader *loader,
+                                           PeasPluginInfo   *info,
+                                           GType             ext_type);
 
   void          (*garbage_collect)        (PeasPluginLoader *loader);
 };
@@ -62,30 +68,18 @@ GType         peas_plugin_loader_get_type             (void);
 void          peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
                                                        const gchar      *module_dir);
 
-PeasPlugin   *peas_plugin_loader_load                 (PeasPluginLoader *loader,
+gboolean      peas_plugin_loader_load                 (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
 void          peas_plugin_loader_unload               (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);
-void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader);
 
-/**
- * PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name):
- *
- * Utility macro used to register plugin loaders.
- */
-#define PEAS_PLUGIN_LOADER_REGISTER_TYPE(PluginLoaderName, plugin_loader_name) \
-        G_DEFINE_DYNAMIC_TYPE (PluginLoaderName,                             \
-                               plugin_loader_name,                           \
-                               PEAS_TYPE_PLUGIN_LOADER);                     \
-                                                                             \
-G_MODULE_EXPORT GObject *                                                    \
-register_peas_plugin_loader (GTypeModule   *type_module)                     \
-{                                                                            \
-        plugin_loader_name##_register_type (type_module);                    \
-                                                                             \
-        return g_object_new (plugin_loader_name##_get_type(),                \
-                             NULL);                                          \
-}
+gboolean      peas_plugin_loader_provides_extension   (PeasPluginLoader *loader,
+                                                       PeasPluginInfo   *info,
+                                                       GType             ext_type);
+PeasExtension *peas_plugin_loader_get_extension       (PeasPluginLoader *loader,
+                                                       PeasPluginInfo   *info,
+                                                       GType             ext_type);
+void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader);
 
 G_END_DECLS
 

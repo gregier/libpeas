@@ -31,7 +31,7 @@
 #include "peas-plugin-info-priv.h"
 #include "peas-plugin-loader.h"
 #include "peas-object-module.h"
-#include "peas-plugin.h"
+#include "peas-extension.h"
 #include "peas-dirs.h"
 
 /**
@@ -365,22 +365,6 @@ peas_engine_finalize (GObject *object)
 }
 
 static void
-peas_engine_activate_plugin_on_object (PeasEngine     *engine,
-                                       PeasPluginInfo *info,
-                                       GObject        *object)
-{
-  peas_plugin_activate (info->plugin, object);
-}
-
-static void
-peas_engine_deactivate_plugin_on_object (PeasEngine     *engine,
-                                         PeasPluginInfo *info,
-                                         GObject        *object)
-{
-  peas_plugin_deactivate (info->plugin, object);
-}
-
-static void
 peas_engine_class_init (PeasEngineClass *klass)
 {
   GType the_type = G_TYPE_FROM_CLASS (klass);
@@ -392,8 +376,6 @@ peas_engine_class_init (PeasEngineClass *klass)
   object_class->finalize = peas_engine_finalize;
   klass->activate_plugin = peas_engine_activate_plugin_real;
   klass->deactivate_plugin = peas_engine_deactivate_plugin_real;
-  klass->activate_plugin_on_object = peas_engine_activate_plugin_on_object;
-  klass->deactivate_plugin_on_object = peas_engine_deactivate_plugin_on_object;
 
   /**
    * PeasEngine:app-name:
@@ -536,7 +518,6 @@ load_plugin_loader (PeasEngine  *engine,
   /* For now all modules are resident */
   module = peas_object_module_new (loader_basename,
                                    loader_dirname,
-                                   "register_peas_plugin_loader",
                                    TRUE);
 
   g_free (loader_dirname);
@@ -545,7 +526,8 @@ load_plugin_loader (PeasEngine  *engine,
   /* make sure to load the type definition */
   if (g_type_module_use (G_TYPE_MODULE (module)))
     {
-      loader = (PeasPluginLoader *) peas_object_module_new_object (module);
+      peas_object_module_register_types (module);
+      loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER);
 
       if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
         {
@@ -656,9 +638,9 @@ load_plugin (PeasEngine     *engine,
       return FALSE;
     }
 
-  info->plugin = peas_plugin_loader_load (loader, info);
+  info->active = peas_plugin_loader_load (loader, info);
 
-  if (info->plugin == NULL)
+  if (info->active == FALSE)
     {
       g_warning ("Error loading plugin '%s'", info->name);
       info->available = FALSE;
@@ -672,14 +654,7 @@ static void
 peas_engine_activate_plugin_real (PeasEngine     *engine,
                                   PeasPluginInfo *info)
 {
-  PeasEngineClass *engine_class = PEAS_ENGINE_GET_CLASS (engine);
-  const GList *item;
-
-  if (!load_plugin (engine, info))
-    return;
-
-  for (item = engine->priv->object_list; item != NULL; item = item->next)
-    engine_class->activate_plugin_on_object (engine, info, G_OBJECT (item->data));
+  load_plugin (engine, info);
 }
 
 /**
@@ -713,19 +688,11 @@ static void
 peas_engine_deactivate_plugin_real (PeasEngine     *engine,
                                     PeasPluginInfo *info)
 {
-  PeasEngineClass *engine_class = PEAS_ENGINE_GET_CLASS (engine);
-  const GList *item;
   PeasPluginLoader *loader;
 
   if (!peas_plugin_info_is_active (info) ||
       !peas_plugin_info_is_available (info))
     return;
-
-  for (item = engine->priv->object_list; item != NULL; item = item->next)
-    engine_class->deactivate_plugin_on_object (engine, info, G_OBJECT (item->data));
-
-  /* first unref the plugin (the loader still has one) */
-  g_object_unref (info->plugin);
 
   /* find the loader and tell it to gc and unload the plugin */
   loader = get_plugin_loader (engine, info);
@@ -733,7 +700,7 @@ peas_engine_deactivate_plugin_real (PeasEngine     *engine,
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
 
-  info->plugin = NULL;
+  info->active = FALSE;
 }
 
 /**
@@ -761,33 +728,35 @@ peas_engine_deactivate_plugin (PeasEngine     *engine,
   return !peas_plugin_info_is_active (info);
 }
 
-/**
- * peas_engine_update_plugins_ui:
- * @engine: A #PeasEngine.
- * @object: A registered #GObject.
- *
- * Triggers an update of all the plugins user interfaces to take into
- * account state changes due to a plugin or an user action.
- */
-void
-peas_engine_update_plugins_ui (PeasEngine *engine,
-                               GObject    *object)
+gboolean
+peas_engine_provides_extension (PeasEngine *engine,
+                                PeasPluginInfo *info,
+                                GType extension_type)
 {
-  GList *pl;
+  PeasPluginLoader *loader;
 
-  g_return_if_fail (PEAS_IS_ENGINE (engine));
-  g_return_if_fail (G_IS_OBJECT (object));
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
+  g_return_val_if_fail (info != NULL, FALSE);
 
-  /* call update_ui for all active plugins */
-  for (pl = engine->priv->plugin_list; pl; pl = pl->next)
-    {
-      PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
+  if (!peas_plugin_info_is_active (info))
+    return FALSE;
 
-      if (!peas_plugin_info_is_active (info))
-        continue;
+  loader = get_plugin_loader (engine, info);
+  return peas_plugin_loader_provides_extension (loader, info, extension_type);
+}
 
-      peas_plugin_update_ui (info->plugin, object);
-    }
+PeasExtension *
+peas_engine_get_extension (PeasEngine *engine,
+                           PeasPluginInfo *info,
+                           GType extension_type)
+{
+  PeasPluginLoader *loader;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (info != NULL, NULL);
+
+  loader = get_plugin_loader (engine, info);
+  return peas_plugin_loader_get_extension (loader, info, extension_type);
 }
 
 /**
@@ -866,90 +835,6 @@ peas_engine_set_active_plugins (PeasEngine   *engine,
         g_signal_emit (engine, signals[ACTIVATE_PLUGIN], 0, info);
       else if (is_active && !to_activate)
         g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
-    }
-}
-
-/**
- * peas_engine_add_object:
- * @engine: A #PeasEngine.
- * @object: A #GObject to register.
- *
- * Register an object against the #PeasEngine. The activate() method of all
- * the active plugins will be called on every registered object.
- */
-void
-peas_engine_add_object (PeasEngine *engine,
-                        GObject    *object)
-{
-  PeasEngineClass *engine_class;
-  GList *pl;
-
-  g_return_if_fail (PEAS_IS_ENGINE (engine));
-  g_return_if_fail (G_IS_OBJECT (object));
-
-  engine_class = PEAS_ENGINE_GET_CLASS (engine);
-
-  /* Ensure we don't insert the same object twice... */
-  if (g_list_find (engine->priv->object_list, object))
-    return;
-
-  /* Activate the plugin on object, and add it to the list of managed objects */
-  for (pl = engine->priv->plugin_list; pl; pl = pl->next)
-    {
-      PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
-
-      /* check if the plugin is actually active */
-      if (!peas_plugin_info_is_active (info))
-        continue;
-
-      engine_class->activate_plugin_on_object (engine, info, object);
-    }
-
-  engine->priv->object_list = g_list_prepend (engine->priv->object_list, object);
-
-  /* also call update_ui after activation */
-  peas_engine_update_plugins_ui (engine, object);
-
-}
-
-/**
- * peas_engine_remove_object:
- * @engine: A #PeasEngine.
- * @object: A #GObject to unregister.
- *
- * Unregister an object against the #PeasEngine. The deactivate() method of
- * all the active plugins will be called on the object while he is being
- * unregistered.
- */
-void
-peas_engine_remove_object (PeasEngine *engine,
-                           GObject    *object)
-{
-  PeasEngineClass *engine_class;
-  GList *pl;
-
-  g_return_if_fail (PEAS_IS_ENGINE (engine));
-  g_return_if_fail (G_IS_OBJECT (object));
-
-  engine_class = PEAS_ENGINE_GET_CLASS (engine);
-
-  GList *item = g_list_find (engine->priv->object_list, object);
-  if (item == NULL)
-    return;
-
-  /* Remove the object to the list of managed objects, and deactivate the plugin on it */
-  engine->priv->object_list = g_list_delete_link (engine->priv->object_list, item);
-
-  for (pl = engine->priv->plugin_list; pl; pl = pl->next)
-    {
-      PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
-
-      /* check if the plugin is actually active */
-      if (!peas_plugin_info_is_active (info))
-        continue;
-
-      /* call deactivate for the plugin for this window */
-      engine_class->deactivate_plugin_on_object (engine, info, object);
     }
 }
 

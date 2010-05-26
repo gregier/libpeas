@@ -47,16 +47,16 @@ peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
   klass->add_module_directory (loader, module_dir);
 }
 
-PeasPlugin *
+gboolean
 peas_plugin_loader_load (PeasPluginLoader *loader,
                          PeasPluginInfo   *info)
 {
   PeasPluginLoaderClass *klass;
 
-  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), NULL);
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
 
   klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_val_if_fail (klass->load != NULL, NULL);
+  g_return_val_if_fail (klass->load != NULL, FALSE);
 
   return klass->load (loader, info);
 }
@@ -73,6 +73,36 @@ peas_plugin_loader_unload (PeasPluginLoader *loader,
   g_return_if_fail (klass->unload != NULL);
 
   klass->unload (loader, info);
+}
+
+gboolean
+peas_plugin_loader_provides_extension (PeasPluginLoader *loader,
+                                       PeasPluginInfo   *info,
+                                       GType             ext_type)
+{
+  PeasPluginLoaderClass *klass;
+
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
+
+  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
+  g_return_val_if_fail (klass->provides_extension != NULL, FALSE);
+
+  return klass->provides_extension (loader, info, ext_type);
+}
+
+PeasExtension *
+peas_plugin_loader_get_extension (PeasPluginLoader *loader,
+                                  PeasPluginInfo   *info,
+                                  GType             ext_type)
+{
+  PeasPluginLoaderClass *klass;
+
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), NULL);
+
+  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
+  g_return_val_if_fail (klass->get_extension != NULL, NULL);
+
+  return klass->get_extension (loader, info, ext_type);
 }
 
 void

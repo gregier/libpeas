@@ -1,8 +1,8 @@
 /*
- * peas-ui-plugin-info.h
- * This file is part of libpeasui
+ * peas-introspection.h
+ * This file is part of libpeas
  *
- * Copyright (C) 2009 Steve Frécinaux
+ * Copyright (C) 2010 Steve Frécinaux
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -19,16 +19,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PEAS_UI_PLUGIN_INFO_H__
-#define __PEAS_UI_PLUGIN_INFO_H__
+#ifndef __PEAS_INTROSPECTION_H__
+#define __PEAS_INTROSPECTION_H__
 
-#include <gtk/gtk.h>
-#include <libpeas/peas-plugin-info.h>
+#include <glib-object.h>
+#include <girepository.h>
 
 G_BEGIN_DECLS
 
-const gchar  *peas_ui_plugin_info_get_icon_name            (PeasPluginInfo *info);
+GICallableInfo 
+            *peas_method_get_info                 (GType        iface_type,
+                                                   const gchar *method_name);
+
+gboolean     peas_method_apply_valist             (GObject     *instance,
+                                                   GType        iface_type,
+                                                   const gchar *method_name,
+                                                   va_list      args);
 
 G_END_DECLS
 
-#endif /* __PEAS_UI_PLUGIN_INFO_H__ */
+#endif

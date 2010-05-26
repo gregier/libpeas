@@ -24,7 +24,7 @@
 
 #include <glib.h>
 #include "peas-plugin-info.h"
-#include "peas-plugin.h"
+#include "peas-extension.h"
 
 G_BEGIN_DECLS
 
@@ -60,14 +60,6 @@ struct _PeasEngineClass {
 
   void     (*deactivate_plugin)           (PeasEngine     *engine,
                                            PeasPluginInfo *info);
-
-  void     (*activate_plugin_on_object)   (PeasEngine     *engine,
-                                           PeasPluginInfo *info,
-                                           GObject        *object);
-
-  void     (*deactivate_plugin_on_object) (PeasEngine     *engine,
-                                           PeasPluginInfo *info,
-                                           GObject        *object);
 };
 
 GType             peas_engine_get_type            (void) G_GNUC_CONST;
@@ -91,15 +83,13 @@ gboolean          peas_engine_deactivate_plugin   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
 void              peas_engine_garbage_collect     (PeasEngine      *engine);
 
-/* plugin activation/deactivation per target_object */
-void              peas_engine_update_plugins_ui   (PeasEngine      *engine,
-                                                   GObject         *object);
+gboolean          peas_engine_provides_extension  (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info,
+                                                   GType            ext_type);
+PeasExtension    *peas_engine_get_extension       (PeasEngine      *engine,
+                                                   PeasPluginInfo  *info,
+                                                   GType            ext_type);
 
-/* object management */
-void              peas_engine_add_object          (PeasEngine      *engine,
-                                                   GObject         *object);
-void              peas_engine_remove_object       (PeasEngine      *engine,
-                                                   GObject         *object);
 
 G_END_DECLS
 

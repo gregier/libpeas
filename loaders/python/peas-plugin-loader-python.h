@@ -24,6 +24,7 @@
 #define __PEAS_PLUGIN_LOADER_PYTHON_H__
 
 #include <libpeas/peas-plugin-loader.h>
+#include <libpeas/peas-object-module.h>
 
 G_BEGIN_DECLS
 
@@ -52,7 +53,7 @@ struct _PeasPluginLoaderPythonClass {
 GType                    peas_plugin_loader_python_get_type  (void) G_GNUC_CONST;
 
 /* All the loaders must implement this function */
-G_MODULE_EXPORT GObject *register_peas_plugin_loader         (GTypeModule *module);
+G_MODULE_EXPORT void     peas_register_types                 (PeasObjectModule *module);
 
 G_END_DECLS
 

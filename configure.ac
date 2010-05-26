@@ -18,7 +18,7 @@ m4_define(peas_lt_age, [m4_eval(peas_binary_age - peas_interface_age)])
 AC_INIT([libpeas],[peas_version],[http://bugzilla.gnome.org/enter_bug.cgi?product=gedit],[libpeas])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_SRCDIR([libpeas/peas-plugin.c])
+AC_CONFIG_SRCDIR([libpeas/peas-engine.c])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_DEFINE(PEAS_MAJOR_VERSION, peas_major_version, [Gedit Plugins Engine major version])
@@ -53,6 +53,7 @@ LT_INIT([disable-static])
 
 AC_CHECK_FUNCS(fsync)
 AC_CHECK_FUNC(sigaction)
+AC_CHECK_SIZEOF(time_t, [], [#include <time.h>])
 
 PKG_PROG_PKG_CONFIG
 
@@ -97,17 +98,28 @@ PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gobject-2.0 >= 2.23.6
 	gmodule-2.0 >= 2.18.0
+	gobject-introspection-1.0 >= 0.6.7
 ])
 
-PKG_CHECK_MODULES(PEASUI, [
-	gtk+-2.0 >= 2.16.0
-])
+AC_MSG_CHECKING([for Gtk+ 3.0 availability.])
+PKG_CHECK_EXISTS([gtk+-3.0 >= 2.90],[found_gtk3=yes],[found_gtk3=no])
+AC_MSG_RESULT([$found_seed])
+
+if test "$found_gtk3" = "yes"; then
+	PKG_CHECK_MODULES(PEASUI, [gtk+-3.0 >= 2.90.0])
+	GTK_TYPELIB=Gtk-3.0
+else
+	PKG_CHECK_MODULES(PEASUI, [gtk+-2.0 >= 2.16.0])
+	GTK_TYPELIB=Gtk-2.0
+fi
+AC_SUBST(GTK_TYPELIB)
+
 
 dnl ================================================================
 dnl GObject Introspection
 dnl ================================================================
 
-GOBJECT_INTROSPECTION_CHECK([0.6.7])
+GOBJECT_INTROSPECTION_REQUIRE([0.6.7])
 
 dnl ================================================================
 dnl Seed Javascript Engine
@@ -124,24 +136,15 @@ AC_MSG_CHECKING([for Seed JS availability.])
 
 if test "x$enable_seed" = "xno"; then
 	found_seed="no (disabled, use --enable-seed to enable)"
-elif test "x$found_introspection" != "xyes"; then
-	found_seed="no (disabled, enable introspection first)"
-elif test "x$enable_seed" = "xyes"; then
-	if test "$found_introspection" != "yes"; then
-		AC_MSG_ERROR([GObject introspection support must be enabled for Seed support])
-	fi
-
-	PKG_CHECK_EXISTS([seed],,
-			 AC_MSG_ERROR([seed is not installed]))
-	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
-			 [found_seed=yes],
-			 AC_MSG_ERROR([You need to have seed >= $1 installed to build libpeas]))
 else
 	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
 			 [found_seed=yes],
 			 [found_seed=no])
 fi
 
+if test "$enable_seed" = "yes" -a "$found_seed" = "no"; then
+	AC_MSG_ERROR([You need to have seed >= $SEED_REQUIRED installed to build libpeas])
+fi
 AC_MSG_RESULT([$found_seed])
 
 if test "$found_seed" = "yes"; then
@@ -159,104 +162,63 @@ dnl ================================================================
 dnl Python
 dnl ================================================================
 
-AC_MSG_CHECKING([for Python support.])
+PYTHON_REQUIRED=2.5.2
+PYGOBJECT_REQUIRED=2.20
+
 AC_ARG_ENABLE(python,
-	      AS_HELP_STRING([--enable-python], [Enable python support]),
-	      [enable_python=$enableval have_python=$enableval],
-	      [enable_python=autodetect have_python=yes])
-AC_MSG_RESULT([$enable_python])
+	      AS_HELP_STRING([--enable-python],[Enable Python support]),
+	      [enable_python=$enableval],
+	      [enable_python=auto])
 
-if test "x$have_python" != "xno"; then
-	AM_PATH_PYTHON([2.3],[],[no])
-	if test "x$PYTHON" = "x:"; then
-		have_python=no
-	fi
-fi
+if test "$enable_python" = "no"; then
+	found_python="no (disabled, use --enable-python to enable)"
+else
+	AM_PATH_PYTHON($PYTHON_REQUIRED,
+		       [found_python=yes],
+		       [found_python="no (python interpretor >= ${PYTHON_REQUIRED} not found"])
 
-#if test "x$have_python" != "xno"; then
-#	AM_CHECK_PYTHON_HEADERS([],[have_python=no])
-#fi
-
-if test "x$have_python" != "xno"; then
-	PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
-	PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
-	PYTHON_LIBS="-lpython$PYTHON_VERSION"
-	PYTHON_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config"
-	PYTHON_CFLAGS="-I$PY_PREFIX/include/python$PYTHON_VERSION"
-	PYTHON_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config/Makefile"
-	PYTHON_LOCALMODLIBS=`sed -n -e 's/^LOCALMODLIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
-	PYTHON_BASEMODLIBS=`sed -n -e 's/^BASEMODLIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
-	PYTHON_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
-	PYTHON_EXTRA_LIBS="$PYTHON_LOCALMODLIBS $PYTHON_BASEMODLIBS $PYTHON_OTHER_LIBS"
-	AC_SUBST([PYTHON_LIBS])
-	AC_SUBST([PYTHON_LIB_LOC])
-	AC_SUBST([PYTHON_CFLAGS])
-	AC_SUBST([PYTHON_EXTRA_LIBS])
-fi
-
-if test "x$have_python" != "xyes"; then
-	if test "x$enable_python" = "xyes"; then
-		AC_MSG_ERROR([Python not found])
-	elif test "x$enable_python" = "xautodetect"; then
-		enable_python=no
-		AC_MSG_WARN([Python not found, disabling python support])
-	fi
-fi
-
-if test "x$have_python" != "xno"; then
-	PKG_CHECK_MODULES([PYGTK], [
-		pygobject-2.0 >= 2.16
-		pygtk-2.0 >= 2.14],
-		[],
-		[
-		have_python=no
-		if test "x$enable_python" = "xyes"; then
-			AC_MSG_ERROR([$PYGTK_PKG_ERRORS])
-		elif test "x$enable_python" = "xautodetect"; then
-			enable_python=no
-			AC_MSG_WARN([$PYGTK_PKG_ERRORS])
-			AC_MSG_WARN([Disabling python support])
+	if test "$found_python" = "yes"; then
+		AC_PATH_TOOL(PYTHON_CONFIG, "python${PYTHON_VERSION}-config")
+		if test -z "$PYTHON_CONFIG"; then
+			AC_PATH_TOOL(PYTHON_CONFIG, "python-config-${PYTHON_VERSION}")
+			if test -z "$PYTHON_CONFIG"; then
+				found_python="no (python${PYTHON_VERSION}-config not found)"
+			fi
 		fi
-		])
-fi
-
-if test "x$have_python" != "xno"; then
-	AC_MSG_CHECKING([for pygtk defs])
-	PYGTK_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygtk-2.0`
-	AC_MSG_RESULT([$PYGTK_DEFSDIR])
-
-	AC_MSG_CHECKING([for pygtk codegen])
-	PYGTK_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/codegen.py"
-	AC_MSG_RESULT([$PYGTK_CODEGEN])
-
-	AC_MSG_CHECKING([for pygtk h2def])
-	PYGTK_H2DEF="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/h2def.py"
-	AC_MSG_RESULT([$PYGTK_H2DEF])
-
-	AC_SUBST([PYGTK_DEFSDIR])
-	AC_SUBST([PYGTK_CODEGEN])
-	AC_SUBST([PYGTK_H2DEF])
-
-	dnl Check for -fno-strict-aliasing
-	FLAGS="-fno-strict-aliasing"
-	save_CFLAGS="$CFLAGS"
-	CFLAGS="$CFLAGS $FLAGS"
-	AC_MSG_CHECKING([whether [$]CC understands $FLAGS])
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[compiler_has_option=yes],[compiler_has_option=no])
-	CFLAGS="$save_CFLAGS"
-	AC_MSG_RESULT($compiler_has_option)
-	if test $compiler_has_option = yes; then
-		NO_STRICT_ALIASING_CFLAGS="$FLAGS"
 	fi
-	AC_SUBST([NO_STRICT_ALIASING_CFLAGS])
+
+	if test "$found_python" = "yes"; then
+		save_CPPFLAGS="${CPPFLAGS}"
+		CPPFLAGS="$CPPFLAGS `$PYTHON_CONFIG --includes`"
+		AC_CHECK_HEADER(Python.h,,[found_python="no (Python headers not found)"])
+		CPPFLAGS="${save_CPPFLAGS}"
+	fi
+
+	AC_MSG_CHECKING([for PyGObject availability.])
+	if test "$found_python" = "yes"; then
+		PKG_CHECK_EXISTS([pygobject-2.0 >= $PYGOBJECT_REQUIRED],,
+				 [found_python="no (pygobject >= $PYGOBJECT_REQURED) not found)"])
+	fi
+	AC_MSG_RESULT([$found_python])
+
+	dnl FIXME: shall we check explicitely for PyGI here? Strictly speaking,
+	dnl it's not required for building libpeas, merely to use it properly.
 fi
 
-if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then
-	enable_python=yes
-	AC_DEFINE([ENABLE_PYTHON],[1],[Define to compile with python support])
+if test "$enable_python" = "yes" -a "$found_python" = "no"; then
+	AC_MSG_ERROR([$found_python])
 fi
 
-AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"])
+if test "$found_python" = "yes"; then
+	PYTHON_CFLAGS="`$PKG_CONFIG --cflags pygobject-2.0` `$PYTHON_CONFIG --includes`"
+	PYTHON_LIBS="`$PKG_CONFIG --libs pygobject-2.0` `$PYTHON_CONFIG --libs`"
+	AC_SUBST(PYTHON_CFLAGS)
+	AC_SUBST(PYTHON_LIBS)
+
+	AC_DEFINE(ENABLE_PYTHON,1,[Define to compile with Python support])
+fi
+
+AM_CONDITIONAL([ENABLE_PYTHON],[test "$found_python" = "yes"])
 
 dnl ================================================================
 dnl Documentation
@@ -276,7 +238,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
-LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex register_peas_plugin_loader"
+LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex peas_register_types"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(LOADER_LIBTOOL_FLAGS)
 
@@ -301,7 +263,6 @@ libpeasui/Makefile
 loaders/Makefile
 loaders/c/Makefile
 loaders/python/Makefile
-loaders/python/bindings/Makefile
 loaders/seed/Makefile
 data/Makefile
 data/libpeas-2.0.pc
@@ -324,7 +285,6 @@ Configuration:
         Source code location          : ${srcdir}
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
-        GObject Introspection support : ${found_introspection}
         Seed JS support               : ${found_seed}
-        Python support                : ${enable_python}
+        Python support                : ${found_python}
 "

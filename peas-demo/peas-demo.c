@@ -1,10 +1,13 @@
 #include <gtk/gtk.h>
+#include <girepository.h>
 #include <libpeas/peas-engine.h>
 #include <libpeasui/peas-ui-plugin-manager.h>
 
-PeasEngine *engine;
-GtkWidget *main_window;
-int n_windows;
+#include "peas-demo-window.h"
+
+static PeasEngine *engine;
+static GtkWidget *main_window;
+static int n_windows;
 
 static void
 activate_plugin (GtkButton   *button,
@@ -35,35 +38,12 @@ create_plugin_manager (GtkButton *button,
   gtk_widget_show_all (window);
 }
 
-static gboolean
-window_delete_event_cb (GtkWidget  *widget,
-                        GdkEvent   *event,
-                        PeasEngine *engine)
-{
-  peas_engine_remove_object (engine, G_OBJECT (widget));
-  return FALSE;
-}
-
 static void
 create_new_window (void)
 {
   GtkWidget *window;
-  GtkWidget *box;
-  gchar *label;
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  box = gtk_vbox_new (TRUE, 6);
-  gtk_container_add (GTK_CONTAINER (window), box);
-
-  label = g_strdup_printf ("Peas Window %d", ++n_windows);
-  gtk_window_set_title (GTK_WINDOW (window), label);
-  g_free (label);
-
-  peas_engine_add_object (engine, G_OBJECT (window));
-
-  g_signal_connect (window, "delete-event",
-                    G_CALLBACK (window_delete_event_cb), engine);
-
+  window = demo_window_new (engine);
   gtk_widget_show_all (window);
 }
 
@@ -126,6 +106,9 @@ main (int argc, char **argv)
   };
 
   gtk_init (&argc, &argv);
+
+  g_irepository_prepend_search_path (PEAS_PREFIX "/lib/girepository-1.0");
+  g_irepository_require (g_irepository_get_default (), "PeasUI", "2.0", 0, NULL);
 
   engine = peas_engine_new ("PeasDemo",
                             PEAS_PREFIX "/lib/peas-demo/",
