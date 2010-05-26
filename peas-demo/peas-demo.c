@@ -108,7 +108,7 @@ main (int argc, char **argv)
   gtk_init (&argc, &argv);
 
   g_irepository_prepend_search_path (PEAS_PREFIX "/lib/girepository-1.0");
-  g_irepository_require (g_irepository_get_default (), "PeasUI", "2.0", 0, NULL);
+  g_irepository_require (g_irepository_get_default (), "PeasUI", "1.0", 0, NULL);
 
   engine = peas_engine_new ("PeasDemo",
                             PEAS_PREFIX "/lib/peas-demo/",
