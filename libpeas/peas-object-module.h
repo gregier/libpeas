@@ -76,6 +76,10 @@ void                peas_object_module_register_extension     (PeasObjectModule 
                                                                GType iface_type,
                                                                PeasCreateFunc func,
                                                                gconstpointer user_data);
+void                peas_object_module_register_extension_type
+                                                              (PeasObjectModule *module,
+                                                               GType             iface_type,
+                                                               GType             extension_type);
 
 G_END_DECLS
 

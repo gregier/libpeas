@@ -156,23 +156,15 @@ peasdemo_hello_world_plugin_class_finalize (PeasDemoHelloWorldPluginClass *klass
 {
 }
 
-GObject *
-create_plugin (void)
-{
-  return g_object_new (PEASDEMO_TYPE_HELLO_WORLD_PLUGIN, NULL);
-}
-
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
   peasdemo_hello_world_plugin_register_type (G_TYPE_MODULE (module));
 
-  peas_object_module_register_extension (module,
-                                         PEAS_TYPE_ACTIVATABLE,
-                                         (PeasCreateFunc) create_plugin,
-                                         NULL);
-  peas_object_module_register_extension (module,
-                                         PEAS_UI_TYPE_CONFIGURABLE,
-                                         (PeasCreateFunc) create_plugin,
-                                         NULL);
+  peas_object_module_register_extension_type (module,
+                                              PEAS_TYPE_ACTIVATABLE,
+                                              PEASDEMO_TYPE_HELLO_WORLD_PLUGIN);
+  peas_object_module_register_extension_type (module,
+                                              PEAS_UI_TYPE_CONFIGURABLE,
+                                              PEASDEMO_TYPE_HELLO_WORLD_PLUGIN);
 }

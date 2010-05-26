@@ -227,17 +227,13 @@ peas_plugin_loader_seed_class_finalize (PeasPluginLoaderSeedClass *klass)
 {
 }
 
-static GObject *
-create_plugin_loader (gconstpointer user_data)
-{
-  return g_object_new (PEAS_TYPE_PLUGIN_LOADER_SEED, NULL);
-}
-
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
   peas_plugin_loader_seed_register_type (G_TYPE_MODULE (module));
   peas_extension_seed_register (G_TYPE_MODULE (module));
 
-  peas_object_module_register_extension (module, PEAS_TYPE_PLUGIN_LOADER, create_plugin_loader, NULL);
+  peas_object_module_register_extension_type (module,
+                                              PEAS_TYPE_PLUGIN_LOADER,
+                                              PEAS_TYPE_PLUGIN_LOADER_SEED);
 }

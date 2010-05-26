@@ -327,12 +327,29 @@ peas_object_module_get_library (PeasObjectModule *module)
 
 void
 peas_object_module_register_extension (PeasObjectModule *module,
-                                       GType iface_type,
-                                       PeasCreateFunc func,
-                                       gconstpointer user_data)
+                                       GType             iface_type,
+                                       PeasCreateFunc    func,
+                                       gconstpointer     user_data)
 {
   InterfaceImplementation impl = { iface_type, func, user_data };
   g_array_append_val (module->priv->implementations, impl);
 
   g_debug ("Registered extension for type '%s'", g_type_name (iface_type));
+}
+
+static GObject *
+create_gobject_from_type (gconstpointer user_data)
+{
+  return g_object_new (GPOINTER_TO_SIZE (user_data), NULL);
+}
+
+void
+peas_object_module_register_extension_type (PeasObjectModule *module,
+                                            GType             iface_type,
+                                            GType             extension_type)
+{
+  peas_object_module_register_extension (module,
+                                         iface_type,
+                                         create_gobject_from_type,
+                                         GSIZE_TO_POINTER (extension_type));
 }

@@ -51,22 +51,15 @@ static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPyt
 
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER);
 
-static GObject *
-create_object (GType the_type)
-{
-  return g_object_new (the_type, NULL);
-}
-
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
   peas_plugin_loader_python_register_type (G_TYPE_MODULE (module));
   peas_extension_python_register (G_TYPE_MODULE (module));
 
-  peas_object_module_register_extension (module,
-                                         PEAS_TYPE_PLUGIN_LOADER,
-                                         (PeasCreateFunc) create_object,
-                                         GSIZE_TO_POINTER (PEAS_TYPE_PLUGIN_LOADER_PYTHON));
+  peas_object_module_register_extension_type (module,
+                                              PEAS_TYPE_PLUGIN_LOADER,
+                                              PEAS_TYPE_PLUGIN_LOADER_PYTHON);
 }
 
 static PyTypeObject *
