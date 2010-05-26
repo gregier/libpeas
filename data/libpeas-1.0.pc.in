@@ -7,5 +7,5 @@ Name: libpeas
 Description: Gedit's Plugin Engine, as a lib
 Requires: glib-2.0 >= 2.14
 Version: @VERSION@
-Cflags: -I${includedir}/libpeas-2.0
-Libs: -L${libdir} -lpeas-2.0
+Cflags: -I${includedir}/libpeas-1.0
+Libs: -L${libdir} -lpeas-1.0

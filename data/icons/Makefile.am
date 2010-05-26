@@ -1,7 +1,7 @@
-icons16x16dir = $(pkgdatadir)/icons/hicolor/16x16/actions
-icons22x22dir = $(pkgdatadir)/icons/hicolor/22x22/actions
-icons32x32dir = $(pkgdatadir)/icons/hicolor/32x32/actions
-scalableiconsdir = $(pkgdatadir)/icons/hicolor/scalable/actions
+icons16x16dir = $(datadir)/icons/hicolor/16x16/actions
+icons22x22dir = $(datadir)/icons/hicolor/22x22/actions
+icons32x32dir = $(datadir)/icons/hicolor/32x32/actions
+scalableiconsdir = $(datadir)/icons/hicolor/scalable/actions
 
 icons16x16_DATA = 16x16/libpeas-plugin.png
 icons22x22_DATA = 22x22/libpeas-plugin.png

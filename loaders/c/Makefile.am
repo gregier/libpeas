@@ -1,6 +1,6 @@
 # C plugin loader
 
-loaderdir = $(libdir)/libpeas-2.0/loaders
+loaderdir = $(libdir)/libpeas-1.0/loaders
 
 INCLUDES = \
 	-I$(top_srcdir)			\

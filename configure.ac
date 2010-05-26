@@ -2,8 +2,8 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
 
-m4_define(peas_major_version,  2)
-m4_define(peas_minor_version, 29)
+m4_define(peas_major_version,  0)
+m4_define(peas_minor_version,  5)
 m4_define(peas_micro_version,  0)
 m4_define(peas_interface_age,  0)
 
@@ -29,9 +29,6 @@ AC_DEFINE(PEAS_MICRO_VERSION, peas_micro_version, [Gedit Plugins Engine micro ve
 AC_SUBST(PEAS_MICRO_VERSION, peas_micro_version)
 
 AC_SUBST(PEAS_VERSION, peas_version)
-
-PEAS_API_VERSION=2.20
-AC_SUBST(PEAS_API_VERSION)
 
 AM_INIT_AUTOMAKE([1.11 dist-bzip2 no-dist-gzip -Wno-portability])
 AM_MAINTAINER_MODE([enable])
@@ -265,8 +262,8 @@ loaders/c/Makefile
 loaders/python/Makefile
 loaders/seed/Makefile
 data/Makefile
-data/libpeas-2.0.pc
-data/libpeasui-2.0.pc
+data/libpeas-1.0.pc
+data/libpeasui-1.0.pc
 data/icons/Makefile
 peas-demo/Makefile
 peas-demo/plugins/Makefile

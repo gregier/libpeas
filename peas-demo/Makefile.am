@@ -18,8 +18,8 @@ peas_demo_SOURCES = \
 peas_demo_LDADD = \
 	$(PEAS_LIBS)			\
 	$(PEASUI_LIBS)			\
-	../libpeas/libpeas-2.0.la	\
-	../libpeasui/libpeasui-2.0.la
+	../libpeas/libpeas-1.0.la	\
+	../libpeasui/libpeasui-1.0.la
 
 peas_demo_CFLAGS = \
 	$(PEAS_CFLAGS)			\
