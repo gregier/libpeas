@@ -549,7 +549,7 @@ load_plugin_loader (PeasEngine  *engine,
   else
     {
       g_warning ("Plugin loader module `%s' could not be loaded",
-                 loader_basename);
+                 loader_id);
       g_object_unref (module);
       module = NULL;
       loader = NULL;
