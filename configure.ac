@@ -100,7 +100,7 @@ PKG_CHECK_MODULES(PEAS, [
 
 AC_MSG_CHECKING([for Gtk+ 3.0 availability.])
 PKG_CHECK_EXISTS([gtk+-3.0 >= 2.90],[found_gtk3=yes],[found_gtk3=no])
-AC_MSG_RESULT([$found_seed])
+AC_MSG_RESULT([$found_gtk3])
 
 if test "$found_gtk3" = "yes"; then
 	PKG_CHECK_MODULES(PEASUI, [gtk+-3.0 >= 2.90.0])
