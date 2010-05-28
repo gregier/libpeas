@@ -45,16 +45,23 @@ CFILE_GLOB = \
 
 # Header files to ignore when scanning (These are internal to libpeas).
 IGNORE_HFILES=		\
+	config.h			\
 	peas-plugin-info-priv.h		\
 	peas-plugin-loader.h		\
 	peas-dirs.h			\
+	peas-i18n.h			\
+	peas-marshal.h			\
 	peas-object-module.h		\
 	peas-plugin-loader-c.h		\
 	peas-plugin-loader-python.h	\
 	peas-plugin-loader-seed.h	\
 	peas-seed-plugin.h		\
-	peasdemo-hello-world-plugin.h
-
+	peasdemo-hello-world-plugin.h	\
+	peas-demo-window.h		\
+	peas-extension-c.h		\
+	peas-extension-seed.h		\
+	peas-extension-python.h		\
+	peas-introspection.h
 
 # Images to copy into HTML directory.
 HTML_IMAGES = \
@@ -80,8 +87,8 @@ GTKDOC_CFLAGS = \
 	$(PEASUI_CFLAGS)
 
 GTKDOC_LIBS = \
-	$(top_builddir)/libpeas/libpeas-2.0.la		\
-	$(top_builddir)/libpeasui/libpeasui-2.0.la	\
+	$(top_builddir)/libpeas/libpeas-1.0.la		\
+	$(top_builddir)/libpeasui/libpeasui-1.0.la	\
 	$(PEAS_LIBS)					\
 	$(PEASUI_LIBS)
 
