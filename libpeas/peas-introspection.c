@@ -97,7 +97,7 @@ read_next_argument (GArgument *cur_arg,
 #if SIZEOF_TIME_T == 4
       cur_arg->v_int32 = va_arg (args, time_t);
 #elif SIZEOF_TIME_T == 8
-      cur_Arg.v_int64 = va_args (args, time_t);
+      cur_arg->v_int64 = va_arg (args, time_t);
 #else
 #  error "Unexpected size for time_t: not 4 or 8"
 #endif
