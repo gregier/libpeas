@@ -28,6 +28,16 @@
 
 #include "peas-object-module.h"
 
+/**
+ * SECTION:peas-object-module
+ * @short_description: Type module which allows extension registration.
+ *
+ * #PeasObjectModule is a subclass of #GTypeModule which allows registration
+ * of extensions.  It will be used by C extensions implementors to register
+ * extension implementations from within the peas_register_types module
+ * function.
+ **/
+
 G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
 
 typedef void     (*PeasObjectModuleRegisterFunc) (PeasObjectModule *);

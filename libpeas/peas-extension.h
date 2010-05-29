@@ -64,10 +64,10 @@ struct _PeasExtensionClass {
 GType        peas_extension_get_type        (void)  G_GNUC_CONST;
 
 gboolean     peas_extension_call            (PeasExtension *exten,
-                                             const gchar   *method,
+                                             const gchar   *method_name,
                                              ...);
 gboolean     peas_extension_call_valist     (PeasExtension *exten,
-                                             const gchar   *method,
+                                             const gchar   *method_name,
                                              va_list        args);
 
 G_END_DECLS

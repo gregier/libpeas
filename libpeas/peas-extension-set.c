@@ -29,6 +29,23 @@
 #include "peas-plugin-info.h"
 #include "peas-marshal.h"
 
+/**
+ * SECTION:peas-extension-set
+ * @short_description: Proxy for a set of extensions of the same type.
+ * @see_also: #PeasExtension
+ *
+ * A #PeasExtensionSet is an object which proxies method calls to a set
+ * of actual extensions.  The application writer will use these objects
+ * in order to call methods on several instances of an actual extension
+ * exported by all the currently loaded plugins.
+ *
+ * #PeasExtensionSet will automatically track loading and unloading of
+ * the plugins, and signal appearance and disappearance of new
+ * extension instances.  You should connect to those signals if you
+ * wish to call specific methods on loading or unloading time, as it
+ * is typically the case for #PeasActivatable extensions.
+ **/
+
 G_DEFINE_TYPE (PeasExtensionSet, peas_extension_set, G_TYPE_OBJECT);
 
 struct _PeasExtensionSetPrivate {
@@ -216,6 +233,16 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
   g_type_class_add_private (klass, sizeof (PeasExtensionSetPrivate));
 }
 
+/**
+ * peas_extension_set_call:
+ * @set: A #PeasExtensionSet.
+ * @method_name: the name of the method that should be called.
+ * @Varargs: arguments for the method.
+ *
+ * Call a method on all the #PeasExtension instances contained in @set.
+ *
+ * Return value: #TRUE on successful call.
+ */
 gboolean
 peas_extension_set_call (PeasExtensionSet *set,
                          const gchar      *method_name,
@@ -231,6 +258,16 @@ peas_extension_set_call (PeasExtensionSet *set,
   return result;
 }
 
+/**
+ * peas_extension_set_call_valist:
+ * @exten: A #PeasExtensionSet.
+ * @method_name: the name of the method that should be called.
+ * @args: the arguments for the method.
+ *
+ * Call a method on all the #PeasExtension instances contained in @set.
+ *
+ * Return value: #TRUE on successful call.
+ */
 gboolean
 peas_extension_set_call_valist (PeasExtensionSet *set,
                                 const gchar      *method_name,
@@ -245,6 +282,14 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
   return klass->call (set, method_name, args);
 }
 
+/**
+ * peas_extension_set_new:
+ * @engine: A #PeasEngine.
+ * @exten_type: the extension #GType
+ *
+ * Create an #ExtensionSet for all the @exten_type extensions defined in
+ * the plugins loaded in @engine.
+ */
 PeasExtensionSet *
 peas_extension_set_new (PeasEngine *engine,
                         GType       exten_type)

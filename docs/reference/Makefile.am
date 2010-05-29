@@ -51,7 +51,6 @@ IGNORE_HFILES=		\
 	peas-dirs.h			\
 	peas-i18n.h			\
 	peas-marshal.h			\
-	peas-object-module.h		\
 	peas-plugin-loader-c.h		\
 	peas-plugin-loader-python.h	\
 	peas-plugin-loader-seed.h	\

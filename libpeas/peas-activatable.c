@@ -27,7 +27,17 @@
 
 /**
  * SECTION:peas-activatable
- * @short_description: Interface for activatable plugins
+ * @short_description: Interface for activatable extensions
+ * @see_also: #PeasExtensionSet
+ *
+ * #PeasActivatable is an interface which should be implemented by extensions
+ * that should be activated on an object of a certain type (depending on the
+ * application). For instance, in gedit, #PeasActivatable extension instances
+ * are bound to individual windows.
+ *
+ * It is typical to use #PeasActivatable along with #PeasExtensionSet in order
+ * to activate and deactivate extensions automatically when plugins are loaded
+ * or unloaded. 
  **/
 
 G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
@@ -42,10 +52,7 @@ peas_activatable_default_init (PeasActivatableInterface *iface)
  * @activatable: A #PeasActivatable.
  * @object: The #GObject on which the plugin should be activated.
  *
- * Activates the plugin on an object.  An instance of #PeasActivatable will be
- * activated once for each object registered against the #PeasEngine which
- * controls this #PeasActivatable.  For instance, a typical GUI application
- * like gedit will activate the plugin once for each of its main windows.
+ * Activates the extension on the given object.
  */
 void
 peas_activatable_activate (PeasActivatable *activatable,

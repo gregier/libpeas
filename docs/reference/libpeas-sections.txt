@@ -98,6 +98,24 @@ PeasExtensionSetPrivate
 </SECTION>
 
 <SECTION>
+<FILE>peas-object-module</FILE>
+<TITLE>PeasObjectModule</TITLE>
+PeasObjectModule
+PeasObjectModuleClass
+PeasCreateFunc
+peas_object_module_register_extension
+peas_object_module_register_extension_type
+<SUBSECTION Standard>
+PEAS_OBJECT_MODULE
+PEAS_IS_OBJECT_MODULE
+PEAS_TYPE_OBJECT_MODULE
+peas_object_module_get_type
+PEAS_OBJECT_MODULE_CLASS
+PEAS_IS_OBJECT_MODULE_CLASS
+PEAS_OBJECT_MODULE_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>peas-extension-base</FILE>
 <TITLE>PeasExtensionBase</TITLE>
 PeasExtensionBase

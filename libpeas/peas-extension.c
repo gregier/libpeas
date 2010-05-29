@@ -28,8 +28,11 @@
 /**
  * SECTION:peas-extension
  * @short_description: Proxy for extensions.
+ * @see_also: #PeasExtensionSet
  *
- * A #PeasExtension is an object which proxies an actual extension.
+ * A #PeasExtension is an object which proxies an actual extension.  The
+ * application writer will use these objects in order to call methods on
+ * an instance of an actual extension exported by a loaded plugin.
  **/
 
 G_DEFINE_ABSTRACT_TYPE (PeasExtension, peas_extension, G_TYPE_OBJECT);
@@ -48,6 +51,7 @@ peas_extension_class_init (PeasExtensionClass *klass)
  * peas_extension_call:
  * @exten: A #PeasExtension.
  * @method_name: the name of the method that should be called.
+ * @Varargs: arguments for the method.
  *
  * Call a method of the object behind @extension.
  *
@@ -68,6 +72,16 @@ peas_extension_call (PeasExtension *exten,
   return result;
 }
 
+/**
+ * peas_extension_call_valist:
+ * @exten: A #PeasExtension.
+ * @method_name: the name of the method that should be called.
+ * @args: the arguments for the method.
+ *
+ * Call a method of the object behind @extension, using @args as arguments.
+ *
+ * Return value: #TRUE on successful call.
+ */
 gboolean
 peas_extension_call_valist (PeasExtension *exten,
                             const gchar   *method_name,

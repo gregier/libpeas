@@ -29,22 +29,18 @@
 #include "peas-dirs.h"
 
 /**
- * SECTION:peas-plugin
- * @short_description: Base class for plugins
+ * SECTION:peas-extension-base
+ * @short_description: Base class for C extensions
  * @see_also: #PeasPluginInfo
  *
- * A #PeasExtensionBase is an object which represents an actual loaded plugin.
+ * #PeasExtensionBase can optionally be used as a base class for the extensions
+ * of your plugin. By inheriting from it, you will make your extension able to
+ * access the related #PeasPluginInfo, and especially the location where all
+ * the data of your plugin lives.
  *
- * As a plugin writer, you will need to inherit from this class to perform
- * the actions you want to using the available hooks.  It will also provide
- * you a few useful pieces of information, like the location where all your
- * data lives.
- *
- * As an application developper, you might want to provide a subclass of
- * #PeasExtensionBase for tighter integration with your application.  But you should
- * not use this class at all in your application code apart from that, as all
- * the actions that can be performed by plugins will be proxied by the
- * #PeasEngine.
+ * Non-C extensions will usually not inherit from this class: Python and Seed
+ * ones automatically get a "plugin_info" attribute that serves the same
+ * purpose.
  **/
 
 G_DEFINE_ABSTRACT_TYPE (PeasExtensionBase, peas_extension_base, G_TYPE_OBJECT);

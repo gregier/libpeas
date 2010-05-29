@@ -55,11 +55,11 @@ struct _PeasActivatableInterface {
  */
 GType             peas_activatable_get_type       (void)  G_GNUC_CONST;
 
-void              peas_activatable_activate       (PeasActivatable *plugin,
+void              peas_activatable_activate       (PeasActivatable *activatable,
                                                    GObject         *object);
-void              peas_activatable_deactivate     (PeasActivatable *plugin,
+void              peas_activatable_deactivate     (PeasActivatable *activatable,
                                                    GObject         *object);
-void              peas_activatable_update_state   (PeasActivatable *plugin,
+void              peas_activatable_update_state   (PeasActivatable *activatable,
                                                    GObject         *object);
 
 G_END_DECLS

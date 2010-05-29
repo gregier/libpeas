@@ -85,10 +85,10 @@ void              peas_engine_garbage_collect     (PeasEngine      *engine);
 
 gboolean          peas_engine_provides_extension  (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
-                                                   GType            ext_type);
+                                                   GType            extension_type);
 PeasExtension    *peas_engine_get_extension       (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
-                                                   GType            ext_type);
+                                                   GType            extension_type);
 
 
 G_END_DECLS
