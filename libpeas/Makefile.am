@@ -18,6 +18,7 @@ libpeas_1_0_la_LIBADD = $(PEAS_LIBS) $(IGE_MAC_LIBS)
 
 INST_H_FILES =			\
 	peas-plugin-info.h	\
+	peas-object-module.h	\
 	peas-extension-base.h	\
 	peas-extension.h	\
 	peas-extension-set.h	\
@@ -27,7 +28,6 @@ INST_H_FILES =			\
 NOINST_H_FILES =		\
 	peas-dirs.h		\
 	peas-i18n.h		\
-	peas-object-module.h	\
 	peas-introspection.h	\
 	peas-plugin-info-priv.h	\
 	peas-plugin-loader.h
