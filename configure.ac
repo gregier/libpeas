@@ -15,7 +15,7 @@ m4_define(peas_lt_current, [m4_eval(100 * peas_minor_version + peas_micro_versio
 m4_define(peas_lt_revision, [peas_interface_age])
 m4_define(peas_lt_age, [m4_eval(peas_binary_age - peas_interface_age)])
 
-AC_INIT([libpeas],[peas_version],[http://bugzilla.gnome.org/enter_bug.cgi?product=gedit],[libpeas])
+AC_INIT([libpeas],[peas_version],[http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas],[libpeas])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([libpeas/peas-engine.c])
