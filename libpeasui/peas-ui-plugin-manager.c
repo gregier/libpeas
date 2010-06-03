@@ -417,6 +417,9 @@ plugin_manager_set_active (PeasUIPluginManager *pm,
         res = FALSE;
     }
 
+  /* cause the configure button sensitivity to be updated */
+  cursor_changed_cb (GTK_TREE_VIEW (pm->priv->tree), pm);
+
   return res;
 }
 
