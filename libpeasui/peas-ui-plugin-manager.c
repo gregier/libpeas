@@ -308,10 +308,9 @@ active_toggled_cb (GtkCellRendererToggle *cell,
 }
 
 static void
-cursor_changed_cb (GtkTreeView *view,
-                   gpointer     data)
+cursor_changed_cb (GtkTreeView         *view,
+                   PeasUIPluginManager *pm)
 {
-  PeasUIPluginManager *pm = data;
   PeasPluginInfo *info;
 
   info = plugin_manager_get_selected_plugin (pm);
@@ -323,12 +322,11 @@ cursor_changed_cb (GtkTreeView *view,
 }
 
 static void
-row_activated_cb (GtkTreeView       *tree_view,
-                  GtkTreePath       *path,
-                  GtkTreeViewColumn *column,
-                  gpointer           data)
+row_activated_cb (GtkTreeView         *tree_view,
+                  GtkTreePath         *path,
+                  GtkTreeViewColumn   *column,
+                  PeasUIPluginManager *pm)
 {
-  PeasUIPluginManager *pm = data;
   GtkTreeIter iter;
   GtkTreeModel *model;
 
@@ -459,7 +457,7 @@ plugin_manager_get_selected_plugin (PeasUIPluginManager *pm)
 
 static void
 plugin_manager_set_active_all (PeasUIPluginManager *pm,
-                               gboolean           active)
+                               gboolean             active)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
