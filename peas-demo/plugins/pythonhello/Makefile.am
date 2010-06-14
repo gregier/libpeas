@@ -1,4 +1,4 @@
-plugindir = $(prefix)/lib/peas-demo/plugins/pythonhello
+plugindir = $(libdir)/peas-demo/plugins/pythonhello
 
 plugin_PYTHON = \
 	pythonhello.py

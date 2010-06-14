@@ -1,4 +1,4 @@
-plugindir = $(prefix)/lib/peas-demo/plugins/helloworld
+plugindir = $(libdir)/peas-demo/plugins/helloworld
 
 INCLUDES = \
 	-I$(top_srcdir) 	\

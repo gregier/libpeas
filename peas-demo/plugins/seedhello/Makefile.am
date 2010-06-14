@@ -1,4 +1,4 @@
-plugindir = $(prefix)/lib/peas-demo/plugins/seedhello
+plugindir = $(libdir)/peas-demo/plugins/seedhello
 
 plugin_DATA = \
 	seedhello.js			\
