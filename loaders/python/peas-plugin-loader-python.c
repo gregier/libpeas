@@ -45,6 +45,7 @@ struct _PeasPluginLoaderPythonPrivate {
   guint idle_gc;
   guint init_failed : 1;
   guint must_finalize_python : 1;
+  PyThreadState *py_thread_state;
 };
 
 typedef struct {
@@ -69,6 +70,7 @@ peas_register_types (PeasObjectModule *module)
                                               PEAS_TYPE_PLUGIN_LOADER_PYTHON);
 }
 
+/* NOTE: This must be called with the GIL held */
 static PyTypeObject *
 find_python_extension_type (PeasPluginInfo *info,
                             GType           exten_type,
@@ -118,13 +120,19 @@ peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PythonInfo *pyinfo;
+  PyTypeObject *extension_type;
+  PyGILState_STATE state;
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
   if (pyinfo == NULL)
     return FALSE;
 
-  return find_python_extension_type (info, exten_type, pyinfo->module) != NULL;
+  state = pyg_gil_state_ensure ();
+  extension_type = find_python_extension_type (info, exten_type, pyinfo->module);
+  pyg_gil_state_release (state);
+
+  return extension_type != NULL;
 }
 
 static PeasExtension *
@@ -139,16 +147,23 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
   PyGObject *pygobject;
   PyObject *emptyarg;
   PyObject *pyplinfo;
+  PyGILState_STATE state;
+  PeasExtension *exten;
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
   if (pyinfo == NULL)
     return NULL;
 
+  state = pyg_gil_state_ensure ();
+
   pytype = find_python_extension_type (info, exten_type, pyinfo->module);
 
   if (pytype == NULL || pytype->tp_new == NULL)
-    return NULL;
+    {
+      pyg_gil_state_release (state);
+      return NULL;
+    }
 
   emptyarg = PyTuple_New (0);
   pyobject = pytype->tp_new (pytype, emptyarg, NULL);
@@ -156,6 +171,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
 
   if (pyobject == NULL)
     {
+      pyg_gil_state_release (state);
       g_error ("Could not create instance for %s.",
                peas_plugin_info_get_name (info));
 
@@ -166,9 +182,10 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
 
   if (pygobject->obj != NULL)
     {
+      Py_DECREF (pyobject);
+      pyg_gil_state_release (state);
       g_error ("Could not create instance for %s (GObject already initialized).",
                peas_plugin_info_get_name (info));
-      Py_DECREF (pyobject);
 
       return NULL;
     }
@@ -177,9 +194,10 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
 
   if (pygobject->obj == NULL)
     {
+      Py_DECREF (pyobject);
+      pyg_gil_state_release (state);
       g_error ("Could not create %s instance for %s (GObject not constructed).",
                g_type_name (exten_type), peas_plugin_info_get_name (info));
-      Py_DECREF (pyobject);
 
       return NULL;
     }
@@ -200,9 +218,13 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
   PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo);
   Py_DECREF (pyplinfo);
 
-  return peas_extension_python_new (exten_type, pyobject);
+  exten = peas_extension_python_new (exten_type, pyobject);
+  pyg_gil_state_release (state);
+
+  return exten;
 }
 
+/* NOTE: This must be called with the GIL held */
 static void
 add_python_info (PeasPluginLoaderPython *loader,
                  PeasPluginInfo         *info,
@@ -222,9 +244,12 @@ peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
                                                 const gchar      *module_dir)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PyGILState_STATE state = pyg_gil_state_ensure ();
 
   g_debug ("Adding %s as a module path for the python loader.", module_dir);
   peas_plugin_loader_python_add_module_path (pyloader, module_dir);
+
+  pyg_gil_state_release (state);
 }
 
 static gboolean
@@ -234,6 +259,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *pymodule, *fromlist;
   gchar *module_name;
+  PyGILState_STATE state;
 
   if (pyloader->priv->init_failed)
     {
@@ -247,6 +273,8 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   /* see if py definition for the plugin is already loaded */
   if (g_hash_table_lookup (pyloader->priv->loaded_plugins, info))
     return TRUE;
+
+  state = pyg_gil_state_ensure ();
 
   /* If we have a special path, we register it */
   peas_plugin_loader_python_add_module_path (pyloader,
@@ -265,11 +293,14 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
     {
       g_free (module_name);
       PyErr_Print ();
+      pyg_gil_state_release (state);
 
       return FALSE;
     }
 
   add_python_info (pyloader, info, pymodule);
+
+  pyg_gil_state_release (state);
 
   return TRUE;
 }
@@ -295,10 +326,20 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
 }
 
 static gboolean
-run_gc (PeasPluginLoaderPython *loader)
+run_gc_protected (void)
 {
+  PyGILState_STATE state = pyg_gil_state_ensure ();
+
   while (PyGC_Collect ())
     ;
+
+  pyg_gil_state_release (state);
+}
+
+static gboolean
+run_gc (PeasPluginLoaderPython *loader)
+{
+  run_gc_protected ();
 
   loader->priv->idle_gc = 0;
   return FALSE;
@@ -318,9 +359,7 @@ peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
    * We both run the GC right now and we schedule
    * a further collection in the main loop.
    */
-
-  while (PyGC_Collect ())
-    ;
+  run_gc_protected ();
 
   if (pyloader->priv->idle_gc == 0)
     pyloader->priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
@@ -332,23 +371,32 @@ peas_python_shutdown (PeasPluginLoaderPython *loader)
   if (!Py_IsInitialized ())
     return;
 
+  if (loader->priv->py_thread_state)
+    {
+      PyEval_RestoreThread (loader->priv->py_thread_state);
+      loader->priv->py_thread_state = NULL;
+    }
+
   if (loader->priv->idle_gc != 0)
     {
       g_source_remove (loader->priv->idle_gc);
       loader->priv->idle_gc = 0;
     }
 
-  while (PyGC_Collect ())
-    ;
+  run_gc_protected ();
 
   if (loader->priv->must_finalize_python)
-    Py_Finalize ();
+    {
+      pyg_gil_state_ensure ();
+      Py_Finalize ();
+    }
 }
 
 /* C equivalent of
  *    import sys
  *    sys.path.insert(0, module_path)
  */
+/* NOTE: This must be called with the GIL held */
 static gboolean
 peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
                                            const gchar            *module_path)
@@ -367,6 +415,7 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
   if (PySequence_Contains (pathlist, pathstring) == 0)
     PyList_Insert (pathlist, 0, pathstring);
   Py_DECREF (pathstring);
+
   return TRUE;
 }
 
@@ -406,6 +455,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   PySys_SetArgv (1, argv);
 
+  /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
   peas_plugin_loader_python_add_module_path (loader, PEAS_PYEXECDIR);
 
   /* import gobject */
@@ -417,6 +467,9 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
       goto python_init_error;
     }
+
+  /* Initialize support for threads */
+  pyg_enable_threads ();
 
   gobject = PyImport_ImportModule ("gobject");
   if (gobject == NULL)
@@ -464,6 +517,8 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   /* Python has been successfully initialized */
   loader->priv->init_failed = FALSE;
+
+  loader->priv->py_thread_state = PyEval_SaveThread ();
 
   return TRUE;
 
