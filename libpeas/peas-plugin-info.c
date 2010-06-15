@@ -154,7 +154,7 @@ parse_extra_keys (PeasPluginInfo   *info,
 
       if (info->keys == NULL)
         {
-          info->keys = g_hash_table_new_full (g_direct_hash,
+          info->keys = g_hash_table_new_full (g_str_hash,
                                               g_str_equal,
                                               g_free,
                                               value_free);
