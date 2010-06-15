@@ -129,27 +129,24 @@ parse_extra_keys (PeasPluginInfo   *info,
         continue;
 
       b = g_key_file_get_boolean (plugin_file, section_header, keys[i], &error);
-      if (b == FALSE)
+      if (b == FALSE && error != NULL)
         {
-          if (error != NULL)
-            {
-              gchar *str;
-              g_error_free (error);
-              error = NULL;
-              str = g_key_file_get_string (plugin_file, section_header, keys[i], NULL);
-              if (str != NULL)
-                {
-                  value = g_new0 (GValue, 1);
-                  g_value_init (value, G_TYPE_STRING);
-                  g_value_take_string (value, str);
-                }
-            }
-          else
+          gchar *str;
+          g_error_free (error);
+          error = NULL;
+          str = g_key_file_get_string (plugin_file, section_header, keys[i], NULL);
+          if (str != NULL)
             {
               value = g_new0 (GValue, 1);
-              g_value_init (value, G_TYPE_BOOLEAN);
-              g_value_set_boolean (value, b);
+              g_value_init (value, G_TYPE_STRING);
+              g_value_take_string (value, str);
             }
+        }
+      else
+        {
+          value = g_new0 (GValue, 1);
+          g_value_init (value, G_TYPE_BOOLEAN);
+          g_value_set_boolean (value, b);
         }
 
       if (!value)
