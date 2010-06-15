@@ -68,6 +68,8 @@ PeasEngine       *peas_engine_new                 (const gchar     *app_name,
                                                    const gchar    **search_paths);
 
 /* plugin management */
+void              peas_engine_disable_loader      (PeasEngine      *engine,
+                                                   const gchar     *loader_id);
 void              peas_engine_rescan_plugins      (PeasEngine      *engine);
 const GList      *peas_engine_get_plugin_list     (PeasEngine      *engine);
 gchar           **peas_engine_get_active_plugins  (PeasEngine      *engine);

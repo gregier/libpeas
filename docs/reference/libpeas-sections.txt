@@ -48,6 +48,7 @@ peas_engine_deactivate_plugin
 peas_engine_garbage_collect
 peas_engine_provides_extension
 peas_engine_get_extension
+peas_engine_disable_loader
 <SUBSECTION Standard>
 PEAS_ENGINE
 PEAS_IS_ENGINE

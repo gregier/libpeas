@@ -577,6 +577,42 @@ get_plugin_loader (PeasEngine     *engine,
 }
 
 /**
+ * peas_engine_disable_loader:
+ * @engine: A #PeasEngine.
+ * @loader_id: The id of the loader to inhibit.
+ *
+ * Disable a loader, avoiding using the plugins written using the
+ * related language to be loaded. This method must be called before
+ * any plugin relying on the loader @loader_id has been loaded.
+ *
+ * For instance, the following code will prevent any python plugin
+ * from being loaded:
+ * |[
+ * peas_engine_disable_loader (engine, "python");
+ * ]|
+ **/
+void
+peas_engine_disable_loader (PeasEngine  *engine,
+                            const gchar *loader_id)
+{
+  LoaderInfo *loader_info;
+
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
+
+  loader_info = (LoaderInfo *) g_hash_table_lookup (engine->priv->loaders,
+                                                    loader_id);
+  if (loader_info != NULL)
+    {
+      g_warning ("Loader %s cannot be disabled as it is already loaded", loader_id);
+      return;
+    }
+
+  /* By adding a NULL loader, we simulate a failed load attempt, effectively
+   * disabling the loader for further use. */
+  add_loader (engine, loader_id, NULL, NULL);
+}
+
+/**
  * peas_engine_get_plugin_list:
  * @engine: A #PeasEngine.
  *
