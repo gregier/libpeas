@@ -98,12 +98,14 @@ PKG_CHECK_MODULES(PEAS, [
 	gobject-introspection-1.0 >= 0.6.7
 ])
 
-AC_MSG_CHECKING([for Gtk+ 3.0 availability.])
-PKG_CHECK_EXISTS([gtk+-3.0 >= 2.90],[found_gtk3=yes],[found_gtk3=no])
-AC_MSG_RESULT([$found_gtk3])
+dnl We currently allow building libpeas with Gtk+ 2.0 for testing purposes and
+dnl technology preview. but do *not* distribute such a version!
+AC_ARG_ENABLE(gtk2-test-build,
+	      AS_HELP_STRING([--gtk2-test-build],[Link against gtk+ 2.0, for testing purpose]),
+	      [use_gtk2=$enableval],
+	      [use_gtk2=no])
 
-if test "$found_gtk3" = "yes"; then
-	PKG_CHECK_MODULES(PEASUI, [gtk+-3.0 >= 2.90.0])
+if test "$use_gtk2" != "yes"; then
 	GTK_TYPELIB=Gtk-3.0
 	GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
 else
