@@ -53,8 +53,8 @@ struct _PeasExtensionSetPrivate {
   GType exten_type;
   GList *extensions;
 
-  gulong activate_handler_id;
-  gulong deactivate_handler_id;
+  gulong load_handler_id;
+  gulong unload_handler_id;
 };
 
 typedef struct {
@@ -150,11 +150,11 @@ peas_extension_set_set_internal_data (PeasExtensionSet *set,
   for (l = plugins; l; l = l->next)
     add_extension (set, (PeasPluginInfo *) l->data);
 
-  set->priv->activate_handler_id =
+  set->priv->load_handler_id =
           g_signal_connect_data (engine, "load-plugin",
                                  G_CALLBACK (add_extension), set,
                                  NULL, G_CONNECT_AFTER | G_CONNECT_SWAPPED);
-  set->priv->deactivate_handler_id =
+  set->priv->unload_handler_id =
           g_signal_connect_data (engine, "unload-plugin",
                                  G_CALLBACK (remove_extension), set,
                                  NULL, G_CONNECT_SWAPPED);
@@ -166,8 +166,8 @@ peas_extension_set_finalize (GObject *object)
   PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
   GList *l;
 
-  g_signal_handler_disconnect (set->priv->engine, set->priv->activate_handler_id);
-  g_signal_handler_disconnect (set->priv->engine, set->priv->deactivate_handler_id);
+  g_signal_handler_disconnect (set->priv->engine, set->priv->load_handler_id);
+  g_signal_handler_disconnect (set->priv->engine, set->priv->unload_handler_id);
 
   for (l = set->priv->extensions; l;)
     {

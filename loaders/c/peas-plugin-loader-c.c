@@ -170,7 +170,7 @@ peas_plugin_loader_c_finalize (GObject *object)
     {
       PeasPluginInfo *info = (PeasPluginInfo *) item->data;
 
-      if (peas_plugin_info_is_active (info))
+      if (peas_plugin_info_is_loaded (info))
         {
           g_warning ("There are still C plugins loaded during destruction");
           break;
