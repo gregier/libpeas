@@ -39,7 +39,7 @@
  * @short_description: Management GUI for plugins.
  *
  * The #PeasUIPluginManager is a widget that can be used to manage plugins,
- * i.e. activate or deactivate them, and see some pieces of information.
+ * i.e. load or unload them, and see some pieces of information.
  *
  * <inlinegraphic fileref="peas-ui-plugin-manager.png" format="PNG" />
  *
@@ -361,7 +361,7 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
         {
           gtk_list_store_append (model, &iter);
           gtk_list_store_set (model, &iter,
-                              ACTIVE_COLUMN, peas_plugin_info_is_active (info),
+                              ACTIVE_COLUMN, peas_plugin_info_is_loaded (info),
                               AVAILABLE_COLUMN, peas_plugin_info_is_available (info),
                               INFO_COLUMN, info,
                               -1);
@@ -404,14 +404,14 @@ plugin_manager_set_active (PeasUIPluginManager *pm,
 
   if (active)
     {
-      /* activate the plugin */
-      if (!peas_engine_activate_plugin (pm->priv->engine, info))
+      /* load the plugin */
+      if (!peas_engine_load_plugin (pm->priv->engine, info))
         res = FALSE;
     }
   else
     {
-      /* deactivate the plugin */
-      if (!peas_engine_deactivate_plugin (pm->priv->engine, info))
+      /* unload the plugin */
+      if (!peas_engine_unload_plugin (pm->priv->engine, info))
         res = FALSE;
     }
 
@@ -574,7 +574,7 @@ create_tree_popup_menu (PeasUIPluginManager *pm)
   item = gtk_check_menu_item_new_with_mnemonic (_("A_ctivate"));
   gtk_widget_set_sensitive (item, peas_plugin_info_is_available (info));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
-                                  peas_plugin_info_is_active (info));
+                                  peas_plugin_info_is_loaded (info));
   g_signal_connect (item, "toggled", G_CALLBACK (enable_plugin_menu_cb), pm);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
@@ -860,7 +860,7 @@ plugin_toggled_cb (PeasEngine          *engine,
     }
 
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, ACTIVE_COLUMN,
-                      peas_plugin_info_is_active (info), -1);
+                      peas_plugin_info_is_loaded (info), -1);
 }
 
 static void
@@ -923,10 +923,10 @@ peas_ui_plugin_manager_constructed (GObject *object)
 
   /* populate the treeview */
   g_signal_connect_after (pm->priv->engine,
-                          "activate-plugin",
+                          "load-plugin",
                           G_CALLBACK (plugin_toggled_cb), pm);
   g_signal_connect_after (pm->priv->engine,
-                          "deactivate-plugin",
+                          "unload-plugin",
                           G_CALLBACK (plugin_toggled_cb), pm);
 
   if (peas_engine_get_plugin_list (pm->priv->engine) != NULL)

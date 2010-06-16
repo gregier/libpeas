@@ -55,10 +55,10 @@ struct _PeasEngine {
 struct _PeasEngineClass {
   GObjectClass parent_class;
 
-  void     (*activate_plugin)             (PeasEngine     *engine,
+  void     (*load_plugin)                 (PeasEngine     *engine,
                                            PeasPluginInfo *info);
 
-  void     (*deactivate_plugin)           (PeasEngine     *engine,
+  void     (*unload_plugin)               (PeasEngine     *engine,
                                            PeasPluginInfo *info);
 };
 
@@ -72,16 +72,16 @@ void              peas_engine_disable_loader      (PeasEngine      *engine,
                                                    const gchar     *loader_id);
 void              peas_engine_rescan_plugins      (PeasEngine      *engine);
 const GList      *peas_engine_get_plugin_list     (PeasEngine      *engine);
-gchar           **peas_engine_get_active_plugins  (PeasEngine      *engine);
-void              peas_engine_set_active_plugins  (PeasEngine      *engine,
+gchar           **peas_engine_get_loaded_plugins  (PeasEngine      *engine);
+void              peas_engine_set_loaded_plugins  (PeasEngine      *engine,
                                                    const gchar    **plugin_names);
 PeasPluginInfo   *peas_engine_get_plugin_info     (PeasEngine      *engine,
                                                    const gchar     *plugin_name);
 
-/* plugin load and unloading (overall, for all windows) */
-gboolean          peas_engine_activate_plugin     (PeasEngine      *engine,
+/* plugin loading and unloading */
+gboolean          peas_engine_load_plugin         (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
-gboolean          peas_engine_deactivate_plugin   (PeasEngine      *engine,
+gboolean          peas_engine_unload_plugin       (PeasEngine      *engine,
                                                    PeasPluginInfo  *info);
 void              peas_engine_garbage_collect     (PeasEngine      *engine);
 

@@ -39,7 +39,7 @@ typedef struct _PeasPluginInfo PeasPluginInfo;
 
 GType         peas_plugin_info_get_type         (void) G_GNUC_CONST;
 
-gboolean      peas_plugin_info_is_active        (PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_loaded        (PeasPluginInfo *info);
 gboolean      peas_plugin_info_is_available     (PeasPluginInfo *info);
 
 const gchar  *peas_plugin_info_get_module_name  (PeasPluginInfo *info);

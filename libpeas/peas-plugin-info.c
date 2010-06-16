@@ -318,19 +318,19 @@ error:
 }
 
 /**
- * peas_plugin_info_is_active:
+ * peas_plugin_info_is_loaded:
  * @info: A #PeasPluginInfo.
  *
- * Check if the plugin is active.
+ * Check if the plugin is loaded.
  *
- * Returns: %TRUE if the plugin is active.
+ * Returns: %TRUE if the plugin is loaded.
  */
 gboolean
-peas_plugin_info_is_active (PeasPluginInfo *info)
+peas_plugin_info_is_loaded (PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
-  return info->available && info->active;
+  return info->available && info->loaded;
 }
 
 /**

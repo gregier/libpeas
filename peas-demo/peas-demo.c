@@ -18,7 +18,7 @@ activate_plugin (GtkButton   *button,
   g_debug ("%s %s", G_STRFUNC, plugin_name);
   info = peas_engine_get_plugin_info (engine, plugin_name);
   g_return_if_fail (info != NULL);
-  peas_engine_activate_plugin (engine, info);
+  peas_engine_load_plugin (engine, info);
 }
 
 static void

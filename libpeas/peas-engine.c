@@ -48,8 +48,8 @@ G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT);
 
 /* Signals */
 enum {
-  ACTIVATE_PLUGIN,
-  DEACTIVATE_PLUGIN,
+  LOAD_PLUGIN,
+  UNLOAD_PLUGIN,
   LAST_SIGNAL
 };
 
@@ -81,10 +81,10 @@ struct _PeasEnginePrivate {
   GList *object_list;
 };
 
-static void peas_engine_activate_plugin_real   (PeasEngine     *engine,
-                                                PeasPluginInfo * info);
-static void peas_engine_deactivate_plugin_real (PeasEngine     * engine,
-                                                PeasPluginInfo * info);
+static void peas_engine_load_plugin_real   (PeasEngine     *engine,
+                                            PeasPluginInfo * info);
+static void peas_engine_unload_plugin_real (PeasEngine     * engine,
+                                            PeasPluginInfo * info);
 
 static void
 load_plugin_info (PeasEngine  *engine,
@@ -339,13 +339,13 @@ peas_engine_finalize (GObject *object)
   PeasEngine *engine = PEAS_ENGINE (object);
   GList *item;
 
-  /* First deactivate all plugins */
+  /* First unload all the plugins */
   for (item = engine->priv->plugin_list; item; item = item->next)
     {
       PeasPluginInfo *info = PEAS_PLUGIN_INFO (item->data);
 
-      if (peas_plugin_info_is_active (info))
-        peas_engine_deactivate_plugin_real (engine, info);
+      if (peas_plugin_info_is_loaded (info))
+        peas_engine_unload_plugin_real (engine, info);
     }
 
   /* unref the loaders */
@@ -374,8 +374,8 @@ peas_engine_class_init (PeasEngineClass *klass)
   object_class->get_property = peas_engine_get_property;
   object_class->constructed = peas_engine_constructed;
   object_class->finalize = peas_engine_finalize;
-  klass->activate_plugin = peas_engine_activate_plugin_real;
-  klass->deactivate_plugin = peas_engine_deactivate_plugin_real;
+  klass->load_plugin = peas_engine_load_plugin_real;
+  klass->unload_plugin = peas_engine_unload_plugin_real;
 
   /**
    * PeasEngine:app-name:
@@ -456,18 +456,17 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                        G_PARAM_STATIC_STRINGS));
 
   /**
-   * PeasEngine::activate-plugin:
+   * PeasEngine::load-plugin:
    * @engine: A #PeasEngine.
    * @info: A #PeasPluginInfo.
    *
-   * The activate-plugin signal is emitted when a plugin is being
-   * activated.
+   * The load-plugin signal is emitted when a plugin is being loaded.
    */
-  signals[ACTIVATE_PLUGIN] =
-    g_signal_new ("activate-plugin",
+  signals[LOAD_PLUGIN] =
+    g_signal_new ("load-plugin",
                   the_type,
                   G_SIGNAL_RUN_LAST,
-                  G_STRUCT_OFFSET (PeasEngineClass, activate_plugin),
+                  G_STRUCT_OFFSET (PeasEngineClass, load_plugin),
                   NULL, NULL,
                   g_cclosure_marshal_VOID__BOXED,
                   G_TYPE_NONE,
@@ -476,18 +475,17 @@ peas_engine_class_init (PeasEngineClass *klass)
                   G_SIGNAL_TYPE_STATIC_SCOPE);
 
   /**
-   * PeasEngine::deactivate-plugin:
+   * PeasEngine::unload-plugin:
    * @engine: A #PeasEngine.
    * @info: A #PeasPluginInfo.
    *
-   * The activate-plugin signal is emitted when a plugin is being
-   * deactivated.
+   * The unload-plugin signal is emitted when a plugin is being unloaded.
    */
-  signals[DEACTIVATE_PLUGIN] =
-    g_signal_new ("deactivate-plugin",
+  signals[UNLOAD_PLUGIN] =
+    g_signal_new ("unload-plugin",
                   the_type,
                   G_SIGNAL_RUN_LAST,
-                  G_STRUCT_OFFSET (PeasEngineClass, deactivate_plugin),
+                  G_STRUCT_OFFSET (PeasEngineClass, unload_plugin),
                   NULL, NULL,
                   g_cclosure_marshal_VOID__BOXED,
                   G_TYPE_NONE,
@@ -658,7 +656,7 @@ load_plugin (PeasEngine     *engine,
 {
   PeasPluginLoader *loader;
 
-  if (peas_plugin_info_is_active (info))
+  if (peas_plugin_info_is_loaded (info))
     return TRUE;
 
   if (!peas_plugin_info_is_available (info))
@@ -674,9 +672,9 @@ load_plugin (PeasEngine     *engine,
       return FALSE;
     }
 
-  info->active = peas_plugin_loader_load (loader, info);
+  info->loaded = peas_plugin_loader_load (loader, info);
 
-  if (info->active == FALSE)
+  if (info->loaded == FALSE)
     {
       g_warning ("Error loading plugin '%s'", info->name);
       info->available = FALSE;
@@ -687,46 +685,45 @@ load_plugin (PeasEngine     *engine,
 }
 
 static void
-peas_engine_activate_plugin_real (PeasEngine     *engine,
-                                  PeasPluginInfo *info)
+peas_engine_load_plugin_real (PeasEngine     *engine,
+                              PeasPluginInfo *info)
 {
   load_plugin (engine, info);
 }
 
 /**
- * peas_engine_activate_plugin:
+ * peas_engine_load_plugin:
  * @engine: A #PeasEngine.
  * @info: A #PeasPluginInfo.
  *
- * Activates the plugin corresponding to @info on all the objects registered
- * against @engine, loading it if it's not already available.
+ * Loads the plugin corresponding to @info if it's not currently loaded.
  *
- * Returns: whether the plugin has been successfuly activated.
+ * Returns: whether the plugin has been successfuly loaded.
  */
 gboolean
-peas_engine_activate_plugin (PeasEngine     *engine,
-                             PeasPluginInfo *info)
+peas_engine_load_plugin (PeasEngine     *engine,
+                         PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
   if (!peas_plugin_info_is_available (info))
     return FALSE;
 
-  if (peas_plugin_info_is_active (info))
+  if (peas_plugin_info_is_loaded (info))
     return TRUE;
 
-  g_signal_emit (engine, signals[ACTIVATE_PLUGIN], 0, info);
+  g_signal_emit (engine, signals[LOAD_PLUGIN], 0, info);
 
-  return peas_plugin_info_is_active (info);
+  return peas_plugin_info_is_loaded (info);
 }
 
 static void
-peas_engine_deactivate_plugin_real (PeasEngine     *engine,
-                                    PeasPluginInfo *info)
+peas_engine_unload_plugin_real (PeasEngine     *engine,
+                                PeasPluginInfo *info)
 {
   PeasPluginLoader *loader;
 
-  if (!peas_plugin_info_is_active (info) ||
+  if (!peas_plugin_info_is_loaded (info) ||
       !peas_plugin_info_is_available (info))
     return;
 
@@ -736,32 +733,30 @@ peas_engine_deactivate_plugin_real (PeasEngine     *engine,
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
 
-  info->active = FALSE;
+  info->loaded = FALSE;
 }
 
 /**
- * peas_engine_deactivate_plugin:
+ * peas_engine_unload_plugin:
  * @engine: A #PeasEngine.
  * @info: A #PeasPluginInfo.
  *
- * Deactivates the plugin corresponding to @info on all the objects registered
- * against @engine, eventually unloading it when it has been completely
- * deactivated.
+ * Unloads the plugin corresponding to @info.
  *
- * Returns: whether the plugin has been successfuly deactivated.
+ * Returns: whether the plugin has been successfuly unloaded.
  */
 gboolean
-peas_engine_deactivate_plugin (PeasEngine     *engine,
-                               PeasPluginInfo *info)
+peas_engine_unload_plugin (PeasEngine     *engine,
+                           PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
-  if (!peas_plugin_info_is_active (info))
+  if (!peas_plugin_info_is_loaded (info))
     return TRUE;
 
-  g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
+  g_signal_emit (engine, signals[UNLOAD_PLUGIN], 0, info);
 
-  return !peas_plugin_info_is_active (info);
+  return !peas_plugin_info_is_loaded (info);
 }
 
 gboolean
@@ -774,7 +769,7 @@ peas_engine_provides_extension (PeasEngine *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
 
-  if (!peas_plugin_info_is_active (info))
+  if (!peas_plugin_info_is_loaded (info))
     return FALSE;
 
   loader = get_plugin_loader (engine, info);
@@ -796,17 +791,17 @@ peas_engine_get_extension (PeasEngine *engine,
 }
 
 /**
- * peas_engine_get_active_plugins:
+ * peas_engine_get_loaded_plugins:
  * @engine: A #PeasEngine.
  *
- * Returns the list of the names of all the active plugins, or %NULL if there
- * is no active plugin. Please note that the returned array is a newly
- * allocated one: you will need to free it using g_strfreev().
+ * Returns the list of the names of all the loaded plugins, or %NULL if there
+ * is no plugin currently loaded. Please note that the returned array is a
+ * newly allocated one: you will need to free it using g_strfreev().
  *
  * Returns: A newly-allocated NULL-terminated array of strings, or %NULL.
  */
 gchar **
-peas_engine_get_active_plugins (PeasEngine *engine)
+peas_engine_get_loaded_plugins (PeasEngine *engine)
 {
   GArray *array = g_array_new (TRUE, FALSE, sizeof (gchar *));
   GList *pl;
@@ -816,7 +811,7 @@ peas_engine_get_active_plugins (PeasEngine *engine)
       PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
       gchar *module_name;
 
-      if (peas_plugin_info_is_active (info))
+      if (peas_plugin_info_is_loaded (info))
         {
           module_name = g_strdup (peas_plugin_info_get_module_name (info));
           g_array_append_val (array, module_name);
@@ -838,16 +833,16 @@ string_in_strv (const gchar  *needle,
 }
 
 /**
- * peas_engine_set_active_plugins:
+ * peas_engine_set_loaded_plugins:
  * @engine: A #PeasEngine.
  * @plugin_names: A NULL-terminated array of plugin names.
  *
- * Sets the list of active plugins for @engine. When this function is called,
- * the #PeasEngine will activate all the plugins whose names are in
- * @plugin_names, and deactivate all other active plugins.
+ * Sets the list of loaded plugins for @engine. When this function is called,
+ * the #PeasEngine will load all the plugins whose names are in @plugin_names,
+ * and ensures all other active plugins are unloaded.
  */
 void
-peas_engine_set_active_plugins (PeasEngine   *engine,
+peas_engine_set_loaded_plugins (PeasEngine   *engine,
                                 const gchar **plugin_names)
 {
   GList *pl;
@@ -856,21 +851,21 @@ peas_engine_set_active_plugins (PeasEngine   *engine,
     {
       PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
       const gchar *module_name;
-      gboolean is_active;
-      gboolean to_activate;
+      gboolean is_loaded;
+      gboolean to_load;
 
       if (!peas_plugin_info_is_available (info))
         continue;
 
       module_name = peas_plugin_info_get_module_name (info);
-      is_active = peas_plugin_info_is_active (info);
+      is_loaded = peas_plugin_info_is_loaded (info);
 
-      to_activate = string_in_strv (module_name, plugin_names);
+      to_load = string_in_strv (module_name, plugin_names);
 
-      if (!is_active && to_activate)
-        g_signal_emit (engine, signals[ACTIVATE_PLUGIN], 0, info);
-      else if (is_active && !to_activate)
-        g_signal_emit (engine, signals[DEACTIVATE_PLUGIN], 0, info);
+      if (!is_loaded && to_load)
+        g_signal_emit (engine, signals[LOAD_PLUGIN], 0, info);
+      else if (is_loaded && !to_load)
+        g_signal_emit (engine, signals[UNLOAD_PLUGIN], 0, info);
     }
 }
 

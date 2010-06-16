@@ -48,8 +48,8 @@ struct _PeasPluginInfo {
   gboolean visible;
   GHashTable *keys;
 
-  gint active : 1;
-  /* A plugin is unavailable if it is not possible to activate it
+  gint loaded : 1;
+  /* A plugin is unavailable if it is not possible to load it
      due to an error loading the plugin module (e.g. for Python plugins
      when the interpreter has not been correctly initializated) */
   gint available : 1;

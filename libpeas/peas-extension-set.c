@@ -78,8 +78,8 @@ add_extension (PeasExtensionSet *set,
   PeasExtension *exten;
   ExtensionItem *item;
 
-  /* Let's just ignore inactive plugins... */
-  if (!peas_plugin_info_is_active (info))
+  /* Let's just ignore unloaded plugins... */
+  if (!peas_plugin_info_is_loaded (info))
     return;
 
   exten = peas_engine_get_extension (set->priv->engine, info,
@@ -151,11 +151,11 @@ peas_extension_set_set_internal_data (PeasExtensionSet *set,
     add_extension (set, (PeasPluginInfo *) l->data);
 
   set->priv->activate_handler_id =
-          g_signal_connect_data (engine, "activate-plugin",
+          g_signal_connect_data (engine, "load-plugin",
                                  G_CALLBACK (add_extension), set,
                                  NULL, G_CONNECT_AFTER | G_CONNECT_SWAPPED);
   set->priv->deactivate_handler_id =
-          g_signal_connect_data (engine, "deactivate-plugin",
+          g_signal_connect_data (engine, "unload-plugin",
                                  G_CALLBACK (remove_extension), set,
                                  NULL, G_CONNECT_SWAPPED);
 }
