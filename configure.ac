@@ -101,7 +101,7 @@ PKG_CHECK_MODULES(PEAS, [
 dnl We currently allow building libpeas with Gtk+ 2.0 for testing purposes and
 dnl technology preview. but do *not* distribute such a version!
 AC_ARG_ENABLE(gtk2-test-build,
-	      AS_HELP_STRING([--gtk2-test-build],[Link against gtk+ 2.0, for testing purpose]),
+	      AS_HELP_STRING([--enable-gtk2-test-build],[Link against gtk+ 2.0, for testing purpose]),
 	      [use_gtk2=$enableval],
 	      [use_gtk2=no])
 
