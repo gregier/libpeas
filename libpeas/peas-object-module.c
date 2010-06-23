@@ -6,6 +6,7 @@
  * Copyright (C) 2003-2004 Christian Persch
  * Copyright (C) 2005-2007 Paolo Maggi
  * Copyright (C) 2008 Jesse van den Kieboom
+ * Copyright (C) 2010 Steve Frécinaux
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -275,7 +276,9 @@ peas_object_module_register_types (PeasObjectModule *module)
 
 GObject *
 peas_object_module_create_object (PeasObjectModule *module,
-                                  GType             interface)
+                                  GType             interface,
+                                  guint             n_parameters,
+                                  GParameter       *parameters)
 {
   guint i;
   InterfaceImplementation *impls;
@@ -288,7 +291,7 @@ peas_object_module_create_object (PeasObjectModule *module,
   impls = (InterfaceImplementation *) module->priv->implementations->data;
   for (i = 0; i < module->priv->implementations->len; ++i)
     if (impls[i].iface_type == interface)
-      return impls[i].func (impls[i].user_data);
+      return impls[i].func (n_parameters, parameters, impls[i].user_data);
 
   return NULL;
 }
@@ -350,9 +353,13 @@ peas_object_module_register_extension (PeasObjectModule *module,
 }
 
 static GObject *
-create_gobject_from_type (gconstpointer user_data)
+create_gobject_from_type (guint          n_parameters,
+                          GParameter    *parameters,
+                          gconstpointer  user_data)
 {
-  return g_object_new (GPOINTER_TO_SIZE (user_data), NULL);
+  return g_object_newv (GPOINTER_TO_SIZE (user_data),
+                        n_parameters,
+                        parameters);
 }
 
 void

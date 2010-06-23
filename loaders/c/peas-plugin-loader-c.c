@@ -121,7 +121,7 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
                                                      info);
   g_return_val_if_fail (module != NULL, NULL);
 
-  instance = peas_object_module_create_object (module, exten_type);
+  instance = peas_object_module_create_object (module, exten_type, 0, NULL);
 
   if (instance == NULL)
     {

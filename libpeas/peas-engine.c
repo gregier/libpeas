@@ -525,7 +525,7 @@ load_plugin_loader (PeasEngine  *engine,
   if (g_type_module_use (G_TYPE_MODULE (module)))
     {
       peas_object_module_register_types (module);
-      loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER);
+      loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER, 0, NULL);
 
       if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
         {
