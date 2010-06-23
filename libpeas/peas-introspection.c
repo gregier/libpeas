@@ -132,7 +132,11 @@ peas_method_get_info (GType        iface_type,
   repo = g_irepository_get_default ();
   iface_info = g_irepository_find_by_gtype (repo, iface_type);
   if (iface_info == NULL)
-    return NULL;
+    {
+      g_warning ("Type not found in introspection: %s",
+                 g_type_name (iface_type));
+      return NULL;
+    }
 
   switch (g_base_info_get_type (iface_info))
     {
@@ -146,6 +150,13 @@ peas_method_get_info (GType        iface_type,
       break;
     default:
       func_info = NULL;
+    }
+
+  if (func_info == NULL)
+    {
+      g_warning ("Method %s.%s not found",
+                 g_type_name (iface_type),
+                 method_name);
     }
 
   g_base_info_unref (iface_info);
