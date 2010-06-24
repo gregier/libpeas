@@ -364,10 +364,6 @@ peas_python_init (PeasPluginLoaderPython *loader)
 {
   PyObject *mdict, *gobject, *gettext, *install, *gettext_args;
   char *argv[] = { "libpeas", NULL };
-#ifdef HAVE_SIGACTION
-  struct sigaction old_sigint;
-  gint res;
-#endif
 
   if (loader->priv->init_failed)
     {
@@ -387,38 +383,8 @@ peas_python_init (PeasPluginLoaderPython *loader)
      ends with success */
   loader->priv->init_failed = TRUE;
 
-  /* Hack to make python not overwrite SIGINT: this is needed to avoid
-   * the crash reported on bug #326191 */
-
-  /* CHECK: can't we use Py_InitializeEx instead of Py_Initialize in order
-     to avoid to manage signal handlers ? - Paolo (Dec. 31, 2006) */
-
-#ifdef HAVE_SIGACTION
-  /* Save old handler */
-  res = sigaction (SIGINT, NULL, &old_sigint);
-  if (res != 0)
-    {
-      g_warning ("Error initializing Python interpreter: cannot get "
-                 "handler to SIGINT signal (%s)", g_strerror (errno));
-
-      return FALSE;
-    }
-#endif
-
   /* Python initialization */
-  Py_Initialize ();
-
-#ifdef HAVE_SIGACTION
-  /* Restore old handler */
-  res = sigaction (SIGINT, &old_sigint, NULL);
-  if (res != 0)
-    {
-      g_warning ("Error initializing Python interpreter: cannot restore "
-                 "handler to SIGINT signal (%s).", g_strerror (errno));
-
-      goto python_init_error;
-    }
-#endif
+  Py_InitializeEx (FALSE);
 
   PySys_SetArgv (1, argv);
 
