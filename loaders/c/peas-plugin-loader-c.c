@@ -115,13 +115,20 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
+  GParameter info_param = { 0 };
   gpointer instance;
 
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      info);
   g_return_val_if_fail (module != NULL, NULL);
 
-  instance = peas_object_module_create_object (module, exten_type, 0, NULL);
+  info_param.name = "plugin-info";
+  g_value_init (&info_param.value, PEAS_TYPE_PLUGIN_INFO);
+  g_value_set_boxed (&info_param.value, info);
+
+  instance = peas_object_module_create_object (module, exten_type, 1, &info_param);
+
+  g_value_unset (&info_param.value);
 
   if (instance == NULL)
     {
@@ -133,9 +140,6 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
 
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, exten_type), NULL);
-
-  if (PEAS_IS_EXTENSION_BASE (instance))
-    g_object_set (instance, "plugin-info", info, NULL);
 
   return peas_extension_c_new (exten_type, G_OBJECT (instance));
 }
