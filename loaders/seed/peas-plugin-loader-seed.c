@@ -19,11 +19,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <seed.h>
 
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
-#include "config.h"
 
 G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER);
 

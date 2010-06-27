@@ -20,6 +20,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "peas-extension-python.h"
 #include "peas-plugin-loader-python.h"
 
@@ -29,7 +33,6 @@
 #include <Python.h>
 #include <pygobject.h>
 #include <signal.h>
-#include "config.h"
 
 #if PY_VERSION_HEX < 0x02050000
 typedef int Py_ssize_t;

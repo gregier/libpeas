@@ -19,7 +19,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <girepository.h>
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
  * girepository.h, so we unset it here to avoid a warning. Yep, that's bad. */
