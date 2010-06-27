@@ -154,6 +154,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
     {
       g_error ("Could not create instance for %s.",
                peas_plugin_info_get_name (info));
+
       return NULL;
     }
 
@@ -161,10 +162,10 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
 
   if (pygobject->obj != NULL)
     {
+      g_error ("Could not create instance for %s (GObject already initialized).",
+               peas_plugin_info_get_name (info));
       Py_DECREF (pyobject);
-      g_error
-        ("Could not create instance for %s (GObject already initialized).",
-         peas_plugin_info_get_name (info));
+
       return NULL;
     }
 
@@ -182,8 +183,8 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (pygobject->obj, exten_type), NULL);
 
   /* now call tp_init manually */
-  if (PyType_IsSubtype (pyobject->ob_type, pytype)
-      && pyobject->ob_type->tp_init != NULL)
+  if (PyType_IsSubtype (pyobject->ob_type, pytype) &&
+      pyobject->ob_type->tp_init != NULL)
     {
       emptyarg = PyTuple_New (0);
       pyobject->ob_type->tp_init (pyobject, emptyarg, NULL);
@@ -235,6 +236,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
       g_warning ("Cannot load python plugin Python '%s' since libpeas was "
                  "not able to initialize the Python interpreter.",
                  peas_plugin_info_get_name (info));
+
       return FALSE;
     }
 
@@ -259,6 +261,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
     {
       g_free (module_name);
       PyErr_Print ();
+
       return FALSE;
     }
 
@@ -419,15 +422,17 @@ peas_python_init (PeasPluginLoaderPython *loader)
     {
       g_warning ("Error initializing Python interpreter: cound not "
                  "import gobject.");
+
       goto python_init_error;
     }
 
   mdict = PyModule_GetDict (gobject);
   PyGObject_Type = PyDict_GetItemString (mdict, "GObject");
-  if (!PyGObject_Type)
+  if (PyGObject_Type == NULL)
     {
       g_warning ("Error initializing Python interpreter: cound not "
                  "get gobject.GObject");
+
       goto python_init_error;
     }
 
