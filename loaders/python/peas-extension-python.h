@@ -23,6 +23,10 @@
 #define __PEAS_EXTENSION_PYTHON_H__
 
 #include <libpeas/peas-extension.h>
+/* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
+ * <libpeas/peas-extension.h>, so we unset it here to avoid a warning.
+ * Yep, that's bad. */
+#undef _POSIX_C_SOURCE
 #include <Python.h>
 
 G_BEGIN_DECLS
