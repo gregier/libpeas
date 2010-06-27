@@ -77,15 +77,24 @@ find_python_extension_type (PeasPluginInfo *info,
   pytype = PyObject_GetAttrString (pygtype, "pytype");
   g_return_val_if_fail (pytype != NULL, NULL);
 
+  if (pytype == Py_None)
+    return NULL;
+
   while (PyDict_Next (locals, &pos, &key, &value))
     {
       if (!PyType_Check (value))
         continue;
 
-      if (PyObject_IsSubclass (value, pytype))
+      switch (PyObject_IsSubclass (value, pytype))
         {
+        case 1:
           Py_DECREF (pygtype);
           return (PyTypeObject *) value;
+        case 0:
+          continue;
+        case -1:
+          PyErr_Print ();
+          continue;
         }
     }
 
@@ -166,6 +175,8 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
 
       return NULL;
     }
+
+  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (pygobject->obj, exten_type), NULL);
 
   /* now call tp_init manually */
   if (PyType_IsSubtype (pyobject->ob_type, pytype)
