@@ -386,26 +386,14 @@ peas_python_init (PeasPluginLoaderPython *loader)
   char *argv[] = { "", NULL };
   gchar *prgname;
 
-  if (loader->priv->init_failed)
-    {
-      /* We already failed to initialized Python, don't need to
-       * retry again */
-      return FALSE;
-    }
-
-  if (Py_IsInitialized ())
-    {
-      /* Python has already been successfully initialized */
-      return TRUE;
-    }
-
   /* We are trying to initialize Python for the first time,
      set init_failed to FALSE only if the entire initialization process
      ends with success */
   loader->priv->init_failed = TRUE;
 
   /* Python initialization */
-  Py_InitializeEx (FALSE);
+  if (!Py_IsInitialized ())
+    Py_InitializeEx (FALSE);
 
   prgname = g_get_prgname ();
   if (prgname != NULL)
