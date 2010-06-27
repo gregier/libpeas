@@ -119,7 +119,14 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
 
   instance = peas_object_module_create_object (module, exten_type);
 
-  g_return_val_if_fail (instance != NULL, NULL);
+  if (instance == NULL)
+    {
+      g_debug ("Plugin '%s' doesn't provide a '%s' extension",
+               peas_plugin_info_get_module_name (info),
+               g_type_name (exten_type));
+      return NULL;
+    }
+
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, exten_type), NULL);
 
