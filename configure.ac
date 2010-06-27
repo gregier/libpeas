@@ -246,6 +246,9 @@ AC_SUBST(LOADER_LIBTOOL_FLAGS)
 dnl ================================================================
 dnl Misc
 dnl ================================================================
+
+AC_DEFINE(G_LOG_DOMAIN, "libpeas", [Log domain])
+
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
 
