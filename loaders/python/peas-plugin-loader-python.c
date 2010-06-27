@@ -43,7 +43,8 @@ typedef int Py_ssize_t;
 struct _PeasPluginLoaderPythonPrivate {
   GHashTable *loaded_plugins;
   guint idle_gc;
-  gboolean init_failed;
+  guint init_failed : 1;
+  guint must_finalize_python : 1;
 };
 
 typedef struct {
@@ -340,7 +341,8 @@ peas_python_shutdown (PeasPluginLoaderPython *loader)
   while (PyGC_Collect ())
     ;
 
-  Py_Finalize ();
+  if (loader->priv->must_finalize_python)
+    Py_Finalize ();
 }
 
 /* C equivalent of
@@ -393,7 +395,10 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   /* Python initialization */
   if (!Py_IsInitialized ())
-    Py_InitializeEx (FALSE);
+    {
+      Py_InitializeEx (FALSE);
+      loader->priv->must_finalize_python = TRUE;
+    }
 
   prgname = g_get_prgname ();
   if (prgname != NULL)
