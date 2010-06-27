@@ -362,7 +362,7 @@ peas_init_pygobject (void)
 static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
-  PyObject *mdict, *gobject, *gettext, *install, *gettext_args;
+  PyObject *mdict, *gobject, *gi, *gettext, *install, *gettext_args;
   char *argv[] = { "libpeas", NULL };
 
   if (loader->priv->init_failed)
@@ -414,6 +414,15 @@ peas_python_init (PeasPluginLoaderPython *loader)
     {
       g_warning ("Error initializing Python interpreter: cound not "
                  "get gobject.GObject");
+      goto python_init_error;
+    }
+
+  gi = PyImport_ImportModule ("gi");
+  if (gi == NULL)
+    {
+      g_warning ("Error initializing Python interpreter: could not "
+                 "import gi.");
+
       goto python_init_error;
     }
 
