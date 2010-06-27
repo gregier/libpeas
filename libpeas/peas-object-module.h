@@ -51,9 +51,6 @@ struct _PeasObjectModule {
 
 struct _PeasObjectModuleClass {
   GTypeModuleClass parent_class;
-
-  /* Virtual class methods */
-  void (*garbage_collect) ();
 };
 
 GType               peas_object_module_get_type               (void) G_GNUC_CONST;
