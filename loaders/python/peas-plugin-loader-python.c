@@ -380,7 +380,8 @@ static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
   PyObject *mdict, *gobject, *gi, *gettext, *install, *gettext_args;
-  char *argv[] = { "libpeas", NULL };
+  char *argv[] = { "", NULL };
+  gchar *prgname;
 
   if (loader->priv->init_failed)
     {
@@ -402,6 +403,10 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   /* Python initialization */
   Py_InitializeEx (FALSE);
+
+  prgname = g_get_prgname ();
+  if (prgname != NULL)
+      argv[0] = prgname;
 
   PySys_SetArgv (1, argv);
 
