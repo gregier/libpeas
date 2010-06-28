@@ -385,9 +385,28 @@ create_gobject_from_type (guint       n_parameters,
                           GParameter *parameters,
                           gpointer    user_data)
 {
-  return g_object_newv (GPOINTER_TO_SIZE (user_data),
-                        n_parameters,
-                        parameters);
+  GType exten_type;
+  GObjectClass *cls;
+  GObject *instance;
+
+  exten_type = GPOINTER_TO_SIZE (user_data);
+
+  cls = g_type_class_ref (exten_type);
+
+  /* If we are instantiating a plugin, then the factory function is
+   * called with a "plugin-info" property appended to the parameters.
+   * Let's get rid of it if the actual type doesn't have such a
+   * property to avoid a warning. */
+  if (n_parameters > 1 &&
+      strcmp (parameters[n_parameters-1].name, "plugin-info") == 0 &&
+      g_object_class_find_property (cls, "plugin-info") != NULL)
+    n_parameters --;
+
+  instance = g_object_newv (exten_type, n_parameters, parameters);
+
+  g_type_class_unref (cls);
+
+  return instance;
 }
 
 /**
