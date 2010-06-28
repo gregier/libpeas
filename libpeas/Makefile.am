@@ -26,6 +26,7 @@ INST_H_FILES =			\
 	peas-engine.h
 
 NOINST_H_FILES =		\
+	peas-debug.h		\
 	peas-dirs.h		\
 	peas-i18n.h		\
 	peas-introspection.h	\
@@ -33,6 +34,7 @@ NOINST_H_FILES =		\
 	peas-plugin-loader.h
 
 C_FILES =			\
+	peas-debug.c		\
 	peas-dirs.c		\
 	peas-i18n.c		\
 	peas-object-module.c	\

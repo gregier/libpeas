@@ -33,6 +33,7 @@
 #include "peas-object-module.h"
 #include "peas-extension.h"
 #include "peas-dirs.h"
+#include "peas-debug.h"
 
 /**
  * SECTION:peas-engine
@@ -503,6 +504,10 @@ peas_engine_class_init (PeasEngineClass *klass)
                   G_SIGNAL_TYPE_STATIC_SCOPE);
 
   g_type_class_add_private (klass, sizeof (PeasEnginePrivate));
+
+  /* We are doing some global initialization here as there is currently no
+   * global init function for libpeas. */
+  peas_debug_init ();
 }
 
 static LoaderInfo *
