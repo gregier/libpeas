@@ -54,8 +54,9 @@ enum {
 
 typedef struct {
   GType iface_type;
-  PeasCreateFunc func;
-  gconstpointer user_data;
+  PeasFactoryFunc func;
+  gpointer user_data;
+  GDestroyNotify destroy_func;
 } InterfaceImplementation;
 
 struct _PeasObjectModulePrivate {
@@ -150,9 +151,17 @@ static void
 peas_object_module_finalize (GObject *object)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  InterfaceImplementation *impls;
+  unsigned i;
 
   g_free (module->priv->path);
   g_free (module->priv->module_name);
+
+  impls = (InterfaceImplementation *) module->priv->implementations->data;
+  for (i = 0; i < module->priv->implementations->len; ++i)
+    if (impls[i].destroy_func != NULL)
+      impls[i].destroy_func (impls[i].user_data);
+
   g_array_free (module->priv->implementations, TRUE);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
@@ -340,35 +349,64 @@ peas_object_module_get_library (PeasObjectModule *module)
   return module->priv->library;
 }
 
+/**
+ * peas_object_module_register_extension_factory:
+ * @module: Your plugin's #PeasObjectModule.
+ * @iface_type: The #GType of the extension interface you implement.
+ * @factory_func: The #PeasFactoryFunc that will create the @iface_type
+ *   instance when requested.
+ * @user_data: Data to pass to @func calls.
+ * @destroy_func: A #GDestroyNotify for @user_data.
+ *
+ * Register an implementation for an extension type through a factory
+ * function @factory_func which will instantiate the extension when
+ * requested.
+ *
+ * This method is primarily meant to be used by native bindings (like gtkmm),
+ * creatint native types which cannot be instantiated correctly using
+ * g_object_new().  For other uses, you will usually prefer relying on
+ * peas_object_module_register_extension_type().
+ */
 void
-peas_object_module_register_extension (PeasObjectModule *module,
-                                       GType             iface_type,
-                                       PeasCreateFunc    func,
-                                       gconstpointer     user_data)
+peas_object_module_register_extension_factory (PeasObjectModule *module,
+                                               GType             iface_type,
+                                               PeasFactoryFunc   factory_func,
+                                               gpointer          user_data,
+                                               GDestroyNotify    destroy_func)
 {
-  InterfaceImplementation impl = { iface_type, func, user_data };
+  InterfaceImplementation impl = { iface_type, factory_func, user_data, destroy_func };
   g_array_append_val (module->priv->implementations, impl);
 
   g_debug ("Registered extension for type '%s'", g_type_name (iface_type));
 }
 
 static GObject *
-create_gobject_from_type (guint          n_parameters,
-                          GParameter    *parameters,
-                          gconstpointer  user_data)
+create_gobject_from_type (guint       n_parameters,
+                          GParameter *parameters,
+                          gpointer    user_data)
 {
   return g_object_newv (GPOINTER_TO_SIZE (user_data),
                         n_parameters,
                         parameters);
 }
 
+/**
+ * peas_object_module_register_extension_type:
+ * @module: Your plugin's #PeasObjectModule.
+ * @iface_type: The #GType of the extension interface you implement.
+ * @extension_type: The #GType of your implementation of @iface_type.
+ *
+ * Register an extension type which implements the extension interface
+ * @iface_type.
+ */
 void
 peas_object_module_register_extension_type (PeasObjectModule *module,
                                             GType             iface_type,
                                             GType             extension_type)
 {
-  peas_object_module_register_extension (module,
-                                         iface_type,
-                                         create_gobject_from_type,
-                                         GSIZE_TO_POINTER (extension_type));
+  peas_object_module_register_extension_factory (module,
+                                                 iface_type,
+                                                 create_gobject_from_type,
+                                                 GSIZE_TO_POINTER (extension_type),
+                                                 NULL);
 }
