@@ -325,7 +325,7 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
   pyinfo->module = NULL;
 }
 
-static gboolean
+static void
 run_gc_protected (void)
 {
   PyGILState_STATE state = pyg_gil_state_ensure ();
