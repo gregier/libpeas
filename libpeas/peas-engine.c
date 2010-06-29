@@ -163,11 +163,18 @@ load_dir_real (PeasEngine  *engine,
 void
 peas_engine_rescan_plugins (PeasEngine *engine)
 {
+  gchar **sp;
   gchar *extension;
   guint i;
-  gchar **sp;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
+
+  sp = engine->priv->search_paths;
+  if (sp == NULL)
+    {
+      g_debug ("No search paths where provided.");
+      return;
+    }
 
   /* Compute the extension of the plugin files. */
   extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
@@ -175,7 +182,6 @@ peas_engine_rescan_plugins (PeasEngine *engine)
     extension[i] = g_ascii_tolower (extension[i]);
 
   /* Go and read everything from the provided search paths */
-  sp = engine->priv->search_paths;
   for (i = 0; sp[i] != NULL; i += 2)
     load_dir_real (engine, extension, sp[i], sp[i + 1], 1);
 
