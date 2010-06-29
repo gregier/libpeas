@@ -34,7 +34,7 @@ header_DATA = $(INST_H_FILES)
 if HAVE_INTROSPECTION
   -include $(INTROSPECTION_MAKEFILE)
   INTROSPECTION_GIRS = PeasUI-1.0.gir
-  INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_builddir)/libpeas
+  INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_builddir)/libpeas --warn-all
   INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
 
   introspection_sources = $(libpeasui_1_0_la_SOURCES)
