@@ -427,7 +427,9 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
 static void
 peas_init_pygobject (void)
 {
-  init_pygobject_check (2, 11, 5);      /* FIXME: get from config */
+  init_pygobject_check (PYGOBJECT_MAJOR_VERSION,
+                        PYGOBJECT_MINOR_VERSION,
+                        PYGOBJECT_MICRO_VERSION);
 }
 
 static gboolean

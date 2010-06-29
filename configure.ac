@@ -166,7 +166,12 @@ dnl Python
 dnl ================================================================
 
 PYTHON_REQUIRED=2.5.2
-PYGOBJECT_REQUIRED=2.20
+
+dnl Used by the Python loader to check the PyGObject version at runtime
+PYGOBJECT_MAJOR_VERSION=2
+PYGOBJECT_MINOR_VERSION=20
+PYGOBJECT_MICRO_VERSION=0
+PYGOBJECT_REQUIRED=$PYGOBJECT_MAJOR_VERSION.$PYGOBJECT_MINOR_VERSION.$PYGOBJECT_MICRO_VERSION
 
 AC_ARG_ENABLE(python,
 	      AS_HELP_STRING([--enable-python],[Enable Python support]),
@@ -218,6 +223,9 @@ if test "$found_python" = "yes"; then
 	AC_SUBST(PYTHON_CFLAGS)
 	AC_SUBST(PYTHON_LIBS)
 
+	AC_DEFINE_UNQUOTED(PYGOBJECT_MAJOR_VERSION,[$PYGOBJECT_MAJOR_VERSION], [PyGObject major version.])
+	AC_DEFINE_UNQUOTED(PYGOBJECT_MINOR_VERSION,[$PYGOBJECT_MINOR_VERSION], [PyGObject minor version.])
+	AC_DEFINE_UNQUOTED(PYGOBJECT_MICRO_VERSION,[$PYGOBJECT_MICRO_VERSION], [PyGObject micro version.])
 	AC_DEFINE(ENABLE_PYTHON,1,[Define to compile with Python support])
 fi
 
