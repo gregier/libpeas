@@ -219,8 +219,11 @@ configure_button_cb (GtkWidget           *button,
   toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
   gtk_window_set_transient_for (GTK_WINDOW (conf_dlg), toplevel);
 
-  wg = gtk_window_get_group (toplevel);
-  if (wg == NULL)
+  if (gtk_window_has_group (toplevel))
+    {
+      wg = gtk_window_get_group (toplevel);
+    }
+  else
     {
       wg = gtk_window_group_new ();
       gtk_window_group_add_window (wg, toplevel);
