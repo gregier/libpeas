@@ -84,13 +84,13 @@ if HAVE_INTROSPECTION
   Peas_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
 
   girdir = $(datadir)/gir-1.0
-  dist_gir_DATA = $(INTROSPECTION_GIRS)
+  gir_DATA = $(INTROSPECTION_GIRS)
 
   typelibdir = $(libdir)/girepository-1.0
   typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
   CLEANFILES += \
-	$(dist_gir_DATA)		\
+	$(gir_DATA)		\
 	$(typelib_DATA)
 
 endif
