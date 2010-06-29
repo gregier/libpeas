@@ -129,7 +129,7 @@ load_dir_real (PeasEngine  *engine,
 
   if (!d)
     {
-      g_warning ("%s", error->message);
+      g_message ("%s", error->message);
       g_error_free (error);
       return;
     }
