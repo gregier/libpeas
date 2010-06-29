@@ -27,11 +27,10 @@
 
 G_BEGIN_DECLS
 
-GICallableInfo 
-            *peas_method_get_info                 (GType        iface_type,
+GICallableInfo  *peas_method_get_info             (GType        iface_type,
                                                    const gchar *method_name);
 
-gboolean     peas_method_apply_valist             (GObject     *instance,
+gboolean        peas_method_apply_valist          (GObject     *instance,
                                                    GType        iface_type,
                                                    const gchar *method_name,
                                                    va_list      args);

@@ -37,12 +37,13 @@ G_BEGIN_DECLS
 #define PEAS_IS_EXTENSION_SET_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION_SET))
 #define PEAS_EXTENSION_SET_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_EXTENSION_SET, PeasExtensionSetClass))
 
-typedef struct _PeasExtensionSet        PeasExtensionSet;
-typedef struct _PeasExtensionSetClass   PeasExtensionSetClass;
-typedef struct _PeasExtensionSetPrivate PeasExtensionSetPrivate;
+typedef struct _PeasExtensionSet         PeasExtensionSet;
+typedef struct _PeasExtensionSetClass    PeasExtensionSetClass;
+typedef struct _PeasExtensionSetPrivate  PeasExtensionSetPrivate;
 
 struct _PeasExtensionSet {
   GObject parent;
+
   PeasExtensionSetPrivate *priv;
 };
 
@@ -55,12 +56,12 @@ struct _PeasExtensionSetClass {
                                            va_list           args);
 
   /* Signals */
-  void (*extension_added) (PeasExtensionSet *set,
-                           PeasPluginInfo *info,
-                           PeasExtension *exten);
-  void (*extension_removed) (PeasExtensionSet *set,
-                             PeasPluginInfo *info,
-                             PeasExtension *exten);
+  void       (*extension_added)           (PeasExtensionSet *set,
+                                           PeasPluginInfo   *info,
+                                           PeasExtension    *exten);
+  void       (*extension_removed)         (PeasExtensionSet *set,
+                                           PeasPluginInfo   *info,
+                                           PeasExtension    *exten);
 };
 
 /*
@@ -75,8 +76,8 @@ gboolean           peas_extension_set_call_valist (PeasExtensionSet *set,
                                                    const gchar      *method_name,
                                                    va_list           args);
 
-PeasExtensionSet  *peas_extension_set_new         (PeasEngine *engine,
-                                                   GType       exten_type);
+PeasExtensionSet  *peas_extension_set_new         (PeasEngine       *engine,
+                                                   GType             exten_type);
 
 G_END_DECLS
 

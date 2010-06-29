@@ -24,11 +24,10 @@
 #endif
 
 #include "peas-introspection.h"
-#include <girepository.h>
 
 static void
-read_next_argument (GArgument *cur_arg,
-                    va_list args,
+read_next_argument (GArgument  *cur_arg,
+                    va_list     args,
                     GITypeInfo *arg_type_info)
 {
   /* Notes: According to GCC 4.4,
@@ -121,6 +120,8 @@ read_next_argument (GArgument *cur_arg,
     case GI_TYPE_TAG_ERROR:
       cur_arg->v_pointer = va_arg (args, gpointer);
       break;
+    default:
+      g_return_if_reached ();
     }
 }
 

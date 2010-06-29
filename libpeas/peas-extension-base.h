@@ -43,15 +43,15 @@ G_BEGIN_DECLS
 
 /**
  * PeasExtensionBase:
- * @parent: the parent object.
  *
  * Base class for C extensions.
  */
-typedef struct _PeasExtensionBase        PeasExtensionBase;
-typedef struct _PeasExtensionBaseClass   PeasExtensionBaseClass;
+typedef struct _PeasExtensionBase       PeasExtensionBase;
+typedef struct _PeasExtensionBaseClass  PeasExtensionBaseClass;
 
 struct _PeasExtensionBase {
   GObject parent;
+
   PeasPluginInfo *plugin_info;
 };
 

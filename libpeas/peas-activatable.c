@@ -94,8 +94,8 @@ peas_activatable_deactivate (PeasActivatable *activatable,
  * @activatable: A #PeasActivatable.
  * @object: A #GObject.
  *
- * Triggers an update of the plugin insternal state to take into account
- * state changes in the targetted object, due to a plugin or an user action.
+ * Triggers an update of the plugin's internal state to take into account
+ * state changes in the targetted object, due to a plugin or user action.
  */
 void
 peas_activatable_update_state (PeasActivatable *activatable,

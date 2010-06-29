@@ -55,7 +55,7 @@ peas_extension_class_init (PeasExtensionClass *klass)
  *
  * Call a method of the object behind @extension.
  *
- * Return value: #TRUE on successful call.
+ * Return value: %TRUE on successful call.
  */
 gboolean
 peas_extension_call (PeasExtension *exten,
@@ -80,12 +80,12 @@ peas_extension_call (PeasExtension *exten,
  *
  * Call a method of the object behind @extension, using @args as arguments.
  *
- * Return value: #TRUE on successful call.
+ * Return value: %TRUE on successful call.
  */
 gboolean
 peas_extension_call_valist (PeasExtension *exten,
                             const gchar   *method_name,
-                            va_list args)
+                            va_list        args)
 {
   PeasExtensionClass *klass;
 

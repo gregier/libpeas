@@ -34,8 +34,8 @@ G_BEGIN_DECLS
 #define PEAS_IS_PLUGIN_LOADER_SEED_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_LOADER_SEED))
 #define PEAS_PLUGIN_LOADER_SEED_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_PLUGIN_LOADER_SEED, PeasPluginLoaderSeedClass))
 
-typedef struct _PeasPluginLoaderSeed         PeasPluginLoaderSeed;
-typedef struct _PeasPluginLoaderSeedClass    PeasPluginLoaderSeedClass;
+typedef struct _PeasPluginLoaderSeed       PeasPluginLoaderSeed;
+typedef struct _PeasPluginLoaderSeedClass  PeasPluginLoaderSeedClass;
 
 struct _PeasPluginLoaderSeed {
   PeasPluginLoader parent;

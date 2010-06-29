@@ -451,7 +451,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   prgname = g_get_prgname ();
   if (prgname != NULL)
-      argv[0] = prgname;
+    argv[0] = prgname;
 
   PySys_SetArgv (1, argv);
 
@@ -587,8 +587,7 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
   loader_class->provides_extension = peas_plugin_loader_python_provides_extension;
   loader_class->garbage_collect = peas_plugin_loader_python_garbage_collect;
 
-  g_type_class_add_private (object_class,
-                            sizeof (PeasPluginLoaderPythonPrivate));
+  g_type_class_add_private (object_class, sizeof (PeasPluginLoaderPythonPrivate));
 }
 
 static void

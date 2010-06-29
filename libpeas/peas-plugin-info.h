@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 /**
  * PeasPluginInfo:
  *
- * Boxed type for the information relative to a plugin.
+ * Boxed type for the information related to a plugin.
  */
 typedef struct _PeasPluginInfo PeasPluginInfo;
 

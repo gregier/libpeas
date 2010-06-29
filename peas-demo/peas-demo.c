@@ -90,7 +90,8 @@ create_main_window (void)
 }
 
 int
-main (int argc, char **argv)
+main (int    argc,
+      char **argv)
 {
   gchar const * const search_paths[] = {
     /* Uninstalled plugins */

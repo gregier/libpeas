@@ -34,8 +34,8 @@ G_BEGIN_DECLS
 #define PEAS_IS_EXTENSION_SEED_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION_SEED))
 #define PEAS_EXTENSION_SEED_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_EXTENSION_SEED, PeasExtensionSeedClass))
 
-typedef struct _PeasExtensionSeed        PeasExtensionSeed;
-typedef struct _PeasExtensionSeedClass   PeasExtensionSeedClass;
+typedef struct _PeasExtensionSeed       PeasExtensionSeed;
+typedef struct _PeasExtensionSeedClass  PeasExtensionSeedClass;
 
 struct _PeasExtensionSeed {
   PeasExtension parent;
@@ -52,9 +52,9 @@ struct _PeasExtensionSeedClass {
 GType            peas_extension_seed_get_type (void) G_GNUC_CONST;
 void             peas_extension_seed_register (GTypeModule    *type_module);
 
-PeasExtension   *peas_extension_seed_new      (GType       exten_type,
-                                               SeedContext js_context,
-                                               SeedObject  js_object);
+PeasExtension   *peas_extension_seed_new      (GType           exten_type,
+                                               SeedContext     js_context,
+                                               SeedObject      js_object);
 
 G_END_DECLS
 

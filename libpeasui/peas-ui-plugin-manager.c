@@ -161,22 +161,21 @@ about_button_cb (GtkWidget           *button,
   PeasPluginInfo *info;
 
   info = plugin_manager_get_selected_plugin (pm);
-
   g_return_if_fail (info != NULL);
 
   /* if there is another about dialog already open destroy it */
   if (pm->priv->about)
     gtk_widget_destroy (pm->priv->about);
 
-  pm->priv->about = g_object_new (GTK_TYPE_ABOUT_DIALOG,
-                                  "program-name", peas_plugin_info_get_name (info),
-                                  "copyright", peas_plugin_info_get_copyright (info),
-                                  "authors", peas_plugin_info_get_authors (info),
-                                  "comments", peas_plugin_info_get_description (info),
-                                  "website", peas_plugin_info_get_website (info),
-                                  "logo-icon-name", peas_ui_plugin_info_get_icon_name (info),
-                                  "version", peas_plugin_info_get_version (info),
-                                  NULL);
+  pm->priv->about = GTK_WIDGET (g_object_new (GTK_TYPE_ABOUT_DIALOG,
+                                              "program-name", peas_plugin_info_get_name (info),
+                                              "copyright", peas_plugin_info_get_copyright (info),
+                                              "authors", peas_plugin_info_get_authors (info),
+                                              "comments", peas_plugin_info_get_description (info),
+                                              "website", peas_plugin_info_get_website (info),
+                                              "logo-icon-name", peas_ui_plugin_info_get_icon_name (info),
+                                              "version", peas_plugin_info_get_version (info),
+                                              NULL));
 
   gtk_window_set_destroy_with_parent (GTK_WINDOW (pm->priv->about), TRUE);
 
@@ -334,11 +333,9 @@ row_activated_cb (GtkTreeView         *tree_view,
   GtkTreeModel *model;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (pm->priv->tree));
-
   g_return_if_fail (model != NULL);
 
   gtk_tree_model_get_iter (model, &iter, path);
-
   g_return_if_fail (&iter != NULL);
 
   plugin_manager_toggle_active (pm, &iter, model);
@@ -378,8 +375,7 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
       GtkTreeSelection *selection;
       PeasPluginInfo *info;
 
-      selection =
-        gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree));
+      selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree));
       g_return_if_fail (selection != NULL);
 
       gtk_tree_selection_select_iter (selection, &iter);
@@ -402,7 +398,6 @@ plugin_manager_set_active (PeasUIPluginManager *pm,
   gboolean res = TRUE;
 
   gtk_tree_model_get (model, iter, INFO_COLUMN, &info, -1);
-
   g_return_val_if_fail (info != NULL, FALSE);
 
   if (active)
@@ -466,10 +461,10 @@ plugin_manager_set_active_all (PeasUIPluginManager *pm,
   GtkTreeIter iter;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (pm->priv->tree));
-
   g_return_if_fail (model != NULL);
 
-  gtk_tree_model_get_iter_first (model, &iter);
+  if (!gtk_tree_model_get_iter_first (model, &iter))
+    return;
 
   do
     plugin_manager_set_active (pm, &iter, model, active);
@@ -842,10 +837,8 @@ plugin_toggled_cb (PeasEngine          *engine,
       info_found = info == tinfo;
     }
 
-  if (!info_found)
+  if (!info_found && gtk_tree_model_get_iter_first (model, &iter))
     {
-      gtk_tree_model_get_iter_first (model, &iter);
-
       do
         {
           PeasPluginInfo *tinfo;
@@ -899,7 +892,7 @@ peas_ui_plugin_manager_init (PeasUIPluginManager *pm)
   hbuttonbox = gtk_hbutton_box_new ();
   gtk_box_pack_start (GTK_BOX (pm), hbuttonbox, FALSE, FALSE, 0);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
-  gtk_box_set_spacing (GTK_BOX (hbuttonbox), 8);
+  gtk_box_set_spacing (GTK_BOX (hbuttonbox), 8); /* should use the default or HIG */
 
   pm->priv->about_button = gtk_button_new_from_stock (GTK_STOCK_ABOUT);
   gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->about_button);
@@ -941,7 +934,6 @@ peas_ui_plugin_manager_constructed (GObject *object)
       gtk_widget_set_sensitive (pm->priv->about_button, FALSE);
       gtk_widget_set_sensitive (pm->priv->configure_button, FALSE);
     }
-
 }
 
 static void
@@ -966,11 +958,13 @@ peas_ui_plugin_manager_finalize (GObject *object)
  *
  * Creates a new plugin manager for the given #PeasEngine.
  *
- * Returns: the new #PeasUIPluginManager
+ * Returns: the new #PeasUIPluginManager.
  */
 GtkWidget *
 peas_ui_plugin_manager_new (PeasEngine *engine)
 {
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+
   return GTK_WIDGET (g_object_new (PEAS_UI_TYPE_PLUGIN_MANAGER,
                                    "engine", engine,
                                    NULL));

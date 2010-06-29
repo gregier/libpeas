@@ -80,7 +80,7 @@ peas_ui_configurable_is_configurable (PeasUIConfigurable *configurable)
 /**
  * peas_ui_configurable_create_configure_dialog:
  * @configurable: A #PeasUIConfigurable
- * @conf_dlg: (out) A #GtkWindow used for configuration
+ * @conf_dlg: (out): A #GtkWindow used for configuration
  *
  * Creates the configure dialog widget for the plugin.
  *
@@ -89,8 +89,8 @@ peas_ui_configurable_is_configurable (PeasUIConfigurable *configurable)
  * Returns: %TRUE on success.
  */
 gboolean
-peas_ui_configurable_create_configure_dialog (PeasUIConfigurable *configurable,
-                                              GtkWidget         **conf_dlg)
+peas_ui_configurable_create_configure_dialog (PeasUIConfigurable  *configurable,
+                                              GtkWidget          **conf_dlg)
 {
   PeasUIConfigurableInterface *iface;
 

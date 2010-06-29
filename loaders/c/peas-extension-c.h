@@ -33,8 +33,8 @@ G_BEGIN_DECLS
 #define PEAS_IS_EXTENSION_C_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION_C))
 #define PEAS_EXTENSION_C_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_EXTENSION_C, PeasExtensionCClass))
 
-typedef struct _PeasExtensionC         PeasExtensionC;
-typedef struct _PeasExtensionCClass    PeasExtensionCClass;
+typedef struct _PeasExtensionC       PeasExtensionC;
+typedef struct _PeasExtensionCClass  PeasExtensionCClass;
 
 struct _PeasExtensionC {
   PeasExtension parent;
@@ -50,8 +50,8 @@ struct _PeasExtensionCClass {
 GType            peas_extension_c_get_type  (void) G_GNUC_CONST;
 void             peas_extension_c_register  (GTypeModule *module);
 
-PeasExtension   *peas_extension_c_new       (GType    gtype,
-                                             GObject *instance);
+PeasExtension   *peas_extension_c_new       (GType        gtype,
+                                             GObject     *instance);
 
 G_END_DECLS
 

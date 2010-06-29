@@ -55,7 +55,7 @@ peas_plugin_loader_c_add_module_directory (PeasPluginLoader *loader,
 }
 
 static gboolean
-peas_plugin_loader_c_load (PeasPluginLoader * loader,
+peas_plugin_loader_c_load (PeasPluginLoader *loader,
                            PeasPluginInfo   *info)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
@@ -217,6 +217,6 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
 }
 
 static void
-peas_plugin_loader_c_class_finalize (PeasPluginLoaderCClass * klass)
+peas_plugin_loader_c_class_finalize (PeasPluginLoaderCClass *klass)
 {
 }

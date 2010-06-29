@@ -38,13 +38,14 @@ G_BEGIN_DECLS
 #define PEAS_IS_EXTENSION_PYTHON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION_PYTHON))
 #define PEAS_EXTENSION_PYTHON_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_EXTENSION_PYTHON, PeasExtensionPythonClass))
 
-typedef struct _PeasExtensionPython         PeasExtensionPython;
-typedef struct _PeasExtensionPythonClass    PeasExtensionPythonClass;
+typedef struct _PeasExtensionPython       PeasExtensionPython;
+typedef struct _PeasExtensionPythonClass  PeasExtensionPythonClass;
 
 struct _PeasExtensionPython {
   PeasExtension parent;
 
-  GType gtype;
+  /* maybe add this to PeasExtension? */
+  GType     gtype;
   PyObject *instance;
 };
 
@@ -55,8 +56,8 @@ struct _PeasExtensionPythonClass {
 GType            peas_extension_python_get_type (void) G_GNUC_CONST;
 void             peas_extension_python_register (GTypeModule *module);
 
-PeasExtension   *peas_extension_python_new      (GType     gtype,
-                                                 PyObject *instance);
+PeasExtension   *peas_extension_python_new      (GType        gtype,
+                                                 PyObject    *instance);
 
 G_END_DECLS
 

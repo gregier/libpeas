@@ -69,7 +69,7 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info);
 }
 
-/**
+/*
  * peas_plugin_info_get_type:
  *
  * Retrieves the #GType object which is associated with the #PeasPluginInfo
@@ -83,7 +83,7 @@ peas_plugin_info_get_type (void)
   static GType the_type = 0;
 
   if (G_UNLIKELY (!the_type))
-    the_type = g_boxed_type_register_static ("PeasPluginInfo",
+    the_type = g_boxed_type_register_static (g_intern_static_string ("PeasPluginInfo"),
                                              (GBoxedCopyFunc) _peas_plugin_info_ref,
                                              (GBoxedFreeFunc) _peas_plugin_info_unref);
 
@@ -91,10 +91,8 @@ peas_plugin_info_get_type (void)
 }
 
 static void
-value_free (gpointer data)
+value_free (GValue *value)
 {
-  GValue *value = (GValue *) data;
-
   g_value_unset (value);
   g_free (value);
 }
@@ -157,13 +155,13 @@ parse_extra_keys (PeasPluginInfo   *info,
           info->keys = g_hash_table_new_full (g_str_hash,
                                               g_str_equal,
                                               g_free,
-                                              value_free);
+                                              (GDestroyNotify) value_free);
         }
       g_hash_table_insert (info->keys, g_strdup (keys[i]), value);
     }
 }
 
-/**
+/*
  * _peas_plugin_info_new:
  * @filename: The filename where to read the plugin information.
  * @app_name: The application name.
@@ -185,7 +183,7 @@ _peas_plugin_info_new (const gchar *filename,
   gchar *section_header;
   gchar *str;
   gchar **keys;
-  int integer;
+  gint integer;
 
   g_return_val_if_fail (filename != NULL, NULL);
   g_return_val_if_fail (app_name != NULL, NULL);
@@ -240,7 +238,7 @@ _peas_plugin_info_new (const gchar *filename,
   else
     {
       /* default to the C loader */
-      info->loader = g_strdup ("c");
+      info->loader = g_strdup ("C");
     }
 
   /* Get Name */
@@ -290,7 +288,7 @@ _peas_plugin_info_new (const gchar *filename,
 
   /* Get extra keys */
   keys = g_key_file_get_keys (plugin_file, section_header, NULL, NULL);
-  parse_extra_keys (info, plugin_file, section_header, (const char **) keys);
+  parse_extra_keys (info, plugin_file, section_header, (const gchar **) keys);
   g_strfreev (keys);
 
   g_free (section_header);

@@ -37,13 +37,12 @@ G_BEGIN_DECLS
 
 /**
  * PeasEngine:
- * @parent: the parent object.
  *
  * Engine at the heart of the Peas plugin system.
  */
-typedef struct _PeasEngine        PeasEngine;
-typedef struct _PeasEngineClass   PeasEngineClass;
-typedef struct _PeasEnginePrivate PeasEnginePrivate;
+typedef struct _PeasEngine         PeasEngine;
+typedef struct _PeasEngineClass    PeasEngineClass;
+typedef struct _PeasEnginePrivate  PeasEnginePrivate;
 
 struct _PeasEngine {
   GObject parent;

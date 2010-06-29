@@ -42,8 +42,8 @@ G_BEGIN_DECLS
  *
  * Base class for plugins.
  */
-typedef struct _PeasExtension        PeasExtension;
-typedef struct _PeasExtensionClass   PeasExtensionClass;
+typedef struct _PeasExtension       PeasExtension;
+typedef struct _PeasExtensionClass  PeasExtensionClass;
 
 struct _PeasExtension {
   GObject parent;

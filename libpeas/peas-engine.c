@@ -82,9 +82,9 @@ struct _PeasEnginePrivate {
 };
 
 static void peas_engine_load_plugin_real   (PeasEngine     *engine,
-                                            PeasPluginInfo * info);
-static void peas_engine_unload_plugin_real (PeasEngine     * engine,
-                                            PeasPluginInfo * info);
+                                            PeasPluginInfo *info);
+static void peas_engine_unload_plugin_real (PeasEngine     *engine,
+                                            PeasPluginInfo *info);
 
 static void
 load_plugin_info (PeasEngine  *engine,
@@ -117,7 +117,7 @@ load_dir_real (PeasEngine  *engine,
                const gchar *extension,
                const gchar *module_dir,
                const gchar *data_dir,
-               unsigned int recursions)
+               guint        recursions)
 {
   GError *error = NULL;
   GDir *d;
@@ -202,10 +202,10 @@ hash_lowercase (gconstpointer data)
 }
 
 static gboolean
-equal_lowercase (gconstpointer a,
-                 gconstpointer b)
+equal_lowercase (const gchar *a,
+                 const gchar *b)
 {
-  return g_ascii_strcasecmp ((const gchar *) a, (const gchar *) b) == 0;
+  return g_ascii_strcasecmp (a, b) == 0;
 }
 
 static void
@@ -253,7 +253,7 @@ peas_engine_init (PeasEngine *engine)
 
   /* mapping from loadername -> loader object */
   engine->priv->loaders = g_hash_table_new_full (hash_lowercase,
-                                                 equal_lowercase,
+                                                 (GEqualFunc) equal_lowercase,
                                                  (GDestroyNotify) g_free,
                                                  (GDestroyNotify) loader_destroy);
 }
@@ -315,9 +315,9 @@ peas_engine_set_property (GObject      *object,
 }
 
 static void
-peas_engine_get_property (GObject   *object,
-                          guint      prop_id,
-                          GValue    *value,
+peas_engine_get_property (GObject    *object,
+                          guint       prop_id,
+                          GValue     *value,
                           GParamSpec *pspec)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
@@ -380,6 +380,7 @@ peas_engine_class_init (PeasEngineClass *klass)
   object_class->get_property = peas_engine_get_property;
   object_class->constructed = peas_engine_constructed;
   object_class->finalize = peas_engine_finalize;
+
   klass->load_plugin = peas_engine_load_plugin_real;
   klass->unload_plugin = peas_engine_unload_plugin_real;
 
@@ -393,7 +394,8 @@ peas_engine_class_init (PeasEngineClass *klass)
    * the .gedit-plugin extension, and the engine will look for a
    * "Gedit Plugin" section in it to load the plugin data.
    */
-  g_object_class_install_property (object_class, PROP_APP_NAME,
+  g_object_class_install_property (object_class,
+                                   PROP_APP_NAME,
                                    g_param_spec_string ("app-name",
                                                         "Application Name",
                                                         "The application name",
@@ -411,7 +413,8 @@ peas_engine_class_init (PeasEngineClass *klass)
    * the base module directory. For instance, the python loader will
    * look for python modules in "${base-module-dir}/python/".
    */
-  g_object_class_install_property (object_class, PROP_BASE_MODULE_DIR,
+  g_object_class_install_property (object_class,
+                                   PROP_BASE_MODULE_DIR,
                                    g_param_spec_string ("base-module-dir",
                                                         "Base module dir",
                                                         "The base application dir for binding modules lookup",
@@ -452,7 +455,8 @@ peas_engine_class_init (PeasEngineClass *klass)
    * };
    * ]|
    */
-  g_object_class_install_property (object_class, PROP_SEARCH_PATHS,
+  g_object_class_install_property (object_class,
+                                   PROP_SEARCH_PATHS,
                                    g_param_spec_boxed ("search-paths",
                                                        "Search paths",
                                                        "The list of paths where to look for plugins",
@@ -552,7 +556,7 @@ load_plugin_loader (PeasEngine  *engine,
     }
   else
     {
-      g_warning ("Plugin loader module `%s' could not be loaded",
+      g_warning ("Plugin loader module '%s' could not be loaded",
                  loader_id);
       g_object_unref (module);
       module = NULL;
@@ -673,7 +677,7 @@ load_plugin (PeasEngine     *engine,
 
   if (loader == NULL)
     {
-      g_warning ("Could not find loader `%s' for plugin `%s'",
+      g_warning ("Could not find loader '%s' for plugin '%s'",
                  info->loader, info->name);
       info->available = FALSE;
       return FALSE;
@@ -767,9 +771,9 @@ peas_engine_unload_plugin (PeasEngine     *engine,
 }
 
 gboolean
-peas_engine_provides_extension (PeasEngine *engine,
+peas_engine_provides_extension (PeasEngine     *engine,
                                 PeasPluginInfo *info,
-                                GType extension_type)
+                                GType           extension_type)
 {
   PeasPluginLoader *loader;
 
@@ -784,9 +788,9 @@ peas_engine_provides_extension (PeasEngine *engine,
 }
 
 PeasExtension *
-peas_engine_get_extension (PeasEngine *engine,
+peas_engine_get_extension (PeasEngine     *engine,
                            PeasPluginInfo *info,
-                           GType extension_type)
+                           GType           extension_type)
 {
   PeasPluginLoader *loader;
 
@@ -842,7 +846,7 @@ string_in_strv (const gchar  *needle,
 /**
  * peas_engine_set_loaded_plugins:
  * @engine: A #PeasEngine.
- * @plugin_names: A NULL-terminated array of plugin names.
+ * @plugin_names: A %NULL-terminated array of plugin names.
  *
  * Sets the list of loaded plugins for @engine. When this function is called,
  * the #PeasEngine will load all the plugins whose names are in @plugin_names,
@@ -878,7 +882,7 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 
 /**
  * peas_engine_new:
- * @app_name: The name of the app
+ * @app_name: (allow-none): The name of the application
  * @base_module_dir: The base directory for language modules
  * @search_paths: The paths where to look for plugins
  *
@@ -892,6 +896,9 @@ peas_engine_new (const gchar  *app_name,
                  const gchar  *base_module_dir,
                  const gchar **search_paths)
 {
+  g_return_val_if_fail (base_module_dir != NULL, NULL);
+  g_return_val_if_fail (search_paths != NULL, NULL);
+
   return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
                                     "app-name", app_name,
                                     "base-module-dir", base_module_dir,

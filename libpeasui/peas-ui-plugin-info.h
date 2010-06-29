@@ -22,7 +22,6 @@
 #ifndef __PEAS_UI_PLUGIN_INFO_H__
 #define __PEAS_UI_PLUGIN_INFO_H__
 
-#include <gtk/gtk.h>
 #include <libpeas/peas-plugin-info.h>
 
 G_BEGIN_DECLS

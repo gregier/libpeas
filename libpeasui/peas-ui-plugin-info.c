@@ -25,6 +25,8 @@
 
 #include <libpeas/peas-plugin-info-priv.h>
 
+#include <gtk/gtk.h>
+
 #include "peas-ui-plugin-info.h"
 #include "peas-ui-configurable.h"
 

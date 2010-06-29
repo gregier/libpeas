@@ -114,7 +114,7 @@ peas_plugin_loader_seed_load (PeasPluginLoader *loader,
 
       if (seed_value_is_object (context, extensions))
         {
-          sinfo = g_slice_new (SeedInfo);
+          sinfo = (SeedInfo *) g_slice_new (SeedInfo);
           sinfo->context = context;
           sinfo->extensions = extensions;
           seed_context_ref (context);

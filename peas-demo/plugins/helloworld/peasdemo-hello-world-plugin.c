@@ -10,7 +10,7 @@
 
 #define WINDOW_DATA_KEY "PeasDemoHelloWorldPluginWindowData"
 
-static void peas_activatable_iface_init (PeasActivatableInterface *iface);
+static void peas_activatable_iface_init     (PeasActivatableInterface    *iface);
 static void peas_ui_configurable_iface_init (PeasUIConfigurableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldPlugin,
@@ -114,8 +114,8 @@ on_configure_dialog_response (GtkDialog *dialog,
 }
 
 static gboolean
-peasdemo_hello_world_plugin_create_configure_dialog (PeasUIConfigurable *configurable,
-                                                     GtkWidget         **dialog)
+peasdemo_hello_world_plugin_create_configure_dialog (PeasUIConfigurable  *configurable,
+                                                     GtkWidget          **dialog)
 {
   g_debug (G_STRFUNC);
 

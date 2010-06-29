@@ -35,25 +35,25 @@ G_BEGIN_DECLS
 #define PEAS_UI_IS_CONFIGURABLE(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_UI_TYPE_CONFIGURABLE))
 #define PEAS_UI_CONFIGURABLE_GET_IFACE(obj)    (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PEAS_UI_TYPE_CONFIGURABLE, PeasUIConfigurableInterface))
 
-typedef struct _PeasUIConfigurable          PeasUIConfigurable; /* dummy typedef */
-typedef struct _PeasUIConfigurableInterface     PeasUIConfigurableInterface;
+typedef struct _PeasUIConfigurable           PeasUIConfigurable; /* dummy typedef */
+typedef struct _PeasUIConfigurableInterface  PeasUIConfigurableInterface;
 
 struct _PeasUIConfigurableInterface
 {
   GTypeInterface g_iface;
 
-  gboolean    (*create_configure_dialog)  (PeasUIConfigurable *configurable,
-                                           GtkWidget         **conf_dlg);
+  gboolean    (*create_configure_dialog)  (PeasUIConfigurable  *configurable,
+                                           GtkWidget          **conf_dlg);
 
   /* Plugins should usually not override this, it's handled automatically
    * by the PeasPluginClass */
-  gboolean    (*is_configurable)          (PeasUIConfigurable *configurable);
+  gboolean    (*is_configurable)          (PeasUIConfigurable  *configurable);
 };
 
 GType       peas_ui_configurable_get_type                (void);
-gboolean    peas_ui_configurable_is_configurable         (PeasUIConfigurable *configurable);
-gboolean    peas_ui_configurable_create_configure_dialog (PeasUIConfigurable *configurable,
-                                                          GtkWidget         **conf_dlg);
+gboolean    peas_ui_configurable_is_configurable         (PeasUIConfigurable  *configurable);
+gboolean    peas_ui_configurable_create_configure_dialog (PeasUIConfigurable  *configurable,
+                                                          GtkWidget          **conf_dlg);
 
 G_END_DECLS
 

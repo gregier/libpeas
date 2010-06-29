@@ -113,7 +113,7 @@ demo_window_new (PeasEngine *engine)
 {
   DemoWindow *dw;
 
-  dw = g_object_new (DEMO_TYPE_WINDOW, NULL);
+  dw = DEMO_WINDOW (g_object_new (DEMO_TYPE_WINDOW, NULL));
   demo_window_set_data (dw, engine);
 
   return GTK_WIDGET (dw);

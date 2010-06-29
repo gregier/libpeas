@@ -36,9 +36,9 @@ G_BEGIN_DECLS
 #define PEAS_IS_PLUGIN_LOADER_PYTHON_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_LOADER_PYTHON))
 #define PEAS_PLUGIN_LOADER_PYTHON_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_PLUGIN_LOADER_PYTHON, PeasPluginLoaderPythonClass))
 
-typedef struct _PeasPluginLoaderPython             PeasPluginLoaderPython;
-typedef struct _PeasPluginLoaderPythonClass        PeasPluginLoaderPythonClass;
-typedef struct _PeasPluginLoaderPythonPrivate      PeasPluginLoaderPythonPrivate;
+typedef struct _PeasPluginLoaderPython         PeasPluginLoaderPython;
+typedef struct _PeasPluginLoaderPythonClass    PeasPluginLoaderPythonClass;
+typedef struct _PeasPluginLoaderPythonPrivate  PeasPluginLoaderPythonPrivate;
 
 struct _PeasPluginLoaderPython {
   PeasPluginLoader parent;

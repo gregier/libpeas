@@ -241,7 +241,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
  *
  * Call a method on all the #PeasExtension instances contained in @set.
  *
- * Return value: #TRUE on successful call.
+ * Return value: %TRUE on successful call.
  */
 gboolean
 peas_extension_set_call (PeasExtensionSet *set,
@@ -266,7 +266,7 @@ peas_extension_set_call (PeasExtensionSet *set,
  *
  * Call a method on all the #PeasExtension instances contained in @set.
  *
- * Return value: #TRUE on successful call.
+ * Return value: %TRUE on successful call.
  */
 gboolean
 peas_extension_set_call_valist (PeasExtensionSet *set,
@@ -285,7 +285,7 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
 /**
  * peas_extension_set_new:
  * @engine: A #PeasEngine.
- * @exten_type: the extension #GType
+ * @exten_type: the extension #GType.
  *
  * Create an #ExtensionSet for all the @exten_type extensions defined in
  * the plugins loaded in @engine.

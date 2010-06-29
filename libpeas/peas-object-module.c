@@ -187,7 +187,8 @@ peas_object_module_get_property (GObject    *object,
       g_value_set_boolean (value, module->priv->resident);
       break;
     default:
-      g_return_if_reached ();
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -213,7 +214,8 @@ peas_object_module_set_property (GObject      *object,
       module->priv->resident = g_value_get_boolean (value);
       break;
     default:
-      g_return_if_reached ();
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -265,11 +267,11 @@ peas_object_module_new (const gchar *module_name,
                         const gchar *path,
                         gboolean     resident)
 {
-  return (PeasObjectModule *) g_object_new (PEAS_TYPE_OBJECT_MODULE,
-                                            "module-name", module_name,
-                                            "path", path,
-                                            "resident", resident,
-                                            NULL);
+  return PEAS_OBJECT_MODULE (g_object_new (PEAS_TYPE_OBJECT_MODULE,
+                                           "module-name", module_name,
+                                           "path", path,
+                                           "resident", resident,
+                                           NULL));
 }
 
 void
@@ -402,7 +404,7 @@ create_gobject_from_type (guint       n_parameters,
       g_object_class_find_property (cls, "plugin-info") != NULL)
     n_parameters --;
 
-  instance = g_object_newv (exten_type, n_parameters, parameters);
+  instance = G_OBJECT (g_object_newv (exten_type, n_parameters, parameters));
 
   g_type_class_unref (cls);
 

@@ -37,9 +37,9 @@ G_BEGIN_DECLS
 #define PEAS_IS_OBJECT_MODULE_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_OBJECT_MODULE))
 #define PEAS_OBJECT_MODULE_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_OBJECT_MODULE, PeasObjectModuleClass))
 
-typedef struct _PeasObjectModule        PeasObjectModule;
-typedef struct _PeasObjectModuleClass   PeasObjectModuleClass;
-typedef struct _PeasObjectModulePrivate PeasObjectModulePrivate;
+typedef struct _PeasObjectModule         PeasObjectModule;
+typedef struct _PeasObjectModuleClass    PeasObjectModuleClass;
+typedef struct _PeasObjectModulePrivate  PeasObjectModulePrivate;
 
 typedef GObject *(*PeasFactoryFunc)   (guint          n_parameters,
                                        GParameter    *parameters,
