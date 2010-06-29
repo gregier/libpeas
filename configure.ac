@@ -51,29 +51,6 @@ LT_INIT([disable-static])
 AC_CHECK_FUNCS(fsync)
 AC_CHECK_SIZEOF(time_t, [], [#include <time.h>])
 
-PKG_PROG_PKG_CONFIG
-
-dnl ================================================================
-dnl Check for native OSX
-dnl ================================================================
-AC_MSG_CHECKING([for native Mac OS X])
-
-gdk_windowing=`$PKG_CONFIG --variable=target gdk-2.0`
-
-if test "$gdk_windowing" = "quartz"; then
-	os_osx=yes
-else
-	os_osx=no
-fi
-AC_MSG_RESULT([$os_osx])
-AM_CONDITIONAL(OS_OSX, test "$os_osx" = "yes")
-
-if test "$os_osx" = "yes"; then
-	AC_DEFINE([OS_OSX],[1],[Defined if os is Mac OSX])
-
-	PKG_CHECK_MODULES(IGE_MAC, ige-mac-integration)
-fi
-
 dnl ================================================================
 dnl Gettext stuff.
 dnl ================================================================
@@ -89,6 +66,8 @@ AM_GLIB_GNU_GETTEXT
 dnl ================================================================
 dnl Start of pkg-config checks
 dnl ================================================================
+
+PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
@@ -107,14 +86,37 @@ AC_ARG_ENABLE(gtk2-test-build,
 if test "$use_gtk2" != "yes"; then
 	GTK_TYPELIB=Gtk-3.0
 	GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
+	GDK_REQUIRED=gdk-3.0
 else
 	GTK_TYPELIB=Gtk-2.0
 	GTK_PKG_REQUIREMENT="gtk+-2.0 >= 2.16"
+	GDK_REQUIRED=gdk-2.0
 fi
 PKG_CHECK_MODULES(PEASUI, [$GTK_PKG_REQUIREMENT])
 AC_SUBST(GTK_TYPELIB)
 AC_SUBST(GTK_PKG_REQUIREMENT)
 
+dnl ================================================================
+dnl Check for native OSX
+dnl ================================================================
+AC_MSG_CHECKING([for native Mac OS X])
+
+
+gdk_windowing=`$PKG_CONFIG --variable=target $GDK_REQUIRED`
+
+if test "$gdk_windowing" = "quartz"; then
+	os_osx=yes
+else
+	os_osx=no
+fi
+AC_MSG_RESULT([$os_osx])
+AM_CONDITIONAL(OS_OSX, test "$os_osx" = "yes")
+
+if test "$os_osx" = "yes"; then
+	AC_DEFINE([OS_OSX],[1],[Defined if os is Mac OSX])
+
+	PKG_CHECK_MODULES(IGE_MAC, ige-mac-integration)
+fi
 
 dnl ================================================================
 dnl GObject Introspection
