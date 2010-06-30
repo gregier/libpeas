@@ -244,7 +244,14 @@ peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
                                                 const gchar      *module_dir)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PyGILState_STATE state = pyg_gil_state_ensure ();
+  PyGILState_STATE state;
+
+  /* Bail if we failed to initialise Python, since adding a module path won't
+   * help us, and calling the GIL functions will cause a crash. */
+  if (pyloader->priv->init_failed)
+    return;
+
+  state = pyg_gil_state_ensure ();
 
   g_debug ("Adding %s as a module path for the python loader.", module_dir);
   peas_plugin_loader_python_add_module_path (pyloader, module_dir);
