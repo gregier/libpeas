@@ -39,26 +39,26 @@ typedef struct _PeasPluginInfo PeasPluginInfo;
 
 GType         peas_plugin_info_get_type         (void) G_GNUC_CONST;
 
-gboolean      peas_plugin_info_is_loaded        (PeasPluginInfo *info);
-gboolean      peas_plugin_info_is_available     (PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_loaded        (const PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_available     (const PeasPluginInfo *info);
 
-const gchar  *peas_plugin_info_get_module_name  (PeasPluginInfo *info);
-const gchar  *peas_plugin_info_get_module_dir   (PeasPluginInfo *info);
-const gchar  *peas_plugin_info_get_data_dir     (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_module_name  (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_module_dir   (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_data_dir     (const PeasPluginInfo *info);
 
-const gchar  *peas_plugin_info_get_name         (PeasPluginInfo *info);
-const gchar  *peas_plugin_info_get_description  (PeasPluginInfo *info);
-const gchar **peas_plugin_info_get_authors      (PeasPluginInfo *info);
-const gchar  *peas_plugin_info_get_website      (PeasPluginInfo *info);
-const gchar  *peas_plugin_info_get_copyright    (PeasPluginInfo *info);
-const gchar  *peas_plugin_info_get_version      (PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_name         (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_description  (const PeasPluginInfo *info);
+const gchar **peas_plugin_info_get_authors      (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_website      (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_copyright    (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_version      (const PeasPluginInfo *info);
 
-gint          peas_plugin_info_get_iage         (PeasPluginInfo *info);
+gint          peas_plugin_info_get_iage         (const PeasPluginInfo *info);
 const GHashTable *
-              peas_plugin_info_get_keys         (PeasPluginInfo *info);
-void          peas_plugin_info_set_visible      (PeasPluginInfo *info,
-                                                 gboolean        visible);
-gboolean      peas_plugin_info_get_visible      (PeasPluginInfo *info);
+              peas_plugin_info_get_keys         (const PeasPluginInfo *info);
+void          peas_plugin_info_set_visible      (PeasPluginInfo       *info,
+                                                 gboolean              visible);
+gboolean      peas_plugin_info_get_visible      (const PeasPluginInfo *info);
 
 G_END_DECLS
 

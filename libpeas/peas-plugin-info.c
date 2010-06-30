@@ -324,7 +324,7 @@ error:
  * Returns: %TRUE if the plugin is loaded.
  */
 gboolean
-peas_plugin_info_is_loaded (PeasPluginInfo *info)
+peas_plugin_info_is_loaded (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
@@ -342,7 +342,7 @@ peas_plugin_info_is_loaded (PeasPluginInfo *info)
  * Returns: %TRUE if the plugin is available.
  */
 gboolean
-peas_plugin_info_is_available (PeasPluginInfo *info)
+peas_plugin_info_is_available (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
@@ -358,7 +358,7 @@ peas_plugin_info_is_available (PeasPluginInfo *info)
  * Returns: the module name.
  */
 const gchar *
-peas_plugin_info_get_module_name (PeasPluginInfo *info)
+peas_plugin_info_get_module_name (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -374,7 +374,7 @@ peas_plugin_info_get_module_name (PeasPluginInfo *info)
  * Returns: the module directory.
  */
 const gchar *
-peas_plugin_info_get_module_dir (PeasPluginInfo *info)
+peas_plugin_info_get_module_dir (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -390,7 +390,7 @@ peas_plugin_info_get_module_dir (PeasPluginInfo *info)
  * Returns: the plugin's data dir.
  */
 const gchar *
-peas_plugin_info_get_data_dir (PeasPluginInfo *info)
+peas_plugin_info_get_data_dir (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -406,7 +406,7 @@ peas_plugin_info_get_data_dir (PeasPluginInfo *info)
  * Returns: the plugin's name.
  */
 const gchar *
-peas_plugin_info_get_name (PeasPluginInfo *info)
+peas_plugin_info_get_name (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -422,7 +422,7 @@ peas_plugin_info_get_name (PeasPluginInfo *info)
  * Returns: the plugin's description.
  */
 const gchar *
-peas_plugin_info_get_description (PeasPluginInfo *info)
+peas_plugin_info_get_description (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -438,7 +438,7 @@ peas_plugin_info_get_description (PeasPluginInfo *info)
  * Returns: the plugin's author list.
  */
 const gchar **
-peas_plugin_info_get_authors (PeasPluginInfo *info)
+peas_plugin_info_get_authors (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, (const gchar **) NULL);
 
@@ -454,7 +454,7 @@ peas_plugin_info_get_authors (PeasPluginInfo *info)
  * Returns: the plugin's associated website.
  */
 const gchar *
-peas_plugin_info_get_website (PeasPluginInfo *info)
+peas_plugin_info_get_website (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -470,7 +470,7 @@ peas_plugin_info_get_website (PeasPluginInfo *info)
  * Returns: the plugin's copyright information.
  */
 const gchar *
-peas_plugin_info_get_copyright (PeasPluginInfo *info)
+peas_plugin_info_get_copyright (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -486,7 +486,7 @@ peas_plugin_info_get_copyright (PeasPluginInfo *info)
  * Returns: the plugin's version.
  */
 const gchar *
-peas_plugin_info_get_version (PeasPluginInfo *info)
+peas_plugin_info_get_version (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -502,7 +502,7 @@ peas_plugin_info_get_version (PeasPluginInfo *info)
  * Returns: the interface age of the plugin or %0 if not known.
  **/
 gint
-peas_plugin_info_get_iage (PeasPluginInfo *info)
+peas_plugin_info_get_iage (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, 0);
 
@@ -523,7 +523,7 @@ peas_plugin_info_get_iage (PeasPluginInfo *info)
  * not free or destroy any data in this hashtable.
  **/
 const GHashTable *
-peas_plugin_info_get_keys (PeasPluginInfo *info)
+peas_plugin_info_get_keys (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
 
@@ -558,7 +558,7 @@ peas_plugin_info_set_visible (PeasPluginInfo *info,
  * if not.
  **/
 gboolean
-peas_plugin_info_get_visible (PeasPluginInfo *info)
+peas_plugin_info_get_visible (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, TRUE);
 
