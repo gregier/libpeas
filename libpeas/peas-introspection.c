@@ -25,7 +25,7 @@
 
 #include "peas-introspection.h"
 
-static void
+static gboolean
 read_next_argument (GArgument  *cur_arg,
                     va_list     args,
                     GITypeInfo *arg_type_info)
@@ -121,8 +121,111 @@ read_next_argument (GArgument  *cur_arg,
       cur_arg->v_pointer = va_arg (args, gpointer);
       break;
     default:
-      g_return_if_reached ();
+      g_return_val_if_reached (FALSE);
     }
+
+  return TRUE;
+}
+
+static gboolean
+set_return_value (gpointer    in_retval,
+                  GArgument  *out_retval,
+                  GITypeInfo *retval_type_info)
+{
+  /* We should discourage people to actually use NULL for the return value. */
+  g_return_val_if_fail (in_retval != NULL, TRUE);
+
+  switch (g_type_info_get_tag (retval_type_info))
+    {
+    case GI_TYPE_TAG_VOID:
+    case GI_TYPE_TAG_BOOLEAN:
+      *((gboolean *) in_retval) = out_retval->v_boolean;
+      break;
+    case GI_TYPE_TAG_INT8:
+      *((gint8 *) in_retval) = out_retval->v_int8;
+      break;
+    case GI_TYPE_TAG_UINT8:
+      *((guint8 *) in_retval) = out_retval->v_uint8;
+      break;
+    case GI_TYPE_TAG_INT16:
+      *((gint16 *) in_retval) = out_retval->v_int16;
+      break;
+    case GI_TYPE_TAG_UINT16:
+      *((guint16 *) in_retval) = out_retval->v_uint16;
+      break;
+    case GI_TYPE_TAG_INT32:
+      *((gint32 *) in_retval) = out_retval->v_int32;
+      break;
+    case GI_TYPE_TAG_UINT32:
+      *((guint32 *) in_retval) = out_retval->v_uint32;
+      break;
+    case GI_TYPE_TAG_INT64:
+      *((gint64 *) in_retval) = out_retval->v_int64;
+      break;
+    case GI_TYPE_TAG_UINT64:
+      *((guint64 *) in_retval) = out_retval->v_uint64;
+      break;
+    case GI_TYPE_TAG_SHORT:
+      *((gshort *) in_retval) = out_retval->v_short;
+      break;
+    case GI_TYPE_TAG_USHORT:
+      *((gushort *) in_retval) = out_retval->v_ushort;
+      break;
+    case GI_TYPE_TAG_INT:
+      *((gint *) in_retval) = out_retval->v_int;
+      break;
+    case GI_TYPE_TAG_UINT:
+      *((guint *) in_retval) = out_retval->v_uint;
+      break;
+    case GI_TYPE_TAG_LONG:
+      *((glong *) in_retval) = out_retval->v_long;
+      break;
+    case GI_TYPE_TAG_ULONG:
+      *((gulong *) in_retval) = out_retval->v_ulong;
+      break;
+    case GI_TYPE_TAG_SSIZE:
+      *((gssize *) in_retval) = out_retval->v_ssize;
+      break;
+    case GI_TYPE_TAG_SIZE:
+      *((gsize *) in_retval) = out_retval->v_size;
+      break;
+    case GI_TYPE_TAG_FLOAT:
+      *((gfloat *) in_retval) = out_retval->v_float;
+      break;
+    case GI_TYPE_TAG_DOUBLE:
+      *((gdouble *) in_retval) = out_retval->v_double;
+      break;
+    case GI_TYPE_TAG_TIME_T:
+      /* borrowed from gfield.c in gobject-introspection */
+#if SIZEOF_TIME_T == 4
+      *((gint32 *) in_retval) = out_retval->v_int32;
+#elif SIZEOF_TIME_T == 8
+      *((gint64 *) in_retval) = out_retval->v_int64;
+#else
+#  error "Unexpected size for time_t: not 4 or 8"
+#endif
+      break;
+    case GI_TYPE_TAG_GTYPE:
+      /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
+      *((gsize *) in_retval) = out_retval->v_size;
+      break;
+    case GI_TYPE_TAG_UTF8:
+    case GI_TYPE_TAG_FILENAME:
+      *((gchar **) in_retval) = out_retval->v_string;
+      break;
+    case GI_TYPE_TAG_ARRAY:
+    case GI_TYPE_TAG_INTERFACE:
+    case GI_TYPE_TAG_GLIST:
+    case GI_TYPE_TAG_GSLIST:
+    case GI_TYPE_TAG_GHASH:
+    case GI_TYPE_TAG_ERROR:
+      *((gsize **) in_retval) = out_retval->v_pointer;
+      break;
+    default:
+      g_return_val_if_reached (FALSE);
+    }
+
+  return TRUE;
 }
 
 GICallableInfo *
@@ -174,16 +277,19 @@ peas_method_apply_valist (GObject     *instance,
                           va_list      args)
 {
   GICallableInfo *func_info;
+  GITypeInfo *retval_info;
+  GArgument out_retval;
   guint n_args, n_in_args, n_out_args;
   GArgument *in_args, *out_args;
-  GArgument retval;
   guint i;
-  gboolean ret;
+  gboolean ret = TRUE;
   GError *error = NULL;
 
   func_info = peas_method_get_info (iface_type, method_name);
   if (func_info == NULL)
     return FALSE;
+
+  retval_info = g_callable_info_get_return_type (func_info);
 
   n_args = g_callable_info_get_n_args (func_info);
   n_in_args = 0;
@@ -195,7 +301,7 @@ peas_method_apply_valist (GObject     *instance,
   /* Set the object as the first argument for the method. */
   in_args[n_in_args++].v_pointer = instance;
 
-  for (i = 0; i < n_args; i++)
+  for (i = 0; ret && i < n_args; i++)
     {
       GIArgInfo *arg_info;
       GITypeInfo *arg_type_info;
@@ -206,7 +312,7 @@ peas_method_apply_valist (GObject     *instance,
       switch (g_arg_info_get_direction (arg_info))
         {
         case GI_DIRECTION_IN:
-          read_next_argument (&in_args[n_in_args++], args, arg_type_info);
+          ret = read_next_argument (&in_args[n_in_args++], args, arg_type_info);
           break;
         /* In the other cases, we expect we will always have a pointer. */
         case GI_DIRECTION_INOUT:
@@ -221,15 +327,38 @@ peas_method_apply_valist (GObject     *instance,
       g_base_info_unref ((GIBaseInfo *) arg_info);
     }
 
-  ret = g_function_info_invoke (func_info, in_args, n_in_args, out_args, n_out_args, &retval, &error);
   if (!ret)
     {
-      g_debug ("Error while calling %s.%s: %s", g_type_name (iface_type), method_name, error->message);
-      g_error_free (error);
+      g_warning ("Invalid argument type for calling '%s.%s'",
+                 g_type_name (iface_type), method_name);
+      goto out;
     }
 
+  ret = g_function_info_invoke (func_info, in_args, n_in_args, out_args,
+                                n_out_args, &out_retval, &error);
+  if (!ret)
+    {
+      g_warning ("Error while calling '%s.%s': %s",
+                 g_type_name (iface_type), method_name, error->message);
+      g_error_free (error);
+      goto out;
+    }
+
+  if (g_type_info_get_tag (retval_info) != GI_TYPE_TAG_VOID)
+    {
+      ret = set_return_value (va_arg (args, gpointer), &out_retval, retval_info);
+
+      if (!ret)
+        {
+          g_warning ("Invalid return type for '%s.%s'",
+                     g_type_name (iface_type), method_name);
+        }
+    }
+
+out:
   g_free (in_args);
   g_free (out_args);
+  g_base_info_unref ((GIBaseInfo *) retval_info);
   g_base_info_unref ((GIBaseInfo *) func_info);
 
   return ret;
