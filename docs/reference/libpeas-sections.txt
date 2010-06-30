@@ -4,7 +4,6 @@
 PEAS_UI_CONFIGURABLE_IFACE
 PeasUIConfigurable
 PeasUIConfigurableInterface
-peas_ui_configurable_is_configurable
 peas_ui_configurable_create_configure_dialog
 <SUBSECTION Standard>
 PEAS_UI_CONFIGURABLE

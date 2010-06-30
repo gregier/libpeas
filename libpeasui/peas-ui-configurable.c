@@ -33,13 +33,10 @@
  * graphical interface for the user to configure the plugin through the
  * #PeasUIPluginManager: the #PeasUIPluginManager will make the “Configure
  * Plugin” button active when the selected plugin implements the
- * #PeasUIConfigurable interface and peas_ui_configurable_is_configurable()
- * returns %TRUE. See peas_ui_configurable_is_configurable().
+ * #PeasUIConfigurable interface.
  *
  * To do so, the plugin writer will just need to implement the
- * create_configure_dialog() method. You should not implement the
- * is_configurable() method, unless create_configure_dialog() is overwritten
- * but does not always return a valid #GtkWindow.
+ * create_configure_dialog() method.
  **/
 
 G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, G_TYPE_OBJECT)
@@ -47,34 +44,6 @@ G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, G_TYPE_OBJECT)
 static void
 peas_ui_configurable_default_init (PeasUIConfigurableInterface *iface)
 {
-}
-
-/**
- * peas_ui_configurable_is_configurable:
- * @configurable: A #PeasUIConfigurable
- *
- * Returns whether the plugin is configurable.
- *
- * The default implementation of the is_configurable() method will return %TRUE
- * if the create_configure_dialog() method was overriden, hence you won't
- * usually need to override this method.
- *
- * Returns: %TRUE if the plugin is configurable.
- */
-gboolean
-peas_ui_configurable_is_configurable (PeasUIConfigurable *configurable)
-{
-  PeasUIConfigurableInterface *iface;
-
-  g_return_val_if_fail (PEAS_UI_IS_CONFIGURABLE (configurable), FALSE);
-
-  iface = PEAS_UI_CONFIGURABLE_GET_IFACE (configurable);
- 
-  if (iface->is_configurable != NULL)
-    return iface->is_configurable (configurable);
-  
-  /* Default implementation */
-  return iface->create_configure_dialog != NULL;
 }
 
 /**
