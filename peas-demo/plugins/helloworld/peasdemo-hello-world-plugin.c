@@ -113,21 +113,22 @@ on_configure_dialog_response (GtkDialog *dialog,
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
-static gboolean
-peasdemo_hello_world_plugin_create_configure_dialog (PeasUIConfigurable  *configurable,
-                                                     GtkWidget          **dialog)
+static GtkWidget *
+peasdemo_hello_world_plugin_create_configure_dialog (PeasUIConfigurable  *configurable)
 {
+  GtkWidget *dialog;
+
   g_debug (G_STRFUNC);
 
-  *dialog = gtk_message_dialog_new (NULL,
-                                    0,
-                                    GTK_MESSAGE_INFO,
-                                    GTK_BUTTONS_OK,
-                                    "This is a configuration dialog for the HelloWorld plugin.");
-  g_signal_connect (*dialog, "response",
+  dialog = gtk_message_dialog_new (NULL,
+                                   0,
+                                   GTK_MESSAGE_INFO,
+                                   GTK_BUTTONS_OK,
+                                   "This is a configuration dialog for the HelloWorld plugin.");
+  g_signal_connect (dialog, "response",
                     G_CALLBACK (on_configure_dialog_response), NULL);
 
-  return TRUE;
+  return dialog;
 }
 
 static void
