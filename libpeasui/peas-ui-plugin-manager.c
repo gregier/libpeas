@@ -215,7 +215,7 @@ configure_button_cb (GtkWidget           *button,
 
   g_object_unref (exten);
   g_return_if_fail (GTK_IS_WIDGET (conf_widget));
-  g_return_if_fail (!GTK_IS_WINDOW (conf_widget));
+  g_return_if_fail (!gtk_widget_is_toplevel (conf_widget));
 
   toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
 
