@@ -23,8 +23,7 @@
 #define __PEAS_DEMO_WINDOW_H__
 
 #include <gtk/gtk.h>
-#include <libpeas/peas-engine.h>
-#include <libpeas/peas-extension-set.h>
+#include <libpeas/peas.h>
 
 G_BEGIN_DECLS
 

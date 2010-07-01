@@ -3,9 +3,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <libpeas/peas-extension-base.h>
-#include <libpeas/peas-plugin-info.h>
-#include <libpeas/peas-object-module.h>
+#include <libpeas/peas.h>
 
 G_BEGIN_DECLS
 

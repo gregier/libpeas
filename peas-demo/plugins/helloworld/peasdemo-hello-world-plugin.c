@@ -3,8 +3,8 @@
 #include <gmodule.h>
 #include <gtk/gtk.h>
 
-#include <libpeas/peas-activatable.h>
-#include <libpeasui/peas-ui-configurable.h>
+#include <libpeas/peas.h>
+#include <libpeasui/peas-ui.h>
 
 #include "peasdemo-hello-world-plugin.h"
 

@@ -24,7 +24,6 @@
 #endif
 
 #include "peas-demo-window.h"
-#include <libpeas/peas-activatable.h>
 
 G_DEFINE_TYPE (DemoWindow, demo_window, GTK_TYPE_WINDOW);
 

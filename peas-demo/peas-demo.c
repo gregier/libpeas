@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <girepository.h>
-#include <libpeas/peas-engine.h>
-#include <libpeasui/peas-ui-plugin-manager.h>
+#include <libpeas/peas.h>
+#include <libpeasui/peas-ui.h>
 
 #include "peas-demo-window.h"
 
