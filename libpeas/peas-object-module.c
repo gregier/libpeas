@@ -114,7 +114,8 @@ peas_object_module_load (GTypeModule *gmodule)
    * returned TRUE */
   if (module->priv->register_func == NULL)
     {
-      g_warning ("Symbol 'peas_register_types' should not be NULL");
+      g_warning ("%s: Symbol 'peas_register_types' is not defined",
+                 module->priv->module_name);
       g_module_close (module->priv->library);
 
       return FALSE;

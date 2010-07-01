@@ -288,7 +288,7 @@ peas_extension_seed_call (PeasExtension *exten,
                                         method_name);
   if (seed_value_is_undefined (sexten->js_context, js_method))
     {
-      g_warning ("Method %s.%s is not defined",
+      g_warning ("Method '%s.%s' is not defined",
                  g_type_name (sexten->exten_type), method_name);
       return FALSE;
     }
@@ -296,7 +296,7 @@ peas_extension_seed_call (PeasExtension *exten,
   /* We want to display an error if the method is defined but is not a function. */
   if (!seed_value_is_function (sexten->js_context, js_method))
     {
-      g_warning ("Method %s.%s is not a function",
+      g_warning ("Method '%s.%s' is not a function",
                  g_type_name (sexten->exten_type), method_name);
       return FALSE;
     }
@@ -412,16 +412,16 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_JS_CONTEXT,
                                    g_param_spec_pointer ("js-context",
-                                                         "Javascript Context",
-                                                         "A Javascript context from Seed",
+                                                         "JavaScript Context",
+                                                         "A Seed JavaScript context",
                                                          G_PARAM_WRITABLE |
                                                          G_PARAM_CONSTRUCT_ONLY));
 
   g_object_class_install_property (object_class,
                                    PROP_JS_OBJECT,
                                    g_param_spec_pointer ("js-object",
-                                                         "Javascript Object",
-                                                         "A Javascript object from Seed",
+                                                         "JavaScript Object",
+                                                         "A Seed JavaScript object",
                                                          G_PARAM_WRITABLE |
                                                          G_PARAM_CONSTRUCT_ONLY));
 }

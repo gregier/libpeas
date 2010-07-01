@@ -108,7 +108,7 @@ find_python_extension_type (PeasPluginInfo *info,
     }
 
   Py_DECREF (pygtype);
-  g_debug ("No %s derivative found in Python plugin '%s'",
+  g_debug ("No '%s' derivative found in Python plugin '%s'",
            g_type_name (exten_type), peas_plugin_info_get_name (info));
   return NULL;
 }
@@ -172,7 +172,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
   if (pyobject == NULL)
     {
       pyg_gil_state_release (state);
-      g_error ("Could not create instance for %s.",
+      g_error ("Could not create instance for '%s'",
                peas_plugin_info_get_name (info));
 
       return NULL;
@@ -184,7 +184,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
     {
       Py_DECREF (pyobject);
       pyg_gil_state_release (state);
-      g_error ("Could not create instance for %s (GObject already initialized).",
+      g_error ("Could not create instance for '%s': GObject already initialized",
                peas_plugin_info_get_name (info));
 
       return NULL;
@@ -196,7 +196,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
     {
       Py_DECREF (pyobject);
       pyg_gil_state_release (state);
-      g_error ("Could not create %s instance for %s (GObject not constructed).",
+      g_error ("Could not create '%s' instance for '%s': GObject not constructed",
                g_type_name (exten_type), peas_plugin_info_get_name (info));
 
       return NULL;
@@ -253,7 +253,7 @@ peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
 
   state = pyg_gil_state_ensure ();
 
-  g_debug ("Adding %s as a module path for the python loader.", module_dir);
+  g_debug ("Adding '%s' as a module path for the python loader", module_dir);
   peas_plugin_loader_python_add_module_path (pyloader, module_dir);
 
   pyg_gil_state_release (state);
@@ -271,7 +271,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   if (pyloader->priv->init_failed)
     {
       g_warning ("Cannot load python plugin Python '%s' since libpeas was "
-                 "not able to initialize the Python interpreter.",
+                 "not able to initialize the Python interpreter",
                  peas_plugin_info_get_name (info));
 
       return FALSE;
@@ -472,7 +472,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   if (PyErr_Occurred ())
     {
       g_warning ("Error initializing Python interpreter: could not "
-                 "import pygobject.");
+                 "import pygobject");
 
       goto python_init_error;
     }
@@ -484,7 +484,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   if (gobject == NULL)
     {
       g_warning ("Error initializing Python interpreter: cound not "
-                 "import gobject.");
+                 "import gobject");
 
       goto python_init_error;
     }
@@ -503,7 +503,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   if (gi == NULL)
     {
       g_warning ("Error initializing Python interpreter: could not "
-                 "import gi.");
+                 "import gi");
 
       goto python_init_error;
     }
@@ -513,7 +513,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   if (gettext == NULL)
     {
       g_warning ("Error initializing Python interpreter: could not "
-                 "import gettext.");
+                 "import gettext");
 
       goto python_init_error;
     }
@@ -534,7 +534,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
 python_init_error:
 
   g_warning ("Please check the installation of all the Python related packages "
-             "required by libpeas and try again.");
+             "required by libpeas and try again");
 
   PyErr_Clear ();
 

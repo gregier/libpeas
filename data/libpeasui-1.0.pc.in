@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libpeas
-Description: libpeas, a plugins library (UI part)
+Description: libpeas, a GObject plugins library (UI part)
 Requires: glib-2.0 >= 2.14, @GTK_PKG_REQUIREMENT@, libpeas-1.0 >= @VERSION@
 Version: @VERSION@
 Cflags: -I${includedir}/libpeas-1.0

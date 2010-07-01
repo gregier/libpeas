@@ -198,7 +198,7 @@ _peas_plugin_info_new (const gchar *filename,
   plugin_file = g_key_file_new ();
   if (!g_key_file_load_from_file (plugin_file, filename, G_KEY_FILE_NONE, NULL))
     {
-      g_warning ("Bad plugin file: %s", filename);
+      g_warning ("Bad plugin file: '%s'", filename);
       goto error;
     }
 
@@ -217,7 +217,7 @@ _peas_plugin_info_new (const gchar *filename,
     }
   else
     {
-      g_warning ("Could not find 'Module' in %s", filename);
+      g_warning ("Could not find 'Module' in '%s'", filename);
       goto error;
     }
 
@@ -248,7 +248,7 @@ _peas_plugin_info_new (const gchar *filename,
     info->name = str;
   else
     {
-      g_warning ("Could not find 'Name' in %s", filename);
+      g_warning ("Could not find 'Name' in '%s'", filename);
       goto error;
     }
 

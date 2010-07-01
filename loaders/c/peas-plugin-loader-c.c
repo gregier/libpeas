@@ -77,12 +77,12 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
        * If this changes, we should use weak refs or something */
 
       g_hash_table_insert (cloader->priv->loaded_plugins, info, module);
-      g_debug ("Insert module %s into C module set", module_name);
+      g_debug ("Insert module '%s' into C module set", module_name);
     }
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
     {
-      g_warning ("Could not load plugin module: %s",
+      g_warning ("Could not load plugin module: '%s'",
                  peas_plugin_info_get_name (info));
 
       return FALSE;
@@ -132,7 +132,7 @@ peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
 
   if (instance == NULL)
     {
-      g_debug ("Plugin '%s' doesn't provide a '%s' extension",
+      g_debug ("Plugin '%s' does not provide a '%s' extension",
                peas_plugin_info_get_module_name (info),
                g_type_name (exten_type));
       return NULL;

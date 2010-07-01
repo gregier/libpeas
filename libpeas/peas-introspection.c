@@ -240,7 +240,7 @@ peas_method_get_info (GType        iface_type,
   iface_info = g_irepository_find_by_gtype (repo, iface_type);
   if (iface_info == NULL)
     {
-      g_warning ("Type not found in introspection: %s",
+      g_warning ("Type not found in introspection: '%s'",
                  g_type_name (iface_type));
       return NULL;
     }
@@ -261,7 +261,7 @@ peas_method_get_info (GType        iface_type,
 
   if (func_info == NULL)
     {
-      g_warning ("Method %s.%s not found",
+      g_warning ("Method '%s.%s' not found",
                  g_type_name (iface_type),
                  method_name);
     }
@@ -333,6 +333,9 @@ peas_method_apply_valist (GObject     *instance,
                  g_type_name (iface_type), method_name);
       goto out;
     }
+
+  g_debug ("Calling '%s.%s' on '%p'",
+           g_type_name (iface_type), method_name, instance);
 
   ret = g_function_info_invoke (func_info, in_args, n_in_args, out_args,
                                 n_out_args, &out_retval, &error);

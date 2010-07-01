@@ -70,7 +70,7 @@ get_script_for_plugin_info (PeasPluginInfo   *info,
   basename = g_strconcat (peas_plugin_info_get_module_name (info), ".js", NULL);
   filename = g_build_filename (peas_plugin_info_get_module_dir (info), basename, NULL);
 
-  g_debug ("Seed script filename is %s", filename);
+  g_debug ("Seed script filename is '%s'", filename);
 
   g_file_get_contents (filename, &script, NULL, NULL);
 
@@ -169,7 +169,7 @@ peas_plugin_loader_seed_get_extension (PeasPluginLoader *loader,
 
   if (!seed_value_is_object (sinfo->context, extension))
     {
-      g_warning ("Extension %s in plugin %s is not a javascript object.",
+      g_warning ("Extension '%s' in plugin '%s' is not a Seed object",
                  g_type_name (exten_type), peas_plugin_info_get_module_name (info));
       return NULL;
     }

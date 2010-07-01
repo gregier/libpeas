@@ -172,7 +172,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
   sp = engine->priv->search_paths;
   if (sp == NULL)
     {
-      g_debug ("No search paths where provided.");
+      g_debug ("No search paths where provided");
       return;
     }
 
@@ -539,7 +539,8 @@ load_plugin_loader (PeasEngine  *engine,
 
       if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
         {
-          g_warning ("Loader object is not a valid PeasPluginLoader instance");
+          g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
+                     loader_id);
           if (loader != NULL && G_IS_OBJECT (loader))
             g_object_unref (loader);
           module = NULL;
@@ -556,7 +557,7 @@ load_plugin_loader (PeasEngine  *engine,
     }
   else
     {
-      g_warning ("Plugin loader module '%s' could not be loaded",
+      g_warning ("Loader '%s' could not be loaded",
                  loader_id);
       g_object_unref (module);
       module = NULL;
@@ -611,7 +612,8 @@ peas_engine_disable_loader (PeasEngine  *engine,
                                                     loader_id);
   if (loader_info != NULL)
     {
-      g_warning ("Loader %s cannot be disabled as it is already loaded", loader_id);
+      g_warning ("Loader '%s' cannot be disabled as it is already loaded",
+                 loader_id);
       return;
     }
 
