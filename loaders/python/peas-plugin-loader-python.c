@@ -172,8 +172,8 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
   if (pyobject == NULL)
     {
       pyg_gil_state_release (state);
-      g_error ("Could not create instance for '%s'",
-               peas_plugin_info_get_name (info));
+      g_warning ("Could not create instance for '%s'",
+                 peas_plugin_info_get_name (info));
 
       return NULL;
     }
@@ -184,8 +184,8 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
     {
       Py_DECREF (pyobject);
       pyg_gil_state_release (state);
-      g_error ("Could not create instance for '%s': GObject already initialized",
-               peas_plugin_info_get_name (info));
+      g_warning ("Could not create instance for '%s': GObject already initialized",
+                 peas_plugin_info_get_name (info));
 
       return NULL;
     }
@@ -196,8 +196,8 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
     {
       Py_DECREF (pyobject);
       pyg_gil_state_release (state);
-      g_error ("Could not create '%s' instance for '%s': GObject not constructed",
-               g_type_name (exten_type), peas_plugin_info_get_name (info));
+      g_warning ("Could not create '%s' instance for '%s': GObject not constructed",
+                 g_type_name (exten_type), peas_plugin_info_get_name (info));
 
       return NULL;
     }
