@@ -23,7 +23,8 @@ INST_H_FILES =			\
 	peas-extension.h	\
 	peas-extension-set.h	\
 	peas-activatable.h	\
-	peas-engine.h
+	peas-engine.h		\
+	peas.h
 
 NOINST_H_FILES =		\
 	peas-debug.h		\
@@ -76,7 +77,10 @@ dist-hook:
 if HAVE_INTROSPECTION
   -include $(INTROSPECTION_MAKEFILE)
   INTROSPECTION_GIRS = Peas-1.0.gir
-  INTROSPECTION_SCANNER_ARGS = -I$(top_srcdir) --warn-all
+  INTROSPECTION_SCANNER_ARGS = \
+	-I$(top_srcdir) 		\
+	--c-include=libpeas/peas.h	\
+	--warn-all
 
   introspection_sources = $(INST_H_FILES) $(C_FILES)
 

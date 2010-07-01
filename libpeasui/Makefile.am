@@ -20,7 +20,8 @@ libpeasui_1_0_la_LIBADD = \
 INST_H_FILES = \
 	peas-ui-configurable.h		\
 	peas-ui-plugin-info.h		\
-	peas-ui-plugin-manager.h
+	peas-ui-plugin-manager.h	\
+	peas-ui.h
 
 libpeasui_1_0_la_SOURCES = \
 	peas-ui-configurable.c		\
@@ -34,7 +35,10 @@ header_DATA = $(INST_H_FILES)
 if HAVE_INTROSPECTION
   -include $(INTROSPECTION_MAKEFILE)
   INTROSPECTION_GIRS = PeasUI-1.0.gir
-  INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_builddir)/libpeas --warn-all
+  INTROSPECTION_SCANNER_ARGS = \
+	--add-include-path=$(top_builddir)/libpeas	\
+	--c-include=libpeasui/peas-ui.h			\
+	--warn-all
   INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
 
   introspection_sources = $(libpeasui_1_0_la_SOURCES)
