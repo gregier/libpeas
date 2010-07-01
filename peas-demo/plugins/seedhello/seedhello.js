@@ -23,18 +23,7 @@ activatable_extension = {
 
 configurable_extension = {
   create_configure_widget: function () {
-    var dialog = new Gtk.Dialog({ title: "Seedhello Config Dialog" });
-    var label = new Gtk.Label({ label: "Example of configuration dialog for a Seed plugin" });
-
-    dialog.get_content_area().pack_start(label);
-    dialog.add_button(Gtk.STOCK_OK, 1);
-
-    dialog.signal.response.connect(function (w, response_id) {
-      print("Dialog button clicked");
-      dialog.destroy();
-    });
-
-    return dialog;
+    return new Gtk.Label({ label: "Example of configuration dialog for a Seed plugin" });
   }
 };
 

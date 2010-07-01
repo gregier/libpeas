@@ -105,30 +105,12 @@ peasdemo_hello_world_plugin_deactivate (PeasActivatable *activatable,
   g_object_set_data (G_OBJECT (window), WINDOW_DATA_KEY, NULL);
 }
 
-static void
-on_configure_dialog_response (GtkDialog *dialog,
-                              gint       response_id,
-                              gpointer   user_data)
-{
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
 static GtkWidget *
 peasdemo_hello_world_plugin_create_configure_widget (PeasUIConfigurable  *configurable)
 {
-  GtkWidget *dialog;
-
   g_debug (G_STRFUNC);
 
-  dialog = gtk_message_dialog_new (NULL,
-                                   0,
-                                   GTK_MESSAGE_INFO,
-                                   GTK_BUTTONS_OK,
-                                   "This is a configuration dialog for the HelloWorld plugin.");
-  g_signal_connect (dialog, "response",
-                    G_CALLBACK (on_configure_dialog_response), NULL);
-
-  return dialog;
+  return gtk_label_new ("This is a configuration dialog for the HelloWorld plugin.");
 }
 
 static void
