@@ -36,7 +36,7 @@
  * #PeasUIConfigurable interface.
  *
  * To do so, the plugin writer will just need to implement the
- * create_configure_dialog() method.
+ * create_configure_widget() method.
  **/
 
 G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, G_TYPE_OBJECT)
@@ -47,17 +47,17 @@ peas_ui_configurable_default_init (PeasUIConfigurableInterface *iface)
 }
 
 /**
- * peas_ui_configurable_create_configure_dialog:
+ * peas_ui_configurable_create_configure_widget:
  * @configurable: A #PeasUIConfigurable
  *
- * Creates the configure dialog widget for the plugin.
+ * Creates the configure widget widget for the plugin.
  *
  * The default implementation returns %NULL.
  *
  * Returns: A #GtkWindow used for configuration.
  */
 GtkWidget *
-peas_ui_configurable_create_configure_dialog (PeasUIConfigurable  *configurable)
+peas_ui_configurable_create_configure_widget (PeasUIConfigurable  *configurable)
 {
   PeasUIConfigurableInterface *iface;
 
@@ -65,8 +65,8 @@ peas_ui_configurable_create_configure_dialog (PeasUIConfigurable  *configurable)
   
   iface = PEAS_UI_CONFIGURABLE_GET_IFACE (configurable);
 
-  if (G_LIKELY (iface->create_configure_dialog != NULL))
-    return iface->create_configure_dialog (configurable);
+  if (G_LIKELY (iface->create_configure_widget != NULL))
+    return iface->create_configure_widget (configurable);
 
   /* Default implementation */
   return NULL;

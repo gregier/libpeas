@@ -42,11 +42,11 @@ struct _PeasUIConfigurableInterface
 {
   GTypeInterface g_iface;
 
-  GtkWidget  *(*create_configure_dialog)  (PeasUIConfigurable  *configurable);
+  GtkWidget  *(*create_configure_widget)  (PeasUIConfigurable  *configurable);
 };
 
 GType       peas_ui_configurable_get_type                (void);
-GtkWidget  *peas_ui_configurable_create_configure_dialog (PeasUIConfigurable  *configurable);
+GtkWidget  *peas_ui_configurable_create_configure_widget (PeasUIConfigurable  *configurable);
 
 G_END_DECLS
 

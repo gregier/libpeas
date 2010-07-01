@@ -22,7 +22,7 @@ activatable_extension = {
 };
 
 configurable_extension = {
-  create_configure_dialog: function () {
+  create_configure_widget: function () {
     var dialog = new Gtk.Dialog({ title: "Seedhello Config Dialog" });
     var label = new Gtk.Label({ label: "Example of configuration dialog for a Seed plugin" });
 

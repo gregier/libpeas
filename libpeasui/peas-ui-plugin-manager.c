@@ -209,9 +209,9 @@ configure_button_cb (GtkWidget           *button,
   exten = peas_engine_get_extension (pm->priv->engine, info, PEAS_UI_TYPE_CONFIGURABLE); 
   g_return_if_fail (exten != NULL);
 
-  g_debug ("Calling create_configure_dialog on %p", exten);
+  g_debug ("Calling create_configure_widget on %p", exten);
 
-  peas_extension_call (exten, "create_configure_dialog", &conf_dlg);
+  peas_extension_call (exten, "create_configure_widget", &conf_dlg);
   g_object_unref (exten);
   g_return_if_fail (conf_dlg != NULL);
 

@@ -114,7 +114,7 @@ on_configure_dialog_response (GtkDialog *dialog,
 }
 
 static GtkWidget *
-peasdemo_hello_world_plugin_create_configure_dialog (PeasUIConfigurable  *configurable)
+peasdemo_hello_world_plugin_create_configure_widget (PeasUIConfigurable  *configurable)
 {
   GtkWidget *dialog;
 
@@ -149,7 +149,7 @@ peas_activatable_iface_init (PeasActivatableInterface *iface)
 static void
 peas_ui_configurable_iface_init (PeasUIConfigurableInterface *iface)
 {
-  iface->create_configure_dialog = peasdemo_hello_world_plugin_create_configure_dialog;
+  iface->create_configure_widget = peasdemo_hello_world_plugin_create_configure_widget;
 }
 
 static void
