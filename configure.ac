@@ -76,6 +76,15 @@ PKG_CHECK_MODULES(PEAS, [
 	gobject-introspection-1.0 >= 0.6.7
 ])
 
+dnl ================================================================
+dnl Build libpeasui
+dnl ================================================================
+
+AC_ARG_ENABLE(libpeasui,
+	      AS_HELP_STRING([--enable-libpeasui],[Build libpeasui for Gtk widgetry]),
+	      [enable_libpeasui=$enableval],
+	      [enable_libpeasui=yes])
+
 dnl We currently allow building libpeas with Gtk+ 2.0 for testing purposes and
 dnl technology preview. but do *not* distribute such a version!
 AC_ARG_ENABLE(gtk2-test-build,
@@ -83,18 +92,22 @@ AC_ARG_ENABLE(gtk2-test-build,
 	      [use_gtk2=$enableval],
 	      [use_gtk2=no])
 
-if test "$use_gtk2" != "yes"; then
-	GTK_TYPELIB=Gtk-3.0
-	GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
-	GDK_REQUIRED=gdk-3.0
-else
-	GTK_TYPELIB=Gtk-2.0
-	GTK_PKG_REQUIREMENT="gtk+-2.0 >= 2.16"
-	GDK_REQUIRED=gdk-2.0
+if test "$enable_libpeasui" = "yes"; then
+	if test "$use_gtk2" != "yes"; then
+		GTK_TYPELIB=Gtk-3.0
+		GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
+		GDK_REQUIRED=gdk-3.0
+	else
+		GTK_TYPELIB=Gtk-2.0
+		GTK_PKG_REQUIREMENT="gtk+-2.0 >= 2.16"
+		GDK_REQUIRED=gdk-2.0
+	fi
+	PKG_CHECK_MODULES(PEASUI, [$GTK_PKG_REQUIREMENT])
+	AC_SUBST(GTK_TYPELIB)
+	AC_SUBST(GTK_PKG_REQUIREMENT)
 fi
-PKG_CHECK_MODULES(PEASUI, [$GTK_PKG_REQUIREMENT])
-AC_SUBST(GTK_TYPELIB)
-AC_SUBST(GTK_PKG_REQUIREMENT)
+
+AM_CONDITIONAL([ENABLE_LIBPEASUI],[test "x$enable_libpeasui" = "xyes"])
 
 dnl ================================================================
 dnl Check for native OSX
@@ -299,6 +312,7 @@ Configuration:
         Source code location          : ${srcdir}
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
+	Build libpeasui	              : ${enable_libpeasui}
         Seed JS support               : ${found_seed}
         Python support                : ${found_python}
 "
