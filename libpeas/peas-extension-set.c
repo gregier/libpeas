@@ -71,6 +71,56 @@ enum {
 
 static guint signals[LAST_SIGNAL];
 
+/* Properties */
+enum {
+  PROP_0,
+  PROP_ENGINE,
+  PROP_EXTENSION_TYPE
+};
+
+static void
+peas_extension_set_set_property (GObject      *object,
+                                 guint         prop_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
+{
+  PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
+
+  switch (prop_id)
+    {
+    case PROP_ENGINE:
+      set->priv->engine = g_value_get_object (value);
+      g_object_ref (set->priv->engine);
+      break;
+    case PROP_EXTENSION_TYPE:
+      set->priv->exten_type = g_value_get_gtype (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
+static void
+peas_extension_set_get_property (GObject    *object,
+                                 guint       prop_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
+{
+  PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
+
+  switch (prop_id)
+    {
+    case PROP_ENGINE:
+      g_value_set_object (value, set->priv->engine);
+      break;
+    case PROP_EXTENSION_TYPE:
+      g_value_set_gtype (value, set->priv->exten_type);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
 static void
 add_extension (PeasExtensionSet *set,
                PeasPluginInfo   *info)
@@ -136,26 +186,22 @@ peas_extension_set_init (PeasExtensionSet *set)
 }
 
 static void
-peas_extension_set_set_internal_data (PeasExtensionSet *set,
-                                      PeasEngine       *engine,
-                                      GType             exten_type)
+peas_extension_set_constructed (GObject *object)
 {
+  PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
+
   GList *plugins, *l;
 
-  set->priv->exten_type = exten_type;
-  set->priv->engine = engine;
-  g_object_ref (engine);
-
-  plugins = (GList *) peas_engine_get_plugin_list (engine);
+  plugins = (GList *) peas_engine_get_plugin_list (set->priv->engine);
   for (l = plugins; l; l = l->next)
     add_extension (set, (PeasPluginInfo *) l->data);
 
   set->priv->load_handler_id =
-          g_signal_connect_data (engine, "load-plugin",
+          g_signal_connect_data (set->priv->engine, "load-plugin",
                                  G_CALLBACK (add_extension), set,
                                  NULL, G_CONNECT_AFTER | G_CONNECT_SWAPPED);
   set->priv->unload_handler_id =
-          g_signal_connect_data (engine, "unload-plugin",
+          g_signal_connect_data (set->priv->engine, "unload-plugin",
                                  G_CALLBACK (remove_extension), set,
                                  NULL, G_CONNECT_SWAPPED);
 }
@@ -202,6 +248,9 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
   GType the_type = G_TYPE_FROM_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  object_class->set_property = peas_extension_set_set_property;
+  object_class->get_property = peas_extension_set_get_property;
+  object_class->constructed = peas_extension_set_constructed;
   object_class->finalize = peas_extension_set_finalize;
 
   klass->call = peas_extension_set_call_real;
@@ -229,6 +278,24 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
                   2,
                   PEAS_TYPE_PLUGIN_INFO | G_SIGNAL_TYPE_STATIC_SCOPE,
                   PEAS_TYPE_EXTENSION);
+
+  g_object_class_install_property (object_class, PROP_ENGINE,
+                                   g_param_spec_object ("engine",
+                                                        "Engine",
+                                                        "The PeasEngine this set is attached to",
+                                                        PEAS_TYPE_ENGINE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
+
+  g_object_class_install_property (object_class, PROP_EXTENSION_TYPE,
+                                   g_param_spec_gtype ("extension-type",
+                                                       "Extension Type",
+                                                       "The extension GType managed by this set",
+                                                       G_TYPE_NONE,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT_ONLY |
+                                                       G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (klass, sizeof (PeasExtensionSetPrivate));
 }
@@ -294,10 +361,8 @@ PeasExtensionSet *
 peas_extension_set_new (PeasEngine *engine,
                         GType       exten_type)
 {
-  PeasExtensionSet *set;
-
-  set = PEAS_EXTENSION_SET (g_object_new (PEAS_TYPE_EXTENSION_SET, NULL));
-  peas_extension_set_set_internal_data (set, engine, exten_type);
-
-  return set;
+  return PEAS_EXTENSION_SET (g_object_new (PEAS_TYPE_EXTENSION_SET,
+                                           "engine", engine,
+                                           "extension-type", exten_type,
+                                           NULL));
 }
