@@ -253,7 +253,7 @@ peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
 
   state = pyg_gil_state_ensure ();
 
-  g_debug ("Adding '%s' as a module path for the python loader", module_dir);
+  g_debug ("Adding '%s' as a module path for the Python loader", module_dir);
   peas_plugin_loader_python_add_module_path (pyloader, module_dir);
 
   pyg_gil_state_release (state);
@@ -270,7 +270,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
 
   if (pyloader->priv->init_failed)
     {
-      g_warning ("Cannot load python plugin Python '%s' since libpeas was "
+      g_warning ("Cannot load Python plugin '%s' since libpeas was "
                  "not able to initialize the Python interpreter",
                  peas_plugin_info_get_name (info));
 
@@ -470,7 +470,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   gobject = PyImport_ImportModule ("gobject");
   if (gobject == NULL)
     {
-      g_warning ("Error initializing Python interpreter: cound not "
+      g_warning ("Error initializing Python interpreter: could not "
                  "import gobject");
 
       goto python_init_error;
@@ -480,7 +480,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   PyGObject_Type = PyDict_GetItemString (mdict, "GObject");
   if (PyGObject_Type == NULL)
     {
-      g_warning ("Error initializing Python interpreter: cound not "
+      g_warning ("Error initializing Python interpreter: could not "
                  "get gobject.GObject");
 
       goto python_init_error;
