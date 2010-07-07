@@ -426,19 +426,6 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
   return TRUE;
 }
 
-/* Note: the following function is needed because init_pyobject is a *macro*
- * which in case of error set the PyErr and then make the calling function
- * return behind our back.
- * It's up to the caller to check the result with PyErr_Occurred ()
- */
-static void
-peas_init_pygobject (void)
-{
-  init_pygobject_check (PYGOBJECT_MAJOR_VERSION,
-                        PYGOBJECT_MINOR_VERSION,
-                        PYGOBJECT_MICRO_VERSION);
-}
-
 static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
@@ -468,7 +455,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   peas_plugin_loader_python_add_module_path (loader, PEAS_PYEXECDIR);
 
   /* import gobject */
-  peas_init_pygobject ();
+  pygobject_init (PYGOBJECT_MAJOR_VERSION, PYGOBJECT_MINOR_VERSION, PYGOBJECT_MICRO_VERSION);
   if (PyErr_Occurred ())
     {
       g_warning ("Error initializing Python interpreter: could not "
