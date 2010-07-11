@@ -78,8 +78,6 @@ struct _PeasEnginePrivate {
 
   GList *plugin_list;
   GHashTable *loaders;
-
-  GList *object_list;
 };
 
 static void peas_engine_load_plugin_real   (PeasEngine     *engine,
@@ -250,8 +248,6 @@ peas_engine_init (PeasEngine *engine)
                                               PEAS_TYPE_ENGINE,
                                               PeasEnginePrivate);
 
-  engine->priv->object_list = NULL;
-
   /* mapping from loadername -> loader object */
   engine->priv->loaders = g_hash_table_new_full (hash_lowercase,
                                                  (GEqualFunc) equal_lowercase,
@@ -363,7 +359,6 @@ peas_engine_finalize (GObject *object)
     _peas_plugin_info_unref (PEAS_PLUGIN_INFO (item->data));
 
   g_list_free (engine->priv->plugin_list);
-  g_list_free (engine->priv->object_list);
   g_strfreev (engine->priv->search_paths);
   g_free (engine->priv->app_name);
   g_free (engine->priv->base_module_dir);
