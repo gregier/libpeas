@@ -34,6 +34,7 @@
 #include "peas-extension.h"
 #include "peas-dirs.h"
 #include "peas-debug.h"
+#include "peas-helpers.h"
 
 /**
  * SECTION:peas-engine
@@ -883,9 +884,11 @@ peas_engine_provides_extension (PeasEngine     *engine,
 }
 
 PeasExtension *
-peas_engine_get_extension (PeasEngine     *engine,
-                           PeasPluginInfo *info,
-                           GType           extension_type)
+peas_engine_get_extensionv (PeasEngine     *engine,
+                            PeasPluginInfo *info,
+                            GType           extension_type,
+                            guint           n_parameters,
+                            GParameter     *parameters)
 {
   PeasPluginLoader *loader;
 
@@ -893,7 +896,57 @@ peas_engine_get_extension (PeasEngine     *engine,
   g_return_val_if_fail (info != NULL, NULL);
 
   loader = get_plugin_loader (engine, info);
-  return peas_plugin_loader_get_extension (loader, info, extension_type);
+  return peas_plugin_loader_get_extension (loader, info, extension_type,
+                                           n_parameters, parameters);
+}
+
+PeasExtension *
+peas_engine_get_extension_valist (PeasEngine     *engine,
+                                  PeasPluginInfo *info,
+                                  GType           extension_type,
+                                  const gchar    *first_property,
+                                  va_list         var_args)
+{
+  gpointer type_struct;
+  guint n_parameters;
+  GParameter *parameters;
+  PeasExtension *exten;
+
+  type_struct = _g_type_struct_ref (extension_type);
+
+  if (!_valist_to_parameter_list (extension_type, type_struct, first_property,
+                                  var_args, &parameters, &n_parameters))
+    {
+      g_return_val_if_reached (NULL);
+    }
+
+  exten = peas_engine_get_extensionv (engine, info, extension_type,
+                                      n_parameters, parameters);
+
+  while (n_parameters-- > 0)
+    g_value_unset (&parameters[n_parameters].value);
+  g_free (parameters);
+
+  _g_type_struct_unref (extension_type, type_struct);
+
+  return exten;
+}
+
+PeasExtension *
+peas_engine_get_extension (PeasEngine     *engine,
+                           PeasPluginInfo *info,
+                           GType           extension_type,
+                           const gchar    *first_property,
+                           ...)
+{
+  va_list var_args;
+  PeasExtension *exten;
+
+  va_start (var_args, first_property);
+  exten = peas_engine_get_extension_valist (engine, info, extension_type, first_property, var_args);
+  va_end (var_args);
+
+  return exten;
 }
 
 /**

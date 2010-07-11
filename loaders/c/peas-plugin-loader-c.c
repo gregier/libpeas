@@ -23,11 +23,13 @@
 #include <config.h>
 #endif
 
+#include <string.h>
+#include <gmodule.h>
+
 #include "peas-plugin-loader-c.h"
 #include "peas-extension-c.h"
 #include <libpeas/peas-object-module.h>
 #include <libpeas/peas-extension-base.h>
-#include <gmodule.h>
 
 struct _PeasPluginLoaderCPrivate
 {
@@ -109,24 +111,39 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
 static PeasExtension *
 peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
                                     PeasPluginInfo   *info,
-                                    GType             exten_type)
+                                    GType             exten_type,
+                                    guint             n_parameters,
+                                    GParameter       *parameters)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
-  GParameter info_param = { 0 };
+  GParameter *exten_parameters;
   gpointer instance;
 
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      info);
   g_return_val_if_fail (module != NULL, NULL);
 
-  info_param.name = "plugin-info";
-  g_value_init (&info_param.value, PEAS_TYPE_PLUGIN_INFO);
-  g_value_set_boxed (&info_param.value, info);
+  /* We want to add a "plugin-info" property so we can pass it to the extension
+   * if it inherits from PeasExtensionBase. No need to actually "duplicate" the
+   * GValues, a memcpy is sufficient as the source GValues are longer lived
+   * than our local copy. */
+  exten_parameters = g_new (GParameter, n_parameters + 1);
+  memcpy (exten_parameters, parameters, sizeof (GParameter) * n_parameters);
 
-  instance = peas_object_module_create_object (module, exten_type, 1, &info_param);
+  /* Initialize our additional property */
+  exten_parameters[n_parameters].name = g_intern_static_string ("plugin-info");
+  memset (&exten_parameters[n_parameters].value, 0, sizeof (GValue));
+  g_value_init (&exten_parameters[n_parameters].value, PEAS_TYPE_PLUGIN_INFO);
+  g_value_set_boxed (&exten_parameters[n_parameters].value, info);
 
-  g_value_unset (&info_param.value);
+  instance = peas_object_module_create_object (module,
+                                               exten_type,
+                                               n_parameters + 1,
+                                               exten_parameters);
+
+  g_value_unset (&exten_parameters[n_parameters].value);
+  g_free (exten_parameters);
 
   if (instance == NULL)
     {

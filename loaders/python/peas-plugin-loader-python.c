@@ -138,7 +138,9 @@ peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
 static PeasExtension *
 peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
                                          PeasPluginInfo   *info,
-                                         GType             exten_type)
+                                         GType             exten_type,
+                                         guint             n_parameters,
+                                         GParameter       *parameters)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PythonInfo *pyinfo;
@@ -190,7 +192,7 @@ peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
       return NULL;
     }
 
-  pygobject_construct (pygobject, NULL);
+  pygobject_constructv (pygobject, n_parameters, parameters);
 
   if (pygobject->obj == NULL)
     {

@@ -58,7 +58,9 @@ struct _PeasPluginLoaderClass {
                                            GType             ext_type);
   PeasExtension *(*get_extension)         (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info,
-                                           GType             ext_type);
+                                           GType             ext_type,
+                                           guint             n_parameters,
+                                           GParameter       *parameters);
 
   void          (*garbage_collect)        (PeasPluginLoader *loader);
 };
@@ -78,7 +80,9 @@ gboolean      peas_plugin_loader_provides_extension   (PeasPluginLoader *loader,
                                                        GType             ext_type);
 PeasExtension *peas_plugin_loader_get_extension       (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info,
-                                                       GType             ext_type);
+                                                       GType             ext_type,
+                                                       guint             n_parameters,
+                                                       GParameter       *parameters);
 void          peas_plugin_loader_garbage_collect      (PeasPluginLoader *loader);
 
 G_END_DECLS

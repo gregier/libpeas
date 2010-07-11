@@ -24,6 +24,10 @@
 #endif
 
 #include <seed.h>
+/* FIXME: Seed Bug 624560 */
+SeedValue seed_value_from_gvalue (SeedContext    ctx,
+                                  GValue        *gval,
+                                  SeedException *exception);
 
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
@@ -151,28 +155,76 @@ peas_plugin_loader_seed_provides_extension  (PeasPluginLoader *loader,
 static PeasExtension *
 peas_plugin_loader_seed_get_extension (PeasPluginLoader *loader,
                                        PeasPluginInfo   *info,
-                                       GType             exten_type)
+                                       GType             exten_type,
+                                       guint             n_parameters,
+                                       GParameter       *parameters)
 {
   PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
   SeedInfo *sinfo;
-  SeedValue extension;
+  SeedValue extension_methods, extension;
+  gchar **property_names;
+  guint i, j;
 
   sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
   if (!sinfo)
     return NULL;
 
-  extension = seed_object_get_property (sinfo->context,
-                                        sinfo->extensions,
-                                        g_type_name (exten_type));
-  if (!extension)
+  /* FIXME: instantiate new object and pass the parameters */
+  extension_methods = seed_object_get_property (sinfo->context,
+                                                sinfo->extensions,
+                                                g_type_name (exten_type));
+  if (!extension_methods)
     return NULL;
 
-  if (!seed_value_is_object (sinfo->context, extension))
+  if (!seed_value_is_object (sinfo->context, extension_methods))
     {
       g_warning ("Extension '%s' in plugin '%s' is not a Seed object",
                  g_type_name (exten_type), peas_plugin_info_get_module_name (info));
       return NULL;
     }
+
+  /* Copy the original extension_methods object to a new specific object. */
+  extension = seed_make_object (sinfo->context, NULL, NULL);
+  property_names = seed_object_copy_property_names (sinfo->context,
+                                                    extension_methods);
+  for (i = 0; property_names[i] != NULL; i++)
+    {
+      SeedValue value;
+
+      value = seed_object_get_property (sinfo->context,
+                                        extension_methods,
+                                        property_names[i]);
+      seed_object_set_property (sinfo->context,
+                                extension,
+                                property_names[i],
+                                value);
+    }
+
+  /* Set the properties as well */
+  for (i = 0; i < n_parameters; i++)
+    {
+      gchar *key;
+      SeedValue value;
+
+      /* We want to normalize the property names to have a '_' instead of the
+       * conventional '-', to make them accessible through this.property_name */
+      key = g_strdup (parameters[i].name);
+      for (j = 0; key[j] != '\0'; j++)
+        if (key[j] == '-')
+          key[j] = '_';
+
+      value = seed_value_from_gvalue (sinfo->context,
+                                      &parameters[i].value,
+                                      NULL);
+      seed_object_set_property (sinfo->context,
+                                extension,
+                                key,
+                                value);
+
+      g_free (key);
+    }
+
+  g_strfreev (property_names);
 
   return peas_extension_seed_new (exten_type, sinfo->context, extension);
 }

@@ -70,6 +70,11 @@ struct _PeasExtensionSetClass {
                                            PeasExtension    *exten);
 };
 
+typedef struct _PeasParameterArray {
+  guint n_parameters;
+  GParameter *parameters;
+} PeasParameterArray;
+
 /*
  * Public methods
  */
@@ -82,8 +87,18 @@ gboolean           peas_extension_set_call_valist (PeasExtensionSet *set,
                                                    const gchar      *method_name,
                                                    va_list           args);
 
+PeasExtensionSet  *peas_extension_set_newv        (PeasEngine       *engine,
+                                                   GType             exten_type,
+                                                   guint             n_parameters,
+                                                   GParameter       *parameter);
+PeasExtensionSet  *peas_extension_set_new_valist  (PeasEngine       *engine,
+                                                   GType             exten_type,
+                                                   const gchar      *first_property,
+                                                   va_list           var_args);
 PeasExtensionSet  *peas_extension_set_new         (PeasEngine       *engine,
-                                                   GType             exten_type);
+                                                   GType             exten_type,
+                                                   const gchar      *first_property,
+                                                   ...);
 
 G_END_DECLS
 

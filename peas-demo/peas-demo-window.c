@@ -77,7 +77,7 @@ demo_window_set_data (DemoWindow *dw,
   dw->engine = engine;
   g_object_ref (dw->engine);
 
-  dw->exten_set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE);
+  dw->exten_set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE, NULL);
 
   peas_extension_set_call (dw->exten_set, "activate", dw);
 

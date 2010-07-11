@@ -28,6 +28,7 @@
 #include "peas-extension-set.h"
 #include "peas-plugin-info.h"
 #include "peas-marshal.h"
+#include "peas-helpers.h"
 
 /**
  * SECTION:peas-extension-set
@@ -51,6 +52,9 @@ G_DEFINE_TYPE (PeasExtensionSet, peas_extension_set, G_TYPE_OBJECT);
 struct _PeasExtensionSetPrivate {
   PeasEngine *engine;
   GType exten_type;
+  guint n_parameters;
+  GParameter *parameters;
+
   GList *extensions;
 
   gulong load_handler_id;
@@ -75,8 +79,26 @@ static guint signals[LAST_SIGNAL];
 enum {
   PROP_0,
   PROP_ENGINE,
-  PROP_EXTENSION_TYPE
+  PROP_EXTENSION_TYPE,
+  PROP_CONSTRUCT_PROPERTIES
 };
+
+static void
+set_construct_properties (PeasExtensionSet *set,
+                          PeasParameterArray *array)
+{
+  unsigned i;
+
+  set->priv->n_parameters = array->n_parameters;
+
+  set->priv->parameters = g_new0 (GParameter, array->n_parameters);
+  for (i = 0; i < array->n_parameters; i++)
+    {
+      set->priv->parameters[i].name = g_intern_string (array->parameters[i].name);
+      g_value_init (&set->priv->parameters[i].value, G_VALUE_TYPE (&array->parameters[i].value));
+      g_value_copy (&array->parameters[i].value, &set->priv->parameters[i].value);
+    }
+}
 
 static void
 peas_extension_set_set_property (GObject      *object,
@@ -94,6 +116,9 @@ peas_extension_set_set_property (GObject      *object,
       break;
     case PROP_EXTENSION_TYPE:
       set->priv->exten_type = g_value_get_gtype (value);
+      break;
+    case PROP_CONSTRUCT_PROPERTIES:
+      set_construct_properties (set, g_value_get_pointer (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -132,8 +157,10 @@ add_extension (PeasExtensionSet *set,
   if (!peas_plugin_info_is_loaded (info))
     return;
 
-  exten = peas_engine_get_extension (set->priv->engine, info,
-                                     set->priv->exten_type);
+  exten = peas_engine_get_extensionv (set->priv->engine, info,
+                                      set->priv->exten_type,
+                                      set->priv->n_parameters,
+                                      set->priv->parameters);
   if (!exten)
     return;
 
@@ -221,6 +248,13 @@ peas_extension_set_finalize (GObject *object)
       l = g_list_delete_link (l, l);
     }
 
+  if (set->priv->parameters != NULL)
+    {
+      while (set->priv->n_parameters-- > 0)
+        g_value_unset (&set->priv->parameters[set->priv->n_parameters].value);
+      g_free (set->priv->parameters);
+    }
+
   g_object_unref (set->priv->engine);
 }
 
@@ -297,6 +331,14 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
                                                        G_PARAM_CONSTRUCT_ONLY |
                                                        G_PARAM_STATIC_STRINGS));
 
+  g_object_class_install_property (object_class, PROP_CONSTRUCT_PROPERTIES,
+                                   g_param_spec_pointer ("construct-properties",
+                                                         "Construct Properties",
+                                                         "The properties to pass the extensions when creating them",
+                                                         G_PARAM_WRITABLE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_STRINGS));
+
   g_type_class_add_private (klass, sizeof (PeasExtensionSetPrivate));
 }
 
@@ -362,11 +404,63 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
  * the plugins loaded in @engine.
  */
 PeasExtensionSet *
-peas_extension_set_new (PeasEngine *engine,
-                        GType       exten_type)
+peas_extension_set_newv (PeasEngine *engine,
+                         GType       exten_type,
+                         guint       n_parameters,
+                         GParameter *parameters)
 {
+  PeasParameterArray construct_properties = { n_parameters, parameters };
+
   return PEAS_EXTENSION_SET (g_object_new (PEAS_TYPE_EXTENSION_SET,
                                            "engine", engine,
                                            "extension-type", exten_type,
+                                           "construct-properties", &construct_properties,
                                            NULL));
+}
+
+PeasExtensionSet *
+peas_extension_set_new_valist (PeasEngine  *engine,
+                               GType        exten_type,
+                               const gchar *first_property,
+                               va_list      var_args)
+{
+  gpointer type_struct;
+  GParameter *parameters;
+  guint n_parameters;
+  PeasExtensionSet *set;
+
+  type_struct = _g_type_struct_ref (exten_type);
+
+  if (!_valist_to_parameter_list (exten_type, type_struct, first_property,
+                                  var_args, &parameters, &n_parameters))
+    {
+      /* WARNING */
+      g_return_val_if_reached (NULL);
+    }
+
+  set = peas_extension_set_newv (engine, exten_type, n_parameters, parameters);
+
+  while (n_parameters-- > 0)
+    g_value_unset (&parameters[n_parameters].value);
+  g_free (parameters);
+
+  _g_type_struct_unref (exten_type, type_struct);
+
+  return set;
+}
+
+PeasExtensionSet *
+peas_extension_set_new (PeasEngine  *engine,
+                        GType        exten_type,
+                        const gchar *first_property,
+                        ...)
+{
+  va_list var_args;
+  PeasExtensionSet *set;
+
+  va_start (var_args, first_property);
+  set = peas_extension_set_new_valist (engine, exten_type, first_property, var_args);
+  va_end (var_args);
+
+  return set;
 }
