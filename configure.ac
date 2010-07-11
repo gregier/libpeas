@@ -49,7 +49,6 @@ LT_INIT([disable-static])
 
 
 AC_CHECK_FUNCS(fsync)
-AC_CHECK_SIZEOF(time_t, [], [#include <time.h>])
 
 dnl ================================================================
 dnl Gettext stuff.
@@ -73,7 +72,7 @@ PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gobject-2.0 >= 2.23.6
 	gmodule-2.0 >= 2.18.0
-	gobject-introspection-1.0 >= 0.6.7
+	gobject-introspection-1.0 >= 0.9.0
 ])
 
 dnl ================================================================
@@ -135,7 +134,7 @@ dnl ================================================================
 dnl GObject Introspection
 dnl ================================================================
 
-GOBJECT_INTROSPECTION_REQUIRE([0.6.7])
+GOBJECT_INTROSPECTION_REQUIRE([0.9.0])
 
 dnl ================================================================
 dnl Seed Javascript Engine

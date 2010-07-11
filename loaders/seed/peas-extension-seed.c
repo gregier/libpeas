@@ -108,23 +108,15 @@ read_next_argument (SeedContext ctx,
     case GI_TYPE_TAG_BOOLEAN:
       return seed_value_from_boolean (ctx, va_arg (args, gboolean), exc);
     case GI_TYPE_TAG_INT8:
-    case GI_TYPE_TAG_UINT8:
     case GI_TYPE_TAG_INT16:
-    case GI_TYPE_TAG_UINT16:
-    case GI_TYPE_TAG_SHORT:
-    case GI_TYPE_TAG_USHORT:
-    case GI_TYPE_TAG_INT:
       return seed_value_from_int (ctx, va_arg (args, gint), exc);
-    case GI_TYPE_TAG_UINT:
+    case GI_TYPE_TAG_UINT8:
+    case GI_TYPE_TAG_UINT16:
       return seed_value_from_uint (ctx, va_arg (args, guint), exc);
     case GI_TYPE_TAG_INT32:
       return seed_value_from_long (ctx, va_arg (args, gint32), exc);
     case GI_TYPE_TAG_UINT32:
       return seed_value_from_ulong (ctx, va_arg (args, guint32), exc);
-    case GI_TYPE_TAG_LONG:
-      return seed_value_from_long (ctx, va_arg (args, glong), exc);
-    case GI_TYPE_TAG_ULONG:
-      return seed_value_from_ulong (ctx, va_arg (args, gulong), exc);
     case GI_TYPE_TAG_INT64:
       return seed_value_from_int64 (ctx, va_arg (args, gint64), exc);
     case GI_TYPE_TAG_UINT64:
@@ -134,12 +126,6 @@ read_next_argument (SeedContext ctx,
       return seed_value_from_double (ctx, va_arg (args, gdouble), exc);
       break;
 
-    case GI_TYPE_TAG_SSIZE:
-      return seed_value_from_long (ctx, va_arg (args, gssize), exc);
-    case GI_TYPE_TAG_SIZE:
-      return seed_value_from_ulong (ctx, va_arg (args, gsize), exc);
-    case GI_TYPE_TAG_TIME_T:
-      return seed_value_from_int64 (ctx, va_arg (args, time_t), exc);
     case GI_TYPE_TAG_GTYPE:
       /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
       return seed_value_from_ulong (ctx, va_arg (args, GType), exc);
@@ -201,24 +187,6 @@ set_return_value (OutArg        *arg,
     case GI_TYPE_TAG_UINT64:
       *((guint64 *) arg->ptr) = seed_value_to_uint64 (ctx, value, exc);
       break;
-    case GI_TYPE_TAG_SHORT:
-      *((gshort *) arg->ptr) = seed_value_to_int (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_USHORT:
-      *((gushort *) arg->ptr) = seed_value_to_uint (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_INT:
-      *((gint *) arg->ptr) = seed_value_to_int (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_UINT:
-      *((guint *) arg->ptr) = seed_value_to_uint (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_LONG:
-      *((glong *) arg->ptr) = seed_value_to_long (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_ULONG:
-      *((gulong *) arg->ptr) = seed_value_to_ulong (ctx, value, exc);
-      break;
     case GI_TYPE_TAG_FLOAT:
       *((gfloat *) arg->ptr) = seed_value_to_float (ctx, value, exc);
       break;
@@ -226,15 +194,6 @@ set_return_value (OutArg        *arg,
       *((gdouble *) arg->ptr) = seed_value_to_double (ctx, value, exc);
       break;
 
-    case GI_TYPE_TAG_SSIZE:
-      *((gssize *) arg->ptr) = seed_value_to_ulong (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_SIZE:
-      *((gsize *) arg->ptr) = seed_value_to_long (ctx, value, exc);
-      break;
-    case GI_TYPE_TAG_TIME_T:
-      *((time_t *) arg->ptr) = seed_value_to_int64 (ctx, value, exc);
-      break;
     case GI_TYPE_TAG_GTYPE:
       /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
       *((GType *) arg->ptr) = seed_value_to_ulong (ctx, value, exc);

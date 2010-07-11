@@ -64,45 +64,11 @@ read_next_argument (GArgument  *cur_arg,
     case GI_TYPE_TAG_UINT64:
       cur_arg->v_uint64 = va_arg (args, guint64);
       break;
-    case GI_TYPE_TAG_SHORT:
-      cur_arg->v_short = va_arg (args, int);
-      break;
-    case GI_TYPE_TAG_USHORT:
-      cur_arg->v_ushort = va_arg (args, int);
-      break;
-    case GI_TYPE_TAG_INT:
-      cur_arg->v_int = va_arg (args, gint);
-      break;
-    case GI_TYPE_TAG_UINT:
-      cur_arg->v_uint = va_arg (args, guint);
-      break;
-    case GI_TYPE_TAG_LONG:
-      cur_arg->v_long = va_arg (args, glong);
-      break;
-    case GI_TYPE_TAG_ULONG:
-      cur_arg->v_ulong = va_arg (args, gulong);
-      break;
-    case GI_TYPE_TAG_SSIZE:
-      cur_arg->v_ssize = va_arg (args, gssize);
-      break;
-    case GI_TYPE_TAG_SIZE:
-      cur_arg->v_size = va_arg (args, gsize);
-      break;
     case GI_TYPE_TAG_FLOAT:
       cur_arg->v_float = va_arg (args, gdouble);
       break;
     case GI_TYPE_TAG_DOUBLE:
       cur_arg->v_double = va_arg (args, gdouble);
-      break;
-    case GI_TYPE_TAG_TIME_T:
-      /* borrowed from gfield.c in gobject-introspection */
-#if SIZEOF_TIME_T == 4
-      cur_arg->v_int32 = va_arg (args, time_t);
-#elif SIZEOF_TIME_T == 8
-      cur_arg->v_int64 = va_arg (args, time_t);
-#else
-#  error "Unexpected size for time_t: not 4 or 8"
-#endif
       break;
     case GI_TYPE_TAG_GTYPE:
       /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
@@ -165,45 +131,11 @@ set_return_value (gpointer    in_retval,
     case GI_TYPE_TAG_UINT64:
       *((guint64 *) in_retval) = out_retval->v_uint64;
       break;
-    case GI_TYPE_TAG_SHORT:
-      *((gshort *) in_retval) = out_retval->v_short;
-      break;
-    case GI_TYPE_TAG_USHORT:
-      *((gushort *) in_retval) = out_retval->v_ushort;
-      break;
-    case GI_TYPE_TAG_INT:
-      *((gint *) in_retval) = out_retval->v_int;
-      break;
-    case GI_TYPE_TAG_UINT:
-      *((guint *) in_retval) = out_retval->v_uint;
-      break;
-    case GI_TYPE_TAG_LONG:
-      *((glong *) in_retval) = out_retval->v_long;
-      break;
-    case GI_TYPE_TAG_ULONG:
-      *((gulong *) in_retval) = out_retval->v_ulong;
-      break;
-    case GI_TYPE_TAG_SSIZE:
-      *((gssize *) in_retval) = out_retval->v_ssize;
-      break;
-    case GI_TYPE_TAG_SIZE:
-      *((gsize *) in_retval) = out_retval->v_size;
-      break;
     case GI_TYPE_TAG_FLOAT:
       *((gfloat *) in_retval) = out_retval->v_float;
       break;
     case GI_TYPE_TAG_DOUBLE:
       *((gdouble *) in_retval) = out_retval->v_double;
-      break;
-    case GI_TYPE_TAG_TIME_T:
-      /* borrowed from gfield.c in gobject-introspection */
-#if SIZEOF_TIME_T == 4
-      *((gint32 *) in_retval) = out_retval->v_int32;
-#elif SIZEOF_TIME_T == 8
-      *((gint64 *) in_retval) = out_retval->v_int64;
-#else
-#  error "Unexpected size for time_t: not 4 or 8"
-#endif
       break;
     case GI_TYPE_TAG_GTYPE:
       /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
