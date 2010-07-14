@@ -162,6 +162,7 @@ PeasPluginInfo
 peas_plugin_info_get_type
 peas_plugin_info_is_loaded
 peas_plugin_info_is_available
+peas_plugin_info_is_builtin
 peas_plugin_info_get_module_name
 peas_plugin_info_get_module_dir
 peas_plugin_info_get_data_dir
@@ -173,7 +174,5 @@ peas_plugin_info_get_copyright
 peas_plugin_info_get_version
 peas_plugin_info_get_iage
 peas_plugin_info_get_keys
-peas_plugin_info_set_visible
-peas_plugin_info_get_visible
 </SECTION>
 

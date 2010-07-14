@@ -366,7 +366,7 @@ plugin_manager_populate_lists (PeasUIPluginManager *pm)
       PeasPluginInfo *info;
       info = (PeasPluginInfo *) plugins->data;
 
-      if (peas_plugin_info_get_visible (info))
+      if (!peas_plugin_info_is_builtin (info))
         {
           gtk_list_store_append (model, &iter);
           gtk_list_store_set (model, &iter,
