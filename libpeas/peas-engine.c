@@ -61,7 +61,8 @@ enum {
   PROP_0,
   PROP_APP_NAME,
   PROP_BASE_MODULE_DIR,
-  PROP_SEARCH_PATHS
+  PROP_SEARCH_PATHS,
+  PROP_PLUGIN_LIST
 };
 
 typedef struct _LoaderInfo LoaderInfo;
@@ -183,6 +184,8 @@ peas_engine_rescan_plugins (PeasEngine *engine)
   /* Go and read everything from the provided search paths */
   for (i = 0; sp[i] != NULL; i += 2)
     load_dir_real (engine, extension, sp[i], sp[i + 1], 1);
+
+  g_object_notify (G_OBJECT (engine), "plugin-list");
 
   g_free (extension);
 }
@@ -330,6 +333,10 @@ peas_engine_get_property (GObject    *object,
     case PROP_SEARCH_PATHS:
       g_value_set_boxed (value, engine->priv->search_paths);
       break;
+      case PROP_PLUGIN_LIST:
+      g_value_set_pointer (value,
+                           (gpointer) peas_engine_get_plugin_list (engine));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -460,6 +467,24 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                        G_PARAM_READWRITE |
                                                        G_PARAM_CONSTRUCT_ONLY |
                                                        G_PARAM_STATIC_STRINGS));
+
+  /**
+   * PeasEngine:plugin-list:
+   *
+   * The list of found plugins.
+   *
+   * This will be modified when peas_engine_rescan_plugins() is called.
+   *
+   * Note that the list belongs to the engine and should not be modified
+   * or freed.
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_PLUGIN_LIST,
+                                   g_param_spec_pointer ("plugin-list",
+                                                         "Plugin list",
+                                                         "The list of found plugins",
+                                                         G_PARAM_READABLE |
+                                                         G_PARAM_STATIC_STRINGS));
 
   /**
    * PeasEngine::load-plugin:
