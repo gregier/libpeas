@@ -45,7 +45,6 @@ struct _PeasPluginInfo {
   gchar *website;
   gchar *version;
   guint iage;
-  gboolean visible;
   GHashTable *keys;
 
   gint loaded : 1;
@@ -53,6 +52,8 @@ struct _PeasPluginInfo {
      due to an error loading the plugin module (e.g. for Python plugins
      when the interpreter has not been correctly initializated) */
   gint available : 1;
+
+  guint builtin : 1;
 };
 
 PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,

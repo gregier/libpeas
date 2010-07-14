@@ -123,7 +123,8 @@ parse_extra_keys (PeasPluginInfo   *info,
           g_str_equal (keys[i], "Authors") ||
           g_str_equal (keys[i], "Copyright") ||
           g_str_equal (keys[i], "Website") ||
-          g_str_equal (keys[i], "Version"))
+          g_str_equal (keys[i], "Version") ||
+          g_str_equal (keys[i], "Builtin"))
         continue;
 
       b = g_key_file_get_boolean (plugin_file, section_header, keys[i], &error);
@@ -184,13 +185,14 @@ _peas_plugin_info_new (const gchar *filename,
   gchar *str;
   gchar **keys;
   gint integer;
+  gboolean b;
+  GError *error = NULL;
 
   g_return_val_if_fail (filename != NULL, NULL);
   g_return_val_if_fail (app_name != NULL, NULL);
 
   info = g_new0 (PeasPluginInfo, 1);
   info->refcount = 1;
-  info->visible = TRUE;
   info->file = g_strdup (filename);
 
   section_header = g_strdup_printf ("%s Plugin", app_name);
@@ -286,6 +288,13 @@ _peas_plugin_info_new (const gchar *filename,
   if (str)
     info->version = str;
 
+  /* Get Builtin */
+  b = g_key_file_get_boolean (plugin_file, section_header, "Builtin", &error);
+  if (error != NULL)
+    g_clear_error (&error);
+  else
+    info->builtin = b;
+
   /* Get extra keys */
   keys = g_key_file_get_keys (plugin_file, section_header, NULL, NULL);
   parse_extra_keys (info, plugin_file, section_header, (const gchar **) keys);
@@ -347,6 +356,23 @@ peas_plugin_info_is_available (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, FALSE);
 
   return info->available != FALSE;
+}
+
+/**
+ * peas_plugin_info_is_builtin:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets is the plugin is a builtin plugin.
+ *
+ * Returns: %TRUE if the plugin is a builtin plugin, %FALSE
+ * if not.
+ **/
+gboolean
+peas_plugin_info_is_builtin (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, TRUE);
+
+  return info->builtin;
 }
 
 /**
@@ -528,39 +554,4 @@ peas_plugin_info_get_keys (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->keys;
-}
-
-/**
- * peas_plugin_info_set_visible:
- * @info: A #PeasPluginInfo.
- * @visible: visibility of the plugin
- *
- * Sets whether the plugin should be visible in the
- * plugin manager.
- *
- **/
-void
-peas_plugin_info_set_visible (PeasPluginInfo *info,
-                              gboolean        visible)
-{
-  g_return_if_fail (info != NULL);
-
-  info->visible = visible;
-}
-
-/**
- * peas_plugin_info_get_visible:
- * @info: A #PeasPluginInfo.
- *
- * Gets the visibility of the plugin.
- *
- * Returns: %TRUE if the plugin should be visible, %FALSE
- * if not.
- **/
-gboolean
-peas_plugin_info_get_visible (const PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, TRUE);
-
-  return info->visible;
 }

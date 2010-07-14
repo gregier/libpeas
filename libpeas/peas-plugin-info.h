@@ -41,6 +41,7 @@ GType         peas_plugin_info_get_type         (void) G_GNUC_CONST;
 
 gboolean      peas_plugin_info_is_loaded        (const PeasPluginInfo *info);
 gboolean      peas_plugin_info_is_available     (const PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_builtin       (const PeasPluginInfo *info);
 
 const gchar  *peas_plugin_info_get_module_name  (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_module_dir   (const PeasPluginInfo *info);
@@ -56,9 +57,6 @@ const gchar  *peas_plugin_info_get_version      (const PeasPluginInfo *info);
 gint          peas_plugin_info_get_iage         (const PeasPluginInfo *info);
 const GHashTable *
               peas_plugin_info_get_keys         (const PeasPluginInfo *info);
-void          peas_plugin_info_set_visible      (PeasPluginInfo       *info,
-                                                 gboolean              visible);
-gboolean      peas_plugin_info_get_visible      (const PeasPluginInfo *info);
 
 G_END_DECLS
 
