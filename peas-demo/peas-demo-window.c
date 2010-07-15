@@ -56,7 +56,7 @@ on_extension_removed (PeasExtensionSet *set,
                       PeasExtension    *exten,
                       DemoWindow       *dw)
 {
-  peas_extension_call (exten, "deactivate", dw);
+  peas_extension_call (exten, "deactivate");
 }
 
 static gboolean
@@ -65,7 +65,7 @@ on_delete_event (GtkWidget *window,
                  gpointer   user_data)
 {
   DemoWindow *dw = DEMO_WINDOW (window);
-  peas_extension_set_call (dw->exten_set, "deactivate", dw);
+  peas_extension_set_call (dw->exten_set, "deactivate");
 
   return FALSE;
 }
@@ -77,9 +77,11 @@ demo_window_set_data (DemoWindow *dw,
   dw->engine = engine;
   g_object_ref (dw->engine);
 
-  dw->exten_set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE, NULL);
+  dw->exten_set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
+                                          "object", dw,
+                                          NULL);
 
-  peas_extension_set_call (dw->exten_set, "activate", dw);
+  peas_extension_set_call (dw->exten_set, "activate");
 
   g_signal_connect (dw->exten_set, "extension-added", G_CALLBACK (on_extension_added), dw);
   g_signal_connect (dw->exten_set, "extension-removed", G_CALLBACK (on_extension_removed), dw);

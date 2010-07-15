@@ -42,12 +42,9 @@ struct _PeasActivatableInterface {
   GTypeInterface g_iface;
 
   /* Virtual public methods */
-  void        (*activate)                 (PeasActivatable *activatable,
-                                           GObject         *object);
-  void        (*deactivate)               (PeasActivatable *activatable,
-                                           GObject         *object);
-  void        (*update_state)             (PeasActivatable *activatable,
-                                           GObject         *object);
+  void        (*activate)                 (PeasActivatable *activatable);
+  void        (*deactivate)               (PeasActivatable *activatable);
+  void        (*update_state)             (PeasActivatable *activatable);
 };
 
 /*
@@ -55,12 +52,9 @@ struct _PeasActivatableInterface {
  */
 GType             peas_activatable_get_type       (void)  G_GNUC_CONST;
 
-void              peas_activatable_activate       (PeasActivatable *activatable,
-                                                   GObject         *object);
-void              peas_activatable_deactivate     (PeasActivatable *activatable,
-                                                   GObject         *object);
-void              peas_activatable_update_state   (PeasActivatable *activatable,
-                                                   GObject         *object);
+void              peas_activatable_activate       (PeasActivatable *activatable);
+void              peas_activatable_deactivate     (PeasActivatable *activatable);
+void              peas_activatable_update_state   (PeasActivatable *activatable);
 
 G_END_DECLS
 

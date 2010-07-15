@@ -19,6 +19,7 @@ typedef struct _PeasDemoHelloWorldPluginClass  PeasDemoHelloWorldPluginClass;
 struct _PeasDemoHelloWorldPlugin {
   PeasExtensionBase parent_instance;
 
+  GtkWidget *window;
   GtkWidget *label;
 };
 

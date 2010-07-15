@@ -18,6 +18,52 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldPlugin,
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
 
+enum {
+  PROP_0,
+  PROP_OBJECT
+};
+
+static void
+peasdemo_hello_world_plugin_set_property (GObject      *object,
+                                          guint         prop_id,
+                                          const GValue *value,
+                                          GParamSpec   *pspec)
+{
+  PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (object);
+
+  switch (prop_id)
+    {
+    case PROP_OBJECT:
+      plugin->window = GTK_WIDGET (g_value_dup_object (value));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+peasdemo_hello_world_plugin_get_property (GObject    *object,
+                                          guint       prop_id,
+                                          GValue     *value,
+                                          GParamSpec *pspec)
+{
+  PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (object);
+
+  switch (prop_id)
+    {
+    case PROP_OBJECT:
+      g_value_set_object (value, plugin->window);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+
 static void
 peasdemo_hello_world_plugin_init (PeasDemoHelloWorldPlugin *plugin)
 {
@@ -43,37 +89,27 @@ get_box (GtkWidget *window)
 }
 
 static void
-peasdemo_hello_world_plugin_activate (PeasActivatable *activatable,
-                                      GObject         *object)
+peasdemo_hello_world_plugin_activate (PeasActivatable *activatable)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (activatable);
-  GtkWidget *window;
   GtkWidget *label;
 
   g_debug (G_STRFUNC);
 
-  g_return_if_fail (GTK_IS_WINDOW (object));
-  window = GTK_WIDGET (object);
-
   plugin->label = gtk_label_new ("Hello World!");
-  gtk_box_pack_start (get_box (window), plugin->label, 1, 1, 0);
+  gtk_box_pack_start (get_box (plugin->window), plugin->label, 1, 1, 0);
   gtk_widget_show (plugin->label);
   g_object_ref (plugin->label);
 }
 
 static void
-peasdemo_hello_world_plugin_deactivate (PeasActivatable *activatable,
-                                        GObject         *object)
+peasdemo_hello_world_plugin_deactivate (PeasActivatable *activatable)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (activatable);
-  GtkWidget *window;
 
   g_debug (G_STRFUNC);
 
-  g_return_if_fail (GTK_IS_WINDOW (object));
-  window = GTK_WIDGET (object);
-
-  gtk_container_remove (GTK_CONTAINER (get_box (window)), plugin->label);
+  gtk_container_remove (GTK_CONTAINER (get_box (plugin->window)), plugin->label);
 }
 
 static void
@@ -81,7 +117,11 @@ peasdemo_hello_world_plugin_class_init (PeasDemoHelloWorldPluginClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  object_class->set_property = peasdemo_hello_world_plugin_set_property;
+  object_class->get_property = peasdemo_hello_world_plugin_get_property;
   object_class->finalize = peasdemo_hello_world_plugin_finalize;
+
+  g_object_class_override_property (object_class, PROP_OBJECT, "object");
 }
 
 static void

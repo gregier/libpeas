@@ -45,69 +45,68 @@ G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
 void
 peas_activatable_default_init (PeasActivatableInterface *iface)
 {
+  g_object_interface_install_property (iface,
+                                       g_param_spec_object ("object",
+                                                            "Object",
+                                                            "Object",
+                                                            G_TYPE_OBJECT,
+                                                            G_PARAM_READWRITE |
+                                                            G_PARAM_CONSTRUCT_ONLY |
+                                                            G_PARAM_STATIC_STRINGS));
 }
 
 /**
  * peas_activatable_activate:
  * @activatable: A #PeasActivatable.
- * @object: The #GObject on which the plugin should be activated.
  *
  * Activates the extension on the given object.
  */
 void
-peas_activatable_activate (PeasActivatable *activatable,
-                           GObject         *object)
+peas_activatable_activate (PeasActivatable *activatable)
 {
   PeasActivatableInterface *iface;
 
   g_return_if_fail (PEAS_IS_ACTIVATABLE (activatable));
-  g_return_if_fail (G_IS_OBJECT (object));
 
   iface = PEAS_ACTIVATABLE_GET_IFACE (activatable);
   if (iface->activate != NULL)
-    iface->activate (activatable, object);
+    iface->activate (activatable);
 }
 
 /**
  * peas_activatable_deactivate:
  * @activatable: A #PeasActivatable.
- * @object: A #GObject.
  *
  * Deactivates the plugin on the given object.
  */
 void
-peas_activatable_deactivate (PeasActivatable *activatable,
-                             GObject         *object)
+peas_activatable_deactivate (PeasActivatable *activatable)
 {
   PeasActivatableInterface *iface;
 
   g_return_if_fail (PEAS_IS_ACTIVATABLE (activatable));
-  g_return_if_fail (G_IS_OBJECT (object));
 
   iface = PEAS_ACTIVATABLE_GET_IFACE (activatable);
   if (iface->deactivate != NULL)
-    iface->deactivate (activatable, object);
+    iface->deactivate (activatable);
 }
 
 /**
  * peas_activatable_update_state:
  * @activatable: A #PeasActivatable.
- * @object: A #GObject.
  *
  * Triggers an update of the plugin's internal state to take into account
  * state changes in the targetted object, due to a plugin or user action.
  */
 void
-peas_activatable_update_state (PeasActivatable *activatable,
-                               GObject         *object)
+peas_activatable_update_state (PeasActivatable *activatable)
 {
   PeasActivatableInterface *iface;
 
   g_return_if_fail (PEAS_IS_ACTIVATABLE (activatable));
-  g_return_if_fail (G_IS_OBJECT (object));
 
   iface = PEAS_ACTIVATABLE_GET_IFACE (activatable);
   if (iface->update_state != NULL)
-    iface->update_state (activatable, object);
+    iface->update_state (activatable);
 }
 
