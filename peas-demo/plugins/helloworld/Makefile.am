@@ -8,8 +8,10 @@ INCLUDES = \
 plugin_LTLIBRARIES = libhelloworld.la
 
 libhelloworld_la_SOURCES = \
-	peasdemo-hello-world-plugin.h	\
-	peasdemo-hello-world-plugin.c
+	peasdemo-hello-world-plugin.h		\
+	peasdemo-hello-world-plugin.c		\
+	peasdemo-hello-world-configurable.h	\
+	peasdemo-hello-world-configurable.c
 
 libhelloworld_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libhelloworld_la_LIBADD  = $(PEAS_LIBS) $(PEASUI_LIBS)
