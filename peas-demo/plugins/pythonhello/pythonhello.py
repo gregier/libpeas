@@ -3,6 +3,7 @@
 
 import gobject
 from gi.repository import Peas
+from gi.repository import PeasUI
 from gi.repository import Gtk
 
 LABEL_STRING="Python Says Hello!"
@@ -24,3 +25,9 @@ class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
 
     def do_update_state(self, window):
         print "PythonHelloPlugin.do_update_state", repr(window)
+
+class PythonHelloConfigurable(gobject.GObject, PeasUI.Configurable):
+    __gtype_name__ = 'PythonHelloConfigurable'
+
+    def do_create_configure_widget(self):
+        return Gtk.Label.new("Python Hello configure widget")
