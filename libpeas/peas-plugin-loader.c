@@ -95,20 +95,20 @@ peas_plugin_loader_provides_extension (PeasPluginLoader *loader,
 }
 
 PeasExtension *
-peas_plugin_loader_get_extension (PeasPluginLoader *loader,
-                                  PeasPluginInfo   *info,
-                                  GType             ext_type,
-                                  guint             n_parameters,
-                                  GParameter       *parameters)
+peas_plugin_loader_create_extension (PeasPluginLoader *loader,
+                                     PeasPluginInfo   *info,
+                                     GType             ext_type,
+                                     guint             n_parameters,
+                                     GParameter       *parameters)
 {
   PeasPluginLoaderClass *klass;
 
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), NULL);
 
   klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_val_if_fail (klass->get_extension != NULL, NULL);
+  g_return_val_if_fail (klass->create_extension != NULL, NULL);
 
-  return klass->get_extension (loader, info, ext_type, n_parameters, parameters);
+  return klass->create_extension (loader, info, ext_type, n_parameters, parameters);
 }
 
 void

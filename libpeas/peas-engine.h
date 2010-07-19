@@ -89,18 +89,18 @@ gboolean          peas_engine_provides_extension  (PeasEngine      *engine,
                                                    GType            extension_type);
 
 
-PeasExtension    *peas_engine_get_extensionv      (PeasEngine      *engine,
+PeasExtension    *peas_engine_create_extensionv   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            extension_type,
                                                    guint            n_parameters,
                                                    GParameter      *parameters);
-PeasExtension    *peas_engine_get_extension_valist
+PeasExtension    *peas_engine_create_extension_valist
                                                   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            extension_type,
                                                    const gchar     *first_property,
                                                    va_list          var_args);
-PeasExtension    *peas_engine_get_extension       (PeasEngine      *engine,
+PeasExtension    *peas_engine_create_extension    (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            extension_type,
                                                    const gchar     *first_property,

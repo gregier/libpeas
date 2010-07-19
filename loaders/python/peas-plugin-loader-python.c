@@ -136,11 +136,11 @@ peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
 }
 
 static PeasExtension *
-peas_plugin_loader_python_get_extension (PeasPluginLoader *loader,
-                                         PeasPluginInfo   *info,
-                                         GType             exten_type,
-                                         guint             n_parameters,
-                                         GParameter       *parameters)
+peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
+                                            PeasPluginInfo   *info,
+                                            GType             exten_type,
+                                            guint             n_parameters,
+                                            GParameter       *parameters)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PythonInfo *pyinfo;
@@ -586,7 +586,7 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
   loader_class->add_module_directory = peas_plugin_loader_python_add_module_directory;
   loader_class->load = peas_plugin_loader_python_load;
   loader_class->unload = peas_plugin_loader_python_unload;
-  loader_class->get_extension = peas_plugin_loader_python_get_extension;
+  loader_class->create_extension = peas_plugin_loader_python_create_extension;
   loader_class->provides_extension = peas_plugin_loader_python_provides_extension;
   loader_class->garbage_collect = peas_plugin_loader_python_garbage_collect;
 

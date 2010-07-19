@@ -109,11 +109,11 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
 }
 
 static PeasExtension *
-peas_plugin_loader_c_get_extension (PeasPluginLoader *loader,
-                                    PeasPluginInfo   *info,
-                                    GType             exten_type,
-                                    guint             n_parameters,
-                                    GParameter       *parameters)
+peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
+                                       PeasPluginInfo   *info,
+                                       GType             exten_type,
+                                       guint             n_parameters,
+                                       GParameter       *parameters)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
@@ -227,7 +227,7 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
   loader_class->load = peas_plugin_loader_c_load;
   loader_class->unload = peas_plugin_loader_c_unload;
   loader_class->provides_extension = peas_plugin_loader_c_provides_extension;
-  loader_class->get_extension = peas_plugin_loader_c_get_extension;
+  loader_class->create_extension = peas_plugin_loader_c_create_extension;
 
   g_type_class_add_private (object_class, sizeof (PeasPluginLoaderCPrivate));
 }

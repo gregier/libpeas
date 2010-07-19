@@ -884,11 +884,11 @@ peas_engine_provides_extension (PeasEngine     *engine,
 }
 
 PeasExtension *
-peas_engine_get_extensionv (PeasEngine     *engine,
-                            PeasPluginInfo *info,
-                            GType           extension_type,
-                            guint           n_parameters,
-                            GParameter     *parameters)
+peas_engine_create_extensionv (PeasEngine     *engine,
+                               PeasPluginInfo *info,
+                               GType           extension_type,
+                               guint           n_parameters,
+                               GParameter     *parameters)
 {
   PeasPluginLoader *loader;
 
@@ -896,16 +896,16 @@ peas_engine_get_extensionv (PeasEngine     *engine,
   g_return_val_if_fail (info != NULL, NULL);
 
   loader = get_plugin_loader (engine, info);
-  return peas_plugin_loader_get_extension (loader, info, extension_type,
-                                           n_parameters, parameters);
+  return peas_plugin_loader_create_extension (loader, info, extension_type,
+                                              n_parameters, parameters);
 }
 
 PeasExtension *
-peas_engine_get_extension_valist (PeasEngine     *engine,
-                                  PeasPluginInfo *info,
-                                  GType           extension_type,
-                                  const gchar    *first_property,
-                                  va_list         var_args)
+peas_engine_create_extension_valist (PeasEngine     *engine,
+                                     PeasPluginInfo *info,
+                                     GType           extension_type,
+                                     const gchar    *first_property,
+                                     va_list         var_args)
 {
   gpointer type_struct;
   guint n_parameters;
@@ -920,8 +920,8 @@ peas_engine_get_extension_valist (PeasEngine     *engine,
       g_return_val_if_reached (NULL);
     }
 
-  exten = peas_engine_get_extensionv (engine, info, extension_type,
-                                      n_parameters, parameters);
+  exten = peas_engine_create_extensionv (engine, info, extension_type,
+                                         n_parameters, parameters);
 
   while (n_parameters-- > 0)
     g_value_unset (&parameters[n_parameters].value);
@@ -933,17 +933,18 @@ peas_engine_get_extension_valist (PeasEngine     *engine,
 }
 
 PeasExtension *
-peas_engine_get_extension (PeasEngine     *engine,
-                           PeasPluginInfo *info,
-                           GType           extension_type,
-                           const gchar    *first_property,
-                           ...)
+peas_engine_create_extension (PeasEngine     *engine,
+                              PeasPluginInfo *info,
+                              GType           extension_type,
+                              const gchar    *first_property,
+                              ...)
 {
   va_list var_args;
   PeasExtension *exten;
 
   va_start (var_args, first_property);
-  exten = peas_engine_get_extension_valist (engine, info, extension_type, first_property, var_args);
+  exten = peas_engine_create_extension_valist (engine, info, extension_type,
+                                               first_property, var_args);
   va_end (var_args);
 
   return exten;

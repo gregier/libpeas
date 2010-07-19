@@ -153,11 +153,11 @@ peas_plugin_loader_seed_provides_extension  (PeasPluginLoader *loader,
 }
 
 static PeasExtension *
-peas_plugin_loader_seed_get_extension (PeasPluginLoader *loader,
-                                       PeasPluginInfo   *info,
-                                       GType             exten_type,
-                                       guint             n_parameters,
-                                       GParameter       *parameters)
+peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
+                                          PeasPluginInfo   *info,
+                                          GType             exten_type,
+                                          guint             n_parameters,
+                                          GParameter       *parameters)
 {
   PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
   SeedInfo *sinfo;
@@ -272,7 +272,7 @@ peas_plugin_loader_seed_class_init (PeasPluginLoaderSeedClass *klass)
   loader_class->add_module_directory = peas_plugin_loader_seed_add_module_directory;
   loader_class->load = peas_plugin_loader_seed_load;
   loader_class->provides_extension = peas_plugin_loader_seed_provides_extension;
-  loader_class->get_extension = peas_plugin_loader_seed_get_extension;
+  loader_class->create_extension = peas_plugin_loader_seed_create_extension;
   loader_class->unload = peas_plugin_loader_seed_unload;
   loader_class->garbage_collect = peas_plugin_loader_seed_garbage_collect;
 }
