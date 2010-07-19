@@ -21,13 +21,23 @@ INST_H_FILES = \
 	peas-ui-configurable.h		\
 	peas-ui-plugin-info.h		\
 	peas-ui-plugin-manager.h	\
+	peas-ui-plugin-manager-view.h	\
 	peas-ui.h
 
-libpeasui_1_0_la_SOURCES = \
+NOINST_H_FILES = \
+	peas-ui-plugin-manager-store.h
+
+C_FILES = \
 	peas-ui-configurable.c		\
 	peas-ui-plugin-info.c		\
 	peas-ui-plugin-manager.c	\
-	$(INST_H_FILES)
+	peas-ui-plugin-manager-store.c	\
+	peas-ui-plugin-manager-view.c
+
+libpeasui_1_0_la_SOURCES = \
+	$(INST_H_FILES)			\
+	$(NOINST_H_FILES)		\
+	$(C_FILES)
 
 headerdir = $(prefix)/include/libpeas-1.0/libpeasui
 header_DATA = $(INST_H_FILES)
@@ -41,7 +51,7 @@ if HAVE_INTROSPECTION
 	--warn-all
   INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
 
-  introspection_sources = $(libpeasui_1_0_la_SOURCES)
+  introspection_sources = $(INST_H_FILES) $(C_FILES)
 
   PeasUI-1.0.gir: libpeasui-1.0.la
   PeasUI_1_0_gir_INCLUDES = GObject-2.0 $(GTK_TYPELIB) Peas-1.0

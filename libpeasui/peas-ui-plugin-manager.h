@@ -54,8 +54,10 @@ struct _PeasUIPluginManagerClass
   GtkVBoxClass parent_class;
 };
 
-GType       peas_ui_plugin_manager_get_type  (void)  G_GNUC_CONST;
-GtkWidget  *peas_ui_plugin_manager_new       (PeasEngine *engine);
+GType      peas_ui_plugin_manager_get_type  (void)  G_GNUC_CONST;
+GtkWidget  *peas_ui_plugin_manager_new      (PeasEngine          *engine);
+
+GtkWidget  *peas_ui_plugin_manager_get_view (PeasUIPluginManager *pm);
 
 G_END_DECLS
 
