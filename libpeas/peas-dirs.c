@@ -96,8 +96,13 @@ peas_dirs_get_lib_dir (void)
 gchar *
 peas_dirs_get_plugin_loaders_dir (void)
 {
+  const gchar *env_var;
   gchar *lib_dir;
   gchar *loader_dir;
+
+  env_var = g_getenv ("PEAS_PLUGIN_LOADERS_DIR");
+  if (env_var != NULL)
+    return g_strdup (env_var);
 
   lib_dir = peas_dirs_get_lib_dir ();
   loader_dir = g_build_filename (lib_dir, "loaders", NULL);
