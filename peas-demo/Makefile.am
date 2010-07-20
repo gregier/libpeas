@@ -24,3 +24,7 @@ peas_demo_LDADD = \
 peas_demo_CFLAGS = \
 	$(PEAS_CFLAGS)			\
 	-DPEAS_PREFIX="\"$(prefix)\""
+
+.PHONY: demo
+demo: $(bin_PROGRAMS)
+	./peas-demo --run-from-build-dir

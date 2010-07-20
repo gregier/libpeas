@@ -1,13 +1,43 @@
+/*
+ * peas-demo.c
+ * This file is part of libpeas
+ *
+ * Copyright (C) 2009-2010 Steve Frécinaux
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Library General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <girepository.h>
 #include <libpeas/peas.h>
+#include <libpeas/peas-i18n.h>
 #include <libpeasui/peas-ui.h>
 
 #include "peas-demo-window.h"
 
+gboolean run_from_build_dir;
 static PeasEngine *engine;
 static GtkWidget *main_window;
 static int n_windows;
+
+static GOptionEntry demo_args[] = {
+  { "run-from-build-dir", 'b', 0, G_OPTION_ARG_NONE, &run_from_build_dir,
+    N_("Run from build directory"), NULL },
+};
 
 static void
 activate_plugin (GtkButton   *button,
@@ -93,22 +123,47 @@ int
 main (int    argc,
       char **argv)
 {
-  gchar const * const search_paths[] = {
-    /* Uninstalled plugins */
-    "./plugins/",
-    "./plugins/",
-    /* User-installed plugins */
-    g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL),
-    g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL),
-    /* System-wide plugins */
-    PEAS_PREFIX "/lib/peas-demo/plugins/",
-    PEAS_PREFIX "/share/peas-demo/plugins/",
-    NULL
-  };
+  GOptionContext *option_context;
+  GError *error = NULL;
+  gchar **search_paths;
 
-  gtk_init (&argc, &argv);
+  option_context = g_option_context_new (_("- libpeas demo application"));
+  g_option_context_add_main_entries (option_context, demo_args, GETTEXT_PACKAGE);
+  g_option_context_add_group (option_context, gtk_get_option_group (TRUE));
 
-  g_irepository_prepend_search_path (PEAS_PREFIX "/lib/girepository-1.0");
+  if (!g_option_context_parse (option_context, &argc, &argv, &error))
+    {
+      g_warning ("Error while parsing arguments: %s", error->message);
+      g_error_free (error);
+      return -1;
+    }
+
+  g_option_context_free (option_context);
+
+  search_paths = g_new0 (gchar *, 5);
+
+  /* User-installed plugins */
+  search_paths[0] = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
+  search_paths[1] = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
+
+  if (run_from_build_dir)
+    {
+      g_debug ("Running from build dir.");
+      g_irepository_prepend_search_path ("../libpeas");
+      g_irepository_prepend_search_path ("../libpeasui");
+      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", "../loaders", TRUE);
+
+      /* Uninstalled plugins */
+      search_paths[2] = g_strdup ("./plugins");
+      search_paths[3] = g_strdup ("./plugins");
+    }
+  else
+    {
+      /* System-wide plugins */
+      search_paths[2] = g_strdup (PEAS_PREFIX "/lib/peas-demo/plugins/");
+      search_paths[3] = g_strdup (PEAS_PREFIX "/share/peas-demo/plugins/");
+    }
+
   g_irepository_require (g_irepository_get_default (), "PeasUI", "1.0", 0, NULL);
 
   engine = peas_engine_new ("PeasDemo",
@@ -122,6 +177,7 @@ main (int    argc,
   gtk_main ();
 
   g_object_unref (engine);
+  g_strfreev (search_paths);
 
   return 0;
 }
