@@ -16,10 +16,10 @@ peas_demo_SOURCES = \
 	peas-demo.c
 
 peas_demo_LDADD = \
-	$(PEAS_LIBS)			\
-	$(PEASUI_LIBS)			\
 	../libpeas/libpeas-1.0.la	\
-	../libpeasui/libpeasui-1.0.la
+	../libpeasui/libpeasui-1.0.la	\
+	$(PEAS_LIBS)			\
+	$(PEASUI_LIBS)
 
 peas_demo_CFLAGS = \
 	$(PEAS_CFLAGS)			\
