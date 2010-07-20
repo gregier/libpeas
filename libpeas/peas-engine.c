@@ -530,64 +530,91 @@ peas_engine_class_init (PeasEngineClass *klass)
   peas_debug_init ();
 }
 
+static PeasObjectModule *
+try_to_open_loader_module (const gchar *loader_id,
+                           gboolean     in_subdir)
+{
+  gchar *tmp_dirname;
+  gchar *loader_dirname;
+  gchar *loader_basename;
+  PeasObjectModule *module;
+
+  if (in_subdir)
+    {
+      tmp_dirname = peas_dirs_get_plugin_loaders_dir ();
+      loader_dirname = g_build_filename (tmp_dirname, loader_id, NULL);
+      g_free (tmp_dirname);
+    }
+  else
+    {
+      loader_dirname = peas_dirs_get_plugin_loaders_dir ();
+    }
+
+  /* Let's build the expected filename of the requested plugin loader */
+  loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, G_MODULE_SUFFIX);
+
+  g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
+
+  module = peas_object_module_new (loader_basename, loader_dirname, TRUE);
+
+  g_free (loader_basename);
+  g_free (loader_dirname);
+
+  if (!g_type_module_use (G_TYPE_MODULE (module)))
+    {
+      g_object_unref (module);
+      module = NULL;
+    }
+
+  return module;
+}
+
 static LoaderInfo *
 load_plugin_loader (PeasEngine  *engine,
                     const gchar *loader_id)
 {
-  gchar *loader_dirname;
-  gchar *loader_basename;
   guint i;
+  gchar *lc_loader_id;
   PeasObjectModule *module;
   PeasPluginLoader *loader;
 
-  /* Let's build the expected filename of the requested plugin loader */
-  loader_dirname = peas_dirs_get_plugin_loaders_dir ();
-  loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, G_MODULE_SUFFIX);
-  for (i = 0; loader_basename[i] != '\0'; ++i)
-    loader_basename[i] = g_ascii_tolower (loader_basename[i]);
+  /* We need to ensure we use the lowercase loader_id */
+  lc_loader_id = g_strdup (loader_id);
+  for (i = 0; lc_loader_id[i] != '\0'; ++i)
+    lc_loader_id[i] = g_ascii_tolower (lc_loader_id[i]);
 
-  g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
+  module = try_to_open_loader_module (lc_loader_id, FALSE);
+  if (module == NULL)
+    module = try_to_open_loader_module (lc_loader_id, TRUE);
 
-  /* For now all modules are resident */
-  module = peas_object_module_new (loader_basename,
-                                   loader_dirname,
-                                   TRUE);
+  g_free (lc_loader_id);
 
-  g_free (loader_dirname);
-  g_free (loader_basename);
+  if (module == NULL)
+    {
+      g_warning ("Loader '%s' could not be loaded", loader_id);
+      return add_loader (engine, loader_id, NULL, NULL);
+    }
 
   /* make sure to load the type definition */
-  if (g_type_module_use (G_TYPE_MODULE (module)))
-    {
-      peas_object_module_register_types (module);
-      loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER, 0, NULL);
+  peas_object_module_register_types (module);
+  loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER, 0, NULL);
 
-      if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
-        {
-          g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
-                     loader_id);
-          if (loader != NULL && G_IS_OBJECT (loader))
-            g_object_unref (loader);
-          module = NULL;
-          loader = NULL;
-        }
-      else
-        {
-          gchar *module_dir = g_build_filename (engine->priv->base_module_dir, loader_id, NULL);
-          peas_plugin_loader_add_module_directory (loader, module_dir);
-          g_free (module_dir);
-        }
-
-      g_type_module_unuse (G_TYPE_MODULE (module));
-    }
-  else
+  if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
     {
-      g_warning ("Loader '%s' could not be loaded",
-                 loader_id);
-      g_object_unref (module);
+      g_warning ("Loader '%s' is not a valid PeasPluginLoader instance", loader_id);
+      if (loader != NULL && G_IS_OBJECT (loader))
+        g_object_unref (loader);
       module = NULL;
       loader = NULL;
     }
+  else
+    {
+      gchar *module_dir = g_build_filename (engine->priv->base_module_dir, loader_id, NULL);
+      peas_plugin_loader_add_module_directory (loader, module_dir);
+      g_free (module_dir);
+    }
+
+  g_type_module_unuse (G_TYPE_MODULE (module));
 
   return add_loader (engine, loader_id, module, loader);
 }
