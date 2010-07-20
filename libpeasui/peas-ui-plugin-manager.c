@@ -28,6 +28,10 @@
 
 #include <string.h>
 
+#ifdef OS_OSX
+#include <Carbon/Carbon.h>
+#endif
+
 #include <libpeas/peas-engine.h>
 #include <libpeas/peas-plugin-info.h>
 #include <libpeas/peas-i18n.h>
@@ -136,6 +140,69 @@ show_about_cb (GtkWidget           *widget,
 }
 
 static void
+help_button_cb (GtkWidget      *button,
+                PeasPluginInfo *info)
+{
+  const gchar *help_uri;
+#ifndef OS_OSX
+  GError *error = NULL;
+  GtkWindow *toplevel;
+  GtkWidget *error_dlg;
+  GtkWindowGroup *wg;
+#endif
+
+  g_return_if_fail (peas_plugin_info_get_help_uri (info) != NULL);
+
+  help_uri = peas_plugin_info_get_help_uri (info);
+
+#ifdef OS_OSX
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:help_uri]]];
+#else
+
+  gtk_show_uri (NULL,
+                help_uri,
+                GDK_CURRENT_TIME,
+                &error);
+
+  if (error == NULL)
+    return;
+
+  g_debug ("PeasUIPluginManager: could not show help uri: '%s'", help_uri);
+
+  toplevel = GTK_WINDOW (gtk_widget_get_toplevel (button));
+  error_dlg = gtk_message_dialog_new (toplevel,
+                                      0,
+                                      GTK_MESSAGE_ERROR,
+                                      GTK_BUTTONS_CLOSE,
+                                      _("There was an error displaying the help."));
+
+  g_signal_connect (error_dlg,
+                    "response",
+                    G_CALLBACK (gtk_widget_destroy), NULL);
+
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (error_dlg),
+                                            "%s", error->message);
+
+  if (gtk_window_has_group (toplevel))
+    {
+      wg = gtk_window_get_group (toplevel);
+    }
+  else
+    {
+      wg = gtk_window_group_new ();
+      gtk_window_group_add_window (wg, toplevel);
+    }
+
+  gtk_window_group_add_window (wg, GTK_WINDOW (error_dlg));
+
+  gtk_window_set_modal (GTK_WINDOW (error_dlg), TRUE);
+  gtk_widget_show_all (error_dlg);
+
+  g_error_free (error);
+#endif
+}
+
+static void
 show_configure_cb (GtkWidget           *widget,
                    PeasUIPluginManager *pm)
 {
@@ -171,6 +238,22 @@ show_configure_cb (GtkWidget           *widget,
 
   vbox = gtk_dialog_get_content_area (GTK_DIALOG (conf_dlg));
   gtk_box_pack_start (GTK_BOX (vbox), conf_widget, TRUE, TRUE, 0);
+
+  if (peas_plugin_info_get_help_uri (info) != NULL)
+    {
+      GtkWidget *buttonbox;
+      GtkWidget *help_button;
+
+      buttonbox = gtk_dialog_get_action_area (GTK_DIALOG (conf_dlg));
+      help_button = gtk_button_new_from_stock (GTK_STOCK_HELP);
+      gtk_container_add (GTK_CONTAINER (buttonbox), help_button);
+      gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (buttonbox), help_button, TRUE);
+
+      g_signal_connect (help_button,
+                        "clicked",
+                        G_CALLBACK (help_button_cb),
+                        info);
+    }
 
   if (gtk_window_has_group (toplevel))
     {

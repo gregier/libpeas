@@ -188,6 +188,7 @@ peas_plugin_info_get_data_dir
 peas_plugin_info_get_name
 peas_plugin_info_get_description
 peas_plugin_info_get_icon_name
+peas_plugin_info_get_help_uri
 peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright

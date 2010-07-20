@@ -44,6 +44,7 @@ struct _PeasPluginInfo {
   gchar *copyright;
   gchar *website;
   gchar *version;
+  gchar *help_uri;
   guint iage;
   GHashTable *keys;
 

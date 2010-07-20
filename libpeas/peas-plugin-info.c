@@ -30,6 +30,14 @@
 #include "peas-i18n.h"
 #include "peas-plugin-info-priv.h"
 
+#ifdef G_OS_WIN32
+#define OS_HELP_KEY "Help-Windows"
+#elif defined(OS_OSX)
+#define OS_HELP_KEY "Help-MacOS-X"
+#else
+#define OS_HELP_KEY "Help-GNOME"
+#endif
+
 /**
  * SECTION:peas-plugin-info
  * @short_description: Information about a plugin.
@@ -64,6 +72,7 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info->copyright);
   g_free (info->loader);
   g_free (info->version);
+  g_free (info->help_uri);
   g_strfreev (info->authors);
 
   g_free (info);
@@ -124,6 +133,7 @@ parse_extra_keys (PeasPluginInfo   *info,
           g_str_equal (keys[i], "Copyright") ||
           g_str_equal (keys[i], "Website") ||
           g_str_equal (keys[i], "Version") ||
+          g_str_has_prefix (keys[i], "Help") ||
           g_str_equal (keys[i], "Builtin"))
         continue;
 
@@ -287,6 +297,17 @@ _peas_plugin_info_new (const gchar *filename,
   str = g_key_file_get_string (plugin_file, section_header, "Version", NULL);
   if (str)
     info->version = str;
+
+  /* Get Help URI */
+  str = g_key_file_get_string (plugin_file, section_header, OS_HELP_KEY, NULL);
+  if (str)
+    info->help_uri = str;
+  else
+    {
+      str = g_key_file_get_string (plugin_file, section_header, "Help", NULL);
+      if (str)
+        info->help_uri = str;
+    }
 
   /* Get Builtin */
   b = g_key_file_get_boolean (plugin_file, section_header, "Builtin", &error);
@@ -538,6 +559,22 @@ peas_plugin_info_get_version (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->version;
+}
+
+/**
+ * peas_plugin_info_get_help_uri:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets the help URI of the plugin.
+ *
+ * Returns: the plugin's help URI.
+ */
+const gchar *
+peas_plugin_info_get_help_uri (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+
+  return info->help_uri;
 }
 
 /**
