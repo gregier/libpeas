@@ -17,19 +17,22 @@
     <title>API Reference</title>
     <chapter>
       <title>Core Classes</title>
-      <xi:include href="xml/peas-activatable.xml"/>
       <xi:include href="xml/peas-engine.xml"/>
-      <xi:include href="xml/peas-extension.xml"/>
-      <xi:include href="xml/peas-object-module.xml"/>
-      <xi:include href="xml/peas-extension-base.xml"/>
-      <xi:include href="xml/peas-extension-set.xml"/>
       <xi:include href="xml/peas-plugin-info.xml"/>
+      <xi:include href="xml/peas-extension.xml"/>
+      <xi:include href="xml/peas-extension-set.xml"/>
+      <xi:include href="xml/peas-extension-base.xml"/>
+      <xi:include href="xml/peas-object-module.xml"/>
     </chapter>
     <chapter>
       <title>UI Components</title>
-      <xi:include href="xml/peas-ui-configurable.xml"/>
       <xi:include href="xml/peas-ui-plugin-manager.xml"/>
       <xi:include href="xml/peas-ui-plugin-manager-view.xml"/>
+    </chapter>
+    <chapter>
+      <title>Built-in Extension Interfaces</title>
+      <xi:include href="xml/peas-activatable.xml"/>
+      <xi:include href="xml/peas-ui-configurable.xml"/>
     </chapter>
   </part>
   <index id="api-index-full">

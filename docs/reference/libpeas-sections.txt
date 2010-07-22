@@ -1,7 +1,6 @@
 <SECTION>
 <FILE>peas-ui-configurable</FILE>
 <TITLE>PeasUIConfigurable</TITLE>
-PEAS_UI_CONFIGURABLE_IFACE
 PeasUIConfigurable
 PeasUIConfigurableInterface
 peas_ui_configurable_create_configure_widget
@@ -10,6 +9,7 @@ PEAS_UI_CONFIGURABLE
 PEAS_UI_IS_CONFIGURABLE
 PEAS_UI_TYPE_CONFIGURABLE
 peas_ui_configurable_get_type
+PEAS_UI_CONFIGURABLE_IFACE
 PEAS_UI_CONFIGURABLE_GET_IFACE
 </SECTION>
 
@@ -37,8 +37,6 @@ PeasUIPluginManagerPrivate
 <TITLE>PeasUIPluginManagerView</TITLE>
 PeasUIPluginManagerView
 PeasUIPluginManagerViewClass
-peas_ui_plugin_manager_view_new
-peas_ui_plugin_manager_view_get_type
 peas_ui_plugin_manager_view_new
 peas_ui_plugin_manager_view_set_show_builtin
 peas_ui_plugin_manager_view_get_show_builtin
@@ -90,7 +88,6 @@ PeasEnginePrivate
 <SECTION>
 <FILE>peas-activatable</FILE>
 <TITLE>PeasActivatable</TITLE>
-PEAS_ACTIVATABLE_IFACE
 PeasActivatable
 PeasActivatableInterface
 peas_activatable_activate
@@ -101,6 +98,7 @@ PEAS_ACTIVATABLE
 PEAS_IS_ACTIVATABLE
 PEAS_TYPE_ACTIVATABLE
 peas_activatable_get_type
+PEAS_ACTIVATABLE_IFACE
 PEAS_ACTIVATABLE_GET_IFACE
 </SECTION>
 
@@ -189,6 +187,7 @@ peas_plugin_info_get_module_dir
 peas_plugin_info_get_data_dir
 peas_plugin_info_get_name
 peas_plugin_info_get_description
+peas_plugin_info_get_icon_name
 peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright
