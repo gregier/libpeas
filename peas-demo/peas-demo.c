@@ -160,14 +160,14 @@ main (int    argc,
   else
     {
       /* System-wide plugins */
-      search_paths[2] = g_strdup (PEAS_PREFIX "/lib/peas-demo/plugins/");
+      search_paths[2] = g_strdup (PEAS_LIBDIR "/peas-demo/plugins/");
       search_paths[3] = g_strdup (PEAS_PREFIX "/share/peas-demo/plugins/");
     }
 
   g_irepository_require (g_irepository_get_default (), "PeasUI", "1.0", 0, NULL);
 
   engine = peas_engine_new ("PeasDemo",
-                            PEAS_PREFIX "/lib/peas-demo/",
+                            PEAS_LIBDIR "/peas-demo/",
                             (const gchar **) search_paths);
 
   n_windows = 0;

@@ -23,6 +23,7 @@ peas_demo_LDADD = \
 
 peas_demo_CFLAGS = \
 	$(PEAS_CFLAGS)			\
+	-DPEAS_LIBDIR="\"$(libdir)\""	\
 	-DPEAS_PREFIX="\"$(prefix)\""
 
 .PHONY: demo
