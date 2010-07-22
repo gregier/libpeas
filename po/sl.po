@@ -1,4 +1,4 @@
-# Slovenian translation for libpeas.
+# Slovenian translations for libpeas.
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
 #
@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-15 16:50+0000\n"
-"PO-Revision-Date: 2010-04-14 14:34+0100\n"
+"POT-Creation-Date: 2010-07-20 18:52+0000\n"
+"PO-Revision-Date: 2010-07-22 10:09+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -20,50 +20,29 @@ msgstr ""
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#. *
-#. * SECTION:peas-ui-plugin-manager
-#. * @short_description: Management GUI for plugins.
-#. *
-#. * The #PeasUIPluginManager is a widget that can be used to manage plugins,
-#. * i.e. activate or deactivate them, and see some pieces of information.
-#. *
-#. * <inlinegraphic fileref="peas-ui-plugin-manager.png" format="PNG" />
-#. *
-#. * The only thing you need to do as an application writer if you wish to use
-#. * the manager to configure * your plugins is to instantiate it using
-#. * peas_ui_plugin_manager_new() and pack it into another widget or a window
-#. * (as in the screenshot above).
-#. *
-#. *
-#: ../libpeasui/peas-ui-plugin-manager.c:53
-msgid "Plugin"
-msgstr "Vstavek"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:54
-msgid "Enabled"
-msgstr "Omogočeno"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:543
-msgid "_About"
-msgstr "_O programu"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:549
+#: ../libpeasui/peas-ui-plugin-manager.c:253
 msgid "C_onfigure"
 msgstr "_Nastavi"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:557
-msgid "A_ctivate"
-msgstr "_Omogoči"
+#: ../libpeasui/peas-ui-plugin-manager.c:261
+msgid "_About"
+msgstr "_O programu"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:567
-msgid "Ac_tivate All"
-msgstr "Omogoči _vse"
+#: ../libpeasui/peas-ui-plugin-manager.c:282
+msgid "_Plugins:"
+msgstr "_Vstavki:"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:571
-msgid "_Deactivate All"
-msgstr "O_nemogoči vse"
+#~ msgid "Enabled"
+#~ msgstr "Omogočeno"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:860
-msgid "Active _Plugins:"
-msgstr "Omogočeni _vstavki:"
+#~ msgid "A_ctivate"
+#~ msgstr "_Omogoči"
 
+#~ msgid "Ac_tivate All"
+#~ msgstr "Omogoči _vse"
+
+#~ msgid "_Deactivate All"
+#~ msgstr "O_nemogoči vse"
+
+#~ msgid "Active _Plugins:"
+#~ msgstr "Omogočeni _vstavki:"
