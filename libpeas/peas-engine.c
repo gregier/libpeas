@@ -62,7 +62,8 @@ enum {
   PROP_APP_NAME,
   PROP_BASE_MODULE_DIR,
   PROP_SEARCH_PATHS,
-  PROP_PLUGIN_LIST
+  PROP_PLUGIN_LIST,
+  PROP_LOADED_PLUGINS
 };
 
 typedef struct _LoaderInfo LoaderInfo;
@@ -308,6 +309,10 @@ peas_engine_set_property (GObject      *object,
     case PROP_SEARCH_PATHS:
       engine->priv->search_paths = g_value_dup_boxed (value);
       break;
+    case PROP_LOADED_PLUGINS:
+      peas_engine_set_loaded_plugins (engine,
+                                      (const gchar **) g_value_get_boxed (value));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -333,9 +338,13 @@ peas_engine_get_property (GObject    *object,
     case PROP_SEARCH_PATHS:
       g_value_set_boxed (value, engine->priv->search_paths);
       break;
-      case PROP_PLUGIN_LIST:
+    case PROP_PLUGIN_LIST:
       g_value_set_pointer (value,
                            (gpointer) peas_engine_get_plugin_list (engine));
+      break;
+    case PROP_LOADED_PLUGINS:
+      g_value_take_boxed (value,
+                          (gconstpointer) peas_engine_get_loaded_plugins (engine));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -485,6 +494,33 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                          "The list of found plugins",
                                                          G_PARAM_READABLE |
                                                          G_PARAM_STATIC_STRINGS));
+
+  /**
+   * PeasEngine:loaded-plugins:
+   *
+   * The list of loaded plugins.
+   *
+   * This will be modified when peas_engine_load_plugin() or
+   * peas_engine_unload_plugin() is called.
+   *
+   * This can be used with GSettings to save the loaded plugins by binding
+   * to this property after instantiating the engine by doing:
+   * |[
+   *   g_settings_bind (gsettings_object,
+   *                    LOADED_PLUGINS_KEY,
+   *                    engine,
+   *                    "loaded-plugins",
+   *                    G_SETTINGS_BIND_DEFAULT);
+   * ]|
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_LOADED_PLUGINS,
+                                   g_param_spec_boxed ("loaded-plugins",
+                                                       "Loaded plugins",
+                                                       "The list of loaded plugins",
+                                                       G_TYPE_STRV,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_STATIC_STRINGS));
 
   /**
    * PeasEngine::load-plugin:
@@ -751,7 +787,8 @@ static void
 peas_engine_load_plugin_real (PeasEngine     *engine,
                               PeasPluginInfo *info)
 {
-  load_plugin (engine, info);
+  if (load_plugin (engine, info))
+    g_object_notify (G_OBJECT (engine), "loaded-plugins");
 }
 
 /**
@@ -797,6 +834,8 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   peas_plugin_loader_unload (loader, info);
 
   info->loaded = FALSE;
+
+  g_object_notify (G_OBJECT (engine), "loaded-plugins");
 }
 
 /**
