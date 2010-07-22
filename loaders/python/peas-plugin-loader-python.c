@@ -449,7 +449,12 @@ peas_python_init (PeasPluginLoaderPython *loader)
   if (prgname != NULL)
     argv[0] = prgname;
 
+#if PY_VERSION_HEX < 0x02060600
   PySys_SetArgv (1, argv);
+  PyRun_SimpleString ("import sys; sys.path.pop(0)\n");
+#else
+  PySys_SetArgvEx (1, argv, 0);
+#endif
 
   /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
   peas_plugin_loader_python_add_module_path (loader, PEAS_PYEXECDIR);
