@@ -329,7 +329,7 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
   Py_XDECREF (pyinfo->module);
   pyg_gil_state_release (state);
 
-  pyinfo->module = NULL;
+  g_hash_table_remove (pyloader->priv->loaded_plugins, info);
 }
 
 static void
