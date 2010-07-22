@@ -88,8 +88,6 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
       return FALSE;
     }
 
-  peas_object_module_register_types (module);
-
   return TRUE;
 }
 
@@ -154,6 +152,7 @@ peas_plugin_loader_c_unload (PeasPluginLoader *loader,
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      info);
 
+  g_debug ("Unloading plugin '%s'", peas_plugin_info_get_module_name (info));
   g_type_module_unuse (G_TYPE_MODULE (module));
 }
 

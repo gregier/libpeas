@@ -60,7 +60,6 @@ PeasObjectModule   *peas_object_module_new                    (const gchar      
                                                                const gchar      *path,
                                                                gboolean          resident);
 
-void                peas_object_module_register_types         (PeasObjectModule *module);
 GObject            *peas_object_module_create_object          (PeasObjectModule *module,
                                                                GType             interface,
                                                                guint             n_parameters,

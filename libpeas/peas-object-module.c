@@ -68,9 +68,17 @@ struct _PeasObjectModulePrivate {
   gchar *path;
   gchar *module_name;
 
-  gboolean types_registered : 1;
-  gboolean resident : 1;
+  guint resident : 1;
 };
+
+static void
+peas_object_module_register_types (PeasObjectModule *module)
+{
+  g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
+  g_return_if_fail (module->priv->register_func != NULL);
+
+  module->priv->register_func (module);
+}
 
 static gboolean
 peas_object_module_load (GTypeModule *gmodule)
@@ -123,6 +131,8 @@ peas_object_module_load (GTypeModule *gmodule)
 
   if (module->priv->resident)
     g_module_make_resident (module->priv->library);
+
+  peas_object_module_register_types (module);
 
   return TRUE;
 }
@@ -275,17 +285,6 @@ peas_object_module_new (const gchar *module_name,
                                            NULL));
 }
 
-void
-peas_object_module_register_types (PeasObjectModule *module)
-{
-  g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
-  g_return_if_fail (module->priv->register_func != NULL);
-  g_return_if_fail (module->priv->types_registered == FALSE);
-
-  module->priv->register_func (module);
-  module->priv->types_registered = TRUE;
-}
-
 GObject *
 peas_object_module_create_object (PeasObjectModule *module,
                                   GType             interface,
@@ -296,9 +295,6 @@ peas_object_module_create_object (PeasObjectModule *module,
   InterfaceImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
-
-  if (!module->priv->types_registered)
-    peas_object_module_register_types (module);
 
   impls = (InterfaceImplementation *) module->priv->implementations->data;
   for (i = 0; i < module->priv->implementations->len; ++i)
@@ -316,9 +312,6 @@ peas_object_module_provides_object (PeasObjectModule *module,
   InterfaceImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), FALSE);
-
-  if (!module->priv->types_registered)
-    peas_object_module_register_types (module);
 
   impls = (InterfaceImplementation *) module->priv->implementations->data;
   for (i = 0; i < module->priv->implementations->len; ++i)

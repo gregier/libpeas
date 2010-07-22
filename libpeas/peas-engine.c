@@ -595,8 +595,6 @@ load_plugin_loader (PeasEngine  *engine,
       return add_loader (engine, loader_id, NULL, NULL);
     }
 
-  /* make sure to load the type definition */
-  peas_object_module_register_types (module);
   loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER, 0, NULL);
 
   if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))

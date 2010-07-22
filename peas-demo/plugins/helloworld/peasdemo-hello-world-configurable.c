@@ -14,8 +14,8 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldConfigurable,
                                 peasdemo_hello_world_configurable,
                                 PEAS_TYPE_EXTENSION_BASE,
                                 0,
-                                G_IMPLEMENT_INTERFACE (PEAS_UI_TYPE_CONFIGURABLE,
-                                                       peas_ui_configurable_iface_init))
+                                G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_UI_TYPE_CONFIGURABLE,
+                                                               peas_ui_configurable_iface_init))
 
 static void
 peasdemo_hello_world_configurable_init (PeasDemoHelloWorldConfigurable *plugin)
