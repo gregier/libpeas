@@ -156,8 +156,7 @@ peas_ui_plugin_info_get_icon_name
 
 <SECTION>
 <FILE>peas-plugin-info</FILE>
-PEAS_TYPE_PLUGIN_INFO
-PEAS_PLUGIN_INFO
+<TITLE>PeasPluginInfo</TITLE>
 PeasPluginInfo
 peas_plugin_info_get_type
 peas_plugin_info_is_loaded
@@ -174,5 +173,9 @@ peas_plugin_info_get_copyright
 peas_plugin_info_get_version
 peas_plugin_info_get_iage
 peas_plugin_info_get_keys
+<SUBSECTION Standard>
+PEAS_TYPE_PLUGIN_INFO
+PEAS_PLUGIN_INFO
+</SUBSECTION>
 </SECTION>
 

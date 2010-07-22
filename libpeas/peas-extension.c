@@ -30,9 +30,34 @@
  * @short_description: Proxy for extensions.
  * @see_also: #PeasExtensionSet
  *
- * A #PeasExtension is an object which proxies an actual extension.  The
- * application writer will use these objects in order to call methods on
- * an instance of an actual extension exported by a loaded plugin.
+ * #PeasExtension is a proxy class used to access actual extensions
+ * implemented using various languages.  As such, the application writer will
+ * use #PeasExtension instances to call methods on extension provided by
+ * loaded plugins.
+ *
+ * To properly use the proxy instances, you will need GObject-introspection
+ * data for the #GInterface or #GObjectClass you want to use as extension
+ * point.  For instance, if you wish to use #PeasActivatable, you will need to
+ * put the following code excerpt in the engine initialization code, in order
+ * to load the required "Peas" typelib:
+ *
+ * |[
+ * g_irepository_require (g_irepository_get_default (),
+ *                        "Peas", "1.0", 0, NULL);
+ * ]|
+ *
+ * You should proceed the same way for any namespace which provides interfaces
+ * you want to use as extension points. GObject-introspection data is required
+ * for all the supported languages, even for C.
+ *
+ * #PeasExtension does not provide any way to access the underlying object.
+ * The main reason is that some loaders may not rely on proper GObject
+ * inheritance for the definition of extensions, and hence it would not be
+ * possible for libpeas to provide a functional GObject instance at all.
+ * Another reason is that it makes reference counting issues easier to deal
+ * with.
+ *
+ * See peas_extension_call() for more information.
  **/
 
 G_DEFINE_ABSTRACT_TYPE (PeasExtension, peas_extension, G_TYPE_OBJECT);
@@ -54,6 +79,20 @@ peas_extension_class_init (PeasExtensionClass *klass)
  * @Varargs: arguments for the method.
  *
  * Call a method of the object behind @extension.
+ *
+ * The arguments provided to this functions should be of the same type as
+ * those defined in the #GInterface or #GObjectClass used as a base for the
+ * proxied extension. They should be provided in the same order, and if its
+ * return type is not void, then a pointer to a variable of that type should
+ * be passed as the last argument.
+ *
+ * For instance, if the method protoype is:
+ * |[ gint (*my_method) (MyClass *instance, const gchar *str, SomeObject *obj); ]|
+ * you should call peas_extension_call() this way:
+ * |[ peas_extension_call (extension, "my_method", "some_str", obj, &gint_var); ]|
+ *
+ * This function will not do anything if the introspection data for the proxied
+ * object's class has not been loaded previously through g_irepository_require().
  *
  * Return value: %TRUE on successful call.
  */
@@ -79,6 +118,8 @@ peas_extension_call (PeasExtension *exten,
  * @args: the arguments for the method.
  *
  * Call a method of the object behind @extension, using @args as arguments.
+ *
+ * See peas_extension_call() for more information.
  *
  * Return value: %TRUE on successful call.
  */

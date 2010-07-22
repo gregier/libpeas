@@ -36,23 +36,30 @@ G_BEGIN_DECLS
 #define PEAS_IS_EXTENSION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION))
 #define PEAS_EXTENSION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_EXTENSION, PeasExtensionClass))
 
-/**
- * PeasExtension:
- * @parent: the parent object.
- *
- * Base class for plugins.
- */
 typedef struct _PeasExtension       PeasExtension;
 typedef struct _PeasExtensionClass  PeasExtensionClass;
 
+/**
+ * PeasExtension:
+ *
+ * The #PeasExtension structure contains only private data and should only be
+ * accessed using the provided API.
+ */
 struct _PeasExtension {
   GObject parent;
 };
 
+/**
+ * PeasExtensionClass:
+ *
+ * The #PeasExtensionClass structure contains only private data and should
+ * only be accessed using the provided API.  You should not inherit from this
+ * class.
+ */
 struct _PeasExtensionClass {
   GObjectClass parent_class;
 
-  /* Virtual public methods */
+  /*< private >*/
   gboolean   (*call)                      (PeasExtension  *exten,
                                            const gchar    *method,
                                            va_list         args);

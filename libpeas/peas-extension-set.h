@@ -41,6 +41,12 @@ typedef struct _PeasExtensionSet         PeasExtensionSet;
 typedef struct _PeasExtensionSetClass    PeasExtensionSetClass;
 typedef struct _PeasExtensionSetPrivate  PeasExtensionSetPrivate;
 
+/**
+ * PeasExtensionSet:
+ *
+ * The #PeasExtensionSet structure contains only private data and should only
+ * be accessed using the provided API.
+ */
 struct _PeasExtensionSet {
   GObject parent;
 

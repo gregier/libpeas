@@ -308,6 +308,8 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
  *
  * Call a method on all the #PeasExtension instances contained in @set.
  *
+ * See peas_extension_call() for more information.
+ *
  * Return value: %TRUE on successful call.
  */
 gboolean
@@ -332,6 +334,8 @@ peas_extension_set_call (PeasExtensionSet *set,
  * @args: the arguments for the method.
  *
  * Call a method on all the #PeasExtension instances contained in @set.
+ *
+ * See peas_extension_call_valist() for more information.
  *
  * Return value: %TRUE on successful call.
  */
