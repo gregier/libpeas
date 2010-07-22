@@ -21,7 +21,6 @@
 #define __PEAS_UI_H__
 
 #include "peas-ui-configurable.h"
-#include "peas-ui-plugin-info.h"
 #include "peas-ui-plugin-manager.h"
 #include "peas-ui-plugin-manager-view.h"
 

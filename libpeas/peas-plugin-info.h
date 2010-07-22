@@ -49,6 +49,7 @@ const gchar  *peas_plugin_info_get_data_dir     (const PeasPluginInfo *info);
 
 const gchar  *peas_plugin_info_get_name         (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_description  (const PeasPluginInfo *info);
+const gchar  *peas_plugin_info_get_icon_name    (const PeasPluginInfo *info);
 const gchar **peas_plugin_info_get_authors      (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_website      (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_copyright    (const PeasPluginInfo *info);

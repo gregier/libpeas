@@ -29,7 +29,6 @@
 #include <libpeas/peas-plugin-info.h>
 
 #include "peas-ui-plugin-manager-store.h"
-#include "peas-ui-plugin-info.h"
 
 static const GType ColumnTypes[] = {
   G_TYPE_BOOLEAN, /* Enabled */
@@ -78,9 +77,15 @@ update_plugin (PeasUIPluginManagerStore *store,
                                     peas_plugin_info_get_description (info));
 
   if (peas_plugin_info_is_available (info))
-    icon_name = peas_ui_plugin_info_get_icon_name (info);
+    {
+      icon_name = peas_plugin_info_get_icon_name (info);
+      if (!gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
+        icon_name = "libpeas-plugin";
+    }
   else
-    icon_name = GTK_STOCK_DIALOG_ERROR;
+    {
+      icon_name = GTK_STOCK_DIALOG_ERROR;
+    }
 
   gtk_list_store_set (GTK_LIST_STORE (store), iter,
     PEAS_UI_PLUGIN_MANAGER_STORE_ENABLED_COLUMN,          loaded,

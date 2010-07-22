@@ -456,6 +456,27 @@ peas_plugin_info_get_description (const PeasPluginInfo *info)
 }
 
 /**
+ * peas_plugin_info_get_icon_name:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets the icon name of the plugin.
+ *
+ * Returns: the plugin's icon name.
+ */
+const gchar *
+peas_plugin_info_get_icon_name (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+
+  /* use the libpeas-plugin icon as a default if the plugin does not
+     have its own */
+  if (info->icon_name != NULL)
+    return info->icon_name;
+  else
+    return "libpeas-plugin";
+}
+
+/**
  * peas_plugin_info_get_authors:
  * @info: A #PeasPluginInfo.
  *
