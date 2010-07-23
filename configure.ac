@@ -298,6 +298,7 @@ peas-demo/Makefile
 peas-demo/plugins/Makefile
 peas-demo/plugins/helloworld/Makefile
 peas-demo/plugins/pythonhello/Makefile
+peas-demo/plugins/secondtime/Makefile
 peas-demo/plugins/seedhello/Makefile
 po/Makefile.in
 ])

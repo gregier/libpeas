@@ -754,6 +754,9 @@ static gboolean
 load_plugin (PeasEngine     *engine,
              PeasPluginInfo *info)
 {
+  const gchar **dependencies;
+  PeasPluginInfo *dep_info;
+  guint i;
   PeasPluginLoader *loader;
 
   if (peas_plugin_info_is_loaded (info))
@@ -761,6 +764,24 @@ load_plugin (PeasEngine     *engine,
 
   if (!peas_plugin_info_is_available (info))
     return FALSE;
+
+  /* We set the plugin info as loaded before trying to load the dependencies,
+   * to make sure we won't have an infinite loop. */
+  info->loaded = TRUE;
+
+  dependencies = peas_plugin_info_get_dependencies (info);
+  for (i = 0; dependencies[i] != NULL; i++)
+    {
+      dep_info = peas_engine_get_plugin_info (engine, dependencies[i]);
+      if (!dep_info)
+        {
+          g_warning ("Plugin not found: %s", dependencies[i]);
+          return FALSE;
+        }
+
+      if (!peas_engine_load_plugin (engine, dep_info))
+        return FALSE;
+    }
 
   loader = get_plugin_loader (engine, info);
 
@@ -772,11 +793,10 @@ load_plugin (PeasEngine     *engine,
       return FALSE;
     }
 
-  info->loaded = peas_plugin_loader_load (loader, info);
-
-  if (info->loaded == FALSE)
+  if (!peas_plugin_loader_load (loader, info))
     {
       g_warning ("Error loading plugin '%s'", info->name);
+      info->loaded = FALSE;
       info->available = FALSE;
       return FALSE;
     }
@@ -824,19 +844,36 @@ static void
 peas_engine_unload_plugin_real (PeasEngine     *engine,
                                 PeasPluginInfo *info)
 {
+  GList *item;
+  const gchar *module_name;
   PeasPluginLoader *loader;
 
   if (!peas_plugin_info_is_loaded (info) ||
       !peas_plugin_info_is_available (info))
     return;
 
+  /* We set the plugin info as unloaded before trying to unload the
+   * dependants, to make sure we won't have an infinite loop. */
+  info->loaded = FALSE;
+
+  /* First unload all the dependant plugins */
+  module_name = peas_plugin_info_get_module_name (info);
+  for (item = engine->priv->plugin_list; item; item = item->next)
+    {
+      PeasPluginInfo *other_info = PEAS_PLUGIN_INFO (item->data);
+
+      if (!peas_plugin_info_is_loaded (other_info))
+        continue;
+
+      if (peas_plugin_info_has_dependency (other_info, module_name))
+         peas_engine_unload_plugin (engine, other_info);
+    }
+
   /* find the loader and tell it to gc and unload the plugin */
   loader = get_plugin_loader (engine, info);
 
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
-
-  info->loaded = FALSE;
 
   g_object_notify (G_OBJECT (engine), "loaded-plugins");
 }

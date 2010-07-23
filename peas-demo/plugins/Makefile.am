@@ -1,4 +1,4 @@
-SUBDIRS = helloworld
+SUBDIRS = helloworld secondtime
 
 if ENABLE_PYTHON
 SUBDIRS += pythonhello

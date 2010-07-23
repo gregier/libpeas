@@ -445,6 +445,48 @@ peas_plugin_info_get_data_dir (const PeasPluginInfo *info)
 }
 
 /**
+ * peas_plugin_info_get_dependencies:
+ * @info: A #PeasPluginInfo.
+ *
+ * Gets the dependencies of the plugin.
+ *
+ * Returns: the plugin's dependencies.
+ */
+const gchar **
+peas_plugin_info_get_dependencies (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+
+  return (const gchar **) info->dependencies;
+}
+
+/**
+ * peas_plugin_info_has_dependency:
+ * @info: A #PeasPluginInfo.
+ * @module_name: The name of the plugin to check.
+ *
+ * Check if the plugin depends on another plugin.
+ *
+ * Returns: whether the plugin depends on the plugin @module_name.
+ */
+gboolean
+peas_plugin_info_has_dependency (const PeasPluginInfo *info,
+                                 const gchar          *module_name)
+{
+  guint i;
+
+  g_return_val_if_fail (info != NULL, FALSE);
+  g_return_val_if_fail (module_name != NULL, FALSE);
+
+  for (i = 0; info->dependencies[i] != NULL; i++)
+    if (g_ascii_strcasecmp (module_name, info->dependencies[i]) == 0)
+      return TRUE;
+
+  return FALSE;
+}
+
+
+/**
  * peas_plugin_info_get_name:
  * @info: A #PeasPluginInfo.
  *

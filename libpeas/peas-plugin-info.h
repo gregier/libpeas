@@ -46,6 +46,9 @@ gboolean      peas_plugin_info_is_builtin       (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_module_name  (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_module_dir   (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_data_dir     (const PeasPluginInfo *info);
+const gchar **peas_plugin_info_get_dependencies (const PeasPluginInfo *info);
+gboolean      peas_plugin_info_has_dependency   (const PeasPluginInfo *info,
+                                                 const gchar          *name);
 
 const gchar  *peas_plugin_info_get_name         (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_description  (const PeasPluginInfo *info);
