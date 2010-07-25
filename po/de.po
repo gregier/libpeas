@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-19 18:51+0000\n"
-"PO-Revision-Date: 2010-07-19 21:47+0100\n"
+"POT-Creation-Date: 2010-07-22 11:00+0000\n"
+"PO-Revision-Date: 2010-07-26 00:37+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,26 +18,55 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:253
+#: ../libpeasui/peas-ui-plugin-manager.c:177
+msgid "There was an error displaying the help."
+msgstr "Beim Anzeigen der Hilfe ist ein Fehler aufgetreten."
+
+#: ../libpeasui/peas-ui-plugin-manager.c:335
 msgid "C_onfigure"
 msgstr "K_onfigurieren"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:261
+#: ../libpeasui/peas-ui-plugin-manager.c:343
 msgid "_About"
 msgstr "_Info"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:282
+#: ../libpeasui/peas-ui-plugin-manager.c:364
 msgid "_Plugins:"
 msgstr "_Plugins:"
 
-#~ msgid "Enabled"
-#~ msgstr "Aktiviert"
+#: ../libpeasui/peas-ui-plugin-manager-view.c:295
+msgid "_Enabled"
+msgstr "Aktivi_ert"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:306
+msgid "E_nable All"
+msgstr "Alle aktiviere_n"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:310
+msgid "_Disable All"
+msgstr "Alle _deaktivieren"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:467
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:488
+msgid "Plugin"
+msgstr "Plugin"
+
+#: ../peas-demo/peas-demo.c:39
+msgid "Run from build directory"
+msgstr "Aus dem Erstellungsordner ausführen"
+
+#: ../peas-demo/peas-demo.c:130
+msgid "- libpeas demo application"
+msgstr "- libpeas-Demoanwendung"
+
 #~ msgid "A_ctivate"
 #~ msgstr "A_ktivieren"
+
 #~ msgid "Ac_tivate All"
 #~ msgstr "_Alle aktivieren"
-#~ msgid "_Deactivate All"
-#~ msgstr "Alle _deaktivieren"
+
 #~ msgid "Active _Plugins:"
 #~ msgstr "Aktive _Plugins:"
-
