@@ -797,8 +797,10 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
  * @info: A #PeasPluginInfo.
  *
  * Loads the plugin corresponding to @info if it's not currently loaded.
+ * Emits the "load-plugin" signal; loading the plugin
+ * actually occurs in the default signal handler.
  *
- * Returns: whether the plugin has been successfuly loaded.
+ * Returns: whether the plugin has been successfully loaded.
  */
 gboolean
 peas_engine_load_plugin (PeasEngine     *engine,
@@ -844,8 +846,10 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
  * @info: A #PeasPluginInfo.
  *
  * Unloads the plugin corresponding to @info.
+ * Emits the "unload-plugin" signal; unloading the plugin
+ * actually occurs in the default signal handler.
  *
- * Returns: whether the plugin has been successfuly unloaded.
+ * Returns: whether the plugin has been successfully unloaded.
  */
 gboolean
 peas_engine_unload_plugin (PeasEngine     *engine,

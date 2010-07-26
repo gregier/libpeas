@@ -86,7 +86,7 @@ peas_extension_class_init (PeasExtensionClass *klass)
  * return type is not void, then a pointer to a variable of that type should
  * be passed as the last argument.
  *
- * For instance, if the method protoype is:
+ * For instance, if the method prototype is:
  * |[ gint (*my_method) (MyClass *instance, const gchar *str, SomeObject *obj); ]|
  * you should call peas_extension_call() this way:
  * |[ peas_extension_call (extension, "my_method", "some_str", obj, &gint_var); ]|

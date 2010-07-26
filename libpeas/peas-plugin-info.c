@@ -600,7 +600,7 @@ peas_plugin_info_get_iage (const PeasPluginInfo *info)
  * Gets a hash table of string keys present and #GValue values,
  * present in the plugin information file, but not handled
  * by libpeas. Note that libpeas only handles booleans and
- * strings, and that strings that are recognised as booleans,
+ * strings, and that strings that are recognized as booleans,
  * as done by #g_key_file_get_boolean, will be of boolean type.
  *
  * Returns: a #GHashTable of string keys and #GValue values. Do

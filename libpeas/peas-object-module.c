@@ -359,7 +359,7 @@ peas_object_module_get_library (PeasObjectModule *module)
  * requested.
  *
  * This method is primarily meant to be used by native bindings (like gtkmm),
- * creatint native types which cannot be instantiated correctly using
+ * creating native types which cannot be instantiated correctly using
  * g_object_new().  For other uses, you will usually prefer relying on
  * peas_object_module_register_extension_type().
  */
