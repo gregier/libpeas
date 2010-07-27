@@ -41,10 +41,24 @@ typedef struct _PeasObjectModule         PeasObjectModule;
 typedef struct _PeasObjectModuleClass    PeasObjectModuleClass;
 typedef struct _PeasObjectModulePrivate  PeasObjectModulePrivate;
 
+/**
+ * PeasFactoryFunc:
+ *
+ * A #PeasFactoryFunc is a factory function which will instanciate a new
+ * extension of a given type. g_object_newv() is such a function.
+ *
+ * It is used with peas_object_module_register_object_factory().
+ */
 typedef GObject *(*PeasFactoryFunc)   (guint          n_parameters,
                                        GParameter    *parameters,
                                        gpointer       user_data);
 
+/**
+ * PeasObjectModule:
+ *
+ * The #PeasObjectModule structure contains only private data and should only
+ * be accessed using the provided API.
+ */
 struct _PeasObjectModule {
   GTypeModule parent;
 
