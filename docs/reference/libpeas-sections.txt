@@ -191,7 +191,6 @@ PEAS_EXTENSION_GET_CLASS
 <FILE>peas-plugin-info</FILE>
 <TITLE>PeasPluginInfo</TITLE>
 PeasPluginInfo
-peas_plugin_info_get_type
 peas_plugin_info_is_loaded
 peas_plugin_info_is_available
 peas_plugin_info_is_builtin
@@ -213,6 +212,6 @@ peas_plugin_info_get_keys
 <SUBSECTION Standard>
 PEAS_TYPE_PLUGIN_INFO
 PEAS_PLUGIN_INFO
-</SUBSECTION>
+peas_plugin_info_get_type
 </SECTION>
 

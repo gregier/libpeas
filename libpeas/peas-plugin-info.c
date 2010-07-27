@@ -43,6 +43,20 @@
  * @short_description: Information about a plugin.
  *
  * A #PeasPluginInfo contains all the information available about a plugin.
+ *
+ * All this information comes from the related plugin info file. Here is an
+ * example of such a plugin file, in the #GKeyFile format:
+ * |[
+ * [YourApplication Plugin]
+ * Module=helloworld
+ * Name=Hello World
+ * Description=Displays "Hello World"
+ * Authors=Steve Frécinaux &lt;code@istique.net&gt;
+ * Copyright=Copyright © 2009-10 Steve Frécinaux
+ * Website=http://live.gnome.org/Libpeas
+ * Help=http://library.gnome.org/devel/libpeas/unstable/
+ * IAge=2
+ * ]|
  **/
 
 PeasPluginInfo *
@@ -78,14 +92,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info);
 }
 
-/*
- * peas_plugin_info_get_type:
- *
- * Retrieves the #GType object which is associated with the #PeasPluginInfo
- * class.
- *
- * Return value: the GType associated with #PeasPluginInfo.
- **/
 GType
 peas_plugin_info_get_type (void)
 {
@@ -365,9 +371,10 @@ peas_plugin_info_is_loaded (const PeasPluginInfo *info)
  * peas_plugin_info_is_available:
  * @info: A #PeasPluginInfo.
  *
- * Check if the plugin is available.  A plugin is marked as not available when
- * there is no loader available to load it, or when there has been an error
- * when trying to load it previously.
+ * Check if the plugin is available.
+ *
+ * A plugin is marked as not available when there is no loader available to
+ * load it, or when there has been an error when trying to load it previously.
  *
  * Returns: %TRUE if the plugin is available.
  */
@@ -384,6 +391,14 @@ peas_plugin_info_is_available (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets is the plugin is a builtin plugin.
+ *
+ * A builtin plugin is a plugin which cannot be enabled or disabled by the
+ * user through a plugin manager (like #PeasUIPluginManager). Loading or
+ * unloading such plugins is the responsibility of the application alone.
+ * Most applications will usually load those plugins immediately after
+ * the initialization of the #PeasEngine.
+ *
+ * The relevant key in the plugin info file is "Builtin".
  *
  * Returns: %TRUE if the plugin is a builtin plugin, %FALSE
  * if not.
@@ -402,6 +417,12 @@ peas_plugin_info_is_builtin (const PeasPluginInfo *info)
  *
  * Gets the module name.
  *
+ * The module name will be used to find the actual plugin. The way this value
+ * will be used depends on the loader (i.e. on the language) of the plugin.
+ * This value is also used to uniquely identify a particular plugin.
+ *
+ * The relevant key in the plugin info file is "Module".
+ *
  * Returns: the module name.
  */
 const gchar *
@@ -417,6 +438,10 @@ peas_plugin_info_get_module_name (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the module directory.
+ *
+ * The module directory is the directory where the plugin file was found. This
+ * is not a value from the #GKeyFile, but rather a value provided by the
+ * #PeasEngine.
  *
  * Returns: the module directory.
  */
@@ -434,6 +459,11 @@ peas_plugin_info_get_module_dir (const PeasPluginInfo *info)
  *
  * Gets the data dir of the plugin.
  *
+ * The module data directory is the directory where a plugin should find its
+ * runtime data. This is not a value read from the #GKeyFile, but rather a
+ * value provided by the #PeasEngine, depending on where the plugin file was
+ * found.
+ *
  * Returns: the plugin's data dir.
  */
 const gchar *
@@ -449,6 +479,13 @@ peas_plugin_info_get_data_dir (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the dependencies of the plugin.
+ *
+ * The #PeasEngine will always ensure that the dependencies of a plugin are
+ * loaded when the said plugin is loaded. It means that dependencies are
+ * loaded before the plugin, and unloaded after it. Circular dependencies of
+ * plugins lead to undefined loading order.
+ *
+ * The relevant key in the plugin info file is "Depends".
  *
  * Returns: the plugin's dependencies.
  */
@@ -492,6 +529,10 @@ peas_plugin_info_has_dependency (const PeasPluginInfo *info,
  *
  * Gets the name of the plugin.
  *
+ * The name of a plugin should be a nice short string to be presented in UIs.
+ *
+ * The relevant key in the plugin info file is "Name".
+ *
  * Returns: the plugin's name.
  */
 const gchar *
@@ -508,6 +549,11 @@ peas_plugin_info_get_name (const PeasPluginInfo *info)
  *
  * Gets the description of the plugin.
  *
+ * The description of the plugin should be a string presenting the purpose of
+ * the plugin. It will typically be presented in a plugin's about box.
+ *
+ * The relevant key in the plugin info file is "Description".
+ *
  * Returns: the plugin's description.
  */
 const gchar *
@@ -523,6 +569,11 @@ peas_plugin_info_get_description (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the icon name of the plugin.
+ *
+ * The icon of the plugin will be presented in the plugin manager UI. If no
+ * icon is specified, the default green puzzle icon will be used.
+ *
+ * The relevant key in the plugin info file is "Icon".
  *
  * Returns: the plugin's icon name.
  */
@@ -545,6 +596,8 @@ peas_plugin_info_get_icon_name (const PeasPluginInfo *info)
  *
  * Gets a NULL-terminated array of strings with the authors of the plugin.
  *
+ * The relevant key in the plugin info file is "Authors".
+ *
  * Returns: the plugin's author list.
  */
 const gchar **
@@ -560,6 +613,8 @@ peas_plugin_info_get_authors (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the website of the plugin.
+ *
+ * The relevant key in the plugin info file is "Website".
  *
  * Returns: the plugin's associated website.
  */
@@ -577,6 +632,8 @@ peas_plugin_info_get_website (const PeasPluginInfo *info)
  *
  * Gets the copyright of the plugin.
  *
+ * The relevant key in the plugin info file is "Copyright".
+ *
  * Returns: the plugin's copyright information.
  */
 const gchar *
@@ -592,6 +649,8 @@ peas_plugin_info_get_copyright (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the version of the plugin.
+ *
+ * The relevant key in the plugin info file is "Version".
  *
  * Returns: the plugin's version.
  */
@@ -609,6 +668,14 @@ peas_plugin_info_get_version (const PeasPluginInfo *info)
  *
  * Gets the help URI of the plugin.
  *
+ * The Help URI of a plugin will typically be presented by the plugin manager
+ * as a "Help" button linking to the URI. It can either be a HTTP URL on some
+ * website or a ghelp: URI if a Gnome help page is available for the plugin.
+ *
+ * The relevant key in the plugin info file is "Help". Other platform-specific
+ * keys exist for platform-specific help files. Those are "Help-Gnome",
+ * "Help-Windows" and "Help-MacOs-X".
+ *
  * Returns: the plugin's help URI.
  */
 const gchar *
@@ -624,6 +691,8 @@ peas_plugin_info_get_help_uri (const PeasPluginInfo *info)
  * @info: A #PeasPluginInfo.
  *
  * Gets the interface age of the plugin.
+ *
+ * The relevant key in the plugin info file is "IAge".
  *
  * Returns: the interface age of the plugin or %0 if not known.
  **/
@@ -643,7 +712,7 @@ peas_plugin_info_get_iage (const PeasPluginInfo *info)
  * present in the plugin information file, but not handled
  * by libpeas. Note that libpeas only handles booleans and
  * strings, and that strings that are recognized as booleans,
- * as done by #g_key_file_get_boolean, will be of boolean type.
+ * as done by g_key_file_get_boolean(), will be of boolean type.
  *
  * Returns: a #GHashTable of string keys and #GValue values. Do
  * not free or destroy any data in this hashtable.
