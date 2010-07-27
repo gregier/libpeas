@@ -43,8 +43,57 @@
  * #PeasExtensionSet will automatically track loading and unloading of
  * the plugins, and signal appearance and disappearance of new
  * extension instances.  You should connect to those signals if you
- * wish to call specific methods on loading or unloading time, as it
- * is typically the case for #PeasActivatable extensions.
+ * wish to call specific methods on loading or unloading time.
+ *
+ * Here is the code for a typical setup of #PeasExtensionSet with
+ * #PeasActivatable as the watched extension point, and #GtkWindow
+ * instances as the target objects:
+ * |[
+ * static void
+ * on_extension_added (PeasExtensionSet *set,
+ *                     PeasPluginInfo   *info,
+ *                     PeasExtension    *exten,
+ *                     GtkWindow        *window)
+ * {
+ *   peas_extension_call (exten, "activate", window);
+ * }
+ *
+ * static void
+ * on_extension_removed (PeasExtensionSet *set,
+ *                       PeasPluginInfo   *info,
+ *                       PeasExtension    *exten,
+ *                       GtkWindow        *window)
+ * {
+ *   peas_extension_call (exten, "deactivate", window);
+ * }
+ *
+ * static gboolean
+ * on_delete_event (GtkWidget        *window,
+ *                  GdkEvent         *event,
+ *                  PeasExtensionSet *set)
+ * {
+ *   peas_extension_set_call (set, "deactivate");
+ *   return FALSE;
+ * }
+ *
+ * PeasExtensionSet *
+ * setup_extension_set (PeasEngine *engine,
+ *                      GtkWindow  *window)
+ * {
+ *   PeasExtensionSet *set;
+ *
+ *   set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
+ *                                 "object", window, NULL);
+ *   peas_extension_set_call (set, "activate");
+ *   g_signal_connect (set, "extension-added",
+ *                     G_CALLBACK (on_extension_added), window);
+ *   g_signal_connect (set, "extension-removed",
+ *                     G_CALLBACK (on_extension_removed), window);
+ *   g_signal_connect (window, "delete-event",
+ *                     G_CALLBACK (on_delete_event), set);
+ *   return set;
+ * }
+ * ]|
  **/
 
 G_DEFINE_TYPE (PeasExtensionSet, peas_extension_set, G_TYPE_OBJECT);
@@ -289,6 +338,21 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
 
   klass->call = peas_extension_set_call_real;
 
+  /**
+   * PeasExtensionSet::extension-added:
+   * @set: A #PeasExtensionSet.
+   * @info: A #PeasPluginInfo.
+   * @exten: A #PeasExtension.
+   *
+   * The extension-added signal is emitted when a new extension has been
+   * added to the #PeasExtensionSet. It happens when a new plugin implementing
+   * the extension set's extension type is loaded.
+   *
+   * You should connect to this signal in order to set up the extensions when
+   * they are loaded. Note that this signal is not fired for extensions coming
+   * from plugins that were already loaded when the #PeasExtensionSet instance
+   * was created. You should set those up by yourself.
+   */
   signals[EXTENSION_ADDED] =
     g_signal_new ("extension-added",
                   the_type,
@@ -301,6 +365,21 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
                   PEAS_TYPE_PLUGIN_INFO | G_SIGNAL_TYPE_STATIC_SCOPE,
                   PEAS_TYPE_EXTENSION);
 
+  /**
+   * PeasExtensionSet::extension-removed:
+   * @set: A #PeasExtensionSet.
+   * @info: A #PeasPluginInfo.
+   * @exten: A #PeasExtension.
+   *
+   * The extension-added signal is emitted when a new extension is about to be
+   * removed from the #PeasExtensionSet. It happens when a plugin implementing
+   * the extension set's extension type is unloaded.
+   *
+   * You should connect to this signal in order to clean up the extensions
+   * when their plugin is unload. Note that this signal is not fired for the
+   * #PeasExtension instances still available when the #PeasExtensionSet
+   * instance is destroyed. You should clean those up by yourself.
+   */
   signals[EXTENSION_REMOVED] =
     g_signal_new ("extension-removed",
                   the_type,
@@ -371,7 +450,7 @@ peas_extension_set_call (PeasExtensionSet *set,
 
 /**
  * peas_extension_set_call_valist:
- * @exten: A #PeasExtensionSet.
+ * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
  * @args: the arguments for the method.
  *
@@ -396,12 +475,17 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
 }
 
 /**
- * peas_extension_set_new:
+ * peas_extension_set_newv:
  * @engine: A #PeasEngine.
  * @exten_type: the extension #GType.
+ * @n_parameters: the length of the @parameters array.
+ * @parameters: an array of #GParameter.
  *
- * Create an #ExtensionSet for all the @exten_type extensions defined in
- * the plugins loaded in @engine.
+ * Create a new #PeasExtensionSet for the @exten_type extension type.
+ *
+ * See peas_extension_set_new() for more information.
+ *
+ * Returns: a new instance of #PeasExtensionSet.
  */
 PeasExtensionSet *
 peas_extension_set_newv (PeasEngine *engine,
@@ -418,6 +502,20 @@ peas_extension_set_newv (PeasEngine *engine,
                                            NULL));
 }
 
+/**
+ * peas_extension_set_new_valist:
+ * @engine: A #PeasEngine.
+ * @exten_type: the extension #GType.
+ * @first_property: the name of the first property.
+ * @var_args: the value of the first property, followed optionally by more
+ *   name/value pairs, followed by %NULL.
+ *
+ * Create a new #PeasExtensionSet for the @exten_type extension type.
+ *
+ * See peas_extension_set_new() for more information.
+ *
+ * Returns: a new instance of #PeasExtensionSet.
+ */
 PeasExtensionSet *
 peas_extension_set_new_valist (PeasEngine  *engine,
                                GType        exten_type,
@@ -449,6 +547,27 @@ peas_extension_set_new_valist (PeasEngine  *engine,
   return set;
 }
 
+/**
+ * peas_extension_set_new:
+ * @engine: A #PeasEngine.
+ * @exten_type: the extension #GType.
+ * @first_property: the name of the first property.
+ * @Varargs: the value of the first property, followed optionally by more
+ *   name/value pairs, followed by %NULL.
+ *
+ * Create a new #PeasExtensionSet for the @exten_type extension type.
+ *
+ * At any moment, the #PeasExtensionSet will contain an extension instance for
+ * each loaded plugin which implements the @exten_type extension type. It does
+ * so by connecting to the relevant signals from #PeasEngine.
+ *
+ * The property values passed to peas_extension_set_new() will be used for the
+ * construction of new extension instances.
+ *
+ * See peas_engine_create_extension() for more information.
+ *
+ * Returns: a new instance of #PeasExtensionSet.
+ */
 PeasExtensionSet *
 peas_extension_set_new (PeasEngine  *engine,
                         GType        exten_type,

@@ -70,6 +70,14 @@ struct _PeasExtensionSetClass {
                                            PeasExtension    *exten);
 };
 
+/**
+ * PeasParameterArray:
+ * @n_parameters: the length of the @parameters array.
+ * @parameters: an array of #GParameter.
+ *
+ * #PeasParameterArray is a structure used by the "construct-properties"
+ * construct property of #PeasExtensionSet.
+ */
 typedef struct _PeasParameterArray {
   guint n_parameters;
   GParameter *parameters;
@@ -90,7 +98,7 @@ gboolean           peas_extension_set_call_valist (PeasExtensionSet *set,
 PeasExtensionSet  *peas_extension_set_newv        (PeasEngine       *engine,
                                                    GType             exten_type,
                                                    guint             n_parameters,
-                                                   GParameter       *parameter);
+                                                   GParameter       *parameters);
 PeasExtensionSet  *peas_extension_set_new_valist  (PeasEngine       *engine,
                                                    GType             exten_type,
                                                    const gchar      *first_property,
