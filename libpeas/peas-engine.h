@@ -44,6 +44,12 @@ typedef struct _PeasEngine         PeasEngine;
 typedef struct _PeasEngineClass    PeasEngineClass;
 typedef struct _PeasEnginePrivate  PeasEnginePrivate;
 
+/**
+ * PeasEngine:
+ *
+ * The #PeasEngine structure contains only private data and should only be
+ * accessed using the provided API.
+ */
 struct _PeasEngine {
   GObject parent;
 

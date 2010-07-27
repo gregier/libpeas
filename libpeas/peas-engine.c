@@ -41,10 +41,19 @@
  * @short_description: Engine at the heart of the Peas plugin system.
  * @see_also: #PeasPluginInfo
  *
- * The #PeasEngine is the object which manages the plugins.  Its role is twofold:
- * First it will fetch all the information about the available plugins from all
- * the registered plugin directories, and second it will provide you an API to
- * load, control and unload the plugins from within your application.
+ * The #PeasEngine is the object which manages the plugins.
+ *
+ * Its role is twofold:
+ * <itemizedlist>
+ *   <listitem>
+ *     <para>it will fetch all the information about the available plugins
+ *     from all the registered plugin directories;</para>
+ *   </listitem>
+ *   <listitem>
+ *     <para>it will provide you an API to load, control and unload your
+ *     plugins and their extensions from within your application.</para>
+ *   </listitem>
+ * </itemizedlist>
  **/
 G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT);
 
@@ -529,6 +538,12 @@ peas_engine_class_init (PeasEngineClass *klass)
    * @info: A #PeasPluginInfo.
    *
    * The load-plugin signal is emitted when a plugin is being loaded.
+   *
+   * The plugin is being loaded in the default handler. Hence, if you want to
+   * perform some action before the plugin is loaded, you should use
+   * g_signal_connect(), but if you want to perform some action *after* the
+   * plugin is loaded (the most common case), you should use
+   * g_signal_connect_after().
    */
   signals[LOAD_PLUGIN] =
     g_signal_new ("load-plugin",
@@ -548,6 +563,12 @@ peas_engine_class_init (PeasEngineClass *klass)
    * @info: A #PeasPluginInfo.
    *
    * The unload-plugin signal is emitted when a plugin is being unloaded.
+   *
+   * The plugin is being unloaded in the default handler. Hence, if you want
+   * to perform some action before the plugin is unloaded (the most common
+   * case), you should use g_signal_connect(), but if you want to perform some
+   * action after the plugin is unloaded (the most common case), you should
+   * use g_signal_connect_after().
    */
   signals[UNLOAD_PLUGIN] =
     g_signal_new ("unload-plugin",
@@ -920,6 +941,23 @@ peas_engine_provides_extension (PeasEngine     *engine,
   return peas_plugin_loader_provides_extension (loader, info, extension_type);
 }
 
+/**
+ * peas_engine_create_extensionv
+ * @engine: A #PeasEngine.
+ * @info: A loaded #PeasPluginInfo.
+ * @extension_type: The implemented extension #GType.
+ * @n_parameters: the length of the @parameters array.
+ * @parameters: an array of #GParameter.
+ *
+ * If the plugin identified by @info implements the @extension_type interface,
+ * then this function will return a new instance of this implementation,
+ * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ *
+ * See peas_engine_create_extension() for more information.
+ *
+ * Returns: a new instance of #PeasExtension wrapping the @extension_type
+ * instance, or %NULL.
+ */
 PeasExtension *
 peas_engine_create_extensionv (PeasEngine     *engine,
                                PeasPluginInfo *info,
@@ -937,6 +975,24 @@ peas_engine_create_extensionv (PeasEngine     *engine,
                                               n_parameters, parameters);
 }
 
+/**
+ * peas_engine_create_extension_valist
+ * @engine: A #PeasEngine.
+ * @info: A loaded #PeasPluginInfo.
+ * @extension_type: The implemented extension #GType.
+ * @first_property: the name of the first property.
+ * @var_args: the value of the first property, followed optionally by more
+ *   name/value pairs, followed by %NULL.
+ *
+ * If the plugin identified by @info implements the @extension_type interface,
+ * then this function will return a new instance of this implementation,
+ * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ *
+ * See peas_engine_create_extension() for more information.
+ *
+ * Returns: a new instance of #PeasExtension wrapping the @extension_type
+ * instance, or %NULL.
+ */
 PeasExtension *
 peas_engine_create_extension_valist (PeasEngine     *engine,
                                      PeasPluginInfo *info,
@@ -969,6 +1025,31 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   return exten;
 }
 
+/**
+ * peas_engine_create_extension:
+ * @engine: A #PeasEngine.
+ * @info: A loaded #PeasPluginInfo.
+ * @extension_type: The implemented extension #GType.
+ * @first_property: the name of the first property.
+ * @Varargs: the value of the first property, followed optionally by more
+ *   name/value pairs, followed by %NULL.
+ *
+ * If the plugin identified by @info implements the @extension_type interface,
+ * then this function will return a new instance of this implementation,
+ * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ *
+ * When creating the new instance of the @extension_type subtype, the
+ * provided construct properties will be passed to the extension construction
+ * handler (exactly like if you had called g_object_new() yourself).
+ *
+ * The new extension instance produced by this function will always be
+ * returned wrapped in a #PeasExtension proxy, following the current libpeas
+ * principle of never giving you the actual object (also because it might as
+ * well *not* be an actual object).
+ *
+ * Returns: a new instance of #PeasExtension wrapping the @extension_type
+ * instance, or %NULL.
+ */
 PeasExtension *
 peas_engine_create_extension (PeasEngine     *engine,
                               PeasPluginInfo *info,
@@ -991,9 +1072,11 @@ peas_engine_create_extension (PeasEngine     *engine,
  * peas_engine_get_loaded_plugins:
  * @engine: A #PeasEngine.
  *
- * Returns the list of the names of all the loaded plugins, or %NULL if there
- * is no plugin currently loaded. Please note that the returned array is a
- * newly allocated one: you will need to free it using g_strfreev().
+ * Returns the list of the names of all the loaded plugins, or an array
+ * containing a single %NULL element if there is no plugin currently loaded.
+ *
+ * Please note that the returned array is a newly allocated one: you will need
+ * to free it using g_strfreev().
  *
  * Returns: A newly-allocated NULL-terminated array of strings, or %NULL.
  */
