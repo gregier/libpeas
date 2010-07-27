@@ -32,12 +32,17 @@
  *
  * #PeasActivatable is an interface which should be implemented by extensions
  * that should be activated on an object of a certain type (depending on the
- * application). For instance, in gedit, #PeasActivatable extension instances
- * are bound to individual windows.
+ * application). For instance, in a typical windowed application,
+ * #PeasActivatable extension instances could be bound to individual toplevel
+ * windows.
  *
  * It is typical to use #PeasActivatable along with #PeasExtensionSet in order
  * to activate and deactivate extensions automatically when plugins are loaded
- * or unloaded. 
+ * or unloaded.
+ *
+ * You can also use the code of this interface as a base for your own
+ * extension types, as illustrated by gedit's #GeditWindowActivatable and
+ * #GeditDocumentActivatable interfaces.
  **/
 
 G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
@@ -45,6 +50,13 @@ G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
 void
 peas_activatable_default_init (PeasActivatableInterface *iface)
 {
+  /**
+   * PeasActivatable:object:
+   *
+   * The object property contains the targetted object for this
+   * #PeasActivatable instance, for example a toplevel window in a typical
+   * windowed application. It is set at construction time and won't change.
+   */
   g_object_interface_install_property (iface,
                                        g_param_spec_object ("object",
                                                             "Object",
@@ -59,7 +71,10 @@ peas_activatable_default_init (PeasActivatableInterface *iface)
  * peas_activatable_activate:
  * @activatable: A #PeasActivatable.
  *
- * Activates the extension on the given object.
+ * Activates the extension on the targetted object.
+ *
+ * On activation, the extension should hook itself to the object
+ * where it makes sense.
  */
 void
 peas_activatable_activate (PeasActivatable *activatable)
@@ -77,7 +92,11 @@ peas_activatable_activate (PeasActivatable *activatable)
  * peas_activatable_deactivate:
  * @activatable: A #PeasActivatable.
  *
- * Deactivates the plugin on the given object.
+ * Deactivates the extension on the targetted object.
+ *
+ * On deactivation, an extension should remove itself from all the hooks it
+ * used and should perform any cleanup required, so it can be unreffed safely
+ * and without any more effect on the host application.
  */
 void
 peas_activatable_deactivate (PeasActivatable *activatable)
@@ -95,8 +114,8 @@ peas_activatable_deactivate (PeasActivatable *activatable)
  * peas_activatable_update_state:
  * @activatable: A #PeasActivatable.
  *
- * Triggers an update of the plugin's internal state to take into account
- * state changes in the targetted object, due to a plugin or user action.
+ * Triggers an update of the extension internal state to take into account
+ * state changes in the targetted object, due to some event or user action.
  */
 void
 peas_activatable_update_state (PeasActivatable *activatable)
