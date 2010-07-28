@@ -69,6 +69,8 @@ peas_activatable_default_init (PeasActivatableInterface *iface)
                                                                 G_PARAM_READWRITE |
                                                                 G_PARAM_CONSTRUCT_ONLY |
                                                                 G_PARAM_STATIC_STRINGS));
+
+      initialized = TRUE;
     }
 }
 
