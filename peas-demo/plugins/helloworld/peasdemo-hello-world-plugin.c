@@ -78,6 +78,7 @@ peasdemo_hello_world_plugin_finalize (GObject *object)
   g_debug (G_STRFUNC);
 
   g_object_unref (plugin->label);
+  g_object_unref (plugin->window);
 
   G_OBJECT_CLASS (peasdemo_hello_world_plugin_parent_class)->finalize (object);
 }
