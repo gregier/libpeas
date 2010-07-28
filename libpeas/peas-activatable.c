@@ -50,21 +50,26 @@ G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
 void
 peas_activatable_default_init (PeasActivatableInterface *iface)
 {
-  /**
-   * PeasActivatable:object:
-   *
-   * The object property contains the targetted object for this
-   * #PeasActivatable instance, for example a toplevel window in a typical
-   * windowed application. It is set at construction time and won't change.
-   */
-  g_object_interface_install_property (iface,
-                                       g_param_spec_object ("object",
-                                                            "Object",
-                                                            "Object",
-                                                            G_TYPE_OBJECT,
-                                                            G_PARAM_READWRITE |
-                                                            G_PARAM_CONSTRUCT_ONLY |
-                                                            G_PARAM_STATIC_STRINGS));
+  static gboolean initialized = FALSE;
+
+  if (!initialized)
+    {
+      /**
+       * PeasActivatable:object:
+       *
+       * The object property contains the targetted object for this
+       * #PeasActivatable instance, for example a toplevel window in a typical
+       * windowed application. It is set at construction time and won't change.
+       */
+      g_object_interface_install_property (iface,
+                                           g_param_spec_object ("object",
+                                                                "Object",
+                                                                "Object",
+                                                                G_TYPE_OBJECT,
+                                                                G_PARAM_READWRITE |
+                                                                G_PARAM_CONSTRUCT_ONLY |
+                                                                G_PARAM_STATIC_STRINGS));
+    }
 }
 
 /**
