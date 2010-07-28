@@ -2,12 +2,13 @@
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
 # Jorge González <jorgegonz@svn.gnome.org>, 2010.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: libpeas master\n"
+"Project-Id-Version: libpeas.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-15 18:14+0000\n"
-"PO-Revision-Date: 2010-02-15 21:33+0100\n"
+"POT-Creation-Date: 2010-07-22 11:00+0000\n"
+"PO-Revision-Date: 2010-07-28 17:13+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -15,49 +16,59 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. *
-#. * SECTION:peas-ui-plugin-manager
-#. * @short_description: Management GUI for plugins.
-#. *
-#. * The #PeasUIPluginManager is a widget that can be used to manage plugins,
-#. * i.e. activate or deactivate them, and see some pieces of information.
-#. *
-#. * <inlinegraphic fileref="peas-ui-plugin-manager.png" format="PNG" />
-#. *
-#. * The only thing you need to do as an application writer if you wish to use
-#. * the manager to configure * your plugins is to instantiate it using
-#. * peas_ui_plugin_manager_new() and pack it into another widget or a window
-#. * (as in the screenshot above).
-#. *
-#. *
-#: ../libpeasui/peas-ui-plugin-manager.c:53
-msgid "Plugin"
-msgstr "Complemento"
+#: ../libpeasui/peas-ui-plugin-manager.c:177
+msgid "There was an error displaying the help."
+msgstr "Hubo un error al mostrar la ayuda."
 
-#: ../libpeasui/peas-ui-plugin-manager.c:54
-msgid "Enabled"
-msgstr "Activado"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:543
-msgid "_About"
-msgstr "Acerca _de"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:549
+#: ../libpeasui/peas-ui-plugin-manager.c:335
 msgid "C_onfigure"
 msgstr "C_onfigurar"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:557
-msgid "A_ctivate"
-msgstr "A_ctivar"
+#: ../libpeasui/peas-ui-plugin-manager.c:343
+msgid "_About"
+msgstr "Acerca _de"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:567
-msgid "Ac_tivate All"
-msgstr "Ac_tivar todos"
+#: ../libpeasui/peas-ui-plugin-manager.c:364
+#| msgid "Plugin"
+msgid "_Plugins:"
+msgstr "Co_mplementos:"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:571
-msgid "_Deactivate All"
+#: ../libpeasui/peas-ui-plugin-manager-view.c:295
+#| msgid "Enabled"
+msgid "_Enabled"
+msgstr "_Activado"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:306
+#| msgid "Enabled"
+msgid "E_nable All"
+msgstr "A_ctivar todos"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:310
+#| msgid "_Deactivate All"
+msgid "_Disable All"
 msgstr "_Desactivar todos"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:860
-msgid "Active _Plugins:"
-msgstr "Co_mplementos activos:"
+#: ../libpeasui/peas-ui-plugin-manager-view.c:467
+msgid "Enabled"
+msgstr "Activado"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:488
+msgid "Plugin"
+msgstr "Complemento"
+
+#: ../peas-demo/peas-demo.c:39
+msgid "Run from build directory"
+msgstr "Ejecutar desde la carpeta de construcción"
+
+#: ../peas-demo/peas-demo.c:130
+msgid "- libpeas demo application"
+msgstr "- libpeas aplicación de demostración"
+
+#~ msgid "A_ctivate"
+#~ msgstr "A_ctivar"
+
+#~ msgid "Ac_tivate All"
+#~ msgstr "Ac_tivar todos"
+
+#~ msgid "Active _Plugins:"
+#~ msgstr "Co_mplementos activos:"
