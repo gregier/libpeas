@@ -26,74 +26,6 @@
 #include "peas-introspection.h"
 
 static gboolean
-read_next_argument (GArgument  *cur_arg,
-                    va_list     args,
-                    GITypeInfo *arg_type_info)
-{
-  /* Notes: According to GCC 4.4,
-   *  - int8, uint8, int16, uint16, short and ushort are promoted to int when passed through '...'
-   *  - float is promoted to double when passed through '...'
-   */
-  switch (g_type_info_get_tag (arg_type_info))
-    {
-    case GI_TYPE_TAG_VOID:
-    case GI_TYPE_TAG_BOOLEAN:
-      cur_arg->v_boolean = va_arg (args, gboolean);
-      break;
-    case GI_TYPE_TAG_INT8:
-      cur_arg->v_int8 = va_arg (args, gint);
-      break;
-    case GI_TYPE_TAG_UINT8:
-      cur_arg->v_uint8 = va_arg (args, gint);
-      break;
-    case GI_TYPE_TAG_INT16:
-      cur_arg->v_int16 = va_arg (args, gint);
-      break;
-    case GI_TYPE_TAG_UINT16:
-      cur_arg->v_uint16 = va_arg (args, gint);
-      break;
-    case GI_TYPE_TAG_INT32:
-      cur_arg->v_int32 = va_arg (args, gint32);
-      break;
-    case GI_TYPE_TAG_UINT32:
-      cur_arg->v_uint32 = va_arg (args, guint32);
-      break;
-    case GI_TYPE_TAG_INT64:
-      cur_arg->v_int64 = va_arg (args, gint64);
-      break;
-    case GI_TYPE_TAG_UINT64:
-      cur_arg->v_uint64 = va_arg (args, guint64);
-      break;
-    case GI_TYPE_TAG_FLOAT:
-      cur_arg->v_float = va_arg (args, gdouble);
-      break;
-    case GI_TYPE_TAG_DOUBLE:
-      cur_arg->v_double = va_arg (args, gdouble);
-      break;
-    case GI_TYPE_TAG_GTYPE:
-      /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
-      cur_arg->v_size = va_arg (args, GType);
-      break;
-    case GI_TYPE_TAG_UTF8:
-    case GI_TYPE_TAG_FILENAME:
-      cur_arg->v_string = va_arg (args, gchar *);
-      break;
-    case GI_TYPE_TAG_ARRAY:
-    case GI_TYPE_TAG_INTERFACE:
-    case GI_TYPE_TAG_GLIST:
-    case GI_TYPE_TAG_GSLIST:
-    case GI_TYPE_TAG_GHASH:
-    case GI_TYPE_TAG_ERROR:
-      cur_arg->v_pointer = va_arg (args, gpointer);
-      break;
-    default:
-      g_return_val_if_reached (FALSE);
-    }
-
-  return TRUE;
-}
-
-static gboolean
 set_return_value (gpointer    in_retval,
                   GArgument  *out_retval,
                   GITypeInfo *retval_type_info)
@@ -233,6 +165,7 @@ peas_method_apply_valist (GObject     *instance,
   /* Set the object as the first argument for the method. */
   in_args[n_in_args++].v_pointer = instance;
 
+  ret = TRUE;
   for (i = 0; ret && i < n_args; i++)
     {
       GIArgInfo *arg_info;
@@ -244,8 +177,72 @@ peas_method_apply_valist (GObject     *instance,
       switch (g_arg_info_get_direction (arg_info))
         {
         case GI_DIRECTION_IN:
-          ret = read_next_argument (&in_args[n_in_args++], args, arg_type_info);
-          break;
+          {
+            GArgument *cur_arg = &in_args[n_in_args++];
+
+            /* Notes: According to GCC 4.4,
+             *  - int8, uint8, int16, uint16, short and ushort are promoted to int when passed through '...'
+             *  - float is promoted to double when passed through '...'
+             */
+            switch (g_type_info_get_tag (arg_type_info))
+              {
+              case GI_TYPE_TAG_VOID:
+              case GI_TYPE_TAG_BOOLEAN:
+                cur_arg->v_boolean = va_arg (args, gboolean);
+                break;
+              case GI_TYPE_TAG_INT8:
+                cur_arg->v_int8 = va_arg (args, gint);
+                break;
+              case GI_TYPE_TAG_UINT8:
+                cur_arg->v_uint8 = va_arg (args, gint);
+                break;
+              case GI_TYPE_TAG_INT16:
+                cur_arg->v_int16 = va_arg (args, gint);
+                break;
+              case GI_TYPE_TAG_UINT16:
+                cur_arg->v_uint16 = va_arg (args, gint);
+                break;
+              case GI_TYPE_TAG_INT32:
+                cur_arg->v_int32 = va_arg (args, gint32);
+                break;
+              case GI_TYPE_TAG_UINT32:
+                cur_arg->v_uint32 = va_arg (args, guint32);
+                break;
+              case GI_TYPE_TAG_INT64:
+                cur_arg->v_int64 = va_arg (args, gint64);
+                break;
+              case GI_TYPE_TAG_UINT64:
+                cur_arg->v_uint64 = va_arg (args, guint64);
+                break;
+              case GI_TYPE_TAG_FLOAT:
+                cur_arg->v_float = va_arg (args, gdouble);
+                break;
+              case GI_TYPE_TAG_DOUBLE:
+                cur_arg->v_double = va_arg (args, gdouble);
+                break;
+              case GI_TYPE_TAG_GTYPE:
+                /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
+                cur_arg->v_size = va_arg (args, GType);
+                break;
+              case GI_TYPE_TAG_UTF8:
+              case GI_TYPE_TAG_FILENAME:
+                cur_arg->v_string = va_arg (args, gchar *);
+                break;
+              case GI_TYPE_TAG_ARRAY:
+              case GI_TYPE_TAG_INTERFACE:
+              case GI_TYPE_TAG_GLIST:
+              case GI_TYPE_TAG_GSLIST:
+              case GI_TYPE_TAG_GHASH:
+              case GI_TYPE_TAG_ERROR:
+                cur_arg->v_pointer = va_arg (args, gpointer);
+                break;
+              default:
+                g_warn_if_reached ();
+                ret = FALSE;
+                break;
+              }
+            break;
+          }
         /* In the other cases, we expect we will always have a pointer. */
         case GI_DIRECTION_INOUT:
           in_args[n_in_args++].v_pointer = out_args[n_out_args++].v_pointer = va_arg (args, gpointer);
