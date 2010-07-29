@@ -214,7 +214,6 @@ add_extension (PeasExtensionSet *set,
     return;
 
 /*  peas_plugin_info_ref (info); */
-  g_object_ref (exten);
 
   item = (ExtensionItem *) g_slice_new (ExtensionItem);
   item->info = info;
