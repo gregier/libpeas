@@ -395,7 +395,7 @@ create_gobject_from_type (guint       n_parameters,
    * property to avoid a warning. */
   if (n_parameters > 1 &&
       strcmp (parameters[n_parameters-1].name, "plugin-info") == 0 &&
-      g_object_class_find_property (cls, "plugin-info") != NULL)
+      g_object_class_find_property (cls, "plugin-info") == NULL)
     n_parameters --;
 
   instance = G_OBJECT (g_object_newv (exten_type, n_parameters, parameters));
