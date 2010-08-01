@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-15 20:39+0000\n"
-"PO-Revision-Date: 2010-02-16 10:02+0100\n"
+"POT-Creation-Date: 2010-08-01 16:41+0200\n"
+"PO-Revision-Date: 2010-08-01 16:44+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
 "Language-Team: Hungarian <gnome at fsf dot hu>\n"
 "MIME-Version: 1.0\n"
@@ -17,50 +17,47 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
-#. *
-#. * SECTION:peas-ui-plugin-manager
-#. * @short_description: Management GUI for plugins.
-#. *
-#. * The #PeasUIPluginManager is a widget that can be used to manage plugins,
-#. * i.e. activate or deactivate them, and see some pieces of information.
-#. *
-#. * <inlinegraphic fileref="peas-ui-plugin-manager.png" format="PNG" />
-#. *
-#. * The only thing you need to do as an application writer if you wish to use
-#. * the manager to configure * your plugins is to instantiate it using
-#. * peas_ui_plugin_manager_new() and pack it into another widget or a window
-#. * (as in the screenshot above).
-#. *
-#. *
-#: ../libpeasui/peas-ui-plugin-manager.c:53
-msgid "Plugin"
-msgstr "Bővítmény"
+#: ../libpeasui/peas-ui-plugin-manager.c:177
+msgid "There was an error displaying the help."
+msgstr "Hiba történt a súgó megjelenítése közben."
 
-#: ../libpeasui/peas-ui-plugin-manager.c:54
-msgid "Enabled"
-msgstr "Engedélyezve"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:543
-msgid "_About"
-msgstr "_Névjegy"
-
-#: ../libpeasui/peas-ui-plugin-manager.c:549
+#: ../libpeasui/peas-ui-plugin-manager.c:335
 msgid "C_onfigure"
 msgstr "_Beállítás"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:557
-msgid "A_ctivate"
-msgstr "_Aktiválás"
+#: ../libpeasui/peas-ui-plugin-manager.c:343
+msgid "_About"
+msgstr "_Névjegy"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:567
-msgid "Ac_tivate All"
-msgstr "Összes a_ktiválása"
+#: ../libpeasui/peas-ui-plugin-manager.c:364
+msgid "_Plugins:"
+msgstr "Bő_vítmények:"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:571
-msgid "_Deactivate All"
-msgstr "Összes l_etiltása"
+#: ../libpeasui/peas-ui-plugin-manager-view.c:295
+msgid "_Enabled"
+msgstr "_Engedélyezve"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:860
-msgid "Active _Plugins:"
-msgstr "A_ktív bővítmények:"
+#: ../libpeasui/peas-ui-plugin-manager-view.c:306
+msgid "E_nable All"
+msgstr "Összes e_ngedélyezése"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:310
+msgid "_Disable All"
+msgstr "Összes le_tiltása"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:467
+msgid "Enabled"
+msgstr "Engedélyezve"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:488
+msgid "Plugin"
+msgstr "Bővítmény"
+
+#: ../peas-demo/peas-demo.c:39
+msgid "Run from build directory"
+msgstr "Futtatás a build könyvtárból"
+
+#: ../peas-demo/peas-demo.c:130
+msgid "- libpeas demo application"
+msgstr "- libpeas demó alkalmazás"
 
