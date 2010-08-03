@@ -459,9 +459,9 @@ peas_engine_class_init (PeasEngineClass *klass)
    * when it comes to installation location: the same plugin can be
    * installed both in the system path or in the user's home directory,
    * without taking other special care than using
-   * egg_plugin_get_data_dir() when looking for its data files.
+   * peas_plugin_info_get_data_dir() when looking for its data files.
    *
-   * Concretely, this property contains a NULL-terminated array of
+   * Concretely, this property contains a %NULL-terminated array of
    * strings, whose even-indexed strings are module directories, and
    * odd-indexed ones are the associated data directories.  Here is an
    * example of such an array:
