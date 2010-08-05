@@ -97,15 +97,15 @@ create_main_window (void)
   gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label ("Hello World");
-  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "helloworld");
+  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), (gpointer) "helloworld");
   gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label ("Python Hello");
-  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "pythonhello");
+  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), (gpointer) "pythonhello");
   gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label ("Seed Hello");
-  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), "seedhello");
+  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), (gpointer) "seedhello");
   gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);

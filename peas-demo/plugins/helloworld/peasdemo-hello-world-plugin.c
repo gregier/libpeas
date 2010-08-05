@@ -93,7 +93,6 @@ static void
 peasdemo_hello_world_plugin_activate (PeasActivatable *activatable)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (activatable);
-  GtkWidget *label;
 
   g_debug (G_STRFUNC);
 

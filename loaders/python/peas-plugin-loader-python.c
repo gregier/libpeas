@@ -102,6 +102,7 @@ find_python_extension_type (PeasPluginInfo *info,
         case 0:
           continue;
         case -1:
+        default:
           PyErr_Print ();
           continue;
         }
@@ -418,7 +419,7 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
   if (!Py_IsInitialized ())
     return FALSE;
 
-  pathlist = PySys_GetObject ("path");
+  pathlist = PySys_GetObject ((char*) "path");
   pathstring = PyString_FromString (module_path);
 
   if (PySequence_Contains (pathlist, pathstring) == 0)
@@ -432,7 +433,7 @@ static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
   PyObject *mdict, *gobject, *gi, *gettext, *install, *gettext_args;
-  char *argv[] = { "", NULL };
+  const char *argv[] = { "", NULL };
   gchar *prgname;
 
   /* We are trying to initialize Python for the first time,
@@ -452,10 +453,10 @@ peas_python_init (PeasPluginLoaderPython *loader)
     argv[0] = prgname;
 
 #if PY_VERSION_HEX < 0x02060600
-  PySys_SetArgv (1, argv);
+  PySys_SetArgv (1, (char**) argv);
   PyRun_SimpleString ("import sys; sys.path.pop(0)\n");
 #else
-  PySys_SetArgvEx (1, argv, 0);
+  PySys_SetArgvEx (1, (char**) argv, 0);
 #endif
 
   /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
