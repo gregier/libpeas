@@ -82,7 +82,7 @@ if HAVE_INTROSPECTION
   INTROSPECTION_SCANNER_ARGS = \
 	-I$(top_srcdir) 		\
 	--c-include=libpeas/peas.h	\
-	--warn-all
+	$(PEAS_GIR_SCANNER_ARGS)
 
   introspection_sources = $(INST_H_FILES) $(C_FILES)
 

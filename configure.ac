@@ -72,7 +72,7 @@ PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gobject-2.0 >= 2.23.6
 	gmodule-2.0 >= 2.18.0
-	gobject-introspection-1.0 >= 0.9.0
+	gobject-introspection-1.0 >= 0.6.9
 ])
 
 dnl ================================================================
@@ -134,7 +134,16 @@ dnl ================================================================
 dnl GObject Introspection
 dnl ================================================================
 
-GOBJECT_INTROSPECTION_REQUIRE([0.9.0])
+GOBJECT_INTROSPECTION_REQUIRE([0.6.9])
+
+PKG_CHECK_EXISTS([gobject-introspection >= 0.9.0],
+                 [enable_gir_args=yes],
+                 [enable_gir_args=no])
+
+if test "$enable_gi_flags" = "yes"; then
+	PEAS_GIR_SCANNER_ARGS="--warn-all"
+	AC_SUBST(PEAS_GIR_SCANNER_ARGS)
+fi
 
 dnl ================================================================
 dnl Seed Javascript Engine

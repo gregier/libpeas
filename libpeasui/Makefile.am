@@ -46,7 +46,7 @@ if HAVE_INTROSPECTION
   INTROSPECTION_SCANNER_ARGS = \
 	--add-include-path=$(top_builddir)/libpeas	\
 	--c-include=libpeasui/peas-ui.h			\
-	--warn-all
+	$(PEAS_GIR_SCANNER_ARGS)
   INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
 
   introspection_sources = $(INST_H_FILES) $(C_FILES)
