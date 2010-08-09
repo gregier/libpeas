@@ -139,6 +139,25 @@ show_about_cb (GtkWidget            *widget,
   gtk_widget_show (pm->priv->about);
 }
 
+#if !GTK_CHECK_VERSION(2,22,0)
+static gboolean
+gtk_window_has_group (GtkWindow *window)
+{
+  GtkWindowGroup *wg;
+  static GtkWindowGroup *default_wg = NULL;
+
+  if (!default_wg)
+    {
+      GtkWidget *temp_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+      default_wg = gtk_window_get_group (GTK_WINDOW (temp_window));
+      gtk_widget_destroy (temp_window);
+    }
+
+  wg = gtk_window_get_group (window);
+  return wg != NULL && wg != default_wg;
+}
+#endif
+
 static void
 help_button_cb (GtkWidget      *button,
                 PeasPluginInfo *info)
