@@ -95,6 +95,9 @@ gboolean           peas_extension_set_call_valist (PeasExtensionSet *set,
                                                    const gchar      *method_name,
                                                    va_list           args);
 
+PeasExtension     *peas_extension_set_get_extension (PeasExtensionSet *set,
+                                                     PeasPluginInfo   *info);
+
 PeasExtensionSet  *peas_extension_set_newv        (PeasEngine       *engine,
                                                    GType             exten_type,
                                                    guint             n_parameters,

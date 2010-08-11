@@ -421,6 +421,36 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
 }
 
 /**
+ * *peas_extension_set_get_extension:
+ * @set: A #PeasExtensionSet
+ * @info: a #PeasPluginInfo
+ *
+ * Returns the #PeasExtension object corresponding to @info, or %NULL
+ * if the plugin doesn't provide such an extension.
+ *
+ * Returns: a reference to a #PeasExtension or %NULL
+ */
+PeasExtension *
+peas_extension_set_get_extension (PeasExtensionSet *set,
+                                  PeasPluginInfo   *info)
+{
+  GList *l;
+
+  g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), NULL);
+  g_return_val_if_fail (info != NULL, NULL);
+
+  for (l = set->priv->extensions; l != NULL; l = l->next)
+    {
+      ExtensionItem *item = l->data;
+
+      if (item->info == info)
+        return item->exten;
+    }
+
+  return NULL;
+}
+
+/**
  * peas_extension_set_call:
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
