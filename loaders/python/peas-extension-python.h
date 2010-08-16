@@ -44,8 +44,6 @@ typedef struct _PeasExtensionPythonClass  PeasExtensionPythonClass;
 struct _PeasExtensionPython {
   PeasExtension parent;
 
-  /* maybe add this to PeasExtension? */
-  GType     gtype;
   PyObject *instance;
 };
 

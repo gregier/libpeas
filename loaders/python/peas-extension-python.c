@@ -51,11 +51,13 @@ peas_extension_python_call (PeasExtension *exten,
                             va_list        args)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
+  GType gtype;
   GObject *instance;
 
+  gtype = peas_extension_get_extension_type (exten);
   instance = pygobject_get (pyexten->instance);
 
-  return peas_method_apply_valist (instance, pyexten->gtype, method_name, args);
+  return peas_method_apply_valist (instance, gtype, method_name, args);
 }
 
 static void
@@ -93,8 +95,9 @@ peas_extension_python_new (GType     gtype,
 {
   PeasExtensionPython *pyexten;
 
-  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (PEAS_TYPE_EXTENSION_PYTHON, NULL));
-  pyexten->gtype = gtype;
+  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (PEAS_TYPE_EXTENSION_PYTHON,
+                                                 "extension-type", gtype,
+                                                 NULL));
   pyexten->instance = instance;
   Py_INCREF (instance);
 

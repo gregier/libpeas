@@ -40,7 +40,6 @@ typedef struct _PeasExtensionSeedClass  PeasExtensionSeedClass;
 struct _PeasExtensionSeed {
   PeasExtension parent;
 
-  GType exten_type;
   SeedContext js_context;
   SeedObject js_object;
 };

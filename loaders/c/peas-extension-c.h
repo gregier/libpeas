@@ -39,7 +39,6 @@ typedef struct _PeasExtensionCClass  PeasExtensionCClass;
 struct _PeasExtensionC {
   PeasExtension parent;
 
-  GType    gtype;
   GObject *instance;
 };
 

@@ -62,14 +62,96 @@
 
 G_DEFINE_ABSTRACT_TYPE (PeasExtension, peas_extension, G_TYPE_OBJECT);
 
+/* Properties */
+enum {
+  PROP_0,
+  PROP_EXTENSION_TYPE
+};
+
+struct _PeasExtensionPrivate {
+  GType exten_type;
+};
+
 static void
 peas_extension_init (PeasExtension *exten)
 {
+  exten->priv = G_TYPE_INSTANCE_GET_PRIVATE (exten,
+                                             PEAS_TYPE_EXTENSION,
+                                             PeasExtensionPrivate);
+}
+
+static void
+peas_extension_set_property (GObject      *object,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
+{
+  PeasExtension *exten = PEAS_EXTENSION (object);
+
+  switch (prop_id)
+    {
+    case PROP_EXTENSION_TYPE:
+      exten->priv->exten_type = g_value_get_gtype (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+peas_extension_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+  PeasExtension *exten = PEAS_EXTENSION (object);
+
+  switch (prop_id)
+    {
+    case PROP_EXTENSION_TYPE:
+      g_value_set_gtype (value, exten->priv->exten_type);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
 }
 
 static void
 peas_extension_class_init (PeasExtensionClass *klass)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->set_property = peas_extension_set_property;
+  object_class->get_property = peas_extension_get_property;
+
+  g_object_class_install_property (object_class, PROP_EXTENSION_TYPE,
+                                   g_param_spec_gtype ("extension-type",
+                                                       "Extension Type",
+                                                       "The GType of this extesion",
+                                                       G_TYPE_NONE,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT_ONLY |
+                                                       G_PARAM_STATIC_STRINGS));
+  
+  g_type_class_add_private (klass, sizeof (PeasExtensionPrivate));
+}
+
+/**
+ * peas_extension_get_extension_type:
+ * @exten: A #PeasExtension.
+ *
+ * Get the type of the extension interface of the object proxied by @exten.
+ *
+ * Return value: The #Gtype proxied by @exten.
+ */
+GType
+peas_extension_get_extension_type (PeasExtension *exten)
+{
+  g_return_val_if_fail (PEAS_IS_EXTENSION (exten), G_TYPE_INVALID);
+
+  return exten->priv->exten_type;
 }
 
 /**

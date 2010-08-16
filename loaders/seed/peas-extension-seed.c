@@ -56,9 +56,6 @@ peas_extension_seed_set_property (GObject      *object,
 
   switch (prop_id)
     {
-    case PROP_EXTEN_TYPE:
-      sexten->exten_type = g_value_get_gtype (value);
-      break;
     case PROP_JS_CONTEXT:
       sexten->js_context = g_value_get_pointer (value);
       break;
@@ -229,6 +226,7 @@ peas_extension_seed_call (PeasExtension *exten,
                           va_list        args)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
+  GType exten_type;
   SeedValue js_method;
   GICallableInfo *func_info;
   guint n_args, n_in_args, n_out_args, i;
@@ -241,6 +239,8 @@ peas_extension_seed_call (PeasExtension *exten,
   g_return_val_if_fail (sexten->js_context != NULL, FALSE);
   g_return_val_if_fail (sexten->js_object != NULL, FALSE);
 
+  exten_type = peas_extension_get_extension_type (exten);
+
   /* Fetch the JS method we want to call */
   js_method = seed_object_get_property (sexten->js_context,
                                         sexten->js_object,
@@ -248,7 +248,7 @@ peas_extension_seed_call (PeasExtension *exten,
   if (seed_value_is_undefined (sexten->js_context, js_method))
     {
       g_warning ("Method '%s.%s' is not defined",
-                 g_type_name (sexten->exten_type), method_name);
+                 g_type_name (exten_type), method_name);
       return FALSE;
     }
 
@@ -256,12 +256,12 @@ peas_extension_seed_call (PeasExtension *exten,
   if (!seed_value_is_function (sexten->js_context, js_method))
     {
       g_warning ("Method '%s.%s' is not a function",
-                 g_type_name (sexten->exten_type), method_name);
+                 g_type_name (exten_type), method_name);
       return FALSE;
     }
 
   /* Prepare the arguments */
-  func_info = peas_method_get_info (sexten->exten_type, method_name);
+  func_info = peas_method_get_info (exten_type, method_name);
   n_args = g_callable_info_get_n_args (func_info);
   n_in_args = 0;
   n_out_args = 0;
@@ -358,15 +358,6 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
   object_class->finalize = peas_extension_seed_finalize;
 
   extension_class->call = peas_extension_seed_call;
-
-  g_object_class_install_property (object_class,
-                                   PROP_EXTEN_TYPE,
-                                   g_param_spec_gtype ("extension-type",
-                                                       "The extension type",
-                                                       "The type we need to proxy",
-                                                       G_TYPE_NONE,
-                                                       G_PARAM_WRITABLE |
-                                                       G_PARAM_CONSTRUCT_ONLY));
 
   g_object_class_install_property (object_class,
                                    PROP_JS_CONTEXT,

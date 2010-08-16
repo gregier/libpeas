@@ -36,8 +36,9 @@ G_BEGIN_DECLS
 #define PEAS_IS_EXTENSION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION))
 #define PEAS_EXTENSION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_EXTENSION, PeasExtensionClass))
 
-typedef struct _PeasExtension       PeasExtension;
-typedef struct _PeasExtensionClass  PeasExtensionClass;
+typedef struct _PeasExtension         PeasExtension;
+typedef struct _PeasExtensionClass    PeasExtensionClass;
+typedef struct _PeasExtensionPrivate  PeasExtensionPrivate;
 
 /**
  * PeasExtension:
@@ -47,6 +48,9 @@ typedef struct _PeasExtensionClass  PeasExtensionClass;
  */
 struct _PeasExtension {
   GObject parent;
+
+  /*< private >*/
+  PeasExtensionPrivate *priv;
 };
 
 /**
@@ -69,6 +73,9 @@ struct _PeasExtensionClass {
  * Public methods
  */
 GType        peas_extension_get_type        (void)  G_GNUC_CONST;
+
+GType        peas_extension_get_extension_type
+                                            (PeasExtension *exten);
 
 gboolean     peas_extension_call            (PeasExtension *exten,
                                              const gchar   *method_name,

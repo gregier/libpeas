@@ -176,6 +176,7 @@ PEAS_EXTENSION_BASE_GET_CLASS
 <TITLE>PeasExtension</TITLE>
 PeasExtension
 PeasExtensionClass
+peas_extension_get_extension_type
 peas_extension_call
 peas_extension_call_valist
 <SUBSECTION Standard>

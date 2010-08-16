@@ -46,8 +46,11 @@ peas_extension_c_call (PeasExtension *exten,
                        va_list        args)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (exten);
+  GType gtype;
 
-  return peas_method_apply_valist (cexten->instance, cexten->gtype, method_name, args);
+  gtype = peas_extension_get_extension_type (exten);
+
+  return peas_method_apply_valist (cexten->instance, gtype, method_name, args);
 }
 
 static void
@@ -83,8 +86,9 @@ peas_extension_c_new (GType    gtype,
 {
   PeasExtensionC *cexten;
 
-  cexten = PEAS_EXTENSION_C (g_object_new (PEAS_TYPE_EXTENSION_C, NULL));
-  cexten->gtype = gtype;
+  cexten = PEAS_EXTENSION_C (g_object_new (PEAS_TYPE_EXTENSION_C,
+                                           "extension-type", gtype,
+                                           NULL));
   cexten->instance = instance;
 
   return PEAS_EXTENSION (cexten);
