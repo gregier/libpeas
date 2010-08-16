@@ -3,7 +3,7 @@ plugindir = $(libdir)/peas-demo/plugins/helloworld
 INCLUDES = \
 	-I$(top_srcdir) 	\
 	$(PEAS_CFLAGS)		\
-	$(PEASUI_CFLAGS)
+	$(PEAS_GTK_CFLAGS)
 
 plugin_LTLIBRARIES = libhelloworld.la
 
@@ -14,7 +14,7 @@ libhelloworld_la_SOURCES = \
 	peasdemo-hello-world-configurable.c
 
 libhelloworld_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
-libhelloworld_la_LIBADD  = $(PEAS_LIBS) $(PEASUI_LIBS)
+libhelloworld_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
 
 plugin_DATA = helloworld.peasdemo-plugin
 

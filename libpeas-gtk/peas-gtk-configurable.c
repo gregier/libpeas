@@ -1,8 +1,8 @@
 /*
- * peas-ui-configurable.c
+ * peas-gtk-configurable.c
  * This file is part of libpeas
  *
- * Copyright (C) 2009 Steve Steve Frécinaux
+ * Copyright (C) 2009-2010 Steve Frécinaux
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -23,38 +23,39 @@
 #include <config.h>
 #endif
 
-#include "peas-ui-configurable.h"
+#include "peas-gtk-configurable.h"
 
 /**
- * SECTION:peas-ui-configurable
+ * SECTION:peas-gtk-configurable
  * @short_description: Interface to provide a plugin configuration UI
  *
- * The #PeasUIConfigurable interface will allow a plugin to provide a
+ * The #PeasGtkConfigurable interface will allow a plugin to provide a
  * graphical interface for the user to configure the plugin through the
- * #PeasUIPluginManager: the #PeasUIPluginManager will make its “Configure
- * Plugin” button active when the selected plugin implements the
- * #PeasUIConfigurable interface.
+ * #PeasGtkPluginManager: the #PeasGtkPluginManager will make its
+ * “Configure Plugin” button active when the selected plugin implements
+ * the #PeasGtkConfigurable interface.
  *
- * To allow plugin configuration from the #PeasUIPluginManager, the plugin
- * writer will just need to implement the create_configure_widget() method.
+ * To allow plugin configuration from the #PeasGtkPluginManager, the
+ * plugin writer will just need to implement the create_configure_widget()
+ * method.
  **/
 
-G_DEFINE_INTERFACE(PeasUIConfigurable, peas_ui_configurable, G_TYPE_OBJECT)
+G_DEFINE_INTERFACE(PeasGtkConfigurable, peas_gtk_configurable, G_TYPE_OBJECT)
 
 static void
-peas_ui_configurable_default_init (PeasUIConfigurableInterface *iface)
+peas_gtk_configurable_default_init (PeasGtkConfigurableInterface *iface)
 {
 }
 
 /**
- * peas_ui_configurable_create_configure_widget:
- * @configurable: A #PeasUIConfigurable
+ * peas_gtk_configurable_create_configure_widget:
+ * @configurable: A #PeasGtkConfigurable
  *
  * Creates the configure widget widget for the plugin. The returned widget
  * should allow configuring all the relevant aspects of the plugin, and should
  * allow instant-apply, as promoted by the Gnome Human Interface Guidelines.
  *
- * #PeasUIPluginManager will embed the returned widget into a dialog box,
+ * #PeasGtkPluginManager will embed the returned widget into a dialog box,
  * but you shouldn't take this behaviour for granted as other implementations
  * of a plugin manager UI might do otherwise.
  *
@@ -63,13 +64,13 @@ peas_ui_configurable_default_init (PeasUIConfigurableInterface *iface)
  * Returns: A #GtkWidget used for configuration.
  */
 GtkWidget *
-peas_ui_configurable_create_configure_widget (PeasUIConfigurable  *configurable)
+peas_gtk_configurable_create_configure_widget (PeasGtkConfigurable *configurable)
 {
-  PeasUIConfigurableInterface *iface;
+  PeasGtkConfigurableInterface *iface;
 
-  g_return_val_if_fail (PEAS_UI_IS_CONFIGURABLE (configurable), FALSE);
-  
-  iface = PEAS_UI_CONFIGURABLE_GET_IFACE (configurable);
+  g_return_val_if_fail (PEAS_GTK_IS_CONFIGURABLE (configurable), FALSE);
+
+  iface = PEAS_GTK_CONFIGURABLE_GET_IFACE (configurable);
 
   if (G_LIKELY (iface->create_configure_widget != NULL))
     return iface->create_configure_widget (configurable);

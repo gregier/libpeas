@@ -4,7 +4,7 @@
 #include <gtk/gtk.h>
 
 #include <libpeas/peas.h>
-#include <libpeasui/peas-ui.h>
+#include <libpeas-gtk/peas-gtk.h>
 
 #include "peasdemo-hello-world-plugin.h"
 #include "peasdemo-hello-world-configurable.h"
@@ -146,6 +146,6 @@ peas_register_types (PeasObjectModule *module)
                                               PEAS_TYPE_ACTIVATABLE,
                                               PEASDEMO_TYPE_HELLO_WORLD_PLUGIN);
   peas_object_module_register_extension_type (module,
-                                              PEAS_UI_TYPE_CONFIGURABLE,
+                                              PEAS_GTK_TYPE_CONFIGURABLE,
                                               PEASDEMO_TYPE_HELLO_WORLD_CONFIGURABLE);
 }

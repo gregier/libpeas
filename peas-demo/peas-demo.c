@@ -25,7 +25,7 @@
 #include <girepository.h>
 #include <libpeas/peas.h>
 #include <libpeas/peas-i18n.h>
-#include <libpeasui/peas-ui.h>
+#include <libpeas-gtk/peas-gtk.h>
 
 #include "peas-demo-window.h"
 
@@ -62,7 +62,7 @@ create_plugin_manager (GtkButton *button,
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Plugin Manager");
 
-  manager = peas_ui_plugin_manager_new (engine);
+  manager = peas_gtk_plugin_manager_new (engine);
   gtk_container_add (GTK_CONTAINER (window), manager);
 
   gtk_widget_show_all (window);
@@ -164,7 +164,7 @@ main (int    argc,
       search_paths[3] = g_strdup (PEAS_PREFIX "/share/peas-demo/plugins/");
     }
 
-  g_irepository_require (g_irepository_get_default (), "PeasUI", "1.0", 0, NULL);
+  g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, NULL);
 
   engine = peas_engine_new ("PeasDemo",
                             PEAS_LIBDIR "/peas-demo/",

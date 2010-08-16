@@ -4,8 +4,8 @@ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc --enable-introspection
 
 SUBDIRS = libpeas loaders
 
-if ENABLE_LIBPEASUI
-SUBDIRS += libpeasui peas-demo
+if ENABLE_GTK
+SUBDIRS += libpeas-gtk peas-demo
 endif
 
 SUBDIRS += data po docs

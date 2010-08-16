@@ -76,13 +76,13 @@ PKG_CHECK_MODULES(PEAS, [
 ])
 
 dnl ================================================================
-dnl Build libpeasui
+dnl Build libpeas-gtk
 dnl ================================================================
 
-AC_ARG_ENABLE(libpeasui,
-	      AS_HELP_STRING([--enable-libpeasui],[Build libpeasui for Gtk widgetry]),
-	      [enable_libpeasui=$enableval],
-	      [enable_libpeasui=yes])
+AC_ARG_ENABLE(gtk,
+	      AS_HELP_STRING([--enable-gtk],[Build libpeas-gtk for Gtk widgetry]),
+	      [enable_gtk=$enableval],
+	      [enable_gtk=yes])
 
 dnl We currently allow building libpeas with Gtk+ 2.0 for testing purposes and
 dnl technology preview. but do *not* distribute such a version!
@@ -91,7 +91,7 @@ AC_ARG_ENABLE(gtk2-test-build,
 	      [use_gtk2=$enableval],
 	      [use_gtk2=no])
 
-if test "$enable_libpeasui" = "yes"; then
+if test "$enable_gtk" = "yes"; then
 	if test "$use_gtk2" != "yes"; then
 		GTK_TYPELIB=Gtk-3.0
 		GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
@@ -101,12 +101,12 @@ if test "$enable_libpeasui" = "yes"; then
 		GTK_PKG_REQUIREMENT="gtk+-2.0 >= 2.16"
 		GDK_REQUIRED=gdk-2.0
 	fi
-	PKG_CHECK_MODULES(PEASUI, [$GTK_PKG_REQUIREMENT])
+	PKG_CHECK_MODULES(PEAS_GTK, [$GTK_PKG_REQUIREMENT])
 	AC_SUBST(GTK_TYPELIB)
 	AC_SUBST(GTK_PKG_REQUIREMENT)
 fi
 
-AM_CONDITIONAL([ENABLE_LIBPEASUI],[test "x$enable_libpeasui" = "xyes"])
+AM_CONDITIONAL([ENABLE_GTK],[test "x$enable_gtk" = "xyes"])
 
 dnl ================================================================
 dnl Check for native OSX
@@ -285,14 +285,14 @@ docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
 libpeas/Makefile
-libpeasui/Makefile
+libpeas-gtk/Makefile
 loaders/Makefile
 loaders/c/Makefile
 loaders/python/Makefile
 loaders/seed/Makefile
 data/Makefile
 data/libpeas-1.0.pc
-data/libpeasui-1.0.pc
+data/libpeas-gtk-1.0.pc
 data/icons/Makefile
 peas-demo/Makefile
 peas-demo/plugins/Makefile
@@ -312,7 +312,7 @@ Configuration:
         Source code location          : ${srcdir}
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
-	Build libpeasui	              : ${enable_libpeasui}
+	Build libpeas-gtk             : ${enable_gtk}
         Seed JS support               : ${found_seed}
         Python support                : ${found_python}
 "

@@ -1,5 +1,5 @@
 /*
- * peas-ui.h
+ * peas-gtk.h
  * This file is part of libpeas
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,11 +17,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PEAS_UI_H__
-#define __PEAS_UI_H__
+#ifndef __PEAS_GTK_H__
+#define __PEAS_GTK_H__
 
-#include "peas-ui-configurable.h"
-#include "peas-ui-plugin-manager.h"
-#include "peas-ui-plugin-manager-view.h"
+#include "peas-gtk-configurable.h"
+#include "peas-gtk-plugin-manager.h"
+#include "peas-gtk-plugin-manager-view.h"
 
 #endif

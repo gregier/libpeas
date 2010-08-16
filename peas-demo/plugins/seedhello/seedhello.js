@@ -29,5 +29,5 @@ configurable_extension = {
 
 extensions = {
   'PeasActivatable': activatable_extension,
-  'PeasUIConfigurable': configurable_extension,
+  'PeasGtkConfigurable': configurable_extension,
 };

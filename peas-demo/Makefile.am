@@ -6,7 +6,7 @@ INCLUDES =								\
 	-I$(top_srcdir)							\
 	-I$(srcdir)							\
 	$(PEAS_CFLAGS)							\
-	$(PEASUI_CFLAGS)						\
+	$(PEAS_GTK_CFLAGS)						\
 	$(WARN_CFLAGS)							\
 	$(DISABLE_DEPRECATED)
 
@@ -16,10 +16,10 @@ peas_demo_SOURCES = \
 	peas-demo.c
 
 peas_demo_LDADD = \
-	../libpeas/libpeas-1.0.la	\
-	../libpeasui/libpeasui-1.0.la	\
-	$(PEAS_LIBS)			\
-	$(PEASUI_LIBS)
+	../libpeas/libpeas-1.0.la		\
+	../libpeas-gtk/libpeas-gtk-1.0.la	\
+	$(PEAS_LIBS)				\
+	$(PEAS_GTK_LIBS)
 
 peas_demo_CFLAGS = \
 	$(PEAS_CFLAGS)			\

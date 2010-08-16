@@ -37,11 +37,11 @@ FIXXREF_OPTIONS=
 # Used for dependencies. The docs will be rebuilt if any of these change.
 HFILE_GLOB = \
 	$(top_srcdir)/libpeas/*.h	\
-	$(top_srcdir)/libpeasui/*.h
+	$(top_srcdir)/libpeas-gtk/*.h
 
 CFILE_GLOB = \
 	$(top_srcdir)/libpeas/*.c	\
-	$(top_srcdir)/libpeasui/*.c
+	$(top_srcdir)/libpeas-gtk/*.c
 
 # Header files to ignore when scanning (These are internal to libpeas).
 IGNORE_HFILES=		\
@@ -61,7 +61,7 @@ IGNORE_HFILES=		\
 	peas-extension-seed.h		\
 	peas-extension-python.h		\
 	peas-introspection.h		\
-	peas-ui-plugin-manager-store.h	\
+	peas-gtk-plugin-manager-store.h	\
 	peas-demo-window.h		\
 	peasdemo-hello-world-plugin.h	\
 	peasdemo-hello-world-configurable.h	\
@@ -69,7 +69,7 @@ IGNORE_HFILES=		\
 
 # Images to copy into HTML directory.
 HTML_IMAGES = \
-	$(srcdir)/images/peas-ui-plugin-manager.png
+	$(srcdir)/images/peas-gtk-plugin-manager.png
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 # e.g. content_files=running.sgml building.sgml changes-2.0.sgml
@@ -92,7 +92,7 @@ GTKDOC_CFLAGS = \
 
 GTKDOC_LIBS = \
 	$(top_builddir)/libpeas/libpeas-1.0.la		\
-	$(top_builddir)/libpeasui/libpeasui-1.0.la	\
+	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
 	$(PEAS_LIBS)					\
 	$(PEASUI_LIBS)
 
