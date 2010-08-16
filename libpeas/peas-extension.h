@@ -23,6 +23,7 @@
 #define __PEAS_EXTENSION_H__
 
 #include <glib-object.h>
+#include <girepository.h>
 
 G_BEGIN_DECLS
 
@@ -66,7 +67,8 @@ struct _PeasExtensionClass {
   /*< private >*/
   gboolean   (*call)                      (PeasExtension  *exten,
                                            const gchar    *method,
-                                           va_list         args);
+                                           GArgument      *args,
+                                           GArgument      *return_value);
 };
 
 /*
@@ -83,6 +85,10 @@ gboolean     peas_extension_call            (PeasExtension *exten,
 gboolean     peas_extension_call_valist     (PeasExtension *exten,
                                              const gchar   *method_name,
                                              va_list        args);
+gboolean     peas_extension_callv           (PeasExtension *exten,
+                                             const gchar   *method_name,
+                                             GArgument     *args,
+                                             GArgument     *return_value);
 
 G_END_DECLS
 

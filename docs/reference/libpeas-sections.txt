@@ -179,6 +179,7 @@ PeasExtensionClass
 peas_extension_get_extension_type
 peas_extension_call
 peas_extension_call_valist
+peas_extension_callv
 <SUBSECTION Standard>
 PEAS_EXTENSION
 PEAS_IS_EXTENSION

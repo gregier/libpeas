@@ -48,7 +48,8 @@ peas_extension_python_init (PeasExtensionPython *pyexten)
 static gboolean
 peas_extension_python_call (PeasExtension *exten,
                             const gchar   *method_name,
-                            va_list        args)
+                            GArgument     *args,
+                            GArgument     *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
   GType gtype;
@@ -57,7 +58,7 @@ peas_extension_python_call (PeasExtension *exten,
   gtype = peas_extension_get_extension_type (exten);
   instance = pygobject_get (pyexten->instance);
 
-  return peas_method_apply_valist (instance, gtype, method_name, args);
+  return peas_method_apply (instance, gtype, method_name, args, retval);
 }
 
 static void

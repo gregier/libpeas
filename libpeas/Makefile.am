@@ -87,7 +87,7 @@ if HAVE_INTROSPECTION
   introspection_sources = $(INST_H_FILES) $(C_FILES)
 
   Peas-1.0.gir: libpeas-1.0.la
-  Peas_1_0_gir_INCLUDES = GObject-2.0 GModule-2.0
+  Peas_1_0_gir_INCLUDES = GObject-2.0 GModule-2.0 GIRepository-2.0
   Peas_1_0_gir_CFLAGS = $(PEAS_CFLAGS)
   Peas_1_0_gir_LIBS = libpeas-1.0.la
   Peas_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))

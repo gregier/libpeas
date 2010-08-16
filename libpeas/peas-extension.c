@@ -24,6 +24,7 @@
 #endif
 
 #include "peas-extension.h"
+#include "peas-introspection.h"
 
 /**
  * SECTION:peas-extension
@@ -210,11 +211,45 @@ peas_extension_call_valist (PeasExtension *exten,
                             const gchar   *method_name,
                             va_list        args)
 {
+  GICallableInfo *callable_info;
+  GITypeInfo *retval_info;
+  GArgument *gargs;
+  GArgument retval;
+  gpointer retval_ptr;
+  gboolean ret;
+
+  g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
+  g_return_val_if_fail (method_name != NULL, FALSE);
+
+  callable_info = peas_gi_get_method_info (exten->priv->exten_type, method_name);
+  gargs = g_new (GArgument, g_callable_info_get_n_args (callable_info));
+  peas_gi_valist_to_arguments (callable_info, args, gargs, &retval_ptr);
+
+  ret = peas_extension_callv (exten, method_name, gargs, &retval);
+
+  if (retval_ptr != NULL)
+    {
+      retval_info = g_callable_info_get_return_type (callable_info);
+      peas_gi_argument_to_pointer (retval_info, &retval, retval_ptr);
+      g_base_info_unref ((GIBaseInfo *) retval_info);
+    }
+
+  g_free (gargs);
+
+  return ret;
+}
+
+gboolean
+peas_extension_callv (PeasExtension *exten,
+                      const gchar   *method_name,
+                      GArgument     *args,
+                      GArgument     *return_value)
+{
   PeasExtensionClass *klass;
 
   g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
   klass = PEAS_EXTENSION_GET_CLASS (exten);
-  return klass->call (exten, method_name, args);
+  return klass->call (exten, method_name, args, return_value);
 }
