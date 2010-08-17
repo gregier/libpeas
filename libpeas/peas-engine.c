@@ -70,7 +70,6 @@ static guint signals[LAST_SIGNAL];
 enum {
   PROP_0,
   PROP_APP_NAME,
-  PROP_BASE_MODULE_DIR,
   PROP_SEARCH_PATHS,
   PROP_PLUGIN_LIST,
   PROP_LOADED_PLUGINS
@@ -85,7 +84,6 @@ struct _LoaderInfo {
 
 struct _PeasEnginePrivate {
   gchar *app_name;
-  gchar *base_module_dir;
   gchar **search_paths;
 
   GList *plugin_list;
@@ -313,9 +311,6 @@ peas_engine_set_property (GObject      *object,
     case PROP_APP_NAME:
       engine->priv->app_name = g_value_dup_string (value);
       break;
-    case PROP_BASE_MODULE_DIR:
-      engine->priv->base_module_dir = g_value_dup_string (value);
-      break;
     case PROP_SEARCH_PATHS:
       engine->priv->search_paths = g_value_dup_boxed (value);
       break;
@@ -341,9 +336,6 @@ peas_engine_get_property (GObject    *object,
     {
     case PROP_APP_NAME:
       g_value_set_string (value, engine->priv->app_name);
-      break;
-    case PROP_BASE_MODULE_DIR:
-      g_value_set_string (value, engine->priv->base_module_dir);
       break;
     case PROP_SEARCH_PATHS:
       g_value_set_boxed (value, engine->priv->search_paths);
@@ -387,7 +379,6 @@ peas_engine_finalize (GObject *object)
   g_list_free (engine->priv->plugin_list);
   g_strfreev (engine->priv->search_paths);
   g_free (engine->priv->app_name);
-  g_free (engine->priv->base_module_dir);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);
 }
@@ -422,25 +413,6 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                         "Application Name",
                                                         "The application name",
                                                         "Peas",
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
-
-  /**
-   * PeasEngine:base-module-dir:
-   *
-   * The base application directory for binding modules lookup.
-   *
-   * Each loader module will load its modules from a subdirectory of
-   * the base module directory. For instance, the python loader will
-   * look for python modules in "${base-module-dir}/python/".
-   */
-  g_object_class_install_property (object_class,
-                                   PROP_BASE_MODULE_DIR,
-                                   g_param_spec_string ("base-module-dir",
-                                                        "Base module dir",
-                                                        "The base application dir for binding modules lookup",
-                                                        NULL,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_STRINGS));
@@ -662,12 +634,6 @@ load_plugin_loader (PeasEngine  *engine,
         g_object_unref (loader);
       module = NULL;
       loader = NULL;
-    }
-  else
-    {
-      gchar *module_dir = g_build_filename (engine->priv->base_module_dir, loader_id, NULL);
-      peas_plugin_loader_add_module_directory (loader, module_dir);
-      g_free (module_dir);
     }
 
   g_type_module_unuse (G_TYPE_MODULE (module));
@@ -1152,7 +1118,6 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 /**
  * peas_engine_new:
  * @app_name: (allow-none): The name of the application
- * @base_module_dir: The base directory for language modules
  * @search_paths: The paths where to look for plugins
  *
  * Returns a new #PeasEngine object.
@@ -1162,15 +1127,12 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
  */
 PeasEngine *
 peas_engine_new (const gchar  *app_name,
-                 const gchar  *base_module_dir,
                  const gchar **search_paths)
 {
-  g_return_val_if_fail (base_module_dir != NULL, NULL);
   g_return_val_if_fail (search_paths != NULL, NULL);
 
   return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
                                     "app-name", app_name,
-                                    "base-module-dir", base_module_dir,
                                     "search-paths", search_paths,
                                     NULL));
 }

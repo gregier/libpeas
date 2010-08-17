@@ -167,7 +167,6 @@ main (int    argc,
   g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, NULL);
 
   engine = peas_engine_new ("PeasDemo",
-                            PEAS_LIBDIR "/peas-demo/",
                             (const gchar **) search_paths);
 
   n_windows = 0;
