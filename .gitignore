@@ -26,8 +26,9 @@ Makefile.in
 /configure
 /configure.lineno
 /data/libpeas-1.0.pc
-/data/libpeasui-1.0.pc
+/data/libpeas-gtk-1.0.pc
 /depcomp
+/libpeas-*.tar.bz2
 /libpeas/peas-marshal.h
 /libpeas/peas-marshal.c
 /peas-demo/peas-demo
@@ -40,10 +41,6 @@ Makefile.in
 /intltool-merge.in
 /intltool-update
 /intltool-update.in
-/loaders/python/bindings/libpeas.defs
-/loaders/python/bindings/libpeas.c
-/loaders/python/bindings/libpeasui.defs
-/loaders/python/bindings/libpeasui.c
 /libtool
 /ltmain.sh
 /m4
