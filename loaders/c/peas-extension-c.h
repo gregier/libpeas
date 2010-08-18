@@ -47,7 +47,6 @@ struct _PeasExtensionCClass {
 };
 
 GType            peas_extension_c_get_type  (void) G_GNUC_CONST;
-void             peas_extension_c_register  (GTypeModule *module);
 
 PeasExtension   *peas_extension_c_new       (GType        gtype,
                                              GObject     *instance);

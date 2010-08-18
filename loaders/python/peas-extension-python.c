@@ -32,13 +32,7 @@
 #include <libpeas/peas-introspection.h>
 #include "peas-extension-python.h"
 
-G_DEFINE_DYNAMIC_TYPE (PeasExtensionPython, peas_extension_python, PEAS_TYPE_EXTENSION);
-
-void
-peas_extension_python_register (GTypeModule *module)
-{
-  peas_extension_python_register_type (module);
-}
+G_DEFINE_TYPE (PeasExtensionPython, peas_extension_python, PEAS_TYPE_EXTENSION);
 
 static void
 peas_extension_python_init (PeasExtensionPython *pyexten)
@@ -83,11 +77,6 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
   object_class->finalize = peas_extension_python_finalize;
 
   extension_class->call = peas_extension_python_call;
-}
-
-static void
-peas_extension_python_class_finalize (PeasExtensionPythonClass *klass)
-{
 }
 
 PeasExtension *

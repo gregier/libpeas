@@ -32,7 +32,7 @@ SeedValue seed_value_from_gvalue (SeedContext    ctx,
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
 
-G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER);
+G_DEFINE_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER);
 
 typedef struct {
   SeedContext context;
@@ -277,17 +277,9 @@ peas_plugin_loader_seed_class_init (PeasPluginLoaderSeedClass *klass)
   loader_class->garbage_collect = peas_plugin_loader_seed_garbage_collect;
 }
 
-static void
-peas_plugin_loader_seed_class_finalize (PeasPluginLoaderSeedClass *klass)
-{
-}
-
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
-  peas_plugin_loader_seed_register_type (G_TYPE_MODULE (module));
-  peas_extension_seed_register (G_TYPE_MODULE (module));
-
   peas_object_module_register_extension_type (module,
                                               PEAS_TYPE_PLUGIN_LOADER,
                                               PEAS_TYPE_PLUGIN_LOADER_SEED);

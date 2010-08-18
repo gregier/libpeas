@@ -52,7 +52,6 @@ struct _PeasExtensionPythonClass {
 };
 
 GType            peas_extension_python_get_type (void) G_GNUC_CONST;
-void             peas_extension_python_register (GTypeModule *module);
 
 PeasExtension   *peas_extension_python_new      (GType        gtype,
                                                  PyObject    *instance);

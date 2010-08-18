@@ -27,7 +27,7 @@
 #include <libpeas/peas-introspection.h>
 #include <girepository.h>
 
-G_DEFINE_DYNAMIC_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
+G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
 
 enum {
   PROP_0,
@@ -392,17 +392,6 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
                                                          "A Seed JavaScript object",
                                                          G_PARAM_WRITABLE |
                                                          G_PARAM_CONSTRUCT_ONLY));
-}
-
-static void
-peas_extension_seed_class_finalize (PeasExtensionSeedClass *klass)
-{
-}
-
-void
-peas_extension_seed_register (GTypeModule *type_module)
-{
-  peas_extension_seed_register_type (type_module);
 }
 
 PeasExtension *

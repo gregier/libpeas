@@ -49,7 +49,6 @@ struct _PeasExtensionSeedClass {
 };
 
 GType            peas_extension_seed_get_type (void) G_GNUC_CONST;
-void             peas_extension_seed_register (GTypeModule    *type_module);
 
 PeasExtension   *peas_extension_seed_new      (GType           exten_type,
                                                SeedContext     js_context,

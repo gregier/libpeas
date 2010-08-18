@@ -57,14 +57,11 @@ static PyObject *PyGObject_Type;
 static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
                                                              const gchar            *module_path);
 
-G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER);
+G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER);
 
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
-  peas_plugin_loader_python_register_type (G_TYPE_MODULE (module));
-  peas_extension_python_register (G_TYPE_MODULE (module));
-
   peas_object_module_register_extension_type (module,
                                               PEAS_TYPE_PLUGIN_LOADER,
                                               PEAS_TYPE_PLUGIN_LOADER_PYTHON);
@@ -592,9 +589,4 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
   loader_class->garbage_collect = peas_plugin_loader_python_garbage_collect;
 
   g_type_class_add_private (object_class, sizeof (PeasPluginLoaderPythonPrivate));
-}
-
-static void
-peas_plugin_loader_python_class_finalize (PeasPluginLoaderPythonClass *klass)
-{
 }

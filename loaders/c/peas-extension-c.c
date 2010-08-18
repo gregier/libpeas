@@ -27,13 +27,7 @@
 #include <libpeas/peas-introspection.h>
 #include "peas-extension-c.h"
 
-G_DEFINE_DYNAMIC_TYPE (PeasExtensionC, peas_extension_c, PEAS_TYPE_EXTENSION);
-
-void
-peas_extension_c_register (GTypeModule *module)
-{
-  peas_extension_c_register_type (module);
-}
+G_DEFINE_TYPE (PeasExtensionC, peas_extension_c, PEAS_TYPE_EXTENSION);
 
 static void
 peas_extension_c_init (PeasExtensionC *cexten)
@@ -74,11 +68,6 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
   object_class->finalize = peas_extension_c_finalize;
 
   extension_class->call = peas_extension_c_call;
-}
-
-static void
-peas_extension_c_class_finalize (PeasExtensionCClass *klass)
-{
 }
 
 PeasExtension *

@@ -36,14 +36,11 @@ struct _PeasPluginLoaderCPrivate
   GHashTable *loaded_plugins;
 };
 
-G_DEFINE_DYNAMIC_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
+G_DEFINE_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
 
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
-  peas_plugin_loader_c_register_type (G_TYPE_MODULE (module));
-  peas_extension_c_register (G_TYPE_MODULE (module));
-
   peas_object_module_register_extension_type (module,
                                               PEAS_TYPE_PLUGIN_LOADER,
                                               PEAS_TYPE_PLUGIN_LOADER_C);
@@ -230,9 +227,4 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
   loader_class->create_extension = peas_plugin_loader_c_create_extension;
 
   g_type_class_add_private (object_class, sizeof (PeasPluginLoaderCPrivate));
-}
-
-static void
-peas_plugin_loader_c_class_finalize (PeasPluginLoaderCClass *klass)
-{
 }
