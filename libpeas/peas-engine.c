@@ -84,6 +84,7 @@ struct _LoaderInfo {
 
 struct _PeasEnginePrivate {
   gchar *app_name;
+  gchar *file_ext;
   gchar **search_paths;
 
   GList *plugin_list;
@@ -123,7 +124,6 @@ load_plugin_info (PeasEngine  *engine,
 
 static void
 load_dir_real (PeasEngine  *engine,
-               const gchar *extension,
                const gchar *module_dir,
                const gchar *data_dir,
                guint        recursions)
@@ -132,7 +132,7 @@ load_dir_real (PeasEngine  *engine,
   GDir *d;
   const gchar *dirent;
 
-  g_debug ("Loading %s/*%s...", module_dir, extension);
+  g_debug ("Loading %s/*%s...", module_dir, engine->priv->file_ext);
 
   d = g_dir_open (module_dir, 0, &error);
 
@@ -147,11 +147,11 @@ load_dir_real (PeasEngine  *engine,
     {
       gchar *filename = g_build_filename (module_dir, dirent, NULL);
 
-      if (g_str_has_suffix (dirent, extension))
+      if (g_str_has_suffix (dirent, engine->priv->file_ext))
         load_plugin_info (engine, filename, module_dir, data_dir);
 
       else if (recursions > 0 && g_file_test (filename, G_FILE_TEST_IS_DIR))
-        load_dir_real (engine, extension, filename, data_dir, recursions - 1);
+        load_dir_real (engine, filename, data_dir, recursions - 1);
 
       g_free (filename);
     }
@@ -173,7 +173,6 @@ void
 peas_engine_rescan_plugins (PeasEngine *engine)
 {
   gchar **sp;
-  gchar *extension;
   guint i;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
@@ -185,18 +184,11 @@ peas_engine_rescan_plugins (PeasEngine *engine)
       return;
     }
 
-  /* Compute the extension of the plugin files. */
-  extension = g_strdup_printf (".%s-plugin", engine->priv->app_name);
-  for (i = 0; extension[i] != '\0'; ++i)
-    extension[i] = g_ascii_tolower (extension[i]);
-
   /* Go and read everything from the provided search paths */
   for (i = 0; sp[i] != NULL; i += 2)
-    load_dir_real (engine, extension, sp[i], sp[i + 1], 1);
+    load_dir_real (engine, sp[i], sp[i + 1], 1);
 
   g_object_notify (G_OBJECT (engine), "plugin-list");
-
-  g_free (extension);
 }
 
 static guint
@@ -298,6 +290,20 @@ peas_engine_garbage_collect (PeasEngine *engine)
                         NULL);
 }
 
+static gchar *
+compute_file_extension (const gchar *app_name)
+{
+  gchar *ext;
+  guint i;
+
+  /* Compute the extension of the plugin files. */
+  ext = g_strdup_printf (".%s-plugin", app_name);
+  for (i = 0; ext[i] != '\0'; ++i)
+    ext[i] = g_ascii_tolower (ext[i]);
+
+  return ext;
+}
+
 static void
 peas_engine_set_property (GObject      *object,
                           guint         prop_id,
@@ -310,6 +316,7 @@ peas_engine_set_property (GObject      *object,
     {
     case PROP_APP_NAME:
       engine->priv->app_name = g_value_dup_string (value);
+      engine->priv->file_ext = compute_file_extension (engine->priv->app_name);
       break;
     case PROP_SEARCH_PATHS:
       engine->priv->search_paths = g_value_dup_boxed (value);
@@ -378,6 +385,7 @@ peas_engine_finalize (GObject *object)
 
   g_list_free (engine->priv->plugin_list);
   g_strfreev (engine->priv->search_paths);
+  g_free (engine->priv->file_ext);
   g_free (engine->priv->app_name);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);
