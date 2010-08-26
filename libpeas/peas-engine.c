@@ -57,6 +57,8 @@
  **/
 G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT);
 
+static PeasEngine *default_engine = NULL;
+
 /* Signals */
 enum {
   LOAD_PLUGIN,
@@ -291,6 +293,12 @@ add_loader (PeasEngine       *engine,
 static void
 peas_engine_init (PeasEngine *engine)
 {
+  /* Set the default engine pointer, for peas_engine_get_default().
+   * We only allow one single instance of a PeasEngine subclass. */
+  g_assert (default_engine == NULL);
+  default_engine = engine;
+  g_object_add_weak_pointer (engine, &default_engine);
+
   if (!g_module_supported ())
     {
       g_warning ("libpeas is not able to initialize the plugins engine.");
@@ -1104,4 +1112,22 @@ peas_engine_new (void)
 {
   return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
                                     NULL));
+}
+
+/**
+ * peas_engine_get_default:
+ *
+ * Return the existing instance of #PeasEngine or a subclass of it.
+ * If no #PeasEngine subclass has been instantiated yet, the first call
+ * of this function will return a new instance of #PeasEngine.
+ *
+ * Returns: the existing instance of #PeasEngine.
+ */
+PeasEngine *
+peas_engine_get_default (void)
+{
+  if (default_engine == NULL)
+    return peas_engine_new ();
+
+  return default_engine;
 }
