@@ -68,8 +68,11 @@ struct _PeasEngineClass {
 };
 
 GType             peas_engine_get_type            (void) G_GNUC_CONST;
-PeasEngine       *peas_engine_new                 (const gchar     *app_name,
-                                                   const gchar    **search_paths);
+PeasEngine       *peas_engine_new                 (const gchar     *app_name);
+
+void              peas_engine_add_search_path     (PeasEngine      *engine,
+                                                   const gchar     *plugin_dir,
+                                                   const gchar     *data_dir);
 
 /* plugin management */
 void              peas_engine_disable_loader      (PeasEngine      *engine,

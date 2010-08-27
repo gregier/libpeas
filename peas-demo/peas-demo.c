@@ -125,7 +125,7 @@ main (int    argc,
 {
   GOptionContext *option_context;
   GError *error = NULL;
-  gchar **search_paths;
+  gchar *plugin_dir;
 
   option_context = g_option_context_new (_("- libpeas demo application"));
   g_option_context_add_main_entries (option_context, demo_args, GETTEXT_PACKAGE);
@@ -140,34 +140,29 @@ main (int    argc,
 
   g_option_context_free (option_context);
 
-  search_paths = g_new0 (gchar *, 5);
-
-  /* User-installed plugins */
-  search_paths[0] = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
-  search_paths[1] = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
-
+  /* Ensure we pick the uninstalled plugin loaders if we're running from build dir */
   if (run_from_build_dir)
     {
       g_debug ("Running from build dir.");
       g_irepository_prepend_search_path ("../libpeas");
       g_irepository_prepend_search_path ("../libpeasui");
       g_setenv ("PEAS_PLUGIN_LOADERS_DIR", "../loaders", TRUE);
-
-      /* Uninstalled plugins */
-      search_paths[2] = g_strdup ("./plugins");
-      search_paths[3] = g_strdup ("./plugins");
-    }
-  else
-    {
-      /* System-wide plugins */
-      search_paths[2] = g_strdup (PEAS_LIBDIR "/peas-demo/plugins/");
-      search_paths[3] = g_strdup (PEAS_PREFIX "/share/peas-demo/plugins/");
     }
 
   g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, NULL);
 
-  engine = peas_engine_new ("PeasDemo",
-                            (const gchar **) search_paths);
+  engine = peas_engine_new ("PeasDemo");
+
+  plugin_dir = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
+  peas_engine_add_search_path (engine, plugin_dir, plugin_dir);
+  g_free (plugin_dir);
+
+  if (run_from_build_dir)
+    peas_engine_add_search_path (engine, "./plugins", NULL);
+  else
+    peas_engine_add_search_path (engine,
+                                 PEAS_LIBDIR "/peas-demo/plugins/",
+                                 PEAS_PREFIX "/share/peas-demo/plugins");
 
   n_windows = 0;
   main_window = create_main_window ();
@@ -176,7 +171,6 @@ main (int    argc,
   gtk_main ();
 
   g_object_unref (engine);
-  g_strfreev (search_paths);
 
   return 0;
 }

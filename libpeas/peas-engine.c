@@ -70,7 +70,6 @@ static guint signals[LAST_SIGNAL];
 enum {
   PROP_0,
   PROP_APP_NAME,
-  PROP_SEARCH_PATHS,
   PROP_PLUGIN_LIST,
   PROP_LOADED_PLUGINS
 };
@@ -82,10 +81,15 @@ struct _LoaderInfo {
   PeasObjectModule *module;
 };
 
+typedef struct _SearchPath {
+  gchar *module_dir;
+  gchar *data_dir;
+} SearchPath;
+
 struct _PeasEnginePrivate {
   gchar *app_name;
   gchar *file_ext;
-  gchar **search_paths;
+  GList *search_paths;
 
   GList *plugin_list;
   GHashTable *loaders;
@@ -172,22 +176,68 @@ load_dir_real (PeasEngine  *engine,
 void
 peas_engine_rescan_plugins (PeasEngine *engine)
 {
-  gchar **sp;
-  guint i;
+  GList *item;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  sp = engine->priv->search_paths;
-  if (sp == NULL)
+  if (engine->priv->search_paths == NULL)
     {
       g_debug ("No search paths where provided");
       return;
     }
 
   /* Go and read everything from the provided search paths */
-  for (i = 0; sp[i] != NULL; i += 2)
-    load_dir_real (engine, sp[i], sp[i + 1], 1);
+  for (item = engine->priv->search_paths; item != NULL; item = item->next)
+    {
+      SearchPath *sp = (SearchPath *) item->data;
+      load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+    }
 
+  g_object_notify (G_OBJECT (engine), "plugin-list");
+}
+
+/**
+ * peas_engine_add_search_path:
+ * @engine: A #PeasEngine.
+ * @module_dir: the plugin module directory.
+ * @data_dir: (allow-none): the plugin data directory.
+ *
+ * This function appends a search path to the list of paths where to
+ * look for plugins.
+ *
+ * A so-called "search path" actually consists of a couple of both a
+ * module directory (where the shared libraries or language modules
+ * lie) and a data directory (where the plugin data is).
+ *
+ * The #PeasPlugin will be able to use a correct data dir depending on
+ * where it is installed, hence allowing to keep the plugin agnostic
+ * when it comes to installation location: the same plugin can be
+ * installed either in the system path or in the user's home directory,
+ * without taking other special care than using
+ * peas_plugin_info_get_data_dir() when looking for its data files.
+ *
+ * If @data_dir is %NULL, then it is set to the same value as
+ * @module_dir.
+ */
+void
+peas_engine_add_search_path (PeasEngine *engine,
+                             const gchar *module_dir,
+                             const gchar *data_dir)
+{
+  SearchPath *sp;
+
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
+  g_return_if_fail (module_dir != NULL);
+
+  sp = g_slice_new (SearchPath);
+  sp->module_dir = g_strdup (module_dir);
+  sp->data_dir = g_strdup (data_dir ? data_dir : module_dir);
+
+  /* Appending to a list is bad, but is easier to handle wrt refreshing
+   * the plugin list. */
+  engine->priv->search_paths = g_list_append (engine->priv->search_paths, sp);
+
+  load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
   g_object_notify (G_OBJECT (engine), "plugin-list");
 }
 
@@ -318,9 +368,6 @@ peas_engine_set_property (GObject      *object,
       engine->priv->app_name = g_value_dup_string (value);
       engine->priv->file_ext = compute_file_extension (engine->priv->app_name);
       break;
-    case PROP_SEARCH_PATHS:
-      engine->priv->search_paths = g_value_dup_boxed (value);
-      break;
     case PROP_LOADED_PLUGINS:
       peas_engine_set_loaded_plugins (engine,
                                       (const gchar **) g_value_get_boxed (value));
@@ -343,9 +390,6 @@ peas_engine_get_property (GObject    *object,
     {
     case PROP_APP_NAME:
       g_value_set_string (value, engine->priv->app_name);
-      break;
-    case PROP_SEARCH_PATHS:
-      g_value_set_boxed (value, engine->priv->search_paths);
       break;
     case PROP_PLUGIN_LIST:
       g_value_set_pointer (value,
@@ -383,8 +427,18 @@ peas_engine_finalize (GObject *object)
   for (item = engine->priv->plugin_list; item; item = item->next)
     _peas_plugin_info_unref (PEAS_PLUGIN_INFO (item->data));
 
+  /* free the search path list */
+  for (item = engine->priv->search_paths; item; item = item->next)
+    {
+      SearchPath *sp = (SearchPath *) item->data;
+
+      g_free (sp->module_dir);
+      g_free (sp->data_dir);
+      g_slice_free (SearchPath, sp);
+    }
+
   g_list_free (engine->priv->plugin_list);
-  g_strfreev (engine->priv->search_paths);
+  g_list_free (engine->priv->search_paths);
   g_free (engine->priv->file_ext);
   g_free (engine->priv->app_name);
 
@@ -424,48 +478,6 @@ peas_engine_class_init (PeasEngineClass *klass)
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_STRINGS));
-
-  /**
-   * PeasEngine:search-paths:
-   *
-   * The list of path where to look for plugins.
-   *
-   * A so-called "search path" actually consists on a couple of both a
-   * module directory (where the shared libraries or language modules
-   * lie) and a data directory (where the plugin data is).
-   *
-   * The #PeasPlugin will be able to use a correct data dir depending on
-   * where it is installed, hence allowing to keep the plugin agnostic
-   * when it comes to installation location: the same plugin can be
-   * installed both in the system path or in the user's home directory,
-   * without taking other special care than using
-   * peas_plugin_info_get_data_dir() when looking for its data files.
-   *
-   * Concretely, this property contains a %NULL-terminated array of
-   * strings, whose even-indexed strings are module directories, and
-   * odd-indexed ones are the associated data directories.  Here is an
-   * example of such an array:
-   * |[
-   * gchar const * const search_paths[] = {
-   *         // Plugins in ~/.config
-   *         g_build_filename (g_get_user_config_dir (), "example/plugins", NULL),
-   *         g_build_filename (g_get_user_config_dir (), "example/plugins", NULL),
-   *         // System plugins
-   *         EXAMPLE_PREFIX "/lib/example/plugins/",
-   *         EXAMPLE_PREFIX "/share/example/plugins/",
-   *         NULL
-   * };
-   * ]|
-   */
-  g_object_class_install_property (object_class,
-                                   PROP_SEARCH_PATHS,
-                                   g_param_spec_boxed ("search-paths",
-                                                       "Search paths",
-                                                       "The list of paths where to look for plugins",
-                                                       G_TYPE_STRV,
-                                                       G_PARAM_READWRITE |
-                                                       G_PARAM_CONSTRUCT_ONLY |
-                                                       G_PARAM_STATIC_STRINGS));
 
   /**
    * PeasEngine:plugin-list:
@@ -1127,7 +1139,6 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 /**
  * peas_engine_new:
  * @app_name: (allow-none): The name of the application
- * @search_paths: The paths where to look for plugins
  *
  * Returns a new #PeasEngine object.
  * See the properties description for more information about the parameters.
@@ -1135,13 +1146,9 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
  * Returns: a newly created #PeasEngine object.
  */
 PeasEngine *
-peas_engine_new (const gchar  *app_name,
-                 const gchar **search_paths)
+peas_engine_new (const gchar  *app_name)
 {
-  g_return_val_if_fail (search_paths != NULL, NULL);
-
   return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
                                     "app-name", app_name,
-                                    "search-paths", search_paths,
                                     NULL));
 }

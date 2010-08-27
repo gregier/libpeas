@@ -62,6 +62,7 @@ PeasGtkPluginManagerViewPrivate
 PeasEngine
 PeasEngineClass
 peas_engine_new
+peas_engine_add_search_path
 peas_engine_rescan_plugins
 peas_engine_get_plugin_list
 peas_engine_get_loaded_plugins
