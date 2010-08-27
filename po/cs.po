@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-19 18:51+0000\n"
-"PO-Revision-Date: 2010-07-19 21:33+0200\n"
+"POT-Creation-Date: 2010-08-18 18:50+0000\n"
+"PO-Revision-Date: 2010-07-22 22:35+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,14 +19,47 @@ msgstr ""
 "X-Poedit-Language: Czech\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:253
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:177
+msgid "There was an error displaying the help."
+msgstr "Vyskytla se chyba při zobrazení nápovědy."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:335
 msgid "C_onfigure"
 msgstr "Na_stavit"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:261
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:343
 msgid "_About"
 msgstr "O _aplikaci"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:282
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:364
 msgid "_Plugins:"
 msgstr "Zásuvné _moduly:"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:295
+msgid "_Enabled"
+msgstr "Povol_en"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:306
+msgid "E_nable All"
+msgstr "Po_volit vše"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:310
+msgid "_Disable All"
+msgstr "Za_kázat vše"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:467
+msgid "Enabled"
+msgstr "Povolen"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:488
+msgid "Plugin"
+msgstr "Zásuvný modul"
+
+#: ../peas-demo/peas-demo.c:39
+msgid "Run from build directory"
+msgstr "Spustit ze složky, ve které bylo sestaveno"
+
+#: ../peas-demo/peas-demo.c:130
+msgid "- libpeas demo application"
+msgstr "- ukázková aplikace libpeas"
+
