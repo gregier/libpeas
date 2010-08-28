@@ -49,12 +49,6 @@ struct _PeasGtkPluginManagerStorePrivate {
   PeasEngine *engine;
 };
 
-/* Properties */
-enum {
-  PROP_0,
-  PROP_ENGINE
-};
-
 G_DEFINE_TYPE (PeasGtkPluginManagerStore, peas_gtk_plugin_manager_store, GTK_TYPE_LIST_STORE);
 
 static void
@@ -145,51 +139,9 @@ peas_gtk_plugin_manager_store_init (PeasGtkPluginManagerStore *store)
   gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (store),
                                         GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID,
                                         GTK_SORT_ASCENDING);
-}
 
-static void
-peas_gtk_plugin_manager_store_set_property (GObject      *object,
-                                            guint         prop_id,
-                                            const GValue *value,
-                                            GParamSpec   *pspec)
-{
-  PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
-
-  switch (prop_id)
-    {
-    case PROP_ENGINE:
-      store->priv->engine = g_value_get_object (value);
-      g_object_ref (store->priv->engine);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
-
-static void
-peas_gtk_plugin_manager_store_get_property (GObject    *object,
-                                            guint       prop_id,
-                                            GValue     *value,
-                                            GParamSpec *pspec)
-{
-  PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
-
-  switch (prop_id)
-    {
-    case PROP_ENGINE:
-      g_value_set_object (value, store->priv->engine);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
-
-static void
-peas_gtk_plugin_manager_store_constructed (GObject *object)
-{
-  PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
+  /* Set up the engine synchronization */
+  store->priv->engine = g_object_ref (peas_engine_get_default ());
 
   g_signal_connect_after (store->priv->engine,
                           "load-plugin",
@@ -201,9 +153,6 @@ peas_gtk_plugin_manager_store_constructed (GObject *object)
                           store);
 
   peas_gtk_plugin_manager_store_reload (store);
-
-  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->constructed (object);
 }
 
 static void
@@ -229,44 +178,22 @@ peas_gtk_plugin_manager_store_class_init (PeasGtkPluginManagerStoreClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->set_property = peas_gtk_plugin_manager_store_set_property;
-  object_class->get_property = peas_gtk_plugin_manager_store_get_property;
-  object_class->constructed = peas_gtk_plugin_manager_store_constructed;
   object_class->dispose = peas_gtk_plugin_manager_store_dispose;
-
-  /*
-   * PeasGtkPLuginManagerStore:engine:
-   *
-   * The #PeasEngine this store is attached to.
-   */
-  g_object_class_install_property (object_class,
-                                   PROP_ENGINE,
-                                   g_param_spec_object ("engine",
-                                                        "engine",
-                                                        "The PeasEngine this store is attached to",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (object_class, sizeof (PeasGtkPluginManagerStorePrivate));
 }
 
 /*
  * peas_gtk_plugin_manager_store_new:
- * @engine: A #PeasEngine.
  *
  * Creates a new plugin manager store for the given #PeasEngine.
  *
  * Returns: the new #PeasGtkPluginManagerStore.
  */
 PeasGtkPluginManagerStore  *
-peas_gtk_plugin_manager_store_new (PeasEngine *engine)
+peas_gtk_plugin_manager_store_new (void)
 {
-  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
-
   return PEAS_GTK_PLUGIN_MANAGER_STORE (g_object_new (PEAS_GTK_TYPE_PLUGIN_MANAGER_STORE,
-                                                      "engine", engine,
                                                       NULL));
 }
 

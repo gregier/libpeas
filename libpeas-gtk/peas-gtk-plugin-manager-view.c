@@ -63,7 +63,6 @@ struct _PeasGtkPluginManagerViewPrivate {
 /* Properties */
 enum {
   PROP_0,
-  PROP_ENGINE,
   PROP_SHOW_BUILTIN
 };
 
@@ -469,6 +468,13 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
                                             PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
                                             PeasGtkPluginManagerViewPrivate);
 
+  view->priv->store = peas_gtk_plugin_manager_store_new ();
+  view->priv->engine = g_object_ref (peas_engine_get_default ());
+  g_signal_connect (view->priv->engine,
+                    "notify::plugin-list",
+                    G_CALLBACK (plugin_list_changed_cb),
+                    view);
+
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view), FALSE);
 
@@ -551,10 +557,6 @@ peas_gtk_plugin_manager_view_set_property (GObject      *object,
 
   switch (prop_id)
     {
-    case PROP_ENGINE:
-      view->priv->engine = g_value_get_object (value);
-      g_object_ref (view->priv->engine);
-      break;
     case PROP_SHOW_BUILTIN:
       peas_gtk_plugin_manager_view_set_show_builtin (view,
                                                     g_value_get_boolean (value));
@@ -575,9 +577,6 @@ peas_gtk_plugin_manager_view_get_property (GObject    *object,
 
   switch (prop_id)
     {
-    case PROP_ENGINE:
-      g_value_set_object (value, view->priv->engine);
-      break;
     case PROP_SHOW_BUILTIN:
       g_value_set_boolean (value,
                            peas_gtk_plugin_manager_view_get_show_builtin (view));
@@ -593,16 +592,9 @@ peas_gtk_plugin_manager_view_constructed (GObject *object)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
 
-  view->priv->store = peas_gtk_plugin_manager_store_new (view->priv->engine);
-
   /* Properly set the model */
   view->priv->show_builtin = TRUE;
   peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
-
-  g_signal_connect (view->priv->engine,
-                    "notify::plugin-list",
-                    G_CALLBACK (plugin_list_changed_cb),
-                    view);
 
   if (G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed != NULL)
     G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed (object);
@@ -650,27 +642,12 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
   object_class->dispose = peas_gtk_plugin_manager_view_dispose;
 
   /**
-   * PeasGtkPLuginManagerView:engine:
-   *
-   * The #PeasEngine this view is attached to.
-   */
-  g_object_class_install_property (object_class,
-                                   PROP_ENGINE,
-                                   g_param_spec_object ("engine",
-                                                        "engine",
-                                                        "The PeasEngine this view is attached to",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
-
-  /**
    * PeasGtkPLuginManagerView:show-builtin:
    *
    * If builtin plugins should be shown.
    */
   g_object_class_install_property (object_class,
-                                   PROP_ENGINE,
+                                   PROP_SHOW_BUILTIN,
                                    g_param_spec_boolean ("show-builtin",
                                                          "show-builtin",
                                                          "If builtin plugins should be shown",
@@ -703,19 +680,15 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 
 /**
  * peas_gtk_plugin_manager_view_new:
- * @engine: A #PeasEngine.
  *
  * Creates a new plugin manager view for the given #PeasEngine.
  *
  * Returns: the new #PeasGtkPluginManagerView.
  */
 GtkWidget *
-peas_gtk_plugin_manager_view_new (PeasEngine *engine)
+peas_gtk_plugin_manager_view_new (void)
 {
-  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
-
   return GTK_WIDGET (g_object_new (PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
-                                   "engine", engine,
                                    NULL));
 }
 

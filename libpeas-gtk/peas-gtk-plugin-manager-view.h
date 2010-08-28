@@ -58,8 +58,8 @@ struct _PeasGtkPluginManagerViewClass {
                              GtkMenu                  *menu);
 };
 
-GType           peas_gtk_plugin_manager_view_get_type            (void) G_GNUC_CONST;
-GtkWidget      *peas_gtk_plugin_manager_view_new                 (PeasEngine              *engine);
+GType           peas_gtk_plugin_manager_view_get_type             (void) G_GNUC_CONST;
+GtkWidget      *peas_gtk_plugin_manager_view_new                  (void);
 
 void            peas_gtk_plugin_manager_view_set_show_builtin     (PeasGtkPluginManagerView *view,
                                                                    gboolean                  show_builtin);

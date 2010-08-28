@@ -63,7 +63,7 @@ create_plugin_manager (GtkButton *button,
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Plugin Manager");
 
-  manager = peas_gtk_plugin_manager_new (engine);
+  manager = peas_gtk_plugin_manager_new ();
   gtk_container_add (GTK_CONTAINER (window), manager);
 
   gtk_widget_show_all (window);
