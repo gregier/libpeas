@@ -2,13 +2,14 @@
 # Copyright (C) 2010 Listed translators
 # This file is distributed under the same license as the libpeas package.
 # Nicolas Repentin <nicolas.repentin@gmail.com>, 2010.
+# Claude Paroz <claude@2xlibre.net>, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-19 18:51+0000\n"
-"PO-Revision-Date: 2010-07-20 20:52+0200\n"
+"POT-Creation-Date: 2010-07-22 11:00+0000\n"
+"PO-Revision-Date: 2010-08-29 19:52+0200\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,29 +17,52 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:253
+#: ../libpeasui/peas-ui-plugin-manager.c:177
+msgid "There was an error displaying the help."
+msgstr "Une erreur s'est produite durant l'affichage de l'aide."
+
+#: ../libpeasui/peas-ui-plugin-manager.c:335
 msgid "C_onfigure"
 msgstr "C_onfigurer"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:261
+#: ../libpeasui/peas-ui-plugin-manager.c:343
 msgid "_About"
 msgstr "À _propos"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:282
+#: ../libpeasui/peas-ui-plugin-manager.c:364
 msgid "_Plugins:"
 msgstr "_Greffons :"
 
-#~ msgid "Enabled"
-#~ msgstr "Activé"
+#: ../libpeasui/peas-ui-plugin-manager-view.c:295
+msgid "_Enabled"
+msgstr "_Activé"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:306
+msgid "E_nable All"
+msgstr "_Tout activer"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:310
+msgid "_Disable All"
+msgstr "Tout _désactiver"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:467
+msgid "Enabled"
+msgstr "Activé"
+
+#: ../libpeasui/peas-ui-plugin-manager-view.c:488
+msgid "Plugin"
+msgstr "Greffon"
+
+#: ../peas-demo/peas-demo.c:39
+msgid "Run from build directory"
+msgstr "Lancer à partir du répertoire de compilation"
+
+#: ../peas-demo/peas-demo.c:130
+msgid "- libpeas demo application"
+msgstr "- application démo libpeas"
 
 #~ msgid "A_ctivate"
 #~ msgstr "A_ctiver"
-
-#~ msgid "Ac_tivate All"
-#~ msgstr "_Tout activer"
-
-#~ msgid "_Deactivate All"
-#~ msgstr "Tout _désactiver"
 
 #~ msgid "Active _Plugins:"
 #~ msgstr "_Greffons actifs :"
