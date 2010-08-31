@@ -360,8 +360,8 @@ peas_method_apply (GObject     *instance,
   n_in_args = 0;
   n_out_args = 0;
 
-  in_args = g_new0 (GArgument, n_args + 1);
-  out_args = g_new0 (GArgument, n_args);
+  in_args = g_newa (GArgument, n_args + 1);
+  out_args = g_newa (GArgument, n_args);
 
   peas_gi_split_in_and_out_arguments (func_info, args,
                                       in_args+1, &n_in_args,
@@ -385,8 +385,6 @@ peas_method_apply (GObject     *instance,
     }
 
 out:
-  g_free (in_args);
-  g_free (out_args);
   g_base_info_unref ((GIBaseInfo *) func_info);
 
   return ret;

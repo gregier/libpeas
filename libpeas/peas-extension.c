@@ -225,7 +225,7 @@ peas_extension_call_valist (PeasExtension *exten,
   if (callable_info == NULL)
     return FALSE;
 
-  gargs = g_new (GArgument, g_callable_info_get_n_args (callable_info));
+  gargs = g_newa (GArgument, g_callable_info_get_n_args (callable_info));
   peas_gi_valist_to_arguments (callable_info, args, gargs, &retval_ptr);
 
   ret = peas_extension_callv (exten, method_name, gargs, &retval);
@@ -236,8 +236,6 @@ peas_extension_call_valist (PeasExtension *exten,
       peas_gi_argument_to_pointer (retval_info, &retval, retval_ptr);
       g_base_info_unref ((GIBaseInfo *) retval_info);
     }
-
-  g_free (gargs);
 
   return ret;
 }
