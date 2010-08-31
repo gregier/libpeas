@@ -221,7 +221,7 @@ show_configure_cb (GtkWidget            *widget,
   exten = peas_engine_create_extension (pm->priv->engine, info, PEAS_GTK_TYPE_CONFIGURABLE, NULL);
   g_return_if_fail (PEAS_IS_EXTENSION (exten));
 
-  peas_extension_call (exten, "create_configure_widget", &conf_widget);
+  conf_widget = peas_gtk_configurable_create_configure_widget (PEAS_GTK_CONFIGURABLE (exten));
   g_object_unref (exten);
 
   g_return_if_fail (GTK_IS_WIDGET (conf_widget));
