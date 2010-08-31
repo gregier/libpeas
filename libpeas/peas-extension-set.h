@@ -59,7 +59,7 @@ struct _PeasExtensionSetClass {
   /* Virtual public methods */
   gboolean   (*call)                      (PeasExtensionSet *set,
                                            const gchar      *method,
-                                           va_list           args);
+                                           GArgument        *args);
 
   /* Signals */
   void       (*extension_added)           (PeasExtensionSet *set,
@@ -93,7 +93,10 @@ gboolean           peas_extension_set_call        (PeasExtensionSet *set,
                                                    ...);
 gboolean           peas_extension_set_call_valist (PeasExtensionSet *set,
                                                    const gchar      *method_name,
-                                                   va_list           args);
+                                                   va_list           va_args);
+gboolean           peas_extension_set_callv       (PeasExtensionSet *set,
+                                                   const gchar      *method_name,
+                                                   GArgument        *args);
 
 PeasExtension     *peas_extension_set_get_extension (PeasExtensionSet *set,
                                                      PeasPluginInfo   *info);

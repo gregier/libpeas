@@ -29,6 +29,7 @@
 #include "peas-plugin-info.h"
 #include "peas-marshal.h"
 #include "peas-helpers.h"
+#include "peas-introspection.h"
 
 /**
  * SECTION:peas-extension-set
@@ -308,17 +309,17 @@ peas_extension_set_finalize (GObject *object)
 
 static gboolean
 peas_extension_set_call_real (PeasExtensionSet *set,
-                              const gchar      *method,
-                              va_list           args)
+                              const gchar      *method_name,
+                              GArgument        *args)
 {
   gboolean ret = TRUE;
   GList *l;
-  va_list args_copy;
+  GArgument dummy;
 
   for (l = set->priv->extensions; l; l = l->next)
     {
-      G_VA_COPY (args_copy, args);
-      ret = peas_extension_call_valist (((ExtensionItem *) l->data)->exten, method, args_copy) && ret;
+      ExtensionItem *item = (ExtensionItem *) l->data;
+      ret = peas_extension_callv (item->exten, method_name, args, &dummy) && ret;
     }
 
   return ret;
@@ -481,7 +482,7 @@ peas_extension_set_call (PeasExtensionSet *set,
  * peas_extension_set_call_valist:
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
- * @args: the arguments for the method.
+ * @va_args: the arguments for the method.
  *
  * Call a method on all the #PeasExtension instances contained in @set.
  *
@@ -492,7 +493,42 @@ peas_extension_set_call (PeasExtensionSet *set,
 gboolean
 peas_extension_set_call_valist (PeasExtensionSet *set,
                                 const gchar      *method_name,
-                                va_list           args)
+                                va_list           va_args)
+{
+  GICallableInfo *callable_info;
+  GArgument *args;
+  gboolean ret;
+
+  g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), FALSE);
+  g_return_val_if_fail (method_name != NULL, FALSE);
+
+  callable_info = peas_gi_get_method_info (set->priv->exten_type, method_name);
+  args = g_new (GArgument, g_callable_info_get_n_args (callable_info));
+  peas_gi_valist_to_arguments (callable_info, va_args, args, NULL);
+
+  ret = peas_extension_set_callv (set, method_name, args);
+
+  g_free (args);
+
+  return ret;
+}
+
+/**
+ * peas_extension_set_callv:
+ * @set: A #PeasExtensionSet.
+ * @method_name: the name of the method that should be called.
+ * @args: the arguments for the method.
+ *
+ * Call a method on all the #PeasExtension instances contained in @set.
+ *
+ * See peas_extension_callv() for more information.
+ *
+ * Return value: %TRUE on successful call.
+ */
+gboolean
+peas_extension_set_callv (PeasExtensionSet *set,
+                          const gchar      *method_name,
+                          GArgument        *args)
 {
   PeasExtensionSetClass *klass;
 

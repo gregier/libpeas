@@ -112,6 +112,7 @@ PeasExtensionSetClass
 PeasParameterArray
 peas_extension_set_call
 peas_extension_set_call_valist
+peas_extension_set_callv
 peas_extension_set_get_extension
 peas_extension_set_new
 peas_extension_set_newv
