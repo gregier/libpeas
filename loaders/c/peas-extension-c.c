@@ -25,6 +25,7 @@
 
 #include  <girepository.h>
 #include <libpeas/peas-introspection.h>
+#include <libpeas/peas-extension-subclasses.h>
 #include "peas-extension-c.h"
 
 G_DEFINE_TYPE (PeasExtensionC, peas_extension_c, PEAS_TYPE_EXTENSION);
@@ -75,8 +76,10 @@ peas_extension_c_new (GType    gtype,
                       GObject *instance)
 {
   PeasExtensionC *cexten;
+  GType real_type;
 
-  cexten = PEAS_EXTENSION_C (g_object_new (PEAS_TYPE_EXTENSION_C,
+  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_C, gtype);
+  cexten = PEAS_EXTENSION_C (g_object_new (real_type,
                                            "extension-type", gtype,
                                            NULL));
   cexten->instance = instance;

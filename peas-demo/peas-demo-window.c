@@ -47,7 +47,7 @@ on_extension_added (PeasExtensionSet *set,
                     PeasExtension    *exten,
                     DemoWindow       *dw)
 {
-  peas_extension_call (exten, "activate", dw);
+  peas_activatable_activate (PEAS_ACTIVATABLE (exten));
 }
 
 static void
@@ -56,7 +56,7 @@ on_extension_removed (PeasExtensionSet *set,
                       PeasExtension    *exten,
                       DemoWindow       *dw)
 {
-  peas_extension_call (exten, "deactivate");
+  peas_activatable_deactivate (PEAS_ACTIVATABLE (exten));
 }
 
 static gboolean

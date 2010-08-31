@@ -25,6 +25,7 @@
 
 #include "peas-extension-seed.h"
 #include <libpeas/peas-introspection.h>
+#include <libpeas/peas-extension-subclasses.h>
 #include <girepository.h>
 
 G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
@@ -399,10 +400,13 @@ peas_extension_seed_new (GType       exten_type,
                          SeedContext js_context,
                          SeedObject  js_object)
 {
+  GType real_type;
+
   g_return_val_if_fail (js_context != NULL, NULL);
   g_return_val_if_fail (js_object != NULL, NULL);
 
-  return PEAS_EXTENSION (g_object_new (PEAS_TYPE_EXTENSION_SEED,
+  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_SEED, exten_type);
+  return PEAS_EXTENSION (g_object_new (real_type,
                                        "extension-type", exten_type,
                                        "js-context", js_context,
                                        "js-object", js_object,

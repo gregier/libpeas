@@ -233,6 +233,70 @@ peas_gi_argument_to_pointer (GITypeInfo     *type_info,
     }
 }
 
+void
+peas_gi_pointer_to_argument (GITypeInfo     *type_info,
+                             gpointer        ptr,
+                             GArgument      *arg)
+{
+  g_return_if_fail (ptr != NULL);
+
+  switch (g_type_info_get_tag (type_info))
+    {
+    case GI_TYPE_TAG_VOID:
+    case GI_TYPE_TAG_BOOLEAN:
+      arg->v_boolean = *((gboolean *) ptr);
+      break;
+    case GI_TYPE_TAG_INT8:
+      arg->v_int8 = *((gint8 *) ptr);
+      break;
+    case GI_TYPE_TAG_UINT8:
+      arg->v_uint8 = *((guint8 *) ptr);
+      break;
+    case GI_TYPE_TAG_INT16:
+      arg->v_int16 = *((gint16 *) ptr);
+      break;
+    case GI_TYPE_TAG_UINT16:
+      arg->v_uint16 = *((guint16 *) ptr);
+      break;
+    case GI_TYPE_TAG_INT32:
+      arg->v_int32 = *((gint32 *) ptr);
+      break;
+    case GI_TYPE_TAG_UINT32:
+      arg->v_uint32 = *((guint32 *) ptr);
+      break;
+    case GI_TYPE_TAG_INT64:
+      arg->v_int64 = *((gint64 *) ptr);
+      break;
+    case GI_TYPE_TAG_UINT64:
+      arg->v_uint64 = *((guint64 *) ptr);
+      break;
+    case GI_TYPE_TAG_FLOAT:
+      arg->v_float = *((gfloat *) ptr);
+      break;
+    case GI_TYPE_TAG_DOUBLE:
+      arg->v_double = *((gdouble *) ptr);
+      break;
+    case GI_TYPE_TAG_GTYPE:
+      /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
+      arg->v_size = *((gsize *) ptr);
+      break;
+    case GI_TYPE_TAG_UTF8:
+    case GI_TYPE_TAG_FILENAME:
+      arg->v_string = *((gchar **) ptr);
+      break;
+    case GI_TYPE_TAG_ARRAY:
+    case GI_TYPE_TAG_INTERFACE:
+    case GI_TYPE_TAG_GLIST:
+    case GI_TYPE_TAG_GSLIST:
+    case GI_TYPE_TAG_GHASH:
+    case GI_TYPE_TAG_ERROR:
+      arg->v_pointer = *((gpointer **) ptr);
+      break;
+    default:
+      g_return_if_reached ();
+    }
+}
+
 GICallableInfo *
 peas_gi_get_method_info (GType        iface_type,
                          const gchar *method_name)

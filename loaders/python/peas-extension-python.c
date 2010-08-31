@@ -30,6 +30,7 @@
 #include <Python.h>
 #include <pygobject.h>
 #include <libpeas/peas-introspection.h>
+#include <libpeas/peas-extension-subclasses.h>
 #include "peas-extension-python.h"
 
 G_DEFINE_TYPE (PeasExtensionPython, peas_extension_python, PEAS_TYPE_EXTENSION);
@@ -84,8 +85,10 @@ peas_extension_python_new (GType     gtype,
                            PyObject *instance)
 {
   PeasExtensionPython *pyexten;
+  GType real_type;
 
-  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (PEAS_TYPE_EXTENSION_PYTHON,
+  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_PYTHON, gtype);
+  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (real_type,
                                                  "extension-type", gtype,
                                                  NULL));
   pyexten->instance = instance;

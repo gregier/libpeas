@@ -37,6 +37,9 @@ void             peas_gi_valist_to_arguments      (GICallableInfo *callable_info
 void             peas_gi_argument_to_pointer      (GITypeInfo     *type_info,
                                                    GArgument      *arg,
                                                    gpointer        ptr);
+void             peas_gi_pointer_to_argument      (GITypeInfo     *type_info,
+                                                   gpointer        ptr,
+                                                   GArgument      *arg);
 gboolean         peas_method_apply                (GObject     *instance,
                                                    GType        iface_type,
                                                    const gchar *method_name,

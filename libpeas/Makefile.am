@@ -26,28 +26,30 @@ INST_H_FILES =			\
 	peas-engine.h		\
 	peas.h
 
-NOINST_H_FILES =		\
-	peas-debug.h		\
-	peas-dirs.h		\
-	peas-helpers.h		\
-	peas-i18n.h		\
-	peas-introspection.h	\
-	peas-plugin-info-priv.h	\
+NOINST_H_FILES =			\
+	peas-debug.h			\
+	peas-dirs.h			\
+	peas-extension-subclasses.h	\
+	peas-helpers.h			\
+	peas-i18n.h			\
+	peas-introspection.h		\
+	peas-plugin-info-priv.h		\
 	peas-plugin-loader.h
 
-C_FILES =			\
-	peas-debug.c		\
-	peas-dirs.c		\
-	peas-helpers.c		\
-	peas-i18n.c		\
-	peas-object-module.c	\
-	peas-introspection.c	\
-	peas-plugin-info.c	\
-	peas-plugin-loader.c	\
-	peas-extension-base.c	\
-	peas-extension.c	\
-	peas-extension-set.c	\
-	peas-activatable.c	\
+C_FILES =				\
+	peas-debug.c			\
+	peas-dirs.c			\
+	peas-helpers.c			\
+	peas-i18n.c			\
+	peas-object-module.c		\
+	peas-introspection.c		\
+	peas-plugin-info.c		\
+	peas-plugin-loader.c		\
+	peas-extension-base.c		\
+	peas-extension.c		\
+	peas-extension-set.c		\
+	peas-extension-subclasses.c	\
+	peas-activatable.c		\
 	peas-engine.c
 
 BUILT_SOURCES = \
