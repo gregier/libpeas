@@ -68,14 +68,14 @@ handle_method_impl (ffi_cif  *cif,
   g_assert (PEAS_IS_EXTENSION (instance));
 
   n_args = g_callable_info_get_n_args (impl->info);
-  arguments = g_newa (GArgument, n_args);
+  arguments = g_newa (GArgument, n_args-1);
 
   for (i = 1; i < n_args; i++)
     {
       arg_info = g_callable_info_get_arg (impl->info, i);
       type_info = g_arg_info_get_type (arg_info);
 
-      peas_gi_pointer_to_argument (type_info, args[i + 1], &arguments[i]);
+      peas_gi_pointer_to_argument (type_info, args[i], &arguments[i-1]);
 
       g_base_info_unref (type_info);
       g_base_info_unref (arg_info);
@@ -93,7 +93,7 @@ handle_method_impl (ffi_cif  *cif,
       if (direction == GI_DIRECTION_OUT || direction == GI_DIRECTION_INOUT)
         {
           type_info = g_arg_info_get_type (arg_info);
-          peas_gi_argument_to_pointer (type_info, &arguments[i], args[i + 1]);
+          peas_gi_argument_to_pointer (type_info, &arguments[i-1], args[i]);
           g_base_info_unref (type_info);
         }
 
