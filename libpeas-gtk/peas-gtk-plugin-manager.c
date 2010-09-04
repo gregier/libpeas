@@ -250,7 +250,11 @@ show_configure_cb (GtkWidget            *widget,
 
   conf_dlg = gtk_dialog_new_with_buttons (peas_plugin_info_get_name (info),
                                           toplevel,
+#if !GTK_CHECK_VERSION(2,90,7)
                                           GTK_DIALOG_NO_SEPARATOR,
+#else
+                                          0,
+#endif
                                           GTK_STOCK_CLOSE,
                                           GTK_RESPONSE_CLOSE,
                                           NULL);
