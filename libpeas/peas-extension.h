@@ -67,8 +67,8 @@ struct _PeasExtensionClass {
   /*< private >*/
   gboolean   (*call)                      (PeasExtension  *exten,
                                            const gchar    *method,
-                                           GArgument      *args,
-                                           GArgument      *return_value);
+                                           GIArgument     *args,
+                                           GIArgument     *return_value);
 };
 
 /*
@@ -87,8 +87,8 @@ gboolean     peas_extension_call_valist     (PeasExtension *exten,
                                              va_list        args);
 gboolean     peas_extension_callv           (PeasExtension *exten,
                                              const gchar   *method_name,
-                                             GArgument     *args,
-                                             GArgument     *return_value);
+                                             GIArgument    *args,
+                                             GIArgument    *return_value);
 
 G_END_DECLS
 

@@ -39,7 +39,7 @@ enum {
 
 typedef struct {
   GITypeInfo *type_info;
-  GArgument *ptr;
+  GIArgument *ptr;
 } OutArg;
 
 static void
@@ -90,7 +90,7 @@ peas_extension_seed_finalize (GObject *object)
 
 static SeedValue
 get_argument (SeedContext ctx,
-              GArgument *arg,
+              GIArgument *arg,
               GITypeInfo *arg_type_info,
               SeedException *exc)
 {
@@ -227,8 +227,8 @@ set_return_value (OutArg        *arg,
 static gboolean
 peas_extension_seed_call (PeasExtension *exten,
                           const gchar   *method_name,
-                          GArgument     *args,
-                          GArgument     *retval)
+                          GIArgument    *args,
+                          GIArgument    *retval)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
   GType exten_type;

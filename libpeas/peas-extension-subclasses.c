@@ -61,14 +61,14 @@ handle_method_impl (ffi_cif  *cif,
   GITypeInfo *return_type_info;
   guint n_args, i;
   PeasExtension *instance;
-  GArgument *arguments;
-  GArgument return_value;
+  GIArgument *arguments;
+  GIArgument return_value;
 
   instance = *((PeasExtension **) args[0]);
   g_assert (PEAS_IS_EXTENSION (instance));
 
   n_args = g_callable_info_get_n_args (impl->info);
-  arguments = g_newa (GArgument, n_args-1);
+  arguments = g_newa (GIArgument, n_args-1);
 
   for (i = 1; i < n_args; i++)
     {

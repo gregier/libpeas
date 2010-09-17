@@ -38,8 +38,8 @@ peas_extension_c_init (PeasExtensionC *cexten)
 static gboolean
 peas_extension_c_call (PeasExtension *exten,
                        const gchar   *method_name,
-                       GArgument     *args,
-                       GArgument     *retval)
+                       GIArgument    *args,
+                       GIArgument    *retval)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (exten);
   GType gtype;

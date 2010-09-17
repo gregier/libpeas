@@ -32,19 +32,19 @@ GICallableInfo  *peas_gi_get_method_info          (GType        iface_type,
 
 void             peas_gi_valist_to_arguments      (GICallableInfo *callable_info,
                                                    va_list         va_args,
-                                                   GArgument      *arguments,
+                                                   GIArgument     *arguments,
                                                    gpointer       *return_value);
 void             peas_gi_argument_to_pointer      (GITypeInfo     *type_info,
-                                                   GArgument      *arg,
+                                                   GIArgument     *arg,
                                                    gpointer        ptr);
 void             peas_gi_pointer_to_argument      (GITypeInfo     *type_info,
                                                    gpointer        ptr,
-                                                   GArgument      *arg);
+                                                   GIArgument     *arg);
 gboolean         peas_method_apply                (GObject     *instance,
                                                    GType        iface_type,
                                                    const gchar *method_name,
-                                                   GArgument   *args,
-                                                   GArgument   *return_value);
+                                                   GIArgument  *args,
+                                                   GIArgument  *return_value);
 
 G_END_DECLS
 

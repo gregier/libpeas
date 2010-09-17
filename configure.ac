@@ -72,7 +72,7 @@ PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= 2.18.0
 	gobject-2.0 >= 2.23.6
 	gmodule-2.0 >= 2.18.0
-	gobject-introspection-1.0 >= 0.9.0
+	gobject-introspection-1.0 >= 0.9.6
 ])
 
 dnl ================================================================

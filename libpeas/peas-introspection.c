@@ -28,14 +28,14 @@
 void
 peas_gi_valist_to_arguments (GICallableInfo *callable_info,
                              va_list         va_args,
-                             GArgument      *arguments,
+                             GIArgument     *arguments,
                              gpointer       *return_value)
 {
   guint i, n_args;
   GIArgInfo *arg_info;
   GITypeInfo *arg_type_info;
   GITypeInfo *retval_info;
-  GArgument *cur_arg;
+  GIArgument *cur_arg;
 
   n_args = g_callable_info_get_n_args (callable_info);
 
@@ -138,10 +138,10 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
 
 static void
 peas_gi_split_in_and_out_arguments (GICallableInfo *callable_info,
-                                    GArgument      *args,
-                                    GArgument      *in_args,
+                                    GIArgument     *args,
+                                    GIArgument     *in_args,
                                     guint          *n_in_args,
-                                    GArgument      *out_args,
+                                    GIArgument     *out_args,
                                     guint          *n_out_args)
 {
   guint n_args, i;
@@ -173,7 +173,7 @@ peas_gi_split_in_and_out_arguments (GICallableInfo *callable_info,
 
 void
 peas_gi_argument_to_pointer (GITypeInfo     *type_info,
-                             GArgument      *arg,
+                             GIArgument     *arg,
                              gpointer        ptr)
 {
   switch (g_type_info_get_tag (type_info))
@@ -236,7 +236,7 @@ peas_gi_argument_to_pointer (GITypeInfo     *type_info,
 void
 peas_gi_pointer_to_argument (GITypeInfo     *type_info,
                              gpointer        ptr,
-                             GArgument      *arg)
+                             GIArgument     *arg)
 {
   g_return_if_fail (ptr != NULL);
 
@@ -343,12 +343,12 @@ gboolean
 peas_method_apply (GObject     *instance,
                    GType        iface_type,
                    const gchar *method_name,
-                   GArgument   *args,
-                   GArgument   *return_value)
+                   GIArgument  *args,
+                   GIArgument  *return_value)
 {
   GICallableInfo *func_info;
   guint n_args, n_in_args, n_out_args;
-  GArgument *in_args, *out_args;
+  GIArgument *in_args, *out_args;
   gboolean ret = TRUE;
   GError *error = NULL;
 
@@ -360,8 +360,8 @@ peas_method_apply (GObject     *instance,
   n_in_args = 0;
   n_out_args = 0;
 
-  in_args = g_newa (GArgument, n_args + 1);
-  out_args = g_newa (GArgument, n_args);
+  in_args = g_newa (GIArgument, n_args + 1);
+  out_args = g_newa (GIArgument, n_args);
 
   peas_gi_split_in_and_out_arguments (func_info, args,
                                       in_args+1, &n_in_args,

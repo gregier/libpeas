@@ -43,8 +43,8 @@ peas_extension_python_init (PeasExtensionPython *pyexten)
 static gboolean
 peas_extension_python_call (PeasExtension *exten,
                             const gchar   *method_name,
-                            GArgument     *args,
-                            GArgument     *retval)
+                            GIArgument    *args,
+                            GIArgument    *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
   GType gtype;

@@ -213,8 +213,8 @@ peas_extension_call_valist (PeasExtension *exten,
 {
   GICallableInfo *callable_info;
   GITypeInfo *retval_info;
-  GArgument *gargs;
-  GArgument retval;
+  GIArgument *gargs;
+  GIArgument retval;
   gpointer retval_ptr;
   gboolean ret;
 
@@ -225,7 +225,7 @@ peas_extension_call_valist (PeasExtension *exten,
   if (callable_info == NULL)
     return FALSE;
 
-  gargs = g_newa (GArgument, g_callable_info_get_n_args (callable_info));
+  gargs = g_newa (GIArgument, g_callable_info_get_n_args (callable_info));
   peas_gi_valist_to_arguments (callable_info, args, gargs, &retval_ptr);
 
   ret = peas_extension_callv (exten, method_name, gargs, &retval);
@@ -243,8 +243,8 @@ peas_extension_call_valist (PeasExtension *exten,
 gboolean
 peas_extension_callv (PeasExtension *exten,
                       const gchar   *method_name,
-                      GArgument     *args,
-                      GArgument     *return_value)
+                      GIArgument    *args,
+                      GIArgument    *return_value)
 {
   PeasExtensionClass *klass;
 
