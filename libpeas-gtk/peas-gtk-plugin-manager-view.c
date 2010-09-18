@@ -361,7 +361,12 @@ menu_position_under_tree_view (GtkMenu     *menu,
       if (gtk_widget_get_direction (GTK_WIDGET (tree_view)) == GTK_TEXT_DIR_RTL)
         {
           GtkRequisition requisition;
+#if !GTK_CHECK_VERSION(2,90,7)
           gtk_widget_size_request (GTK_WIDGET (menu), &requisition);
+#else
+          gtk_size_request_get_size (GTK_SIZE_REQUEST (menu), &requisition,
+                                     NULL);
+#endif
           *x += rect.width - requisition.width;
         }
     }
@@ -375,7 +380,12 @@ menu_position_under_tree_view (GtkMenu     *menu,
       if (gtk_widget_get_direction (GTK_WIDGET (tree_view)) == GTK_TEXT_DIR_RTL)
         {
           GtkRequisition requisition;
+#if !GTK_CHECK_VERSION(2,90,7)
           gtk_widget_size_request (GTK_WIDGET (menu), &requisition);
+#else
+          gtk_size_request_get_size (GTK_SIZE_REQUEST (menu), &requisition,
+                                     NULL);
+#endif
           *x += allocation.width - requisition.width;
         }
     }
