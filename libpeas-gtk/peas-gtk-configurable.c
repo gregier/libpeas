@@ -61,7 +61,7 @@ peas_gtk_configurable_default_init (PeasGtkConfigurableInterface *iface)
  *
  * This method should always return a valid #GtkWidget instance, never %NULL.
  *
- * Returns: A #GtkWidget used for configuration.
+ * Returns: (transfer full): A #GtkWidget used for configuration.
  */
 GtkWidget *
 peas_gtk_configurable_create_configure_widget (PeasGtkConfigurable *configurable)

@@ -534,7 +534,7 @@ peas_gtk_plugin_manager_class_init (PeasGtkPluginManagerClass *klass)
   object_class->dispose = peas_gtk_plugin_manager_dispose;
 
   /**
-   * PeasGtkPLuginManager:engine:
+   * PeasGtkPluginManager:engine:
    *
    * The #PeasEngine this manager is attached to.
    */
@@ -575,7 +575,7 @@ peas_gtk_plugin_manager_new (PeasEngine *engine)
  *
  * Returns the #PeasGtkPluginManagerView of @pm.
  *
- * Returns: the view of @pm.
+ * Returns: (transfer none): the #GtkTreeView of @pm.
  */
 GtkWidget *
 peas_gtk_plugin_manager_get_view (PeasGtkPluginManager *pm)

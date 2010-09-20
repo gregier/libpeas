@@ -58,7 +58,7 @@ struct _PeasExtensionSetClass {
 
   /* Virtual public methods */
   gboolean   (*call)                      (PeasExtensionSet *set,
-                                           const gchar      *method,
+                                           const gchar      *method_name,
                                            GIArgument       *args);
 
   /* Signals */

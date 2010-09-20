@@ -908,7 +908,7 @@ peas_engine_provides_extension (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_create_extensionv
+ * peas_engine_create_extensionv:
  * @engine: A #PeasEngine.
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
@@ -921,8 +921,8 @@ peas_engine_provides_extension (PeasEngine     *engine,
  *
  * See peas_engine_create_extension() for more information.
  *
- * Returns: a new instance of #PeasExtension wrapping the @extension_type
- * instance, or %NULL.
+ * Returns: (transfer full): a new instance of #PeasExtension wrapping
+ * the @extension_type instance, or %NULL.
  */
 PeasExtension *
 peas_engine_create_extensionv (PeasEngine     *engine,
@@ -942,7 +942,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_create_extension_valist
+ * peas_engine_create_extension_valist:
  * @engine: A #PeasEngine.
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
@@ -956,8 +956,8 @@ peas_engine_create_extensionv (PeasEngine     *engine,
  *
  * See peas_engine_create_extension() for more information.
  *
- * Returns: a new instance of #PeasExtension wrapping the @extension_type
- * instance, or %NULL.
+ * Returns: (transfer full): a new instance of #PeasExtension wrapping
+ * the @extension_type instance, or %NULL.
  */
 PeasExtension *
 peas_engine_create_extension_valist (PeasEngine     *engine,
@@ -1013,8 +1013,8 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
  * principle of never giving you the actual object (also because it might as
  * well *not* be an actual object).
  *
- * Returns: a new instance of #PeasExtension wrapping the @extension_type
- * instance, or %NULL.
+ * Returns: (transfer full): a new instance of #PeasExtension wrapping
+ * the @extension_type instance, or %NULL.
  */
 PeasExtension *
 peas_engine_create_extension (PeasEngine     *engine,
@@ -1044,7 +1044,8 @@ peas_engine_create_extension (PeasEngine     *engine,
  * Please note that the returned array is a newly allocated one: you will need
  * to free it using g_strfreev().
  *
- * Returns: A newly-allocated NULL-terminated array of strings, or %NULL.
+ * Returns: (transfer full): A newly-allocated %NULL-terminated
+ * array of strings, or %NULL.
  */
 gchar **
 peas_engine_get_loaded_plugins (PeasEngine *engine)

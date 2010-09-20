@@ -285,6 +285,15 @@ peas_object_module_new (const gchar *module_name,
                                            NULL));
 }
 
+/**
+ * peas_object_module_create_object:
+ * @module:
+ * @interface:
+ * @n_parameters:
+ * @parameters:
+ *
+ * Return value: (transfer full):
+ */
 GObject *
 peas_object_module_create_object (PeasObjectModule *module,
                                   GType             interface,
@@ -337,6 +346,12 @@ peas_object_module_get_module_name (PeasObjectModule *module)
   return module->priv->module_name;
 }
 
+/**
+ * peas_object_module_get_library: (skip)
+ * @module:
+ *
+ * Return value:
+ */
 GModule *
 peas_object_module_get_library (PeasObjectModule *module)
 {

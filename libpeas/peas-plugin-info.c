@@ -487,7 +487,7 @@ peas_plugin_info_get_data_dir (const PeasPluginInfo *info)
  *
  * The relevant key in the plugin info file is "Depends".
  *
- * Returns: the plugin's dependencies.
+ * Returns: (transfer none): the plugin's dependencies.
  */
 const gchar **
 peas_plugin_info_get_dependencies (const PeasPluginInfo *info)
@@ -598,7 +598,7 @@ peas_plugin_info_get_icon_name (const PeasPluginInfo *info)
  *
  * The relevant key in the plugin info file is "Authors".
  *
- * Returns: the plugin's author list.
+ * Returns: (transfer none): the plugin's author list.
  */
 const gchar **
 peas_plugin_info_get_authors (const PeasPluginInfo *info)

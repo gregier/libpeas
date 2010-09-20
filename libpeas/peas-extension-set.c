@@ -422,14 +422,14 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
 }
 
 /**
- * *peas_extension_set_get_extension:
+ * peas_extension_set_get_extension:
  * @set: A #PeasExtensionSet
  * @info: a #PeasPluginInfo
  *
  * Returns the #PeasExtension object corresponding to @info, or %NULL
  * if the plugin doesn't provide such an extension.
  *
- * Returns: a reference to a #PeasExtension or %NULL
+ * Returns: (transfer none): a reference to a #PeasExtension or %NULL
  */
 PeasExtension *
 peas_extension_set_get_extension (PeasExtensionSet *set,
@@ -545,7 +545,7 @@ peas_extension_set_callv (PeasExtensionSet *set,
  *
  * See peas_extension_set_new() for more information.
  *
- * Returns: a new instance of #PeasExtensionSet.
+ * Returns: (transfer full): a new instance of #PeasExtensionSet.
  */
 PeasExtensionSet *
 peas_extension_set_newv (PeasEngine *engine,

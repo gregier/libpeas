@@ -48,6 +48,8 @@ typedef struct _PeasObjectModulePrivate  PeasObjectModulePrivate;
  * extension of a given type. g_object_newv() is such a function.
  *
  * It is used with peas_object_module_register_object_factory().
+ *
+ * Return value: (transfer full):
  */
 typedef GObject *(*PeasFactoryFunc)   (guint          n_parameters,
                                        GParameter    *parameters,
