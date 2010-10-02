@@ -151,7 +151,7 @@ main (int    argc,
 
   g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, NULL);
 
-  engine = peas_engine_new ("PeasDemo");
+  engine = peas_engine_new ();
 
   plugin_dir = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
   peas_engine_add_search_path (engine, plugin_dir, plugin_dir);

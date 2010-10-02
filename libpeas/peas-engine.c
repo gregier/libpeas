@@ -69,7 +69,6 @@ static guint signals[LAST_SIGNAL];
 /* Properties */
 enum {
   PROP_0,
-  PROP_APP_NAME,
   PROP_PLUGIN_LIST,
   PROP_LOADED_PLUGINS
 };
@@ -87,8 +86,6 @@ typedef struct _SearchPath {
 } SearchPath;
 
 struct _PeasEnginePrivate {
-  gchar *app_name;
-  gchar *file_ext;
   GList *search_paths;
 
   GList *plugin_list;
@@ -110,12 +107,14 @@ load_plugin_info (PeasEngine  *engine,
   const gchar *module_name;
 
   info = _peas_plugin_info_new (filename,
-                                engine->priv->app_name,
                                 module_dir,
                                 data_dir);
 
   if (info == NULL)
-    return;
+    {
+      g_warning ("Error loading '%s'", filename);
+      return;
+    }
 
   /* If a plugin with this name has already been loaded
    * drop this one (user plugins override system plugins) */
@@ -136,7 +135,7 @@ load_dir_real (PeasEngine  *engine,
   GDir *d;
   const gchar *dirent;
 
-  g_debug ("Loading %s/*%s...", module_dir, engine->priv->file_ext);
+  g_debug ("Loading %s/*.plugin...", module_dir);
 
   d = g_dir_open (module_dir, 0, &error);
 
@@ -151,7 +150,7 @@ load_dir_real (PeasEngine  *engine,
     {
       gchar *filename = g_build_filename (module_dir, dirent, NULL);
 
-      if (g_str_has_suffix (dirent, engine->priv->file_ext))
+      if (g_str_has_suffix (dirent, ".plugin"))
         load_plugin_info (engine, filename, module_dir, data_dir);
 
       else if (recursions > 0 && g_file_test (filename, G_FILE_TEST_IS_DIR))
@@ -340,20 +339,6 @@ peas_engine_garbage_collect (PeasEngine *engine)
                         NULL);
 }
 
-static gchar *
-compute_file_extension (const gchar *app_name)
-{
-  gchar *ext;
-  guint i;
-
-  /* Compute the extension of the plugin files. */
-  ext = g_strdup_printf (".%s-plugin", app_name);
-  for (i = 0; ext[i] != '\0'; ++i)
-    ext[i] = g_ascii_tolower (ext[i]);
-
-  return ext;
-}
-
 static void
 peas_engine_set_property (GObject      *object,
                           guint         prop_id,
@@ -364,10 +349,6 @@ peas_engine_set_property (GObject      *object,
 
   switch (prop_id)
     {
-    case PROP_APP_NAME:
-      engine->priv->app_name = g_value_dup_string (value);
-      engine->priv->file_ext = compute_file_extension (engine->priv->app_name);
-      break;
     case PROP_LOADED_PLUGINS:
       peas_engine_set_loaded_plugins (engine,
                                       (const gchar **) g_value_get_boxed (value));
@@ -388,9 +369,6 @@ peas_engine_get_property (GObject    *object,
 
   switch (prop_id)
     {
-    case PROP_APP_NAME:
-      g_value_set_string (value, engine->priv->app_name);
-      break;
     case PROP_PLUGIN_LIST:
       g_value_set_pointer (value,
                            (gpointer) peas_engine_get_plugin_list (engine));
@@ -439,8 +417,6 @@ peas_engine_finalize (GObject *object)
 
   g_list_free (engine->priv->plugin_list);
   g_list_free (engine->priv->search_paths);
-  g_free (engine->priv->file_ext);
-  g_free (engine->priv->app_name);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);
 }
@@ -458,26 +434,6 @@ peas_engine_class_init (PeasEngineClass *klass)
 
   klass->load_plugin = peas_engine_load_plugin_real;
   klass->unload_plugin = peas_engine_unload_plugin_real;
-
-  /**
-   * PeasEngine:app-name:
-   *
-   * The application name. Filename extension and section header for
-   * #PeasPluginInfo files are actually derived from this value.
-   *
-   * For instance, if app-name is "Gedit", then info files will have
-   * the .gedit-plugin extension, and the engine will look for a
-   * "Gedit Plugin" section in it to load the plugin data.
-   */
-  g_object_class_install_property (object_class,
-                                   PROP_APP_NAME,
-                                   g_param_spec_string ("app-name",
-                                                        "Application Name",
-                                                        "The application name",
-                                                        "Peas",
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
 
   /**
    * PeasEngine:plugin-list:
@@ -1138,17 +1094,14 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 
 /**
  * peas_engine_new:
- * @app_name: (allow-none): The name of the application
  *
  * Returns a new #PeasEngine object.
- * See the properties description for more information about the parameters.
  *
  * Returns: a newly created #PeasEngine object.
  */
 PeasEngine *
-peas_engine_new (const gchar  *app_name)
+peas_engine_new (void)
 {
   return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
-                                    "app-name", app_name,
                                     NULL));
 }

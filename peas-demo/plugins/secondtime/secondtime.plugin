@@ -1,4 +1,4 @@
-[PeasDemo Plugin]
+[Plugin]
 Module=secondtime
 Depends=helloworld
 IAge=2

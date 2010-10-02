@@ -115,7 +115,6 @@ value_free (GValue *value)
 static void
 parse_extra_keys (PeasPluginInfo   *info,
                   GKeyFile         *plugin_file,
-                  const gchar      *section_header,
                   const gchar     **keys)
 {
   guint i;
@@ -143,13 +142,13 @@ parse_extra_keys (PeasPluginInfo   *info,
           g_str_equal (keys[i], "Builtin"))
         continue;
 
-      b = g_key_file_get_boolean (plugin_file, section_header, keys[i], &error);
+      b = g_key_file_get_boolean (plugin_file, "Plugin", keys[i], &error);
       if (b == FALSE && error != NULL)
         {
           gchar *str;
           g_error_free (error);
           error = NULL;
-          str = g_key_file_get_string (plugin_file, section_header, keys[i], NULL);
+          str = g_key_file_get_string (plugin_file, "Plugin", keys[i], NULL);
           if (str != NULL)
             {
               value = g_new0 (GValue, 1);
@@ -181,7 +180,6 @@ parse_extra_keys (PeasPluginInfo   *info,
 /*
  * _peas_plugin_info_new:
  * @filename: The filename where to read the plugin information.
- * @app_name: The application name.
  * @module_dir: The module directory.
  * @data_dir: The data directory.
  *
@@ -191,13 +189,11 @@ parse_extra_keys (PeasPluginInfo   *info,
  */
 PeasPluginInfo *
 _peas_plugin_info_new (const gchar *filename,
-                       const gchar *app_name,
                        const gchar *module_dir,
                        const gchar *data_dir)
 {
   PeasPluginInfo *info;
   GKeyFile *plugin_file = NULL;
-  gchar *section_header;
   gchar *str;
   gchar **keys;
   gint integer;
@@ -205,13 +201,10 @@ _peas_plugin_info_new (const gchar *filename,
   GError *error = NULL;
 
   g_return_val_if_fail (filename != NULL, NULL);
-  g_return_val_if_fail (app_name != NULL, NULL);
 
   info = g_new0 (PeasPluginInfo, 1);
   info->refcount = 1;
   info->file = g_strdup (filename);
-
-  section_header = g_strdup_printf ("%s Plugin", app_name);
 
   plugin_file = g_key_file_new ();
   if (!g_key_file_load_from_file (plugin_file, filename, G_KEY_FILE_NONE, NULL))
@@ -220,14 +213,14 @@ _peas_plugin_info_new (const gchar *filename,
       goto error;
     }
 
-  if (!g_key_file_has_key (plugin_file, section_header, "IAge", NULL))
+  if (!g_key_file_has_key (plugin_file, "Plugin", "IAge", NULL))
     goto error;
 
-  integer = g_key_file_get_integer (plugin_file, section_header, "IAge", NULL);
+  integer = g_key_file_get_integer (plugin_file, "Plugin", "IAge", NULL);
   info->iage = integer <= 0 ? 0 : integer;
 
   /* Get module name */
-  str = g_key_file_get_string (plugin_file, section_header, "Module", NULL);
+  str = g_key_file_get_string (plugin_file, "Plugin", "Module", NULL);
 
   if ((str != NULL) && (*str != '\0'))
     {
@@ -241,13 +234,13 @@ _peas_plugin_info_new (const gchar *filename,
 
   /* Get the dependency list */
   info->dependencies = g_key_file_get_string_list (plugin_file,
-                                                   section_header,
+                                                   "Plugin",
                                                    "Depends", NULL, NULL);
   if (info->dependencies == NULL)
     info->dependencies = g_new0 (gchar *, 1);
 
   /* Get the loader for this plugin */
-  str = g_key_file_get_string (plugin_file, section_header, "Loader", NULL);
+  str = g_key_file_get_string (plugin_file, "Plugin", "Loader", NULL);
 
   if ((str != NULL) && (*str != '\0'))
     {
@@ -260,8 +253,8 @@ _peas_plugin_info_new (const gchar *filename,
     }
 
   /* Get Name */
-  str = g_key_file_get_locale_string (plugin_file,
-                                      section_header, "Name", NULL, NULL);
+  str = g_key_file_get_locale_string (plugin_file, "Plugin",
+                                      "Name", NULL, NULL);
   if (str)
     info->name = str;
   else
@@ -271,63 +264,59 @@ _peas_plugin_info_new (const gchar *filename,
     }
 
   /* Get Description */
-  str = g_key_file_get_locale_string (plugin_file,
-                                      section_header,
+  str = g_key_file_get_locale_string (plugin_file, "Plugin",
                                       "Description", NULL, NULL);
   if (str)
     info->desc = str;
 
   /* Get Icon */
-  str = g_key_file_get_locale_string (plugin_file,
-                                      section_header, "Icon", NULL, NULL);
+  str = g_key_file_get_locale_string (plugin_file, "Plugin",
+                                      "Icon", NULL, NULL);
   if (str)
     info->icon_name = str;
 
   /* Get Authors */
-  info->authors = g_key_file_get_string_list (plugin_file,
-                                              section_header,
+  info->authors = g_key_file_get_string_list (plugin_file, "Plugin",
                                               "Authors", NULL, NULL);
 
   /* Get Copyright */
-  str = g_key_file_get_string (plugin_file,
-                               section_header, "Copyright", NULL);
+  str = g_key_file_get_string (plugin_file, "Plugin", "Copyright", NULL);
   if (str)
     info->copyright = str;
 
   /* Get Website */
-  str = g_key_file_get_string (plugin_file, section_header, "Website", NULL);
+  str = g_key_file_get_string (plugin_file, "Plugin", "Website", NULL);
   if (str)
     info->website = str;
 
   /* Get Version */
-  str = g_key_file_get_string (plugin_file, section_header, "Version", NULL);
+  str = g_key_file_get_string (plugin_file, "Plugin", "Version", NULL);
   if (str)
     info->version = str;
 
   /* Get Help URI */
-  str = g_key_file_get_string (plugin_file, section_header, OS_HELP_KEY, NULL);
+  str = g_key_file_get_string (plugin_file, "Plugin", OS_HELP_KEY, NULL);
   if (str)
     info->help_uri = str;
   else
     {
-      str = g_key_file_get_string (plugin_file, section_header, "Help", NULL);
+      str = g_key_file_get_string (plugin_file, "Plugin", "Help", NULL);
       if (str)
         info->help_uri = str;
     }
 
   /* Get Builtin */
-  b = g_key_file_get_boolean (plugin_file, section_header, "Builtin", &error);
+  b = g_key_file_get_boolean (plugin_file, "Plugin", "Builtin", &error);
   if (error != NULL)
     g_clear_error (&error);
   else
     info->builtin = b;
 
   /* Get extra keys */
-  keys = g_key_file_get_keys (plugin_file, section_header, NULL, NULL);
-  parse_extra_keys (info, plugin_file, section_header, (const gchar **) keys);
+  keys = g_key_file_get_keys (plugin_file, "Plugin", NULL, NULL);
+  parse_extra_keys (info, plugin_file, (const gchar **) keys);
   g_strfreev (keys);
 
-  g_free (section_header);
   g_key_file_free (plugin_file);
 
   info->module_dir = g_strdup (module_dir);
@@ -345,7 +334,6 @@ error:
   g_free (info->name);
   g_free (info->loader);
   g_free (info);
-  g_free (section_header);
   g_key_file_free (plugin_file);
 
   return NULL;

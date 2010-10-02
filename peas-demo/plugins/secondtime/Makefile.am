@@ -14,6 +14,6 @@ libsecondtime_la_SOURCES = \
 libsecondtime_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libsecondtime_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
 
-plugin_DATA = secondtime.peasdemo-plugin
+plugin_DATA = secondtime.plugin
 
 EXTRA_DIST = $(plugin_DATA)

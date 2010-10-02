@@ -58,7 +58,6 @@ struct _PeasPluginInfo {
 };
 
 PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,
-                                         const gchar    *app_name,
                                          const gchar    *module_dir,
                                          const gchar    *data_dir);
 PeasPluginInfo *_peas_plugin_info_ref   (PeasPluginInfo *info);

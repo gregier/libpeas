@@ -1,4 +1,4 @@
-[PeasDemo Plugin]
+[Plugin]
 Module=seedhello
 Loader=seed
 IAge=2

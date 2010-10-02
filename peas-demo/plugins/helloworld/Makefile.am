@@ -16,6 +16,6 @@ libhelloworld_la_SOURCES = \
 libhelloworld_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libhelloworld_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
 
-plugin_DATA = helloworld.peasdemo-plugin
+plugin_DATA = helloworld.plugin
 
 EXTRA_DIST = $(plugin_DATA)
