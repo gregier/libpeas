@@ -1101,20 +1101,6 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 }
 
 /**
- * peas_engine_new:
- *
- * Returns a new #PeasEngine object.
- *
- * Returns: a newly created #PeasEngine object.
- */
-PeasEngine *
-peas_engine_new (void)
-{
-  return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
-                                    NULL));
-}
-
-/**
  * peas_engine_get_default:
  *
  * Return the existing instance of #PeasEngine or a subclass of it.
@@ -1127,7 +1113,7 @@ PeasEngine *
 peas_engine_get_default (void)
 {
   if (default_engine == NULL)
-    return peas_engine_new ();
+    return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE, NULL));
 
   return default_engine;
 }
