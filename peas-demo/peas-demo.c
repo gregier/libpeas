@@ -30,7 +30,6 @@
 #include "peas-demo-window.h"
 
 gboolean run_from_build_dir;
-static PeasEngine *engine;
 static GtkWidget *main_window;
 static int n_windows;
 
@@ -43,9 +42,11 @@ static void
 activate_plugin (GtkButton   *button,
                  const gchar *plugin_name)
 {
+  PeasEngine *engine;
   PeasPluginInfo *info;
 
   g_debug ("%s %s", G_STRFUNC, plugin_name);
+  engine = peas_engine_get_default ();
   info = peas_engine_get_plugin_info (engine, plugin_name);
   g_return_if_fail (info != NULL);
   peas_engine_load_plugin (engine, info);
@@ -73,7 +74,7 @@ create_new_window (void)
 {
   GtkWidget *window;
 
-  window = demo_window_new (engine);
+  window = demo_window_new (peas_engine_get_default ());
   gtk_widget_show_all (window);
 }
 
@@ -126,6 +127,7 @@ main (int    argc,
   GOptionContext *option_context;
   GError *error = NULL;
   gchar *plugin_dir;
+  PeasEngine *engine;
 
   option_context = g_option_context_new (_("- libpeas demo application"));
   g_option_context_add_main_entries (option_context, demo_args, GETTEXT_PACKAGE);
@@ -151,8 +153,7 @@ main (int    argc,
 
   g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, NULL);
 
-  engine = peas_engine_new ();
-
+  engine = peas_engine_get_default ();
   plugin_dir = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
   peas_engine_add_search_path (engine, plugin_dir, plugin_dir);
   g_free (plugin_dir);
