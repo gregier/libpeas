@@ -30,7 +30,7 @@ AC_SUBST(PEAS_MICRO_VERSION, peas_micro_version)
 
 AC_SUBST(PEAS_VERSION, peas_version)
 
-AM_INIT_AUTOMAKE([1.11 dist-bzip2 no-dist-gzip -Wno-portability])
+AM_INIT_AUTOMAKE([1.11 foreign dist-bzip2 no-dist-gzip -Wno-portability])
 AM_MAINTAINER_MODE([enable])
 
 AM_SILENT_RULES([yes])
