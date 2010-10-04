@@ -44,10 +44,11 @@
  *
  * A #PeasPluginInfo contains all the information available about a plugin.
  *
- * All this information comes from the related plugin info file. Here is an
- * example of such a plugin file, in the #GKeyFile format:
+ * All this information comes from the related plugin info file, whose file
+ * extension is ".plugin". Here is an example of such a plugin file, in the
+ * #GKeyFile format:
  * |[
- * [YourApplication Plugin]
+ * [Plugin]
  * Module=helloworld
  * Name=Hello World
  * Description=Displays "Hello World"
