@@ -42,7 +42,7 @@
 
 /**
  * SECTION:peas-gtk-plugin-manager
- * @short_description: Management GGtk for plugins.
+ * @short_description: Management GUI for plugins.
  *
  * The #PeasGtkPluginManager is a widget that can be used to manage plugins,
  * i.e. load or unload them, and see some pieces of information.
