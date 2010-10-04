@@ -297,7 +297,7 @@ peas_engine_init (PeasEngine *engine)
    * We only allow one single instance of a PeasEngine subclass. */
   g_assert (default_engine == NULL);
   default_engine = engine;
-  g_object_add_weak_pointer (engine, &default_engine);
+  g_object_add_weak_pointer (G_OBJECT (engine), (gpointer *) &default_engine);
 
   if (!g_module_supported ())
     {
@@ -1107,7 +1107,7 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
  * If no #PeasEngine subclass has been instantiated yet, the first call
  * of this function will return a new instance of #PeasEngine.
  *
- * Returns: the existing instance of #PeasEngine.
+ * Returns: (transfer none): the existing instance of #PeasEngine.
  */
 PeasEngine *
 peas_engine_get_default (void)
