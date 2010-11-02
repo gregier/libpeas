@@ -31,7 +31,7 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
                              GIArgument     *arguments,
                              gpointer       *return_value)
 {
-  guint i, n_args;
+  gint i, n_args;
   GIArgInfo *arg_info;
   GITypeInfo *arg_type_info;
   GITypeInfo *retval_info;
