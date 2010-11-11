@@ -235,7 +235,8 @@ peas_extension_seed_call (PeasExtension *exten,
   SeedValue js_method;
   GICallableInfo *func_info;
   GITypeInfo *retval_info;
-  guint n_args, n_in_args, n_out_args, i;
+  gint n_args;
+  guint n_in_args, n_out_args, i;
   SeedValue *js_in_args;
   OutArg *out_args;
   SeedValue js_ret, val;
@@ -268,7 +269,11 @@ peas_extension_seed_call (PeasExtension *exten,
 
   /* Prepare the arguments */
   func_info = peas_gi_get_method_info (exten_type, method_name);
+  if (func_info == NULL)
+    return FALSE;
+
   n_args = g_callable_info_get_n_args (func_info);
+  g_return_val_if_fail (n_args >= 0, FALSE);
   n_in_args = 0;
   n_out_args = 0;
 

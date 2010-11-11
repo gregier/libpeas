@@ -497,12 +497,18 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
 {
   GICallableInfo *callable_info;
   GIArgument *args;
+  gint n_args;
 
   g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
   callable_info = peas_gi_get_method_info (set->priv->exten_type, method_name);
-  args = g_newa (GIArgument, g_callable_info_get_n_args (callable_info));
+  g_return_val_if_fail (callable_info != NULL, FALSE);
+
+  n_args = g_callable_info_get_n_args (callable_info);
+  g_return_val_if_fail (n_args >= 0, FALSE);
+
+  args = g_newa (GIArgument, n_args);
   peas_gi_valist_to_arguments (callable_info, va_args, args, NULL);
 
   return peas_extension_set_callv (set, method_name, args);

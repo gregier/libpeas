@@ -59,7 +59,7 @@ handle_method_impl (ffi_cif  *cif,
   GIArgInfo *arg_info;
   GITypeInfo *type_info;
   GITypeInfo *return_type_info;
-  guint n_args, i;
+  gint n_args, i;
   PeasExtension *instance;
   GIArgument *arguments;
   GIArgument return_value;
@@ -68,6 +68,7 @@ handle_method_impl (ffi_cif  *cif,
   g_assert (PEAS_IS_EXTENSION (instance));
 
   n_args = g_callable_info_get_n_args (impl->info);
+  g_return_if_fail (n_args < 1);
   arguments = g_newa (GIArgument, n_args-1);
 
   for (i = 1; i < n_args; i++)
@@ -191,6 +192,7 @@ implement_interface_methods (gpointer iface,
            g_type_name (exten_type), g_type_name (proxy_type));
 
   iface_info = g_irepository_find_by_gtype (NULL, exten_type);
+  g_return_if_fail (iface_info != NULL);
   g_return_if_fail (g_base_info_get_type (iface_info) == GI_INFO_TYPE_INTERFACE);
 
   n_vfuncs = g_interface_info_get_n_vfuncs (iface_info);
