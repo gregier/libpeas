@@ -68,7 +68,7 @@ handle_method_impl (ffi_cif  *cif,
   g_assert (PEAS_IS_EXTENSION (instance));
 
   n_args = g_callable_info_get_n_args (impl->info);
-  g_return_if_fail (n_args < 1);
+  g_return_if_fail (n_args >= 1);
   arguments = g_newa (GIArgument, n_args-1);
 
   for (i = 1; i < n_args; i++)
