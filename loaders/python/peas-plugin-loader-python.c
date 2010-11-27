@@ -265,7 +265,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *pymodule, *fromlist;
-  gchar *module_name;
+  const gchar *module_name;
   PyGILState_STATE state;
 
   if (pyloader->priv->init_failed)
@@ -290,15 +290,14 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   /* we need a fromlist to be able to import modules with a '.' in the
      name. */
   fromlist = PyTuple_New (0);
-  module_name = g_strdup (peas_plugin_info_get_module_name (info));
+  module_name = peas_plugin_info_get_module_name (info);
 
-  pymodule = PyImport_ImportModuleEx (module_name, NULL, NULL, fromlist);
+  pymodule = PyImport_ImportModuleEx ((gchar *) module_name, NULL, NULL, fromlist);
 
   Py_DECREF (fromlist);
 
   if (!pymodule)
     {
-      g_free (module_name);
       PyErr_Print ();
       pyg_gil_state_release (state);
 

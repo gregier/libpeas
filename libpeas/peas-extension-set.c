@@ -511,6 +511,8 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
   args = g_newa (GIArgument, n_args);
   peas_gi_valist_to_arguments (callable_info, va_args, args, NULL);
 
+  g_base_info_unref ((GIBaseInfo *) callable_info);
+
   return peas_extension_set_callv (set, method_name, args);
 }
 

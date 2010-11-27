@@ -208,6 +208,7 @@ implement_interface_methods (gpointer iface,
           GIVFuncInfo *vfunc_info;
           vfunc_info = g_interface_info_get_vfunc (iface_info, i);
           create_native_closure (iface_info, vfunc_info, &impls[i]);
+          g_base_info_unref ((GIBaseInfo *) vfunc_info);
         }
 
       g_type_set_qdata (exten_type, method_impl_quark (), impls);
