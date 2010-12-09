@@ -708,7 +708,8 @@ compare_plugin_info_and_name (PeasPluginInfo *info,
  * @engine: A #PeasEngine.
  * @plugin_name: A plugin name.
  *
- * Returns: the #PeasPluginInfo corresponding with a given plugin name.
+ * Returns: the #PeasPluginInfo corresponding with
+ * a given plugin module name.
  */
 PeasPluginInfo *
 peas_engine_get_plugin_info (PeasEngine  *engine,
