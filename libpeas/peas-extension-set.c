@@ -288,13 +288,22 @@ peas_extension_set_constructed (GObject *object)
 }
 
 static void
-peas_extension_set_finalize (GObject *object)
+peas_extension_set_dispose (GObject *object)
 {
   PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
   GList *l;
 
-  g_signal_handler_disconnect (set->priv->engine, set->priv->load_handler_id);
-  g_signal_handler_disconnect (set->priv->engine, set->priv->unload_handler_id);
+  if (set->priv->load_handler_id != 0)
+    {
+      g_signal_handler_disconnect (set->priv->engine, set->priv->load_handler_id);
+      set->priv->load_handler_id = 0;
+    }
+
+  if (set->priv->unload_handler_id != 0)
+    {
+      g_signal_handler_disconnect (set->priv->engine, set->priv->unload_handler_id);
+      set->priv->unload_handler_id = 0;
+    }
 
   for (l = set->priv->extensions; l;)
     {
@@ -306,10 +315,16 @@ peas_extension_set_finalize (GObject *object)
     {
       while (set->priv->n_parameters-- > 0)
         g_value_unset (&set->priv->parameters[set->priv->n_parameters].value);
+
       g_free (set->priv->parameters);
+      set->priv->parameters = NULL;
     }
 
-  g_object_unref (set->priv->engine);
+  if (set->priv->engine != NULL)
+    {
+      g_object_unref (set->priv->engine);
+      set->priv->engine = NULL;
+    }
 }
 
 static gboolean
@@ -339,7 +354,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
   object_class->set_property = peas_extension_set_set_property;
   object_class->get_property = peas_extension_set_get_property;
   object_class->constructed = peas_extension_set_constructed;
-  object_class->finalize = peas_extension_set_finalize;
+  object_class->dispose = peas_extension_set_dispose;
 
   klass->call = peas_extension_set_call_real;
 
