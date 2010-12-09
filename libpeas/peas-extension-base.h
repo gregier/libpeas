@@ -26,9 +26,6 @@
 
 #include "peas-plugin-info.h"
 
-/* TODO: add a .h file that includes all the .h files normally needed to
- * develop a plugin */
-
 G_BEGIN_DECLS
 
 /*
