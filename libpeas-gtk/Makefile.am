@@ -45,7 +45,7 @@ if HAVE_INTROSPECTION
   INTROSPECTION_GIRS = PeasGtk-1.0.gir
   INTROSPECTION_SCANNER_ARGS = \
 	--add-include-path=$(top_builddir)/libpeas	\
-	--c-include=libpeasgtk/peas-gtk.h		\
+	--c-include=libpeas-gtk/peas-gtk.h		\
 	--warn-all
   INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
 

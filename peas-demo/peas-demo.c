@@ -147,7 +147,7 @@ main (int    argc,
     {
       g_debug ("Running from build dir.");
       g_irepository_prepend_search_path ("../libpeas");
-      g_irepository_prepend_search_path ("../libpeasui");
+      g_irepository_prepend_search_path ("../libpeas-gtk");
       g_setenv ("PEAS_PLUGIN_LOADERS_DIR", "../loaders", TRUE);
     }
 
