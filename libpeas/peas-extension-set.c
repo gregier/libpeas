@@ -116,6 +116,11 @@ typedef struct {
   PeasExtension *exten;
 } ExtensionItem;
 
+typedef struct {
+  guint n_parameters;
+  GParameter *parameters;
+} PeasParameterArray;
+
 /* Signals */
 enum {
   EXTENSION_ADDED,

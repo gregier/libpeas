@@ -70,19 +70,6 @@ struct _PeasExtensionSetClass {
                                            PeasExtension    *exten);
 };
 
-/**
- * PeasParameterArray:
- * @n_parameters: the length of the @parameters array.
- * @parameters: an array of #GParameter.
- *
- * #PeasParameterArray is a structure used by the "construct-properties"
- * construct property of #PeasExtensionSet.
- */
-typedef struct _PeasParameterArray {
-  guint n_parameters;
-  GParameter *parameters;
-} PeasParameterArray;
-
 /*
  * Public methods
  */
