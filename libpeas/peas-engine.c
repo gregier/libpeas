@@ -748,11 +748,11 @@ load_plugin (PeasEngine     *engine,
       if (!dep_info)
         {
           g_warning ("Plugin not found: %s", dependencies[i]);
-          return FALSE;
+          goto error;
         }
 
       if (!peas_engine_load_plugin (engine, dep_info))
-        return FALSE;
+        goto error;
     }
 
   loader = get_plugin_loader (engine, info);
@@ -761,19 +761,23 @@ load_plugin (PeasEngine     *engine,
     {
       g_warning ("Could not find loader '%s' for plugin '%s'",
                  info->loader, info->name);
-      info->available = FALSE;
-      return FALSE;
+      goto error;
     }
 
   if (!peas_plugin_loader_load (loader, info))
     {
       g_warning ("Error loading plugin '%s'", info->name);
-      info->loaded = FALSE;
-      info->available = FALSE;
-      return FALSE;
+      goto error;
     }
 
   return TRUE;
+
+error:
+
+  info->loaded = FALSE;
+  info->available = FALSE;
+
+  return FALSE;
 }
 
 static void
