@@ -1054,7 +1054,16 @@ peas_engine_get_loaded_plugins (PeasEngine *engine)
         }
     }
 
-  return (gchar **) g_array_free (array, FALSE);
+  /* Bug in GArray? */
+  if (array->len == 0)
+    {
+      g_array_free (array, TRUE);
+      return NULL;
+    }
+  else
+    {
+      return (gchar **) g_array_free (array, FALSE);
+    }
 }
 
 static gboolean
