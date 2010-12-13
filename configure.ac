@@ -105,6 +105,7 @@ if test "$enable_gtk" = "yes"; then
 	PKG_CHECK_MODULES(PEAS_GTK, [$GTK_PKG_REQUIREMENT])
 	AC_SUBST(GTK_TYPELIB)
 	AC_SUBST(GTK_PKG_REQUIREMENT)
+	AC_DEFINE(ENABLE_GTK,1,[Define to compile with GTK+ support])
 fi
 
 AM_CONDITIONAL([ENABLE_GTK],[test "x$enable_gtk" = "xyes"])
@@ -302,6 +303,22 @@ peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
 peas-demo/plugins/seedhello/Makefile
 po/Makefile.in
+tests/Makefile
+tests/libpeas/Makefile
+tests/libpeas/plugins/Makefile
+tests/libpeas/introspection/Makefile
+tests/libpeas/plugins/callable/Makefile
+tests/libpeas/testing/Makefile
+tests/libpeas-gtk/Makefile
+tests/libpeas-gtk/plugins/Makefile
+tests/libpeas-gtk/plugins/builtin-configurable/Makefile
+tests/libpeas-gtk/plugins/configurable/Makefile
+tests/libpeas-gtk/testing/Makefile
+tests/plugins/Makefile
+tests/plugins/builtin/Makefile
+tests/plugins/has-dep/Makefile
+tests/plugins/loadable/Makefile
+tests/plugins/self-dep/Makefile
 ])
 
 AC_OUTPUT

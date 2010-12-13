@@ -8,7 +8,7 @@ if ENABLE_GTK
 SUBDIRS += libpeas-gtk peas-demo
 endif
 
-SUBDIRS += data po docs
+SUBDIRS += tests data po docs
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \
@@ -23,3 +23,8 @@ dist-hook:
 	else \
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
+
+test test-gdb test-report perf-report full-report: all
+	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
+
+.PHONY: all test test-gdb test-report perf-report full-report

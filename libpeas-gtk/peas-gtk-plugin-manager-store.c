@@ -66,9 +66,17 @@ update_plugin (PeasGtkPluginManagerStore *store,
   available = peas_plugin_info_is_available (info);
   builtin = peas_plugin_info_is_builtin (info);
 
-  markup = g_markup_printf_escaped ("<b>%s</b>\n%s",
-                                    peas_plugin_info_get_name (info),
-                                    peas_plugin_info_get_description (info));
+  if (peas_plugin_info_get_description (info) == NULL)
+    {
+      markup = g_markup_printf_escaped ("<b>%s</b>",
+                                        peas_plugin_info_get_name (info));
+    }
+  else
+    {
+      markup = g_markup_printf_escaped ("<b>%s</b>\n%s",
+                                        peas_plugin_info_get_name (info),
+                                        peas_plugin_info_get_description (info));
+    }
 
   if (peas_plugin_info_is_available (info))
     {
