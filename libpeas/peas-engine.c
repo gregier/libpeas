@@ -392,7 +392,7 @@ peas_engine_get_property (GObject    *object,
 }
 
 static void
-peas_engine_finalize (GObject *object)
+peas_engine_dispose (GObject *object)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
   GList *item;
@@ -407,7 +407,11 @@ peas_engine_finalize (GObject *object)
     }
 
   /* unref the loaders */
-  g_hash_table_destroy (engine->priv->loaders);
+  if (engine->priv->loaders != NULL)
+    {
+      g_hash_table_destroy (engine->priv->loaders);
+      engine->priv->loaders = NULL;
+    }
 
   /* and finally free the infos */
   for (item = engine->priv->plugin_list; item; item = item->next)
@@ -422,6 +426,14 @@ peas_engine_finalize (GObject *object)
       g_free (sp->data_dir);
       g_slice_free (SearchPath, sp);
     }
+
+  G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
+}
+
+static void
+peas_engine_finalize (GObject *object)
+{
+  PeasEngine *engine = PEAS_ENGINE (object);
 
   g_list_free (engine->priv->plugin_list);
   g_list_free (engine->priv->search_paths);
@@ -438,6 +450,7 @@ peas_engine_class_init (PeasEngineClass *klass)
   object_class->set_property = peas_engine_set_property;
   object_class->get_property = peas_engine_get_property;
   object_class->constructed = peas_engine_constructed;
+  object_class->dispose = peas_engine_dispose;
   object_class->finalize = peas_engine_finalize;
 
   klass->load_plugin = peas_engine_load_plugin_real;
