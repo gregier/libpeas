@@ -65,7 +65,7 @@ struct _PeasPluginLoaderClass {
   void          (*garbage_collect)        (PeasPluginLoader *loader);
 };
 
-GType         peas_plugin_loader_get_type             (void);
+GType         peas_plugin_loader_get_type             (void)  G_GNUC_CONST;
 
 void          peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
                                                        const gchar      *module_dir);

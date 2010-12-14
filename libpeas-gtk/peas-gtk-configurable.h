@@ -45,7 +45,7 @@ struct _PeasGtkConfigurableInterface
   GtkWidget  *(*create_configure_widget)  (PeasGtkConfigurable  *configurable);
 };
 
-GType       peas_gtk_configurable_get_type                (void);
+GType       peas_gtk_configurable_get_type                (void)  G_GNUC_CONST;
 GtkWidget  *peas_gtk_configurable_create_configure_widget (PeasGtkConfigurable  *configurable);
 
 G_END_DECLS
