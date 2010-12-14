@@ -34,7 +34,7 @@ introspection_callable_default_init (IntrospectionCallableInterface *iface)
 
 /**
  * introspection_callable_call_with_return:
- * callable:
+ * @callable:
  *
  * Returns: (transfer full):
  */
@@ -54,8 +54,8 @@ introspection_callable_call_with_return (IntrospectionCallable *callable)
 
 /**
  * introspection_callable_call_single_arg:
- * callable:
- * called: (out):
+ * @callable:
+ * @called: (out):
  */
 void
 introspection_callable_call_single_arg (IntrospectionCallable *callable,
@@ -72,10 +72,10 @@ introspection_callable_call_single_arg (IntrospectionCallable *callable,
 
 /**
  * introspection_callable_call_multi_args:
- * callable:
- * called_1: (out):
- * called_2: (out):
- * called_3: (out):
+ * @callable:
+ * @called_1: (out):
+ * @called_2: (out):
+ * @called_3: (out):
  */
 void
 introspection_callable_call_multi_args (IntrospectionCallable *callable,
