@@ -215,7 +215,10 @@ _peas_plugin_info_new (const gchar *filename,
     }
 
   if (!g_key_file_has_key (plugin_file, "Plugin", "IAge", NULL))
-    goto error;
+    {
+      g_warning ("Could not find 'IAge' in '%s'", filename);
+      goto error;
+    }
 
   integer = g_key_file_get_integer (plugin_file, "Plugin", "IAge", NULL);
   info->iage = integer <= 0 ? 0 : integer;
