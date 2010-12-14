@@ -206,7 +206,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
  * This function appends a search path to the list of paths where to
  * look for plugins.
  *
- * A so-called "search path" actually consists of a couple of both a
+ * A so-called "search path" actually consists of both a
  * module directory (where the shared libraries or language modules
  * lie) and a data directory (where the plugin data is).
  *
