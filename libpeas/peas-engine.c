@@ -92,6 +92,8 @@ struct _PeasEnginePrivate {
 
   GList *plugin_list;
   GHashTable *loaders;
+
+  guint in_dispose : 1;
 };
 
 static void peas_engine_load_plugin_real   (PeasEngine     *engine,
@@ -309,6 +311,8 @@ peas_engine_init (PeasEngine *engine)
                                               PEAS_TYPE_ENGINE,
                                               PeasEnginePrivate);
 
+  engine->priv->in_dispose = FALSE;
+
   /* mapping from loadername -> loader object */
   engine->priv->loaders = g_hash_table_new_full (hash_lowercase,
                                                  (GEqualFunc) equal_lowercase,
@@ -396,6 +400,8 @@ peas_engine_dispose (GObject *object)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
   GList *item;
+
+  engine->priv->in_dispose = TRUE;
 
   /* First unload all the plugins */
   for (item = engine->priv->plugin_list; item; item = item->next)
@@ -866,7 +872,8 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
 
-  g_object_notify (G_OBJECT (engine), "loaded-plugins");
+  if (!engine->priv->in_dispose)
+    g_object_notify (G_OBJECT (engine), "loaded-plugins");
 }
 
 /**
