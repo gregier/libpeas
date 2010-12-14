@@ -491,6 +491,8 @@ peas_engine_class_init (PeasEngineClass *klass)
    *                    "loaded-plugins",
    *                    G_SETTINGS_BIND_DEFAULT);
    * ]|
+   *
+   * Note: notify will not be called when the engine is being destroyed.
    */
   g_object_class_install_property (object_class,
                                    PROP_LOADED_PLUGINS,
