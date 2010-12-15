@@ -321,12 +321,6 @@ peas_engine_init (PeasEngine *engine)
 }
 
 static void
-peas_engine_constructed (GObject *object)
-{
-  peas_engine_rescan_plugins (PEAS_ENGINE (object));
-}
-
-static void
 loader_garbage_collect (const gchar *id,
                         LoaderInfo  *info)
 {
@@ -455,7 +449,6 @@ peas_engine_class_init (PeasEngineClass *klass)
 
   object_class->set_property = peas_engine_set_property;
   object_class->get_property = peas_engine_get_property;
-  object_class->constructed = peas_engine_constructed;
   object_class->dispose = peas_engine_dispose;
   object_class->finalize = peas_engine_finalize;
 
