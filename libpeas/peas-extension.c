@@ -240,6 +240,8 @@ peas_extension_call_valist (PeasExtension *exten,
       g_base_info_unref ((GIBaseInfo *) retval_info);
     }
 
+  g_base_info_unref ((GIBaseInfo *) callable_info);
+
   return ret;
 }
 
