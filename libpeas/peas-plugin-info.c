@@ -382,7 +382,7 @@ peas_plugin_info_is_available (const PeasPluginInfo *info)
  * Gets is the plugin is a builtin plugin.
  *
  * A builtin plugin is a plugin which cannot be enabled or disabled by the
- * user through a plugin manager (like #PeasUIPluginManager). Loading or
+ * user through a plugin manager (like #PeasGtkPluginManager). Loading or
  * unloading such plugins is the responsibility of the application alone.
  * Most applications will usually load those plugins immediately after
  * the initialization of the #PeasEngine.

@@ -32,7 +32,7 @@
  *
  * Returns the translated string from the libpeas translations.
  * This is an internal function and should only be used by
- * the internals of libpeas (such as libpeas or libpeasui).
+ * the internals of libpeas (such as libpeas or libpeas-gtk).
  *
  * Returns: the transation of @msgid to the current locale
  */
