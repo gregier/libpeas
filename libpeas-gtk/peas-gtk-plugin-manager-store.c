@@ -37,6 +37,7 @@ static const GType ColumnTypes[] = {
   G_TYPE_BOOLEAN, /* Icon Visible */
   G_TYPE_STRING,  /* Info */
   G_TYPE_BOOLEAN, /* Info Visible */
+  /* To avoid having to unref it all the time */
   G_TYPE_POINTER  /* PeasPluginInfo */
 };
 
@@ -403,6 +404,9 @@ peas_gtk_plugin_manager_store_get_plugin (PeasGtkPluginManagerStore *store,
                       PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN, &info,
                       -1);
 
+  /* We register it as a pointer instead
+   * of a boxed so no need to unref it
+   */
   return info;
 }
 
