@@ -250,7 +250,8 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                                                         "The module to load for this object",
                                                         NULL,
                                                         G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY));
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,
                                    PROP_PATH,
@@ -259,7 +260,8 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                                                         "The path to use when loading this module",
                                                         NULL,
                                                         G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY));
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,
                                    PROP_RESIDENT,
@@ -268,7 +270,8 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                                                          "Whether the module is resident",
                                                          FALSE,
                                                          G_PARAM_READWRITE |
-                                                         G_PARAM_CONSTRUCT_ONLY));
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
 }
