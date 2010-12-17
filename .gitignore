@@ -65,4 +65,13 @@ Makefile.in
 /py-compile
 /so_locations
 /stamp-h1
+/tests/*-report.html
+/tests/*-report.xml
+/tests/libpeas/engine
+/tests/libpeas/extension
+/tests/libpeas/extension-set
+/tests/libpeas/plugin-info
+/tests/libpeas-gtk/plugin-manager
+/tests/libpeas-gtk/plugin-manager-store
+/tests/libpeas-gtk/plugin-manager-view
 /xmldocs.make

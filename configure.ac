@@ -261,9 +261,14 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
+# The reasons for -rpath /nowhere can be found at:
+# http://www.mail-archive.com/automake@gnu.org/msg10725.htm
+
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
+TEST_PLUGIN_LIBTOOL_FLAGS="$PLUGIN_LIBTOOL_FLAGS -rpath /nowhere"
 LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex peas_register_types"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
+AC_SUBST(TEST_PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(LOADER_LIBTOOL_FLAGS)
 
 dnl ================================================================
@@ -302,6 +307,22 @@ peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
 peas-demo/plugins/seedhello/Makefile
 po/Makefile.in
+tests/Makefile
+tests/libpeas/Makefile
+tests/libpeas/plugins/Makefile
+tests/libpeas/plugins/callable/Makefile
+tests/libpeas/introspection/Makefile
+tests/libpeas/testing/Makefile
+tests/libpeas-gtk/Makefile
+tests/libpeas-gtk/plugins/Makefile
+tests/libpeas-gtk/plugins/builtin-configurable/Makefile
+tests/libpeas-gtk/plugins/configurable/Makefile
+tests/libpeas-gtk/testing/Makefile
+tests/plugins/Makefile
+tests/plugins/builtin/Makefile
+tests/plugins/has-dep/Makefile
+tests/plugins/loadable/Makefile
+tests/plugins/self-dep/Makefile
 ])
 
 AC_OUTPUT
