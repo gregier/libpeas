@@ -64,17 +64,27 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 
 dnl ================================================================
-dnl Start of pkg-config checks
+dnl Minimum libpeas requirements (GObject and Introspection)
 dnl ================================================================
 
 PKG_PROG_PKG_CONFIG
 
+GLIB_REQUIRED=2.18.0
+GOBJECT_REQUIRED=2.23.6
+INTROSPECTION_REQUIRED=0.9.0
+
 PKG_CHECK_MODULES(PEAS, [
-	glib-2.0 >= 2.18.0
-	gobject-2.0 >= 2.23.6
-	gmodule-2.0 >= 2.18.0
-	gobject-introspection-1.0 >= 0.9.6
+	glib-2.0 >= $GLIB_REQUIRED
+	gobject-2.0 >= $GOBJECT_REQUIRED
+	gmodule-2.0 >= $GLIB_REQUIRED
+	gobject-introspection-1.0 >= $INTROSPECTION_REQUIRED
 ])
+
+GOBJECT_INTROSPECTION_REQUIRE($INTROSPECTION_REQUIRED)
+
+AC_SUBST(GLIB_REQUIRED)
+AC_SUBST(GOBJECT_REQUIRED)
+AC_SUBST(INTROSPECTION_REQUIRED)
 
 dnl ================================================================
 dnl Build libpeas-gtk
@@ -130,12 +140,6 @@ if test "$os_osx" = "yes"; then
 
 	PKG_CHECK_MODULES(IGE_MAC, ige-mac-integration)
 fi
-
-dnl ================================================================
-dnl GObject Introspection
-dnl ================================================================
-
-GOBJECT_INTROSPECTION_REQUIRE([0.9.0])
 
 dnl ================================================================
 dnl Seed Javascript Engine
