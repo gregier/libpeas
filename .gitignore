@@ -12,6 +12,7 @@
 .libs
 Makefile
 Makefile.in
+/ABOUT-NLS
 /aclocal.m4
 /autom4te.cache
 /config.cache
@@ -20,6 +21,7 @@ Makefile.in
 /config.h.in
 /config.log
 /config.lt
+/config.rpath
 /config.status
 /config.status.lineno
 /config.sub
@@ -47,13 +49,18 @@ Makefile.in
 /missing
 /mkinstalldirs
 /omf.make
+/po/*.header
 /po/*.gmo
 /po/*.mo
+/po/*.sed
+/po/*.sin
 /po/.intltool-merge-cache
 /po/Makefile
 /po/Makefile.in
 /po/Makefile.in.in
+/po/Makevars.template
 /po/POTFILES
+/po/Rules-quot
 /po/stamp-it
 /py-compile
 /so_locations
