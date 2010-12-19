@@ -56,9 +56,9 @@ handle_method_impl (ffi_cif  *cif,
                     gpointer  data)
 {
   MethodImpl *impl = (MethodImpl *) data;
-  GIArgInfo *arg_info;
-  GITypeInfo *type_info;
-  GITypeInfo *return_type_info;
+  GIArgInfo arg_info;
+  GITypeInfo type_info;
+  GITypeInfo return_type_info;
   gint n_args, i;
   PeasExtension *instance;
   GIArgument *arguments;
@@ -73,13 +73,10 @@ handle_method_impl (ffi_cif  *cif,
 
   for (i = 1; i < n_args; i++)
     {
-      arg_info = g_callable_info_get_arg (impl->info, i);
-      type_info = g_arg_info_get_type (arg_info);
+      g_callable_info_load_arg (impl->info, i, &arg_info);
+      g_arg_info_load_type (&arg_info, &type_info);
 
-      peas_gi_pointer_to_argument (type_info, args[i], &arguments[i-1]);
-
-      g_base_info_unref (type_info);
-      g_base_info_unref (arg_info);
+      peas_gi_pointer_to_argument (&type_info, args[i], &arguments[i-1]);
     }
 
   peas_extension_callv (instance, impl->method_name, arguments, &return_value);
@@ -88,25 +85,20 @@ handle_method_impl (ffi_cif  *cif,
     {
       GIDirection direction;
 
-      arg_info = g_callable_info_get_arg (impl->info, i);
-      direction = g_arg_info_get_direction (arg_info);
+      g_callable_info_load_arg (impl->info, i, &arg_info);
+      direction = g_arg_info_get_direction (&arg_info);
 
       if (direction == GI_DIRECTION_OUT || direction == GI_DIRECTION_INOUT)
         {
-          type_info = g_arg_info_get_type (arg_info);
-          peas_gi_argument_to_pointer (type_info, &arguments[i-1], args[i]);
-          g_base_info_unref (type_info);
+          g_arg_info_load_type (&arg_info, &type_info);
+          peas_gi_argument_to_pointer (&type_info, &arguments[i-1], args[i]);
         }
-
-      g_base_info_unref (arg_info);
     }
 
-  return_type_info = g_callable_info_get_return_type (impl->info);
+  g_callable_info_load_return_type (impl->info, &return_type_info);
 
-  if (g_type_info_get_tag (return_type_info) != GI_TYPE_TAG_VOID)
-    peas_gi_argument_to_pointer (return_type_info, &return_value, result);
-
-  g_base_info_unref (return_type_info);
+  if (g_type_info_get_tag (&return_type_info) != GI_TYPE_TAG_VOID)
+    peas_gi_argument_to_pointer (&return_type_info, &return_value, result);
 }
 
 static void

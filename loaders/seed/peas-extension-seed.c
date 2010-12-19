@@ -295,13 +295,13 @@ peas_extension_seed_call (PeasExtension *exten,
   /* Handle the other arguments */
   for (i = 0; i < n_args && exc == NULL; i++)
     {
-      GIArgInfo *arg_info;
+      GIArgInfo arg_info;
       GITypeInfo *arg_type_info;
 
-      arg_info = g_callable_info_get_arg (func_info, i);
-      arg_type_info = g_arg_info_get_type (arg_info);
+      g_callable_info_load_arg (func_info, i, &arg_info);
+      arg_type_info = g_arg_info_load_type (&arg_info, &arg_type_info);
 
-      switch (g_arg_info_get_direction (arg_info))
+      switch (g_arg_info_get_direction (&arg_info))
         {
         case GI_DIRECTION_IN:
           js_in_args[n_in_args++] = get_argument (sexten->js_context,

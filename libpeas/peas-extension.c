@@ -212,7 +212,7 @@ peas_extension_call_valist (PeasExtension *exten,
                             va_list        args)
 {
   GICallableInfo *callable_info;
-  GITypeInfo *retval_info;
+  GITypeInfo retval_info;
   GIArgument *gargs;
   GIArgument retval;
   gpointer retval_ptr;
@@ -234,9 +234,8 @@ peas_extension_call_valist (PeasExtension *exten,
 
   if (retval_ptr != NULL)
     {
-      retval_info = g_callable_info_get_return_type (callable_info);
-      peas_gi_argument_to_pointer (retval_info, &retval, retval_ptr);
-      g_base_info_unref ((GIBaseInfo *) retval_info);
+      g_callable_info_load_return_type (callable_info, &retval_info);
+      peas_gi_argument_to_pointer (&retval_info, &retval, retval_ptr);
     }
 
   g_base_info_unref ((GIBaseInfo *) callable_info);

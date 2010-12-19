@@ -32,9 +32,9 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
                              gpointer       *return_value)
 {
   gint i, n_args;
-  GIArgInfo *arg_info;
-  GITypeInfo *arg_type_info;
-  GITypeInfo *retval_info;
+  GIArgInfo arg_info;
+  GITypeInfo arg_type_info;
+  GITypeInfo retval_info;
   GIArgument *cur_arg;
 
   g_return_if_fail (callable_info != NULL);
@@ -43,11 +43,11 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
 
   for (i = 0; i < n_args; i++)
     {
-      arg_info = g_callable_info_get_arg (callable_info, i);
-      arg_type_info = g_arg_info_get_type (arg_info);
+      g_callable_info_load_arg (callable_info, i, &arg_info);
+      g_arg_info_load_type (&arg_info, &arg_type_info);
       cur_arg = &arguments[i];
 
-      switch (g_arg_info_get_direction (arg_info))
+      switch (g_arg_info_get_direction (&arg_info))
         {
         case GI_DIRECTION_IN:
           {
@@ -55,7 +55,7 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
              *  - int8, uint8, int16, uint16, short and ushort are promoted to int when passed through '...'
              *  - float is promoted to double when passed through '...'
              */
-            switch (g_type_info_get_tag (arg_type_info))
+            switch (g_type_info_get_tag (&arg_type_info))
               {
               case GI_TYPE_TAG_VOID:
               case GI_TYPE_TAG_BOOLEAN:
@@ -120,21 +120,16 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
           cur_arg->v_pointer = va_arg (va_args, gpointer);
           break;
         }
-
-      g_base_info_unref ((GIBaseInfo *) arg_type_info);
-      g_base_info_unref ((GIBaseInfo *) arg_info);
     }
 
   if (return_value != NULL)
     {
-      retval_info = g_callable_info_get_return_type (callable_info);
+      g_callable_info_load_return_type (callable_info, &retval_info);
 
-      if (g_type_info_get_tag (retval_info) != GI_TYPE_TAG_VOID)
+      if (g_type_info_get_tag (&retval_info) != GI_TYPE_TAG_VOID)
         *return_value = va_arg (va_args, gpointer);
       else
         *return_value = NULL;
-
-      g_base_info_unref ((GIBaseInfo *) retval_info);
     }
 }
 
@@ -147,7 +142,7 @@ peas_gi_split_in_and_out_arguments (GICallableInfo *callable_info,
                                     guint          *n_out_args)
 {
   gint n_args, i;
-  GIArgInfo *arg_info;
+  GIArgInfo arg_info;
 
   g_return_if_fail (callable_info != NULL);
 
@@ -155,9 +150,9 @@ peas_gi_split_in_and_out_arguments (GICallableInfo *callable_info,
 
   for (i = 0; i < n_args; i++)
     {
-      arg_info = g_callable_info_get_arg (callable_info, i);
+      g_callable_info_load_arg (callable_info, i, &arg_info);
 
-      switch (g_arg_info_get_direction (arg_info))
+      switch (g_arg_info_get_direction (&arg_info))
         {
         case GI_DIRECTION_IN:
           in_args[(*n_in_args)++] = args[i];
@@ -170,8 +165,6 @@ peas_gi_split_in_and_out_arguments (GICallableInfo *callable_info,
           out_args[(*n_out_args)++] = args[i];
           break;
         }
-
-      g_base_info_unref ((GIBaseInfo *) arg_info);
     }
 }
 
