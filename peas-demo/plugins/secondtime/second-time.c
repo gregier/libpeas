@@ -90,7 +90,6 @@ static void
 peasdemo_second_time_activate (PeasActivatable *activatable)
 {
   PeasDemoSecondTime *plugin = PEASDEMO_SECOND_TIME (activatable);
-  GtkWidget *label;
 
   g_debug (G_STRFUNC);
 
