@@ -71,7 +71,7 @@ peas_dirs_get_lib_dir (void)
 
   win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
 
-  data_dir = g_build_filename (win32_dir, "lib", "libpeas-1.0", NULL);
+  lib_dir = g_build_filename (win32_dir, "lib", "libpeas-1.0", NULL);
   g_free (win32_dir);
 #elif defined (OS_OSX)
   IgeMacBundle *bundle = ige_mac_bundle_get_default ();
