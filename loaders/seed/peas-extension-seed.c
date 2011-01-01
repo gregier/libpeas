@@ -299,7 +299,7 @@ peas_extension_seed_call (PeasExtension *exten,
       GITypeInfo *arg_type_info;
 
       g_callable_info_load_arg (func_info, i, &arg_info);
-      arg_type_info = g_arg_info_load_type (&arg_info, &arg_type_info);
+      arg_type_info = g_arg_info_get_type (&arg_info);
 
       switch (g_arg_info_get_direction (&arg_info))
         {
@@ -324,7 +324,6 @@ peas_extension_seed_call (PeasExtension *exten,
         }
 
       g_base_info_unref ((GIBaseInfo *) arg_type_info);
-      g_base_info_unref ((GIBaseInfo *) arg_info);
     }
   if (exc != NULL)
     goto cleanup;
