@@ -189,23 +189,6 @@ enabled_toggled_cb (GtkCellRendererToggle    *cell,
   gtk_tree_path_free (path);
 }
 
-static void
-row_activated_cb (GtkTreeView              *tree_view,
-                  GtkTreePath              *path,
-                  GtkTreeViewColumn        *column,
-                  PeasGtkPluginManagerView *view)
-{
-  GtkTreeIter iter;
-
-  g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (tree_view),
-                                             &iter, path));
-
-  convert_iter_to_child_iter (view, &iter);
-
-  if (peas_gtk_plugin_manager_store_can_enable (view->priv->store, &iter))
-    peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, &iter);
-}
-
 /* Callback used as the interactive search comparison function */
 static gboolean
 name_search_cb (GtkTreeModel             *model,
@@ -425,39 +408,6 @@ show_popup_menu (GtkTreeView              *tree_view,
     }
 }
 
-static gboolean
-button_press_event_cb (GtkWidget                *tree_view,
-                       GdkEventButton           *event,
-                       PeasGtkPluginManagerView *view)
-{
-  GtkWidgetClass *widget_class;
-  gboolean handled;
-
-  if (event->type != GDK_BUTTON_PRESS || event->button != 3)
-    return FALSE;
-
-  widget_class = GTK_WIDGET_CLASS (peas_gtk_plugin_manager_view_parent_class);
-
-  /* The selection must by updated */
-  handled = widget_class->button_press_event (tree_view, event);
-
-  if (!handled)
-    return FALSE;
-
-  show_popup_menu (GTK_TREE_VIEW (tree_view), view, event);
-
-  return TRUE;
-}
-
-static gboolean
-popup_menu_cb (GtkTreeView              *tree_view,
-               PeasGtkPluginManagerView *view)
-{
-  show_popup_menu (tree_view, view, NULL);
-
-  return TRUE;
-}
-
 static void
 plugin_icon_data_func (GtkTreeViewColumn *column,
                        GtkCellRenderer   *cell,
@@ -554,21 +504,54 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
                                        (GtkTreeViewSearchEqualFunc) name_search_cb,
                                        view,
                                        NULL);
+}
 
-  gtk_widget_show (GTK_WIDGET (view));
+static gboolean
+peas_gtk_plugin_manager_view_button_press_event (GtkWidget      *tree_view,
+                                                 GdkEventButton *event)
+{
+  PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view);
+  GtkWidgetClass *widget_class;
+  gboolean handled;
 
-  g_signal_connect (view,
-                    "row-activated",
-                    G_CALLBACK (row_activated_cb),
-                    view);
-  g_signal_connect (view,
-                    "button-press-event",
-                    G_CALLBACK (button_press_event_cb),
-                    view);
-  g_signal_connect (view,
-                    "popup-menu",
-                    G_CALLBACK (popup_menu_cb),
-                    view);
+  widget_class = GTK_WIDGET_CLASS (peas_gtk_plugin_manager_view_parent_class);
+
+  /* The selection must by updated */
+  handled = widget_class->button_press_event (tree_view, event);
+
+  if (event->type != GDK_BUTTON_PRESS || event->button != 3 || !handled)
+    return handled;
+
+  show_popup_menu (GTK_TREE_VIEW (tree_view), view, event);
+
+  return TRUE;
+}
+
+static gboolean
+peas_gtk_plugin_manager_view_popup_menu (GtkWidget *widget)
+{
+  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+
+  show_popup_menu (tree_view, PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view), NULL);
+
+  return TRUE;
+}
+
+static void
+peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
+                                            GtkTreePath       *path,
+                                            GtkTreeViewColumn *column)
+{
+  PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view);
+  GtkTreeIter iter;
+
+  if (!gtk_tree_model_get_iter (gtk_tree_view_get_model (tree_view), &iter, path))
+    return;
+
+  convert_iter_to_child_iter (view, &iter);
+
+  if (peas_gtk_plugin_manager_store_can_enable (view->priv->store, &iter))
+    peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, &iter);
 }
 
 static void
@@ -659,11 +642,18 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 {
   GType the_type = G_TYPE_FROM_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+  GtkTreeViewClass *tree_view_class = GTK_TREE_VIEW_CLASS (klass);
 
   object_class->set_property = peas_gtk_plugin_manager_view_set_property;
   object_class->get_property = peas_gtk_plugin_manager_view_get_property;
   object_class->constructed = peas_gtk_plugin_manager_view_constructed;
   object_class->dispose = peas_gtk_plugin_manager_view_dispose;
+
+  widget_class->button_press_event = peas_gtk_plugin_manager_view_button_press_event;
+  widget_class->popup_menu = peas_gtk_plugin_manager_view_popup_menu;
+
+  tree_view_class->row_activated = peas_gtk_plugin_manager_view_row_activated;
 
   /**
    * PeasGtkPLuginManagerView:show-builtin:
