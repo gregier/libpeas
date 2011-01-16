@@ -265,35 +265,58 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
 static void
 verify_icon (TestFixture *fixture,
              const gchar *plugin_name,
+             gboolean     has_pixbuf,
              const gchar *icon_name)
 {
   PeasPluginInfo *info;
   GtkTreeIter iter;
+  GdkPixbuf *model_icon_pixbuf;
   gchar *model_icon_name;
 
   info = peas_engine_get_plugin_info (fixture->engine, plugin_name);
   testing_get_iter_for_plugin_info (fixture->view, info, &iter);
 
   gtk_tree_model_get (fixture->model, &iter,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN, &model_icon_pixbuf,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN, &model_icon_name,
     -1);
 
+  if (has_pixbuf)
+    g_assert (GDK_IS_PIXBUF (model_icon_pixbuf));
+  else
+    g_assert (!GDK_IS_PIXBUF (model_icon_pixbuf));
+
   g_assert_cmpstr (model_icon_name, ==, icon_name);
+
+  if (model_icon_pixbuf != NULL)
+    g_object_unref (model_icon_pixbuf);
 
   if (model_icon_name != NULL)
     g_free (model_icon_name);
 }
 
 static void
-test_gtk_plugin_manager_store_valid_icon (TestFixture *fixture)
+test_gtk_plugin_manager_store_valid_custom_icon (TestFixture *fixture)
 {
-  verify_icon (fixture, "valid-icon", "gtk-about");
+  verify_icon (fixture, "valid-custom-icon", TRUE, NULL);
 }
 
 static void
-test_gtk_plugin_manager_store_invalid_icon (TestFixture *fixture)
+test_gtk_plugin_manager_store_valid_stock_icon (TestFixture *fixture)
 {
-  verify_icon (fixture, "invalid-icon", "libpeas-plugin");
+  verify_icon (fixture, "valid-stock-icon", FALSE, "gtk-about");
+}
+
+static void
+test_gtk_plugin_manager_store_invalid_custom_icon (TestFixture *fixture)
+{
+  verify_icon (fixture, "invalid-custom-icon", FALSE, "libpeas-plugin");
+}
+
+static void
+test_gtk_plugin_manager_store_invalid_stock_icon (TestFixture *fixture)
+{
+  verify_icon (fixture, "invalid-stock-icon", FALSE, "libpeas-plugin");
 }
 
 int
@@ -319,8 +342,10 @@ main (int    argc,
   TEST ("verify-builtin", verify_builtin);
   TEST ("verify-info", verify_info);
 
-  TEST ("valid-icon", valid_icon);
-  TEST ("invalid-icon", invalid_icon);
+  TEST ("valid-custom-icon", valid_custom_icon);
+  TEST ("valid-stock-icon", valid_stock_icon);
+  TEST ("invalid-custom-icon", invalid_custom_icon);
+  TEST ("invalid-stock-icon", invalid_stock_icon);
 
 #undef TEST
 

@@ -322,6 +322,7 @@ tests/libpeas-gtk/Makefile
 tests/libpeas-gtk/plugins/Makefile
 tests/libpeas-gtk/plugins/builtin-configurable/Makefile
 tests/libpeas-gtk/plugins/configurable/Makefile
+tests/libpeas-gtk/plugins/valid-custom-icon/Makefile
 tests/libpeas-gtk/testing/Makefile
 tests/plugins/Makefile
 tests/plugins/builtin/Makefile
