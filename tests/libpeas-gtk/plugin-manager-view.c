@@ -211,6 +211,8 @@ test_gtk_plugin_manager_view_enable_plugin (TestFixture *fixture)
   g_assert (!peas_plugin_info_is_loaded (info));
   gtk_tree_view_row_activated (fixture->tree_view, path, column);
   g_assert (peas_plugin_info_is_loaded (info));
+
+  gtk_tree_path_free (path);
 }
 
 static void
@@ -233,6 +235,8 @@ test_gtk_plugin_manager_view_enable_builtin_plugin (TestFixture *fixture)
   g_assert (!peas_plugin_info_is_loaded (info));
   gtk_tree_view_row_activated (fixture->tree_view, path, column);
   g_assert (!peas_plugin_info_is_loaded (info));
+
+  gtk_tree_path_free (path);
 }
 
 int
