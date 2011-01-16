@@ -9,7 +9,7 @@
   <bookinfo>
     <title>Peas Reference Manual</title>
     <releaseinfo>
-      for libpeas &version; and libpeasui &version;
+      for libpeas &version; and libpeas-gtk &version;
     </releaseinfo>
   </bookinfo>
 

@@ -93,7 +93,7 @@ plugins written in C, Python and Javascript.
 
 The global idea is this one: you create a new PeasEngine instance and give it
 the information needed for it to find your plugins. Then you load some plugins
-(you can use the PeasUIPluginManager for that purpose) and perform actions
+(you can use the PeasGtkPluginManager for that purpose) and perform actions
 through some PeasExtensions objects you can get from the engine.
 
 

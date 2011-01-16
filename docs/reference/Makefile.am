@@ -88,13 +88,13 @@ GTKDOC_CFLAGS = \
 	-I$(top_srcdir)			\
 	-I$(top_builddir)		\
 	$(PEAS_CFLAGS)			\
-	$(PEASUI_CFLAGS)
+	$(PEAS_GTK_CFLAGS)
 
 GTKDOC_LIBS = \
 	$(top_builddir)/libpeas/libpeas-1.0.la		\
 	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
 	$(PEAS_LIBS)					\
-	$(PEASUI_LIBS)
+	$(PEAS_GTK_LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
