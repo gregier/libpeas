@@ -96,6 +96,8 @@ test_extension_create_invalid (PeasEngine *engine)
                                                 PEAS_TYPE_ACTIVATABLE,
                                                 "object", NULL,
                                                 NULL);
+      /* Resident Modules */
+      g_object_unref (extension);
       exit (0);
     }
   /* Resident modules cause this to fail?
