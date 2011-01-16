@@ -298,5 +298,7 @@ main (int    argc,
 
 #undef TEST
 
+  g_object_unref (peas_engine_get_default ());
+
   return g_test_run ();
 }
