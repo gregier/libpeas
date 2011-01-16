@@ -236,6 +236,17 @@ _peas_plugin_info_new (const gchar *filename,
       goto error;
     }
 
+  /* Get Name */
+  str = g_key_file_get_locale_string (plugin_file, "Plugin",
+                                      "Name", NULL, NULL);
+  if (str)
+    info->name = str;
+  else
+    {
+      g_warning ("Could not find 'Name' in '%s'", filename);
+      goto error;
+    }
+
   /* Get the dependency list */
   info->dependencies = g_key_file_get_string_list (plugin_file,
                                                    "Plugin",
@@ -254,17 +265,6 @@ _peas_plugin_info_new (const gchar *filename,
     {
       /* default to the C loader */
       info->loader = g_strdup ("C");
-    }
-
-  /* Get Name */
-  str = g_key_file_get_locale_string (plugin_file, "Plugin",
-                                      "Name", NULL, NULL);
-  if (str)
-    info->name = str;
-  else
-    {
-      g_warning ("Could not find 'Name' in '%s'", filename);
-      goto error;
     }
 
   /* Get Description */
@@ -336,7 +336,6 @@ error:
   g_free (info->file);
   g_free (info->module_name);
   g_free (info->name);
-  g_free (info->loader);
   g_free (info);
   g_key_file_free (plugin_file);
 
