@@ -310,21 +310,7 @@ plugin_loaded_toggled_cb (PeasEngine           *engine,
 }
 
 static void
-selection_changed_cb (GtkTreeSelection    *selection,
-                      PeasGtkPluginManager *pm)
-{
-  PeasGtkPluginManagerView *view;
-  PeasPluginInfo *info;
-
-  view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
-  info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
-
-  update_button_sensitivity (pm, info);
-}
-
-static void
-cursor_changed_cb (GtkTreeView         *tree_view,
-                   PeasGtkPluginManager *pm)
+selection_changed_cb (PeasGtkPluginManager *pm)
 {
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
@@ -437,21 +423,21 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                           "unload-plugin",
                           G_CALLBACK (plugin_loaded_toggled_cb),
                           pm);
-  g_signal_connect (selection,
-                    "changed",
-                    G_CALLBACK (selection_changed_cb),
-                    pm);
-  g_signal_connect (pm->priv->view,
-                    "cursor-changed",
-                    G_CALLBACK (cursor_changed_cb),
-                    pm);
+  g_signal_connect_swapped (selection,
+                            "changed",
+                            G_CALLBACK (selection_changed_cb),
+                            pm);
+  g_signal_connect_swapped (pm->priv->view,
+                            "cursor-changed",
+                            G_CALLBACK (selection_changed_cb),
+                            pm);
   g_signal_connect (pm->priv->view,
                     "populate-popup",
                     G_CALLBACK (populate_popup_cb),
                     pm);
 
   /* Update the button sensitivity */
-  selection_changed_cb (selection, pm);
+  selection_changed_cb (pm);
 }
 
 static void

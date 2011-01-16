@@ -355,19 +355,23 @@ menu_position_under_tree_view (GtkMenu     *menu,
   else
     {
       GtkAllocation allocation;
+
       gtk_widget_get_allocation (GTK_WIDGET (tree_view), &allocation);
+
       *x += allocation.x;
       *y += allocation.y;
 
       if (gtk_widget_get_direction (GTK_WIDGET (tree_view)) == GTK_TEXT_DIR_RTL)
         {
           GtkRequisition requisition;
+
 #if !GTK_CHECK_VERSION(2,90,7)
           gtk_widget_size_request (GTK_WIDGET (menu), &requisition);
 #else
           gtk_widget_get_preferred_size (GTK_WIDGET (menu), &requisition,
                                          NULL);
 #endif
+
           *x += allocation.width - requisition.width;
         }
     }
@@ -504,6 +508,10 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
                                        (GtkTreeViewSearchEqualFunc) name_search_cb,
                                        view,
                                        NULL);
+
+  /* Properly set the model */
+  view->priv->show_builtin = TRUE;
+  peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
 }
 
 static gboolean
@@ -566,7 +574,7 @@ peas_gtk_plugin_manager_view_set_property (GObject      *object,
     {
     case PROP_SHOW_BUILTIN:
       peas_gtk_plugin_manager_view_set_show_builtin (view,
-                                                    g_value_get_boolean (value));
+                                                     g_value_get_boolean (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -592,19 +600,6 @@ peas_gtk_plugin_manager_view_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
-}
-
-static void
-peas_gtk_plugin_manager_view_constructed (GObject *object)
-{
-  PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
-
-  /* Properly set the model */
-  view->priv->show_builtin = TRUE;
-  peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
-
-  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed (object);
 }
 
 static void
@@ -647,7 +642,6 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 
   object_class->set_property = peas_gtk_plugin_manager_view_set_property;
   object_class->get_property = peas_gtk_plugin_manager_view_get_property;
-  object_class->constructed = peas_gtk_plugin_manager_view_constructed;
   object_class->dispose = peas_gtk_plugin_manager_view_dispose;
 
   widget_class->button_press_event = peas_gtk_plugin_manager_view_button_press_event;
@@ -715,7 +709,7 @@ peas_gtk_plugin_manager_view_new (void)
  */
 void
 peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
-                                               gboolean                 show_builtin)
+                                               gboolean                  show_builtin)
 {
   GtkTreeIter iter;
   gboolean iter_set;
@@ -733,7 +727,7 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
 
   view->priv->show_builtin = show_builtin;
 
-  if (show_builtin == TRUE)
+  if (show_builtin)
     {
       gtk_tree_view_set_model (GTK_TREE_VIEW (view),
                                GTK_TREE_MODEL (view->priv->store));
@@ -782,7 +776,7 @@ peas_gtk_plugin_manager_view_get_show_builtin (PeasGtkPluginManagerView *view)
  */
 void
 peas_gtk_plugin_manager_view_set_selected_iter (PeasGtkPluginManagerView *view,
-                                                GtkTreeIter             *iter)
+                                                GtkTreeIter              *iter)
 {
   GtkTreeSelection *selection;
 
@@ -807,7 +801,7 @@ peas_gtk_plugin_manager_view_set_selected_iter (PeasGtkPluginManagerView *view,
  */
 gboolean
 peas_gtk_plugin_manager_view_get_selected_iter (PeasGtkPluginManagerView *view,
-                                                GtkTreeIter             *iter)
+                                                GtkTreeIter              *iter)
 {
   GtkTreeSelection *selection;
 
@@ -833,7 +827,7 @@ peas_gtk_plugin_manager_view_get_selected_iter (PeasGtkPluginManagerView *view,
  */
 void
 peas_gtk_plugin_manager_view_set_selected_plugin (PeasGtkPluginManagerView *view,
-                                                  PeasPluginInfo          *info)
+                                                  PeasPluginInfo           *info)
 {
   GtkTreeIter iter;
   GtkTreeSelection *selection;
@@ -842,7 +836,7 @@ peas_gtk_plugin_manager_view_set_selected_plugin (PeasGtkPluginManagerView *view
   g_return_if_fail (info != NULL);
 
   g_return_if_fail (peas_gtk_plugin_manager_store_get_iter_from_plugin (view->priv->store,
-                                                                       &iter, info));
+                                                                        &iter, info));
 
   if (!convert_child_iter_to_iter (view, &iter))
     return;
