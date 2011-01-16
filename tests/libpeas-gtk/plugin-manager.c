@@ -105,17 +105,13 @@ test_setup (TestFixture   *fixture,
   g_assert (fixture->configure_button != NULL);
 
   g_list_free (buttons);
-
-  g_object_ref_sink (fixture->manager);
 }
 
 static void
 test_teardown (TestFixture   *fixture,
                gconstpointer  data)
 {
-  /* Yes this really is needed */
-  g_object_run_dispose (G_OBJECT (fixture->manager));
-  g_object_unref (fixture->manager);
+  gtk_widget_destroy (GTK_WIDGET (fixture->manager));
 
   testing_engine_free (fixture->engine);
 }
