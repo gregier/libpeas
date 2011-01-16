@@ -459,6 +459,31 @@ popup_menu_cb (GtkTreeView              *tree_view,
 }
 
 static void
+plugin_icon_data_func (GtkTreeViewColumn *column,
+                       GtkCellRenderer   *cell,
+                       GtkTreeModel      *model,
+                       GtkTreeIter       *iter)
+{
+  GdkPixbuf *icon_pixbuf;
+  gchar *icon_name;
+
+  gtk_tree_model_get (model, iter,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN, &icon_pixbuf,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN, &icon_name,
+    -1);
+
+  if (icon_pixbuf == NULL)
+    g_object_set (cell, "icon-name", icon_name, NULL);
+  else
+    {
+      g_object_set (cell, "pixbuf", icon_pixbuf, NULL);
+      g_object_unref (icon_pixbuf);
+    }
+
+  g_free (icon_name);
+}
+
+static void
 peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
 {
   GtkTreeViewColumn *column;
@@ -507,10 +532,9 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
   cell = gtk_cell_renderer_pixbuf_new ();
   gtk_tree_view_column_pack_start (column, cell, FALSE);
   g_object_set (cell, "stock-size", GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
-  gtk_tree_view_column_set_attributes (column, cell,
-                                       //"sensitive", PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,
-                                       "icon-name", PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_COLUMN,
-                                       NULL);
+  gtk_tree_view_column_set_cell_data_func (column, cell,
+                                           (GtkTreeCellDataFunc) plugin_icon_data_func,
+                                           NULL, NULL);
 
   cell = gtk_cell_renderer_text_new ();
   gtk_tree_view_column_pack_start (column, cell, TRUE);

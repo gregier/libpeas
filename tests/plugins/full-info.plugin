@@ -8,6 +8,6 @@ Description=Has full info.
 Authors=Garrett Regier
 Copyright=Copyright © 2010 Garrett Regier
 Website=http://live.gnome.org/Libpeas
-Icon=full-info-icon
+Icon=gtk-ok
 Version=1.0
 Help=http://git.gnome.org/browse/libpeas

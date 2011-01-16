@@ -79,7 +79,7 @@ test_plugin_info_verify_full_info (PeasEngine *engine)
 
   g_assert_cmpstr (peas_plugin_info_get_name (info), ==, "Full Info");
   g_assert_cmpstr (peas_plugin_info_get_description (info), ==, "Has full info.");
-  g_assert_cmpstr (peas_plugin_info_get_icon_name (info), ==, "full-info-icon");
+  g_assert_cmpstr (peas_plugin_info_get_icon_name (info), ==, "gtk-ok");
   g_assert_cmpstr (peas_plugin_info_get_website (info), ==, "http://live.gnome.org/Libpeas");
   g_assert_cmpstr (peas_plugin_info_get_copyright (info), ==, "Copyright © 2010 Garrett Regier");
   g_assert_cmpstr (peas_plugin_info_get_version (info), ==, "1.0");

@@ -168,29 +168,29 @@ static void
 verify_model (TestFixture    *fixture,
               PeasPluginInfo *info,
               gboolean        can_enable,
-              const gchar    *icon,
+              const gchar    *icon_name,
               gboolean        icon_visible,
               gboolean        info_sensitive)
 {
   GtkTreeIter iter;
   gboolean model_can_enable, model_icon_visible, model_info_sensitive;
-  gchar *model_icon;
+  gchar *model_icon_name;
 
   testing_get_iter_for_plugin_info (fixture->view, info, &iter);
 
   gtk_tree_model_get (fixture->model, &iter,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,      &model_can_enable,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_COLUMN,            &model_icon,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,    &model_icon_visible,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN,  &model_info_sensitive,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,     &model_can_enable,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN,      &model_icon_name,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,   &model_icon_visible,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN, &model_info_sensitive,
     -1);
 
   g_assert_cmpint (model_can_enable, ==, can_enable);
-  g_assert_cmpstr (model_icon, ==, icon);
+  g_assert_cmpstr (model_icon_name, ==, icon_name);
   g_assert_cmpint (model_icon_visible, ==, icon_visible);
   g_assert_cmpint (model_info_sensitive, ==, info_sensitive);
 
-  g_free (model_icon);
+  g_free (model_icon_name);
 }
 
 static void
@@ -275,7 +275,7 @@ verify_icon (TestFixture *fixture,
   testing_get_iter_for_plugin_info (fixture->view, info, &iter);
 
   gtk_tree_model_get (fixture->model, &iter,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_COLUMN, &model_icon_name,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN, &model_icon_name,
     -1);
 
   g_assert_cmpstr (model_icon_name, ==, icon_name);

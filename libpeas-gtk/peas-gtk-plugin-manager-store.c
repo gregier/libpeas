@@ -33,7 +33,8 @@
 static const GType ColumnTypes[] = {
   G_TYPE_BOOLEAN, /* Enabled */
   G_TYPE_BOOLEAN, /* Enabled Visible */
-  G_TYPE_STRING,  /* Icon */
+  G_TYPE_OBJECT,  /* Pixbuf Icon */
+  G_TYPE_STRING,  /* Stock Icon */
   G_TYPE_BOOLEAN, /* Icon Visible */
   G_TYPE_STRING,  /* Info */
   G_TYPE_BOOLEAN, /* Info Visible */
@@ -62,6 +63,7 @@ update_plugin (PeasGtkPluginManagerStore *store,
   gboolean builtin;
   gchar *markup;
   const gchar *icon_name;
+  GdkPixbuf *icon_pixbuf = NULL;
 
   loaded = peas_plugin_info_is_loaded (info);
   available = peas_plugin_info_is_available (info);
@@ -79,26 +81,68 @@ update_plugin (PeasGtkPluginManagerStore *store,
                                         peas_plugin_info_get_description (info));
     }
 
-  if (peas_plugin_info_is_available (info))
-    {
-      icon_name = peas_plugin_info_get_icon_name (info);
-      if (!gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
-        icon_name = "libpeas-plugin";
-    }
-  else
+  if (!available)
     {
       icon_name = GTK_STOCK_DIALOG_ERROR;
     }
+  else
+    {
+      gchar *icon_filename;
+
+      icon_name = peas_plugin_info_get_icon_name (info);
+      icon_filename = g_build_filename (peas_plugin_info_get_data_dir (info),
+                                        icon_name,
+                                        NULL);
+
+      if (!gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
+        icon_name = "libpeas-plugin";
+
+      /* Prevent warning for the common case that icon_filename
+       * does not exist but warn when it is a directory
+       */
+      if (g_file_test (icon_filename, G_FILE_TEST_EXISTS))
+        {
+          GError *error = NULL;
+          gint width, height;
+
+          /* Attempt to load the icon scaled to the correct size */
+          if (!gtk_icon_size_lookup (GTK_ICON_SIZE_SMALL_TOOLBAR,
+                                     &width, &height))
+            {
+              icon_pixbuf = gdk_pixbuf_new_from_file (icon_filename, &error);
+            }
+          else
+            {
+              icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename,
+                                                              width, height,
+                                                              &error);
+            }
+
+          if (error == NULL)
+            icon_name = NULL;
+          else
+            {
+              g_warning ("Error while loading icon: %s", error->message);
+              g_error_free (error);
+            }
+        }
+
+      g_free (icon_filename);
+    }
 
   gtk_list_store_set (GTK_LIST_STORE (store), iter,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN,          loaded,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,       !builtin && available,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_COLUMN,             icon_name,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,     !available,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,             markup,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN,   available && (!builtin || loaded),
-    PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN,           info,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN,        loaded,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,     !builtin && available,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN,    icon_pixbuf,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN,      icon_name,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,   !available,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,           markup,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN, available && (!builtin || loaded),
+    PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN,         info,
     -1);
+
+  if (icon_pixbuf != NULL)
+    g_object_unref (icon_pixbuf);
 
   g_free (markup);
 }
