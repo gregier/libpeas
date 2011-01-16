@@ -41,6 +41,7 @@ static GLogFunc default_log_func;
  */
 static const gchar *allowed_patterns[] = {
   "*Plugin not found: does-not-exist*",
+  "*Error while loading icon*does-not-exist*",
   "*libcloader.so*cannot open shared object file: No such file or directory*",
 };
 

@@ -262,6 +262,40 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
   g_free (model_info);
 }
 
+static void
+verify_icon (TestFixture *fixture,
+             const gchar *plugin_name,
+             const gchar *icon_name)
+{
+  PeasPluginInfo *info;
+  GtkTreeIter iter;
+  gchar *model_icon_name;
+
+  info = peas_engine_get_plugin_info (fixture->engine, plugin_name);
+  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+
+  gtk_tree_model_get (fixture->model, &iter,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_COLUMN, &model_icon_name,
+    -1);
+
+  g_assert_cmpstr (model_icon_name, ==, icon_name);
+
+  if (model_icon_name != NULL)
+    g_free (model_icon_name);
+}
+
+static void
+test_gtk_plugin_manager_store_valid_icon (TestFixture *fixture)
+{
+  verify_icon (fixture, "valid-icon", "gtk-about");
+}
+
+static void
+test_gtk_plugin_manager_store_invalid_icon (TestFixture *fixture)
+{
+  verify_icon (fixture, "invalid-icon", "libpeas-plugin");
+}
+
 int
 main (int    argc,
       char **argv)
@@ -284,6 +318,9 @@ main (int    argc,
   TEST ("verify-unavailable", verify_unavailable);
   TEST ("verify-builtin", verify_builtin);
   TEST ("verify-info", verify_info);
+
+  TEST ("valid-icon", valid_icon);
+  TEST ("invalid-icon", invalid_icon);
 
 #undef TEST
 

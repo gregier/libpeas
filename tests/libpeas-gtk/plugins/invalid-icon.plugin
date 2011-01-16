@@ -1,0 +1,8 @@
+[Plugin]
+Module=invalid-icon
+IAge=2
+Name=Invalid Icon
+Description=A plugin that has an invalid icon.
+Icon=does-not-exist
+Authors=Garrett Regier
+Copyright=Copyright © 2010 Garrett Regier

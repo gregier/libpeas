@@ -1,0 +1,8 @@
+[Plugin]
+Module=valid-icon
+IAge=2
+Name=Valid Icon
+Description=A plugin that has a valid icon.
+Icon=gtk-about
+Authors=Garrett Regier
+Copyright=Copyright © 2010 Garrett Regier
