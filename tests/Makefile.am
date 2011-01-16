@@ -6,7 +6,7 @@ if ENABLE_GTK
 SUBDIRS += libpeas-gtk
 endif
 
-test test-gdb:
+test test-gdb test-valgrind:
 	@for subdir in $(SUBDIRS) ; do \
 	   test "$$subdir" = "plugins" || \
 	   ( cd $$subdir && \
@@ -65,7 +65,7 @@ test-report perf-report full-report:
 	 $(GTESTER_REPORT) $@.xml >$@.html ; \
 	 rm -rf "$$GTESTER_LOGDIR" ;
 
-.PHONY: test test-gdb test-report perf-report full-report
+.PHONY: test test-gdb test-valgrind test-report perf-report full-report
 
 check-local: test
 

@@ -67,6 +67,7 @@ Makefile.in
 /stamp-h1
 /tests/*-report.html
 /tests/*-report.xml
+/tests/*/vgdump-*
 /tests/libpeas/engine
 /tests/libpeas/extension
 /tests/libpeas/extension-set

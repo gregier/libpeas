@@ -15,6 +15,20 @@ test-gdb: $(TEST_PROGS)
 	   } \
 	 done
 
+test-valgrind: $(TEST_PROGS)
+	@test -z "$(TEST_PROGS)" || \
+	 for test_prog in $(TEST_PROGS) ; do \
+	   if test -e vgdump-$$test_prog; then \
+	     unlink vgdump-$$test_prog; \
+	   fi ; \
+	   G_SLICE=always-malloc G_DEBUG=gc-friendly,resident-modules \
+	     libtool --mode=execute valgrind --leak-check=full \
+	     --leak-resolution=high --num-callers=20 \
+	     --log-file=vgdump-$$test_prog $$test_prog ; \
+	 done
+
 generate-report: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
+
+CLEANFILES = vgdump-*

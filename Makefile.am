@@ -24,7 +24,7 @@ dist-hook:
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
 
-test test-gdb test-report perf-report full-report: all
+test test-gdb test-valgrind test-report perf-report full-report: all
 	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
 
 .PHONY: all test test-gdb test-report perf-report full-report
