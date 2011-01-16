@@ -1,3 +1,5 @@
+GTESTER_REPORT = gtester-report
+
 SUBDIRS = plugins libpeas
 
 if ENABLE_GTK
@@ -7,17 +9,23 @@ endif
 test test-gdb:
 	@for subdir in $(SUBDIRS) ; do \
 	   test "$$subdir" = "plugins" || \
-	   ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $(@) ) || exit $? ; \
+	   ( cd $$subdir && \
+	     if ! $(MAKE) $(AM_MAKEFLAGS) -n run-test-hook 2>/dev/null 1>&2 ; then \
+	       $(MAKE) $(AM_MAKEFLAGS) $(@) ; \
+	     elif $(MAKE) $(AM_MAKEFLAGS) run-test-hook 2>/dev/null 1>&2 ; then \
+	       $(MAKE) $(AM_MAKEFLAGS) $(@) ; \
+	     else \
+	       true ; \
+	     fi \
+	   ) || exit $? ; \
 	 done
-
-GTESTER_REPORT = gtester-report
 
 # test-report: run tests and generate report
 # perf-report: run tests with -m perf and generate report
 # full-report: run tests with -m perf -m slow and generate report
 test-report perf-report full-report:
 	@export GTESTER_LOGDIR=`mktemp -d "$(abs_srcdir)/.testlogs-XXXXXX"` ; \
-	 if test -d "$(top_srcdir)/.git"; then \
+	 if test -d "$(top_srcdir)/.git" ; then \
 	   export REVISION="`git describe`" ;  \
 	 else \
 	   export REVISION="$(VERSION)" ; \
@@ -40,8 +48,15 @@ test-report perf-report full-report:
 	   test "$$subdir" = "plugins" || { \
 	     export GTESTER_LOG=`mktemp "$$GTESTER_LOGDIR/log-XXXXXX"` ; \
 	     export GTESTER_ARGS="--verbose $$test_options -o $$GTESTER_LOG" ; \
-	     ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) generate-report ) ; \
-	     sed '1,1s/^<?xml\b[^>?]*?>//' <"$$GTESTER_LOG" >> $@.xml ; \
+	     ( cd $$subdir && \
+	       if ! $(MAKE) $(AM_MAKEFLAGS) -n run-test-hook 2>/dev/null 1>&2 ; then \
+	         $(MAKE) $(AM_MAKEFLAGS) generate-report ; \
+	       elif $(MAKE) $(AM_MAKEFLAGS) run-test-hook 2>/dev/null 1>&2 ; then \
+	         $(MAKE) $(AM_MAKEFLAGS) generate-report ; \
+	       else \
+	         false ; \
+	       fi \
+	     ) && sed '1,1s/^<?xml\b[^>?]*?>//' <"$$GTESTER_LOG" >> $@.xml ; \
 	   } \
 	 done ; \
 	 echo >> $@.xml ; \

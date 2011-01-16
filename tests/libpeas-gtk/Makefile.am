@@ -1,28 +1,9 @@
-GTESTER = gtester
-
-TEST_PROGS =
+include $(top_srcdir)/tests/Makefile.tests
 
 SUBDIRS = plugins testing
 
-test: $(TEST_PROGS)
-	@test -z "$(TEST_PROGS)" || \
-	 test -z "$(DISPLAY)" || \
-	 $(GTESTER) --verbose $(TEST_PROGS)
-
-test-gdb: $(TEST_PROGS)
-	@test -z "$(TEST_PROGS)" || \
-	 test -z "$(DISPLAY)" || \
-	 for test_prog in $(TEST_PROGS); do \
-	   $(GTESTER) --verbose $$test_prog || { \
-	     libtool --mode=execute gdb --ex "run --verbose" $$test_prog ; \
-	     exit 1 ; \
-	   } \
-	 done
-
-generate-report: $(TEST_PROGS)
-	@test -z "$(TEST_PROGS)" || \
-	 test -z "$(DISPLAY)" || \
-	 $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
+run-test-hook:
+	@test -n "$(DISPLAY)"
 
 INCLUDES = \
 	-I$(top_srcdir)			\
