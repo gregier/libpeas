@@ -24,6 +24,7 @@
 #endif
 
 #include "peas-extension.h"
+#include "peas-extension-priv.h"
 #include "peas-introspection.h"
 
 /**
@@ -67,10 +68,6 @@ G_DEFINE_ABSTRACT_TYPE (PeasExtension, peas_extension, G_TYPE_OBJECT);
 enum {
   PROP_0,
   PROP_EXTENSION_TYPE
-};
-
-struct _PeasExtensionPrivate {
-  GType exten_type;
 };
 
 static void
@@ -120,12 +117,24 @@ peas_extension_get_property (GObject    *object,
 }
 
 static void
+peas_extension_constructed (GObject *object)
+{
+  PeasExtension *exten = PEAS_EXTENSION (object);
+
+  exten->priv->constructed = TRUE;
+
+  if (G_OBJECT_CLASS (peas_extension_parent_class)->constructed != NULL)
+    G_OBJECT_CLASS (peas_extension_parent_class)->constructed (object);
+}
+
+static void
 peas_extension_class_init (PeasExtensionClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->set_property = peas_extension_set_property;
   object_class->get_property = peas_extension_get_property;
+  object_class->constructed = peas_extension_constructed;
 
   g_object_class_install_property (object_class, PROP_EXTENSION_TYPE,
                                    g_param_spec_gtype ("extension-type",
@@ -255,5 +264,5 @@ peas_extension_callv (PeasExtension *exten,
   g_return_val_if_fail (method_name != NULL, FALSE);
 
   klass = PEAS_EXTENSION_GET_CLASS (exten);
-  return klass->call (exten, method_name, args, return_value);
+  return klass->call (exten, G_TYPE_INVALID, method_name, args, return_value);
 }

@@ -42,15 +42,17 @@ peas_extension_python_init (PeasExtensionPython *pyexten)
 
 static gboolean
 peas_extension_python_call (PeasExtension *exten,
+                            GType          gtype,
                             const gchar   *method_name,
                             GIArgument    *args,
                             GIArgument    *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
-  GType gtype;
   GObject *instance;
 
-  gtype = peas_extension_get_extension_type (exten);
+  if (gtype == G_TYPE_INVALID)
+    gtype = peas_extension_get_extension_type (exten);
+
   instance = pygobject_get (pyexten->instance);
 
   return peas_method_apply (instance, gtype, method_name, args, retval);

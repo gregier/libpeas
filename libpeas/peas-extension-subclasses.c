@@ -27,6 +27,7 @@
 #include <girepository.h>
 #include <girffi.h>
 #include "peas-extension.h"
+#include "peas-extension-priv.h"
 #include "peas-extension-subclasses.h"
 #include "peas-introspection.h"
 
@@ -228,9 +229,95 @@ implement_interface_methods (gpointer iface,
 }
 
 static void
-extension_subclass_init (GObjectClass *klass)
+extension_subclass_set_property (GObject      *object,
+                                 guint         prop_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
 {
+  PeasExtension *exten = PEAS_EXTENSION (object);
+  GIArgument args[2];
+  GIArgument return_value;
+
+  /* This will have already been set on the real instance */
+  if ((pspec->flags & G_PARAM_CONSTRUCT_ONLY) != 0)
+    return;
+
+  /* Setting will fail if we are not constructed yet */
+  if ((pspec->flags & G_PARAM_CONSTRUCT) != 0 && !exten->priv->constructed)
+    return;
+
+  g_debug ("Setting '%s:%s'",
+           G_OBJECT_TYPE_NAME (object),
+           g_param_spec_get_name (pspec));
+
+  args[0].v_string = (gchar *) g_param_spec_get_name (pspec);
+  args[1].v_pointer = (gpointer) value;
+
+  PEAS_EXTENSION_GET_CLASS (object)->call (exten,
+                                           G_TYPE_OBJECT,
+                                           "set_property",
+                                           args, &return_value);
+}
+
+static void
+extension_subclass_get_property (GObject    *object,
+                                 guint       prop_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
+{
+  GIArgument args[2];
+  GIArgument return_value;
+
+  g_debug ("Getting '%s:%s'",
+           G_OBJECT_TYPE_NAME (object),
+           g_param_spec_get_name (pspec));
+
+  args[0].v_string = (gchar *) g_param_spec_get_name (pspec);
+  args[1].v_pointer = value;
+
+  PEAS_EXTENSION_GET_CLASS (object)->call (PEAS_EXTENSION (object),
+                                           G_TYPE_OBJECT,
+                                           "get_property",
+                                           args, &return_value);
+}
+
+static void
+extension_subclass_init (GObjectClass *klass,
+                         GType         exten_type)
+{
+  GIInterfaceInfo *iface_info;
+  gint n_props, i;
+
   g_debug ("Initializing class '%s'", G_OBJECT_CLASS_NAME (klass));
+
+  klass->set_property = extension_subclass_set_property;
+  klass->get_property = extension_subclass_get_property;
+
+  iface_info = g_irepository_find_by_gtype (NULL, exten_type);
+  g_return_if_fail (iface_info != NULL);
+  g_return_if_fail (g_base_info_get_type (iface_info) == GI_INFO_TYPE_INTERFACE);
+
+  n_props = g_interface_info_get_n_properties (iface_info);
+
+  for (i = 0; i < n_props; ++i)
+    {
+      GIPropertyInfo *prop_info;
+
+      prop_info = g_interface_info_get_property (iface_info, i);
+
+      g_object_class_override_property (klass, i + 1,
+                                        g_base_info_get_name (prop_info));
+
+      g_debug ("Overrided '%s:%s' for '%s' proxy",
+               g_type_name (exten_type), g_base_info_get_name (prop_info),
+               G_OBJECT_CLASS_NAME (klass));
+
+      g_base_info_unref (prop_info);
+    }
+
+  g_base_info_unref (iface_info);
+
+  g_debug ("Initialized class '%s'", G_OBJECT_CLASS_NAME (klass));
 }
 
 static void
@@ -261,7 +348,7 @@ peas_extension_register_subclass (GType parent_type,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) extension_subclass_init,
         (GClassFinalizeFunc) NULL,
-        NULL,
+        GSIZE_TO_POINTER (extension_type),
         0,
         0,
         (GInstanceInitFunc) extension_subclass_instance_init

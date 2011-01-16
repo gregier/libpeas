@@ -226,12 +226,12 @@ set_return_value (OutArg        *arg,
 
 static gboolean
 peas_extension_seed_call (PeasExtension *exten,
+                          GType          exten_type,
                           const gchar   *method_name,
                           GIArgument    *args,
                           GIArgument    *retval)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
-  GType exten_type;
   SeedValue js_method;
   GICallableInfo *func_info;
   GITypeInfo *retval_info;
@@ -246,7 +246,8 @@ peas_extension_seed_call (PeasExtension *exten,
   g_return_val_if_fail (sexten->js_context != NULL, FALSE);
   g_return_val_if_fail (sexten->js_object != NULL, FALSE);
 
-  exten_type = peas_extension_get_extension_type (exten);
+  if (exten_type == G_TYPE_INVALID)
+    exten_type = peas_extension_get_extension_type (exten);
 
   /* Fetch the JS method we want to call */
   js_method = seed_object_get_property (sexten->js_context,

@@ -31,6 +31,7 @@
 #include "testing/testing.h"
 
 #include "introspection/introspection-callable.h"
+#include "introspection/introspection-properties.h"
 #include "introspection/introspection-unimplemented.h"
 
 typedef struct _TestFixture TestFixture;
@@ -103,7 +104,7 @@ test_extension_create_invalid (PeasEngine *engine)
   /* Resident modules cause this to fail?
   g_test_trap_assert_failed ();*/
 
-  peas_engine_load_plugin (engine, info);
+  g_assert (peas_engine_load_plugin (engine, info));
 
   /* Invalid GType */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
@@ -129,6 +130,125 @@ test_extension_create_invalid (PeasEngine *engine)
                                             INTROSPECTION_TYPE_UNIMPLEMENTED,
                                             NULL);
   g_assert (!PEAS_IS_EXTENSION (extension));
+}
+
+static void
+test_extension_properties_construct_only (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  gchar *construct_only;
+
+  info = peas_engine_get_plugin_info (engine, "properties");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            "construct-only", "my-construct-only",
+                                            NULL);
+
+
+  g_object_get (extension, "construct-only", &construct_only, NULL);
+  g_assert_cmpstr (construct_only, ==, "my-construct-only");
+  g_free (construct_only);
+
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      g_object_set (extension, "construct-only", "other-construct-only", NULL);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*WARNING*");
+
+  g_object_unref (extension);
+}
+
+static void
+test_extension_properties_read_only (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  gchar *read_only;
+
+  info = peas_engine_get_plugin_info (engine, "properties");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            NULL);
+
+  g_object_get (extension, "read-only", &read_only, NULL);
+  g_assert_cmpstr (read_only, ==, "read-only");
+  g_free (read_only);
+
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      g_object_set (extension, "read-only", "my-read-only", NULL);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*WARNING*");
+
+  g_object_unref (extension);
+}
+
+static void
+test_extension_properties_write_only (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+
+  info = peas_engine_get_plugin_info (engine, "properties");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            NULL);
+
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      gchar *write_only = NULL;
+
+      g_object_get (extension, "write-only", &write_only, NULL);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*WARNING*");
+
+  g_object_set (extension, "write-only", "my-write-only", NULL);
+
+  g_object_unref (extension);
+}
+
+static void
+test_extension_properties_readwrite (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  gchar *readwrite;
+
+  info = peas_engine_get_plugin_info (engine, "properties");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            NULL);
+
+  g_object_get (extension, "readwrite", &readwrite, NULL);
+  g_assert_cmpstr (readwrite, ==, "readwrite");
+  g_free (readwrite);
+
+  g_object_set (extension, "readwrite", "my-readwrite", NULL);
+
+  g_object_get (extension, "readwrite", &readwrite, NULL);
+  g_assert_cmpstr (readwrite, ==, "my-readwrite");
+  g_free (readwrite);
+
+  g_object_unref (extension);
 }
 
 static void
@@ -266,6 +386,11 @@ main (int    argc,
 
   TEST ("create-valid", create_valid);
   TEST ("create-invalid", create_invalid);
+
+  TEST ("properties-construct-only", properties_construct_only);
+  TEST ("properties-read-only", properties_read_only);
+  TEST ("properties-write-only", properties_write_only);
+  TEST ("properties-readwrite", properties_readwrite);
 
   TEST ("call-invalid", call_invalid);
   TEST ("call-no-args", call_no_args);

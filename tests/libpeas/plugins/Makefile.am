@@ -1,4 +1,4 @@
-SUBDIRS = callable
+SUBDIRS = callable properties
 
 noinst_DATA = \
 	info-missing-iage.plugin	\

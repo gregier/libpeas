@@ -37,14 +37,15 @@ peas_extension_c_init (PeasExtensionC *cexten)
 
 static gboolean
 peas_extension_c_call (PeasExtension *exten,
+                       GType          gtype,
                        const gchar   *method_name,
                        GIArgument    *args,
                        GIArgument    *retval)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (exten);
-  GType gtype;
 
-  gtype = peas_extension_get_extension_type (exten);
+  if (gtype == G_TYPE_INVALID)
+    gtype = peas_extension_get_extension_type (exten);
 
   return peas_method_apply (cexten->instance, gtype, method_name, args, retval);
 }
