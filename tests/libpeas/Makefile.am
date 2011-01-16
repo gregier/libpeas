@@ -12,7 +12,7 @@ test-gdb: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS); do \
 	   $(GTESTER) --verbose $$test_prog || { \
-	     gdb --ex "run --verbose" ".libs/lt-$$test_prog" ; \
+	     libtool --mode=execute gdb --ex "run --verbose" $$test_prog ; \
 	     exit 1 ; \
 	   } \
 	 done
