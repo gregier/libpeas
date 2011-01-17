@@ -302,7 +302,9 @@ test_extension_call_no_args (PeasEngine *engine)
 
   g_assert (PEAS_IS_ACTIVATABLE (extension));
 
-  g_assert (peas_extension_call (extension, "activate"));
+  activatable = PEAS_ACTIVATABLE (extension);
+
+  peas_activatable_activate (activatable);
 
   g_object_unref (extension);
 }
@@ -312,6 +314,7 @@ test_extension_call_with_return (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
+  IntrospectionCallable *callable;
   const gchar *return_val = NULL;
 
   info = peas_engine_get_plugin_info (engine, "callable");
@@ -324,7 +327,9 @@ test_extension_call_with_return (PeasEngine *engine)
 
   g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
-  g_assert (peas_extension_call (extension, "call_with_return", &return_val));
+  callable = INTROSPECTION_CALLABLE (extension);
+
+  return_val = introspection_callable_call_with_return (callable);
   g_assert_cmpstr (return_val, ==, "Hello, World!");
 
   g_object_unref (extension);
@@ -335,6 +340,7 @@ test_extension_call_single_arg (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
+  IntrospectionCallable *callable;
   gboolean called = FALSE;
 
   info = peas_engine_get_plugin_info (engine, "callable");
@@ -347,7 +353,9 @@ test_extension_call_single_arg (PeasEngine *engine)
 
   g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
-  g_assert (peas_extension_call (extension, "call_single_arg", &called));
+  callable = INTROSPECTION_CALLABLE (extension);
+
+  introspection_callable_call_single_arg (callable, &called);
   g_assert (called);
 
   g_object_unref (extension);
@@ -358,6 +366,7 @@ test_extension_call_multi_args (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
+  IntrospectionCallable *callable;
   gboolean params[3] = { FALSE, FALSE, FALSE };
 
   info = peas_engine_get_plugin_info (engine, "callable");
@@ -370,8 +379,10 @@ test_extension_call_multi_args (PeasEngine *engine)
 
   g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
-  g_assert (peas_extension_call (extension, "call_multi_args",
-                                 &params[0], &params[1], &params[2]));
+  callable = INTROSPECTION_CALLABLE (extension);
+
+  introspection_callable_call_multi_args (callable, &params[0],
+                                          &params[1], &params[2]);
   g_assert (params[0] && params[1] && params[2]);
 
   g_object_unref (extension);
