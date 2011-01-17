@@ -118,8 +118,6 @@ main (int    argc,
       g_setenv ("PEAS_PLUGIN_LOADERS_DIR", "../loaders", TRUE);
     }
 
-  g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, NULL);
-
   engine = peas_engine_get_default ();
   plugin_dir = g_build_filename (g_get_user_config_dir (), "peas-demo/plugins", NULL);
   peas_engine_add_search_path (engine, plugin_dir, plugin_dir);

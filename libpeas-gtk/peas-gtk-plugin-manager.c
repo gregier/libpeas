@@ -27,6 +27,7 @@
 #endif
 
 #include <string.h>
+#include <girepository.h>
 
 #ifdef OS_OSX
 #include <Carbon/Carbon.h>
@@ -361,6 +362,16 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                                           PEAS_GTK_TYPE_PLUGIN_MANAGER,
                                           PeasGtkPluginManagerPrivate);
 
+  /**
+   * If we are using a PeasGtkPluginManager, we know for sure we will be using
+   * libpeas-gtk, so let's load the typelib for it here.
+   */
+  g_irepository_require (g_irepository_get_default (),
+                         "PeasGtk", "1.0", 0, NULL);
+
+  /**
+   * Let's initialize the widgets of the plugin manager now.
+   */
   pm->priv->engine = g_object_ref (peas_engine_get_default ());
 
   gtk_box_set_spacing (GTK_BOX (pm), 6);
