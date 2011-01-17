@@ -28,20 +28,6 @@
 G_DEFINE_TYPE (DemoWindow, demo_window, GTK_TYPE_WINDOW);
 
 static void
-demo_window_init (DemoWindow *dw)
-{
-  DemoWindowClass *klass = DEMO_WINDOW_GET_CLASS (dw);
-  gchar *label;
-
-  dw->box = gtk_vbox_new (TRUE, 6);
-  gtk_container_add (GTK_CONTAINER (dw), dw->box);
-
-  label = g_strdup_printf ("Peas Window %d", ++(klass->n_windows));
-  gtk_window_set_title (GTK_WINDOW (dw), label);
-  g_free (label);
-}
-
-static void
 on_extension_added (PeasExtensionSet *set,
                     PeasPluginInfo   *info,
                     PeasExtension    *exten,
@@ -71,13 +57,21 @@ on_delete_event (GtkWidget *window,
 }
 
 static void
-demo_window_set_data (DemoWindow *dw,
-                      PeasEngine *engine)
+demo_window_init (DemoWindow *dw)
 {
-  dw->engine = engine;
-  g_object_ref (dw->engine);
+  DemoWindowClass *klass = DEMO_WINDOW_GET_CLASS (dw);
+  gchar *label;
 
-  dw->exten_set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
+  dw->box = gtk_vbox_new (TRUE, 6);
+  gtk_container_add (GTK_CONTAINER (dw), dw->box);
+
+  label = g_strdup_printf ("Peas Window %d", ++(klass->n_windows));
+  gtk_window_set_title (GTK_WINDOW (dw), label);
+  g_free (label);
+
+  dw->engine = g_object_ref (peas_engine_get_default ());
+
+  dw->exten_set = peas_extension_set_new (dw->engine, PEAS_TYPE_ACTIVATABLE,
                                           "object", dw,
                                           NULL);
 
@@ -110,12 +104,7 @@ demo_window_class_init (DemoWindowClass *klass)
 }
 
 GtkWidget *
-demo_window_new (PeasEngine *engine)
+demo_window_new (void)
 {
-  DemoWindow *dw;
-
-  dw = DEMO_WINDOW (g_object_new (DEMO_TYPE_WINDOW, NULL));
-  demo_window_set_data (dw, engine);
-
-  return GTK_WIDGET (dw);
+  return GTK_WIDGET (g_object_new (DEMO_TYPE_WINDOW, NULL));
 }

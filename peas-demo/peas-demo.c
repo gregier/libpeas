@@ -74,7 +74,7 @@ create_new_window (void)
 {
   GtkWidget *window;
 
-  window = demo_window_new (peas_engine_get_default ());
+  window = demo_window_new ();
   gtk_widget_show_all (window);
 }
 
