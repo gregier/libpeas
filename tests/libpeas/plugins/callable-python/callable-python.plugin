@@ -1,8 +1,0 @@
-[Plugin]
-Module=callable
-IAge=2
-Name=Callable
-Description=This plugin can be loaded and is callable.
-Authors=Garrett Regier
-Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas
