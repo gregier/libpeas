@@ -27,4 +27,7 @@ dist-hook:
 test test-gdb test-valgrind test-report perf-report full-report: all
 	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
 
-.PHONY: all test test-gdb test-report perf-report full-report
+demo: all
+	@cd peas-demo && $(MAKE) $(AM_MAKEFLAGS) $(@)
+
+.PHONY: all test test-gdb test-report perf-report full-report demo
