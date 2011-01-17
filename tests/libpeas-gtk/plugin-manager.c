@@ -34,6 +34,7 @@ typedef struct _TestFixture TestFixture;
 
 struct _TestFixture {
   PeasEngine *engine;
+  GtkWidget *window;
   PeasGtkPluginManager *manager;
   PeasGtkPluginManagerView *view;
   GtkTreeSelection *selection;
@@ -67,9 +68,20 @@ test_setup (TestFixture   *fixture,
   GtkContainer *button_box = NULL;
 
   fixture->engine = testing_engine_new ();
+  fixture->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   fixture->manager = PEAS_GTK_PLUGIN_MANAGER (peas_gtk_plugin_manager_new ());
   fixture->view = PEAS_GTK_PLUGIN_MANAGER_VIEW (peas_gtk_plugin_manager_get_view (fixture->manager));
   fixture->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (fixture->view));
+
+  /* gtk_window_set_transient_for() will not add to the
+   * window group unless one has already been created and
+   * find_window_by_title() will need need it to be in the group
+   */
+  gtk_window_group_add_window (gtk_window_group_new (),
+                               GTK_WINDOW (fixture->window));
+
+  gtk_container_add (GTK_CONTAINER (fixture->window),
+                     GTK_WIDGET (fixture->manager));
 
   g_signal_connect (fixture->view,
                     "notify::model",
@@ -79,7 +91,7 @@ test_setup (TestFixture   *fixture,
   /* Set the model */
   g_object_notify (G_OBJECT (fixture->view), "model");
 
-  /* Must use forall at the buttons are "internal" children */
+  /* Must use forall as the buttons are "internal" children */
   gtk_container_forall (GTK_CONTAINER (fixture->manager),
                         (GtkCallback) plugin_manager_forall_cb,
                         &button_box);
@@ -121,6 +133,34 @@ test_runner (TestFixture   *fixture,
              gconstpointer  data)
 {
   ((void (*) (TestFixture *)) data) (fixture);
+}
+
+static GtkWidget *
+find_window_by_title (GtkWindow   *window,
+                      const gchar *title)
+{
+  GtkWindowGroup *group;
+  GList *windows;
+  GList *l;
+  GtkWidget *found_window = NULL;
+  
+  group = gtk_window_get_group (window);
+  windows = gtk_window_group_list_windows (group);
+
+  for (l = windows; l != NULL; l = l->next)
+    {
+      if (g_strcmp0 (gtk_window_get_title (l->data), title) == 0)
+        {
+          found_window = l->data;
+          break;
+        }
+    }
+
+  g_list_free (windows);
+
+  g_assert (GTK_IS_WINDOW (found_window));
+
+  return found_window;
 }
 
 static void
@@ -228,6 +268,118 @@ test_gtk_plugin_manager_plugin_unloaded (TestFixture *fixture)
   g_assert (!gtk_widget_is_sensitive (fixture->configure_button));
 }
 
+static void
+test_gtk_plugin_manager_about_dialog (TestFixture *fixture)
+{
+  gint i;
+  GtkTreeIter iter;
+  GtkWidget *window;
+  PeasPluginInfo *info;
+  const gchar **authors_plugin;
+  const gchar * const *authors_dialog;
+
+  /* Full Info is a builtin plugin */
+  peas_gtk_plugin_manager_view_set_show_builtin (fixture->view, TRUE);
+
+  info = peas_engine_get_plugin_info (fixture->engine, "full-info");
+
+  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  gtk_tree_selection_select_iter (fixture->selection, &iter);
+
+  /* Must be first so we the window is added to the window group */
+  gtk_button_clicked (GTK_BUTTON (fixture->about_button));
+
+  window = find_window_by_title (GTK_WINDOW (fixture->window),
+                                 "About Full Info");
+  g_assert (GTK_IS_ABOUT_DIALOG (window));
+
+
+  g_assert_cmpstr (gtk_about_dialog_get_program_name (GTK_ABOUT_DIALOG (window)),
+                   ==, peas_plugin_info_get_name (info));
+  g_assert_cmpstr (gtk_about_dialog_get_copyright (GTK_ABOUT_DIALOG (window)),
+                   ==, peas_plugin_info_get_copyright (info));
+  g_assert_cmpstr (gtk_about_dialog_get_website (GTK_ABOUT_DIALOG (window)),
+                   ==, peas_plugin_info_get_website (info));
+  g_assert_cmpstr (gtk_about_dialog_get_logo_icon_name (GTK_ABOUT_DIALOG (window)),
+                   ==, peas_plugin_info_get_icon_name (info));
+  g_assert_cmpstr (gtk_about_dialog_get_version (GTK_ABOUT_DIALOG (window)),
+                   ==, peas_plugin_info_get_version (info));
+  g_assert_cmpstr (gtk_about_dialog_get_comments (GTK_ABOUT_DIALOG (window)),
+                   ==, peas_plugin_info_get_description (info));
+
+  authors_plugin = peas_plugin_info_get_authors (info);
+  authors_dialog = gtk_about_dialog_get_authors (GTK_ABOUT_DIALOG (window));
+
+  for (i = 0; authors_plugin[i] == NULL && authors_dialog[i] == NULL; ++i)
+    g_assert_cmpstr (authors_plugin[i], ==, authors_dialog[i]);
+}
+
+static void
+test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
+{
+  GtkTreeIter iter;
+  GtkWidget *window;
+  PeasPluginInfo *info;
+  GList *list;
+  GList *list_it;
+  GtkWidget *content;
+  GtkWidget *label = NULL;
+  GtkWidget *button_box;
+  GtkWidget *close_button = NULL;
+  GtkWidget *help_button = NULL;
+
+  info = peas_engine_get_plugin_info (fixture->engine, "configurable");
+
+  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  gtk_tree_selection_select_iter (fixture->selection, &iter);
+
+  /* Must be first so we the window is added to the window group */
+  gtk_button_clicked (GTK_BUTTON (fixture->configure_button));
+
+  window = find_window_by_title (GTK_WINDOW (fixture->window), "Configurable");
+  g_assert (GTK_IS_DIALOG (window));
+
+  content = gtk_dialog_get_content_area (GTK_DIALOG (window));
+  list = gtk_container_get_children (GTK_CONTAINER (content));
+
+  for (list_it = list; list_it != NULL; list_it = list_it->next)
+    {
+      if (GTK_IS_LABEL (list_it->data))
+        {
+          const gchar *text = gtk_label_get_text (GTK_LABEL (list_it->data));
+
+          if (g_strcmp0 (text, "Hello, World!") == 0)
+            label = GTK_WIDGET (list_it->data);
+        }
+    }
+
+  g_assert (label != NULL);
+
+  g_list_free (list);
+
+
+  button_box = gtk_dialog_get_action_area (GTK_DIALOG (window));
+  list = gtk_container_get_children (GTK_CONTAINER (button_box));
+
+  for (list_it = list; list_it != NULL; list_it = list_it->next)
+    {
+      if (GTK_IS_BUTTON (list_it->data))
+        {
+          const gchar *label = gtk_button_get_label (GTK_BUTTON (list_it->data));
+
+          if (g_strcmp0 (label, GTK_STOCK_CLOSE) == 0)
+            close_button = GTK_WIDGET (list_it->data);
+          else if (g_strcmp0 (label, GTK_STOCK_HELP) == 0)
+            help_button = GTK_WIDGET (list_it->data);
+        }
+    }
+
+  g_assert (close_button != NULL);
+  g_assert (help_button != NULL);
+
+  g_list_free (list);
+}
+
 int
 main (int    argc,
       char **argv)
@@ -246,6 +398,9 @@ main (int    argc,
 
   TEST ("plugin-loaded", plugin_loaded);
   TEST ("plugin-unloaded", plugin_unloaded);
+
+  TEST ("about-dialog", about_dialog);
+  TEST ("configure-dialog", configure_dialog);
 
 #undef TEST
 

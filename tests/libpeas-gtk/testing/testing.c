@@ -206,6 +206,14 @@ testing_show_widget (gpointer widget)
 
   g_assert (GTK_IS_WIDGET (widget));
 
+  if (GTK_IS_WINDOW (widget))
+    window = widget;
+  else
+    {
+      window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+      gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (widget));
+    }
+
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size (GTK_WINDOW (window), 200, 100);
 
