@@ -43,6 +43,7 @@ struct _IntrospectionCallableInterface {
 
   /* Virtual public methods */
   const gchar *(*call_with_return) (IntrospectionCallable *callable);
+  void         (*call_no_args)     (IntrospectionCallable *callable);
   void         (*call_single_arg)  (IntrospectionCallable *callable,
                                     gboolean              *called);
   void         (*call_multi_args)  (IntrospectionCallable *callable,
@@ -58,6 +59,7 @@ GType        introspection_callable_get_type        (void) G_GNUC_CONST;
 
 const gchar *introspection_callable_call_with_return (IntrospectionCallable *callable);
 
+void         introspection_callable_call_no_args     (IntrospectionCallable *callable);
 void         introspection_callable_call_single_arg  (IntrospectionCallable *callable,
                                                       gboolean              *called);
 void         introspection_callable_call_multi_args  (IntrospectionCallable *callable,

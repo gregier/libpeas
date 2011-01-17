@@ -52,6 +52,18 @@ introspection_callable_call_with_return (IntrospectionCallable *callable)
   return NULL;
 }
 
+void
+introspection_callable_call_no_args (IntrospectionCallable *callable)
+{
+  IntrospectionCallableInterface *iface;
+
+  g_return_if_fail (INTROSPECTION_IS_CALLABLE (callable));
+
+  iface = INTROSPECTION_CALLABLE_GET_IFACE (callable);
+  if (iface->call_no_args != NULL)
+    iface->call_no_args (callable);
+}
+
 /**
  * introspection_callable_call_single_arg:
  * @callable:

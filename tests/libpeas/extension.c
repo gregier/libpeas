@@ -73,17 +73,16 @@ test_extension_create_valid (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
 
-  info = peas_engine_get_plugin_info (engine, "loadable");
+  info = peas_engine_get_plugin_info (engine, "callable");
 
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
   g_assert (PEAS_IS_EXTENSION (extension));
-  g_assert (PEAS_IS_ACTIVATABLE (extension));
+  g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
   g_object_unref (extension);
 }
@@ -94,14 +93,13 @@ test_extension_create_invalid (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
 
-  info = peas_engine_get_plugin_info (engine, "loadable");
+  info = peas_engine_get_plugin_info (engine, "callable");
 
   /* Not loaded */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
     {
       extension = peas_engine_create_extension (engine, info,
-                                                PEAS_TYPE_ACTIVATABLE,
-                                                "object", NULL,
+                                                INTROSPECTION_TYPE_CALLABLE,
                                                 NULL);
       /* Resident Modules */
       g_object_unref (extension);
@@ -263,16 +261,13 @@ test_extension_call_invalid (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
 
-  info = peas_engine_get_plugin_info (engine, "loadable");
+  info = peas_engine_get_plugin_info (engine, "callable");
 
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
-
-  g_assert (PEAS_IS_ACTIVATABLE (extension));
 
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
     {
@@ -280,7 +275,7 @@ test_extension_call_invalid (PeasEngine *engine)
       exit (0);
     }
   g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*Method 'PeasActivatable.invalid' not found*");
+  g_test_trap_assert_stderr ("*Method 'IntrospectionCallable.invalid' not found*");
 
   g_object_unref (extension);
 }
@@ -290,21 +285,19 @@ test_extension_call_no_args (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
+  IntrospectionCallable *callable;
 
-  info = peas_engine_get_plugin_info (engine, "loadable");
+  info = peas_engine_get_plugin_info (engine, "callable");
 
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
-  g_assert (PEAS_IS_ACTIVATABLE (extension));
+  callable = INTROSPECTION_CALLABLE (extension);
 
-  activatable = PEAS_ACTIVATABLE (extension);
-
-  peas_activatable_activate (activatable);
+  introspection_callable_call_no_args (callable);
 
   g_object_unref (extension);
 }
@@ -324,8 +317,6 @@ test_extension_call_with_return (PeasEngine *engine)
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
-
-  g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
   callable = INTROSPECTION_CALLABLE (extension);
 
@@ -351,8 +342,6 @@ test_extension_call_single_arg (PeasEngine *engine)
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
-  g_assert (INTROSPECTION_IS_CALLABLE (extension));
-
   callable = INTROSPECTION_CALLABLE (extension);
 
   introspection_callable_call_single_arg (callable, &called);
@@ -376,8 +365,6 @@ test_extension_call_multi_args (PeasEngine *engine)
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
-
-  g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
   callable = INTROSPECTION_CALLABLE (extension);
 
