@@ -39,37 +39,6 @@ static GOptionEntry demo_args[] = {
 };
 
 static void
-activate_plugin (GtkButton   *button,
-                 const gchar *plugin_name)
-{
-  PeasEngine *engine;
-  PeasPluginInfo *info;
-
-  g_debug ("%s %s", G_STRFUNC, plugin_name);
-  engine = peas_engine_get_default ();
-  info = peas_engine_get_plugin_info (engine, plugin_name);
-  g_return_if_fail (info != NULL);
-  peas_engine_load_plugin (engine, info);
-}
-
-static void
-create_plugin_manager (GtkButton *button,
-                       gpointer   user_data)
-{
-  GtkWidget *window;
-  GtkWidget *manager;
-
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_container_set_border_width (GTK_CONTAINER (window), 6);
-  gtk_window_set_title (GTK_WINDOW (window), "Peas Plugin Manager");
-
-  manager = peas_gtk_plugin_manager_new ();
-  gtk_container_add (GTK_CONTAINER (window), manager);
-
-  gtk_widget_show_all (window);
-}
-
-static void
 create_new_window (void)
 {
   GtkWidget *window;
@@ -83,6 +52,8 @@ create_main_window (void)
 {
   GtkWidget *window;
   GtkWidget *box;
+  GtkWidget *manager;
+  GtkWidget *button_box;
   GtkWidget *button;
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -90,32 +61,28 @@ create_main_window (void)
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Demo");
 
-  box = gtk_hbox_new (TRUE, 6);
+#if GTK_CHECK_VERSION(2,91,1)
+  gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
+#endif
+
+  box = gtk_vbox_new (FALSE, 6);
   gtk_container_add (GTK_CONTAINER (window), box);
+
+  manager = peas_gtk_plugin_manager_new ();
+  gtk_box_pack_start (GTK_BOX (box), manager, TRUE, TRUE, 0);
+
+  button_box = gtk_hbutton_box_new ();
+  gtk_box_set_spacing (GTK_BOX (button_box), 6);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (button_box), GTK_BUTTONBOX_END);
+  gtk_box_pack_start (GTK_BOX (box), button_box, FALSE, FALSE, 0);
 
   button = gtk_button_new_with_label ("New window");
   g_signal_connect (button, "clicked", G_CALLBACK (create_new_window), NULL);
-  gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
-
-  button = gtk_button_new_with_label ("Hello World");
-  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), (gpointer) "helloworld");
-  gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
-
-  button = gtk_button_new_with_label ("Python Hello");
-  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), (gpointer) "pythonhello");
-  gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
-
-  button = gtk_button_new_with_label ("Seed Hello");
-  g_signal_connect (button, "clicked", G_CALLBACK (activate_plugin), (gpointer) "seedhello");
-  gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
-
-  button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);
-  g_signal_connect (button, "clicked", G_CALLBACK (create_plugin_manager), NULL);
-  gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
+  gtk_container_add (GTK_CONTAINER (button_box), button);
 
   button = gtk_button_new_from_stock (GTK_STOCK_QUIT);
   g_signal_connect (button, "clicked", G_CALLBACK (gtk_main_quit), NULL);
-  gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
+  gtk_container_add (GTK_CONTAINER (button_box), button);
 
   return window;
 }
