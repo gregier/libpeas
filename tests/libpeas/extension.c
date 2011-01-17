@@ -34,6 +34,12 @@
 #include "introspection/introspection-properties.h"
 #include "introspection/introspection-unimplemented.h"
 
+/* TODO:
+ *        - IntrospectionOther:
+ *            - No Invoker
+ *            - No Struct Field
+ */
+
 typedef struct _TestFixture TestFixture;
 
 struct _TestFixture {

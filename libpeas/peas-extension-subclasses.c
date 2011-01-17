@@ -121,7 +121,6 @@ create_native_closure (GIInterfaceInfo *iface_info,
       g_debug ("No invoker for VFunc '%s.%s'",
                g_base_info_get_name (iface_info),
                g_base_info_get_name (vfunc_info));
-      g_base_info_unref (vfunc_info);
       return;
     }
 
