@@ -54,11 +54,6 @@ testing_callable_plugin_call_with_return (IntrospectionCallable *callable)
 }
 
 static void
-testing_callable_plugin_call_no_args (IntrospectionCallable *callable)
-{
-}
-
-static void
 testing_callable_plugin_call_single_arg (IntrospectionCallable *callable,
                                          gboolean              *called)
 {
@@ -85,7 +80,6 @@ static void
 introspection_callable_iface_init (IntrospectionCallableInterface *iface)
 {
   iface->call_with_return = testing_callable_plugin_call_with_return;
-  iface->call_no_args = testing_callable_plugin_call_no_args;
   iface->call_single_arg = testing_callable_plugin_call_single_arg;
   iface->call_multi_args = testing_callable_plugin_call_multi_args;
 }
@@ -95,12 +89,8 @@ testing_callable_plugin_class_finalize (TestingCallablePluginClass *klass)
 {
 }
 
-G_MODULE_EXPORT void
-peas_register_types (PeasObjectModule *module)
+void
+testing_callable_plugin_register (GTypeModule *module)
 {
-  testing_callable_plugin_register_type (G_TYPE_MODULE (module));
-
-  peas_object_module_register_extension_type (module,
-                                              INTROSPECTION_TYPE_CALLABLE,
-                                              TESTING_TYPE_CALLABLE_PLUGIN);
+  testing_callable_plugin_register_type (module);
 }

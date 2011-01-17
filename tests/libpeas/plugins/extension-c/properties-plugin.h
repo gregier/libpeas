@@ -47,8 +47,8 @@ struct _TestingPropertiesPluginClass {
   PeasExtensionBaseClass parent_class;
 };
 
-GType                 testing_properties_plugin_get_type (void) G_GNUC_CONST;
-G_MODULE_EXPORT void  peas_register_types                (PeasObjectModule *module);
+GType testing_properties_plugin_get_type (void) G_GNUC_CONST;
+void  testing_properties_plugin_register (GTypeModule *module);
 
 G_END_DECLS
 

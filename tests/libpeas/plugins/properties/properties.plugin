@@ -1,8 +1,0 @@
-[Plugin]
-Module=properties
-IAge=2
-Name=Properties
-Description=This plugin can be loaded and has properties.
-Authors=Garrett Regier
-Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas

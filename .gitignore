@@ -69,7 +69,7 @@ Makefile.in
 /tests/*-report.xml
 /tests/*/vgdump-*
 /tests/libpeas/engine
-/tests/libpeas/extension
+/tests/libpeas/extension-c
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
 /tests/libpeas-gtk/plugin-manager

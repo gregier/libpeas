@@ -19,15 +19,15 @@ progs_ldadd = \
 
 TEST_PROGS += \
 	engine		\
-	extension	\
+	extension-c	\
 	extension-set	\
 	plugin-info
 
 engine_SOURCES = engine.c
 engine_LDADD   = $(progs_ldadd)
 
-extension_SOURCES = extension.c
-extension_LDADD   = $(progs_ldadd)
+extension_c_SOURCES = extension-c.c
+extension_c_LDADD   = $(progs_ldadd)
 
 extension_set_SOURCES = extension-set.c
 extension_set_LDADD   = $(progs_ldadd)

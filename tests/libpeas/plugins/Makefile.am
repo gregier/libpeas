@@ -1,4 +1,4 @@
-SUBDIRS = callable properties
+SUBDIRS = extension-c
 
 noinst_DATA = \
 	info-missing-iage.plugin	\

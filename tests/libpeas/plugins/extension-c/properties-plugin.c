@@ -82,7 +82,7 @@ testing_properties_plugin_set_property (GObject      *object,
       break;
 
     case PROP_WRITE_ONLY:
-      /* Don't bother doing anything */
+      /* Don't bother actually doing anythin */
       break;
 
     case PROP_READWRITE:
@@ -173,12 +173,8 @@ testing_properties_plugin_class_finalize (TestingPropertiesPluginClass *klass)
 {
 }
 
-G_MODULE_EXPORT void
-peas_register_types (PeasObjectModule *module)
+void
+testing_properties_plugin_register (GTypeModule *module)
 {
-  testing_properties_plugin_register_type (G_TYPE_MODULE (module));
-
-  peas_object_module_register_extension_type (module,
-                                              INTROSPECTION_TYPE_PROPERTIES,
-                                              TESTING_TYPE_PROPERTIES_PLUGIN);
+  testing_properties_plugin_register_type (module);
 }

@@ -314,8 +314,7 @@ po/Makefile.in
 tests/Makefile
 tests/libpeas/Makefile
 tests/libpeas/plugins/Makefile
-tests/libpeas/plugins/callable/Makefile
-tests/libpeas/plugins/properties/Makefile
+tests/libpeas/plugins/extension-c/Makefile
 tests/libpeas/introspection/Makefile
 tests/libpeas/testing/Makefile
 tests/libpeas-gtk/Makefile
