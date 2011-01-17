@@ -70,6 +70,7 @@ Makefile.in
 /tests/*/vgdump-*
 /tests/libpeas/engine
 /tests/libpeas/extension-c
+/tests/libpeas/extension-python
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
 /tests/libpeas-gtk/plugin-manager

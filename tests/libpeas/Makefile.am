@@ -23,11 +23,20 @@ TEST_PROGS += \
 	extension-set	\
 	plugin-info
 
+if ENABLE_PYTHON
+TEST_PROGS += extension-python
+endif
+
 engine_SOURCES = engine.c
 engine_LDADD   = $(progs_ldadd)
 
 extension_c_SOURCES = extension-c.c
 extension_c_LDADD   = $(progs_ldadd)
+
+if ENABLE_PYTHON
+extension_python_SOURCES = extension-python.c
+extension_python_LDADD   = $(progs_ldadd)
+endif
 
 extension_set_SOURCES = extension-set.c
 extension_set_LDADD   = $(progs_ldadd)

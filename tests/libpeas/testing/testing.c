@@ -41,7 +41,7 @@ static GLogFunc default_log_func;
  */
 static const gchar *allowed_patterns[] = {
   "*Plugin not found: does-not-exist*",
-  "*libcloader.so*cannot open shared object file: No such file or directory*",
+  "*lib*loader.so*cannot open shared object file: No such file or directory*",
   "*Could not find 'IAge' in *info-missing-iage.plugin*",
   "*Could not find 'Module' in *info-missing-module.plugin*",
   "*Could not find 'Name' in *info-missing-name.plugin*",
