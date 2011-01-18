@@ -50,12 +50,15 @@ struct _IntrospectionCallableInterface {
                                     gboolean              *called_1,
                                     gboolean              *called_2,
                                     gboolean              *called_3);
+
+  /* libpeas must have an invoker to implement an interface's vfunc */
+  void         (*no_invoker_)      (IntrospectionCallable *callable);
 };
 
 /*
  * Public methods
  */
-GType        introspection_callable_get_type        (void) G_GNUC_CONST;
+GType        introspection_callable_get_type         (void) G_GNUC_CONST;
 
 const gchar *introspection_callable_call_with_return (IntrospectionCallable *callable);
 

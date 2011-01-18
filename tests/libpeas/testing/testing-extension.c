@@ -36,12 +36,6 @@
 #include "introspection-properties.h"
 #include "introspection-unimplemented.h"
 
-/* TODO:
- *        - IntrospectionCallable:
- *            - No Invoker
- *            - No Struct Field
- */
-
 static gchar *extension_plugin;
 
 void
