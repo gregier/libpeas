@@ -56,7 +56,7 @@ test-report perf-report full-report:
 	       else \
 	         false ; \
 	       fi \
-	     ) && sed '1,1s/^<?xml\b[^>?]*?>//' <"$$GTESTER_LOG" >> $@.xml ; \
+	     ) ; sed '1,1s/^<?xml\b[^>?]*?>//' <"$$GTESTER_LOG" >> $@.xml ; \
 	   } \
 	 done ; \
 	 echo >> $@.xml ; \
