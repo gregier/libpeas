@@ -80,12 +80,18 @@ peas_extension_seed_constructed (GObject *object)
 }
 
 static void
-peas_extension_seed_finalize (GObject *object)
+peas_extension_seed_dispose (GObject *object)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
 
-  seed_value_unprotect (sexten->js_context, sexten->js_object);
-  seed_context_unref (sexten->js_context);
+  if (sexten->js_object != NULL)
+    {
+      seed_value_unprotect (sexten->js_context, sexten->js_object);
+      seed_context_unref (sexten->js_context);
+
+      sexten->js_object = NULL;
+      sexten->js_context = NULL;
+    }
 }
 
 static SeedValue
@@ -379,7 +385,7 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
 
   object_class->set_property = peas_extension_seed_set_property;
   object_class->constructed = peas_extension_seed_constructed;
-  object_class->finalize = peas_extension_seed_finalize;
+  object_class->dispose = peas_extension_seed_dispose;
 
   extension_class->call = peas_extension_seed_call;
 

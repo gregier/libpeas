@@ -83,14 +83,23 @@ demo_window_init (DemoWindow *dw)
 }
 
 static void
-demo_window_finalize (GObject *object)
+demo_window_dispose (GObject *object)
 {
   DemoWindow *dw = DEMO_WINDOW (object);
 
-  g_object_unref (dw->exten_set);
-  g_object_unref (dw->engine);
+  if (dw->exten_set != NULL)
+    {
+      g_object_unref (dw->exten_set);
+      dw->exten_set = NULL;
+    }
 
-  G_OBJECT_CLASS (demo_window_parent_class)->finalize (object);
+  if (dw->engine != NULL)
+    {
+      g_object_unref (dw->engine);
+      dw->engine = NULL;
+    }
+
+  G_OBJECT_CLASS (demo_window_parent_class)->dispose (object);
 }
 
 static void
@@ -98,7 +107,7 @@ demo_window_class_init (DemoWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = demo_window_finalize;
+  object_class->dispose = demo_window_dispose;
 
   klass->n_windows = 0;
 }

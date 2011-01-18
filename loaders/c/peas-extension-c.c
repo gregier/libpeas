@@ -51,14 +51,17 @@ peas_extension_c_call (PeasExtension *exten,
 }
 
 static void
-peas_extension_c_finalize (GObject *object)
+peas_extension_c_dispose (GObject *object)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (object);
   
   if (cexten->instance)
-    g_object_unref (cexten->instance);
+    {
+      g_object_unref (cexten->instance);
+      cexten->instance = NULL;
+    }
 
-  G_OBJECT_CLASS (peas_extension_c_parent_class)->finalize (object);
+  G_OBJECT_CLASS (peas_extension_c_parent_class)->dispose (object);
 }
 
 static void
@@ -67,7 +70,7 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
-  object_class->finalize = peas_extension_c_finalize;
+  object_class->dispose = peas_extension_c_dispose;
 
   extension_class->call = peas_extension_c_call;
 }

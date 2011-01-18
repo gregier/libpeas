@@ -59,16 +59,17 @@ peas_extension_python_call (PeasExtension *exten,
 }
 
 static void
-peas_extension_python_finalize (GObject *object)
+peas_extension_python_dispose (GObject *object)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (object);
 
   if (pyexten->instance)
     {
       Py_DECREF (pyexten->instance);
+      pyexten->instance = NULL;
     }
 
-  G_OBJECT_CLASS (peas_extension_python_parent_class)->finalize (object);
+  G_OBJECT_CLASS (peas_extension_python_parent_class)->dispose (object);
 }
 
 static void
@@ -77,7 +78,7 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
-  object_class->finalize = peas_extension_python_finalize;
+  object_class->dispose = peas_extension_python_dispose;
 
   extension_class->call = peas_extension_python_call;
 }
