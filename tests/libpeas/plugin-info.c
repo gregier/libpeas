@@ -163,6 +163,25 @@ test_plugin_info_missing_name (PeasEngine *engine)
   g_assert (peas_engine_get_plugin_info (engine, "invalid-info-name") == NULL);
 }
 
+static void
+test_plugin_info_os_dependant_help (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  const gchar *help;
+
+  info = peas_engine_get_plugin_info (engine, "os-dependant-help");
+
+  help = peas_plugin_info_get_help_uri (info);
+
+#ifdef G_OS_WIN32
+  g_assert_cmpstr (help, ==, "Windows");
+#elif defined(OS_OSX)
+  g_assert_cmpstr (help, ==, "MacOS-X");
+#else
+  g_assert_cmpstr (help, ==, "GNOME");
+#endif
+}
+
 int
 main (int    argc,
       char **argv)
@@ -184,6 +203,8 @@ main (int    argc,
   TEST ("missing-iage", missing_iage);
   TEST ("missing-module", missing_module);
   TEST ("missing-name", missing_name);
+
+  TEST ("os-dependant-help", os_dependant_help);
 
 #undef TEST
 
