@@ -17,29 +17,31 @@ progs_ldadd = \
 	./testing/libtesting.la			\
 	./introspection/libintrospection-1.0.la
 
-TEST_PROGS += \
-	engine		\
-	extension-c	\
-	extension-set	\
-	plugin-info
+
+TEST_PROGS     += engine
+engine_SOURCES  = engine.c
+engine_LDADD    = $(progs_ldadd)
+
+TEST_PROGS          += extension-c
+extension_c_SOURCES  = extension-c.c
+extension_c_LDADD    = $(progs_ldadd)
 
 if ENABLE_PYTHON
-TEST_PROGS += extension-python
+TEST_PROGS               += extension-python
+extension_python_SOURCES  = extension-python.c
+extension_python_LDADD    = $(progs_ldadd)
 endif
 
-engine_SOURCES = engine.c
-engine_LDADD   = $(progs_ldadd)
-
-extension_c_SOURCES = extension-c.c
-extension_c_LDADD   = $(progs_ldadd)
-
-if ENABLE_PYTHON
-extension_python_SOURCES = extension-python.c
-extension_python_LDADD   = $(progs_ldadd)
+if ENABLE_SEED
+TEST_PROGS             += extension-seed
+extension_seed_SOURCES  = extension-seed.c
+extension_seed_LDADD    = $(progs_ldadd)
 endif
 
-extension_set_SOURCES = extension-set.c
-extension_set_LDADD   = $(progs_ldadd)
+TEST_PROGS            += extension-set
+extension_set_SOURCES  = extension-set.c
+extension_set_LDADD    = $(progs_ldadd)
 
-plugin_info_SOURCES = plugin-info.c
-plugin_info_LDADD   = $(progs_ldadd)
+TEST_PROGS          += plugin-info
+plugin_info_SOURCES  = plugin-info.c
+plugin_info_LDADD    = $(progs_ldadd)
