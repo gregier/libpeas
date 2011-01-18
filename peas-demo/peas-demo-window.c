@@ -58,9 +58,8 @@ demo_window_init (DemoWindow *dw)
   gtk_window_set_title (GTK_WINDOW (dw), label);
   g_free (label);
 
-  dw->engine = g_object_ref (peas_engine_get_default ());
-
-  dw->exten_set = peas_extension_set_new (dw->engine, PEAS_TYPE_ACTIVATABLE,
+  dw->exten_set = peas_extension_set_new (peas_engine_get_default (),
+                                          PEAS_TYPE_ACTIVATABLE,
                                           "object", dw,
                                           NULL);
 
@@ -79,12 +78,6 @@ demo_window_dispose (GObject *object)
     {
       g_object_unref (dw->exten_set);
       dw->exten_set = NULL;
-    }
-
-  if (dw->engine != NULL)
-    {
-      g_object_unref (dw->engine);
-      dw->engine = NULL;
     }
 
   G_OBJECT_CLASS (demo_window_parent_class)->dispose (object);
