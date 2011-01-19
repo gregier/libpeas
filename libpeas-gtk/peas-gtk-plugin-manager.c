@@ -482,7 +482,7 @@ peas_gtk_plugin_manager_class_init (PeasGtkPluginManagerClass *klass)
 /**
  * peas_gtk_plugin_manager_new:
  *
- * Creates a new plugin manager for the given #PeasEngine.
+ * Creates a new plugin manager.
  *
  * Returns: the new #PeasGtkPluginManager.
  */
@@ -495,7 +495,7 @@ peas_gtk_plugin_manager_new (void)
 
 /**
  * peas_gtk_plugin_manager_get_view:
- * @pm: A @PeasGtkPluginManager.
+ * @pm: A #PeasGtkPluginManager.
  *
  * Returns the #PeasGtkPluginManagerView of @pm.
  *

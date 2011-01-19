@@ -27,13 +27,13 @@
 
 /**
  * SECTION:peas-activatable
- * @short_description: Interface for activatable extensions
+ * @short_description: Interface for activatable plugins.
  * @see_also: #PeasExtensionSet
  *
- * #PeasActivatable is an interface which should be implemented by extensions
+ * #PeasActivatable is an interface which should be implemented by plugins
  * that should be activated on an object of a certain type (depending on the
  * application). For instance, in a typical windowed application,
- * #PeasActivatable extension instances could be bound to individual toplevel
+ * #PeasActivatable plugin instances could be bound to individual toplevel
  * windows.
  *
  * It is typical to use #PeasActivatable along with #PeasExtensionSet in order

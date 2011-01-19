@@ -30,7 +30,7 @@
 
 /**
  * SECTION:peas-extension-base
- * @short_description: Base class for C extensions
+ * @short_description: Base class for C extensions.
  * @see_also: #PeasPluginInfo
  *
  * #PeasExtensionBase can optionally be used as a base class for the extensions
@@ -132,7 +132,8 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
                                    PROP_DATA_DIR,
                                    g_param_spec_string ("data-dir",
                                                         "Data Directory",
-                                                        "The full path of the directory where the plugin should look for its data files",
+                                                        "The full path of the directory where the "
+                                                        "plugin should look for its data files",
                                                         NULL,
                                                         G_PARAM_READABLE |
                                                         G_PARAM_STATIC_STRINGS));

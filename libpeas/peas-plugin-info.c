@@ -381,7 +381,7 @@ peas_plugin_info_is_available (const PeasPluginInfo *info)
  * peas_plugin_info_is_builtin:
  * @info: A #PeasPluginInfo.
  *
- * Gets is the plugin is a builtin plugin.
+ * Check if the plugin is a builtin plugin.
  *
  * A builtin plugin is a plugin which cannot be enabled or disabled by the
  * user through a plugin manager (like #PeasGtkPluginManager). Loading or
@@ -664,8 +664,8 @@ peas_plugin_info_get_version (const PeasPluginInfo *info)
  * website or a ghelp: URI if a Gnome help page is available for the plugin.
  *
  * The relevant key in the plugin info file is "Help". Other platform-specific
- * keys exist for platform-specific help files. Those are "Help-Gnome",
- * "Help-Windows" and "Help-MacOs-X".
+ * keys exist for platform-specific help files. Those are "Help-GNOME",
+ * "Help-Windows" and "Help-MacOS-X".
  *
  * Returns: the plugin's help URI.
  */

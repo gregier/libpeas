@@ -27,7 +27,7 @@
 
 /**
  * SECTION:peas-gtk-configurable
- * @short_description: Interface to provide a plugin configuration UI
+ * @short_description: Interface for providing a plugin configuration UI.
  *
  * The #PeasGtkConfigurable interface will allow a plugin to provide a
  * graphical interface for the user to configure the plugin through the
@@ -51,7 +51,7 @@ peas_gtk_configurable_default_init (PeasGtkConfigurableInterface *iface)
  * peas_gtk_configurable_create_configure_widget:
  * @configurable: A #PeasGtkConfigurable
  *
- * Creates the configure widget widget for the plugin. The returned widget
+ * Creates the configure widget for the plugin. The returned widget
  * should allow configuring all the relevant aspects of the plugin, and should
  * allow instant-apply, as promoted by the Gnome Human Interface Guidelines.
  *

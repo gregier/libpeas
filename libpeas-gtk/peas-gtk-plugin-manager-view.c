@@ -42,7 +42,7 @@
  * plugins, i.e. load or unload them, and see some pieces of information.
  *
  * The only thing you need to do as an application writer if you wish
- * to use the view to configure your plugins is to instantiate it using
+ * to use the view to display your plugins is to instantiate it using
  * peas_gtk_plugin_manager_view_new() and pack it into another
  * widget or a window.
  *
@@ -650,7 +650,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
   tree_view_class->row_activated = peas_gtk_plugin_manager_view_row_activated;
 
   /**
-   * PeasGtkPLuginManagerView:show-builtin:
+   * PeasGtkPluginManagerView:show-builtin:
    *
    * If builtin plugins should be shown.
    */
@@ -689,7 +689,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 /**
  * peas_gtk_plugin_manager_view_new:
  *
- * Creates a new plugin manager view for the given #PeasEngine.
+ * Creates a new plugin manager view.
  *
  * Returns: the new #PeasGtkPluginManagerView.
  */

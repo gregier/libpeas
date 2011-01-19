@@ -172,8 +172,8 @@ load_dir_real (PeasEngine  *engine,
  *
  * Rescan all the registered directories to find new or updated plugins.
  *
- * Calling this function will make the newly installed plugin infos to be
- * loaded by the engine, so the new plugins can actually be used without
+ * Calling this function will make the newly installed plugin infos
+ * be loaded by the engine, so the new plugins can be used without
  * restarting the application.
  */
 void
@@ -212,7 +212,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
  * module directory (where the shared libraries or language modules
  * lie) and a data directory (where the plugin data is).
  *
- * The #PeasPlugin will be able to use a correct data dir depending on
+ * The plugin will be able to use a correct data dir depending on
  * where it is installed, hence allowing to keep the plugin agnostic
  * when it comes to installation location: the same plugin can be
  * installed either in the system path or in the user's home directory,

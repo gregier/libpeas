@@ -239,7 +239,7 @@ peas_gtk_plugin_manager_store_class_init (PeasGtkPluginManagerStoreClass *klass)
 /*
  * peas_gtk_plugin_manager_store_new:
  *
- * Creates a new plugin manager store for the given #PeasEngine.
+ * Creates a new plugin manager store.
  *
  * Returns: the new #PeasGtkPluginManagerStore.
  */

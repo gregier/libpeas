@@ -38,7 +38,7 @@
  * loaded plugins.
  *
  * To properly use the proxy instances, you will need GObject-introspection
- * data for the #GInterface or #GObjectClass you want to use as extension
+ * data for the #GInterface or #GObjectClass you want to use as an extension
  * point.  For instance, if you wish to use #PeasActivatable, you will need to
  * put the following code excerpt in the engine initialization code, in order
  * to load the required "Peas" typelib:
@@ -136,10 +136,15 @@ peas_extension_class_init (PeasExtensionClass *klass)
   object_class->get_property = peas_extension_get_property;
   object_class->constructed = peas_extension_constructed;
 
+  /**
+   * PeasExtension:extension-type:
+   *
+   * The GType of the interface being proxied.
+   */
   g_object_class_install_property (object_class, PROP_EXTENSION_TYPE,
                                    g_param_spec_gtype ("extension-type",
                                                        "Extension Type",
-                                                       "The GType of this extesion",
+                                                       "The GType of the interface being proxied",
                                                        G_TYPE_NONE,
                                                        G_PARAM_READWRITE |
                                                        G_PARAM_CONSTRUCT_ONLY |
