@@ -917,7 +917,8 @@ peas_engine_provides_extension (PeasEngine     *engine,
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
  * @n_parameters: the length of the @parameters array.
- * @parameters: an array of #GParameter.
+ * @parameters: (allow-none) (array length=n_parameters):
+ *   an array of #GParameter.
  *
  * If the plugin identified by @info implements the @extension_type interface,
  * then this function will return a new instance of this implementation,
@@ -927,6 +928,8 @@ peas_engine_provides_extension (PeasEngine     *engine,
  *
  * Returns: (transfer full): a new instance of #PeasExtension wrapping
  * the @extension_type instance, or %NULL.
+ *
+ * Rename to: peas_engine_create_extension
  */
 PeasExtension *
 peas_engine_create_extensionv (PeasEngine     *engine,
@@ -946,7 +949,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_create_extension_valist:
+ * peas_engine_create_extension_valist: (skip)
  * @engine: A #PeasEngine.
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
@@ -960,7 +963,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
  *
  * See peas_engine_create_extension() for more information.
  *
- * Returns: (transfer full): a new instance of #PeasExtension wrapping
+ * Returns: a new instance of #PeasExtension wrapping
  * the @extension_type instance, or %NULL.
  */
 PeasExtension *
@@ -996,7 +999,7 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_create_extension:
+ * peas_engine_create_extension: (skip)
  * @engine: A #PeasEngine.
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
@@ -1017,7 +1020,7 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
  * principle of never giving you the actual object (also because it might as
  * well *not* be an actual object).
  *
- * Returns: (transfer full): a new instance of #PeasExtension wrapping
+ * Returns: a new instance of #PeasExtension wrapping
  * the @extension_type instance, or %NULL.
  */
 PeasExtension *

@@ -170,7 +170,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
 }
 
 /**
- * peas_extension_call:
+ * peas_extension_call: (skip)
  * @exten: A #PeasExtension.
  * @method_name: the name of the method that should be called.
  * @Varargs: arguments for the method.
@@ -209,7 +209,7 @@ peas_extension_call (PeasExtension *exten,
 }
 
 /**
- * peas_extension_call_valist:
+ * peas_extension_call_valist: (skip)
  * @exten: A #PeasExtension.
  * @method_name: the name of the method that should be called.
  * @args: the arguments for the method.
@@ -257,6 +257,21 @@ peas_extension_call_valist (PeasExtension *exten,
   return ret;
 }
 
+/**
+ * peas_extension_callv:
+ * @exten: A #PeasExtension.
+ * @method_name: the name of the method that should be called.
+ * @args: the arguments for the method.
+ * @return_value: the return falue for the method.
+ *
+ * Call a method of the object behind @extension, using @args as arguments.
+ *
+ * See peas_extension_call() for more information.
+ *
+ * Return value: (transfer full): %TRUE on successful call.
+ *
+ * Rename to: peas_extension_call
+ */
 gboolean
 peas_extension_callv (PeasExtension *exten,
                       const gchar   *method_name,

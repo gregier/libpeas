@@ -472,7 +472,7 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
 }
 
 /**
- * peas_extension_set_call:
+ * peas_extension_set_call: (skip)
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
  * @Varargs: arguments for the method.
@@ -499,7 +499,7 @@ peas_extension_set_call (PeasExtensionSet *set,
 }
 
 /**
- * peas_extension_set_call_valist:
+ * peas_extension_set_call_valist: (skip)
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
  * @va_args: the arguments for the method.
@@ -547,6 +547,8 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
  * See peas_extension_callv() for more information.
  *
  * Return value: %TRUE on successful call.
+ *
+ * Rename to: peas_extension_set_call
  */
 gboolean
 peas_extension_set_callv (PeasExtensionSet *set,
@@ -567,13 +569,15 @@ peas_extension_set_callv (PeasExtensionSet *set,
  * @engine: A #PeasEngine.
  * @exten_type: the extension #GType.
  * @n_parameters: the length of the @parameters array.
- * @parameters: an array of #GParameter.
+ * @parameters: (array length=n_parameters): an array of #GParameter.
  *
  * Create a new #PeasExtensionSet for the @exten_type extension type.
  *
  * See peas_extension_set_new() for more information.
  *
  * Returns: (transfer full): a new instance of #PeasExtensionSet.
+ *
+ * Rename to: peas_extension_set_new
  */
 PeasExtensionSet *
 peas_extension_set_newv (PeasEngine *engine,
@@ -591,7 +595,7 @@ peas_extension_set_newv (PeasEngine *engine,
 }
 
 /**
- * peas_extension_set_new_valist:
+ * peas_extension_set_new_valist: (skip)
  * @engine: A #PeasEngine.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
@@ -636,7 +640,7 @@ peas_extension_set_new_valist (PeasEngine  *engine,
 }
 
 /**
- * peas_extension_set_new:
+ * peas_extension_set_new: (skip)
  * @engine: A #PeasEngine.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
