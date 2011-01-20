@@ -139,9 +139,9 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PythonInfo *pyinfo;
   PyTypeObject *pytype;
+  GType the_type;
+  GObject *object;
   PyObject *pyobject;
-  PyGObject *pygobject;
-  PyObject *emptyarg;
   PyObject *pyplinfo;
   PyGILState_STATE state;
   PeasExtension *exten;
@@ -152,59 +152,33 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
 
   pytype = find_python_extension_type (info, exten_type, pyinfo->module);
 
-  if (pytype == NULL || pytype->tp_new == NULL)
+  if (pytype == NULL)
     {
       pyg_gil_state_release (state);
       return NULL;
     }
 
-  emptyarg = PyTuple_New (0);
-  pyobject = pytype->tp_new (pytype, emptyarg, NULL);
-  Py_DECREF (emptyarg);
+  the_type = pyg_type_from_object ((PyObject *) pytype);
 
-  if (pyobject == NULL)
+  if (the_type == G_TYPE_INVALID)
     {
       pyg_gil_state_release (state);
-      g_warning ("Could not create instance for '%s'",
-                 peas_plugin_info_get_name (info));
-
       return NULL;
     }
 
-  pygobject = (PyGObject *) pyobject;
+  /* FIXME: we don't release the gil state here. */
+  g_return_val_if_fail (g_type_is_a (the_type, exten_type), NULL);
 
-  if (pygobject->obj != NULL)
+  object = g_object_newv (the_type, n_parameters, parameters);
+
+  if (!object)
     {
-      Py_DECREF (pyobject);
       pyg_gil_state_release (state);
-      g_warning ("Could not create instance for '%s': GObject already initialized",
-                 peas_plugin_info_get_name (info));
-
       return NULL;
     }
 
-  pygobject_constructv (pygobject, n_parameters, parameters);
-
-  if (pygobject->obj == NULL)
-    {
-      Py_DECREF (pyobject);
-      pyg_gil_state_release (state);
-      g_warning ("Could not create '%s' instance for '%s': GObject not constructed",
-                 g_type_name (exten_type), peas_plugin_info_get_name (info));
-
-      return NULL;
-    }
-
-  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (pygobject->obj, exten_type), NULL);
-
-  /* now call tp_init manually */
-  if (PyType_IsSubtype (pyobject->ob_type, pytype) &&
-      pyobject->ob_type->tp_init != NULL)
-    {
-      emptyarg = PyTuple_New (0);
-      pyobject->ob_type->tp_init (pyobject, emptyarg, NULL);
-      Py_DECREF (emptyarg);
-    }
+  pyobject = pygobject_new (object);
+  g_object_unref (object);
 
   /* Set the plugin info as an attribute of the instance */
   pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);
