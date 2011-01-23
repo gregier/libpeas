@@ -23,7 +23,7 @@
 #include <config.h>
 #endif
 
-#include "libpeas/peas-debug.h"
+#include "peas-debug.h"
 
 
 static void

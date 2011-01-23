@@ -1,5 +1,5 @@
 /*
- * peas-activatable.h
+ * peas-activatable.c
  * This file is part of libpeas
  *
  * Copyright (C) 2010 Steve Frécinaux

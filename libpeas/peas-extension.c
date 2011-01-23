@@ -1,5 +1,5 @@
 /*
- * peas-extension.h
+ * peas-extension.c
  * This file is part of libpeas
  *
  * Copyright (C) 2010 Steve Frécinaux

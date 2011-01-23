@@ -1,5 +1,5 @@
 /*
- * peas-plugin.h
+ * peas-extension-base.c
  * This file is part of libpeas
  *
  * Copyright (C) 2002-2008 Paolo Maggi
@@ -26,7 +26,6 @@
 
 #include "peas-extension-base.h"
 #include "peas-plugin-info-priv.h"
-#include "peas-dirs.h"
 
 /**
  * SECTION:peas-extension-base

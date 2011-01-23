@@ -1,5 +1,5 @@
 /*
- * peas-extension-subclasses.h
+ * peas-extension-subclasses.c
  * This file is part of libpeas
  *
  * Copyright (C) 2010 - Steve Frécinaux
