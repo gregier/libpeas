@@ -403,7 +403,7 @@ peas_engine_dispose (GObject *object)
       PeasPluginInfo *info = PEAS_PLUGIN_INFO (item->data);
 
       if (peas_plugin_info_is_loaded (info))
-        peas_engine_unload_plugin_real (engine, info);
+        peas_engine_unload_plugin (engine, info);
     }
 
   /* unref the loaders */
