@@ -749,6 +749,8 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
 
   if (iter_set)
     peas_gtk_plugin_manager_view_set_selected_iter (view, &iter);
+
+  g_object_notify (G_OBJECT (view), "show-builtin");
 }
 
 /**
