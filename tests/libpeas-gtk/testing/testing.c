@@ -214,7 +214,6 @@ testing_show_widget (gpointer widget)
       gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (widget));
     }
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size (GTK_WINDOW (window), 200, 100);
 
 #if GTK_CHECK_VERSION(2,91,1)
