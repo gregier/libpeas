@@ -85,7 +85,6 @@ if HAVE_INTROSPECTION
   INTROSPECTION_SCANNER_ARGS = \
 	-I$(top_srcdir) 		\
 	--c-include=libpeas/peas.h	\
-	--pkg-export=libpeas-1.0        \
 	--warn-all
 
   introspection_sources = $(INST_H_FILES) $(C_FILES)
