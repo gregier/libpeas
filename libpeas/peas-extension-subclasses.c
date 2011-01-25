@@ -77,7 +77,10 @@ handle_method_impl (ffi_cif  *cif,
       g_callable_info_load_arg (impl->info, i, &arg_info);
       g_arg_info_load_type (&arg_info, &type_info);
 
-      peas_gi_pointer_to_argument (&type_info, args[i], &arguments[i-1]);
+      if (g_arg_info_get_direction (&arg_info) == GI_DIRECTION_IN)
+        peas_gi_pointer_to_argument (&type_info, args[i], &arguments[i-1]);
+      else
+        arguments[i-1].v_pointer = *((gpointer **) args[i]);
     }
 
   peas_extension_callv (instance, impl->method_name, arguments, &return_value);
