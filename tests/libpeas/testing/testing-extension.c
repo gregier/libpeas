@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <glib.h>
 #include <libpeas/peas.h>
@@ -176,6 +177,7 @@ testing_extension_call_no_args_ (PeasEngine *engine)
 
   callable = INTROSPECTION_CALLABLE (extension);
 
+  g_assert (peas_extension_call (extension, "call_no_args"));
   introspection_callable_call_no_args (callable);
 
   g_object_unref (extension);
@@ -198,6 +200,11 @@ testing_extension_call_with_return_ (PeasEngine *engine)
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
+
+  g_assert (peas_extension_call (extension, "call_with_return", &return_val));
+  g_assert_cmpstr (return_val, ==, "Hello, World!");
+
+  return_val = NULL;
 
   return_val = introspection_callable_call_with_return (callable);
   g_assert_cmpstr (return_val, ==, "Hello, World!");
@@ -223,6 +230,11 @@ testing_extension_call_single_arg_ (PeasEngine *engine)
 
   callable = INTROSPECTION_CALLABLE (extension);
 
+  g_assert (peas_extension_call (extension, "call_single_arg", &called));
+  g_assert (called);
+
+  called = FALSE;
+
   introspection_callable_call_single_arg (callable, &called);
   g_assert (called);
 
@@ -246,6 +258,12 @@ testing_extension_call_multi_args_ (PeasEngine *engine)
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
+
+  g_assert (peas_extension_call (extension, "call_multi_args",
+                                 &params[0], &params[1], &params[2]));
+  g_assert (params[0] && params[1] && params[2]);
+
+  memset (params, FALSE, G_N_ELEMENTS (params));
 
   introspection_callable_call_multi_args (callable, &params[0],
                                           &params[1], &params[2]);
