@@ -61,6 +61,7 @@ IGNORE_HFILES=		\
 	peas-extension-seed.h		\
 	peas-extension-python.h		\
 	peas-introspection.h		\
+	peas-gtk-disable-plugins-dialog.h       \
 	peas-gtk-plugin-manager-store.h	\
 	peas-demo-window.h		\
 	peasdemo-hello-world-plugin.h	\

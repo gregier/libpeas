@@ -28,9 +28,11 @@
 
 #include <string.h>
 
+#include <libpeas/peas-engine.h>
 #include <libpeas/peas-i18n.h>
 
 #include "peas-gtk-plugin-manager-view.h"
+#include "peas-gtk-disable-plugins-dialog.h"
 #include "peas-gtk-plugin-manager-store.h"
 #include "peas-gtk-configurable.h"
 
@@ -118,6 +120,73 @@ convert_child_iter_to_iter (PeasGtkPluginManagerView *view,
   return success;
 }
 
+static GList *
+get_dependant_plugins (PeasGtkPluginManagerView *view,
+                       PeasPluginInfo           *info)
+{
+  const gchar *module_name;
+  const GList *plugins;
+  GList *dep_plugins = NULL;
+
+  module_name = peas_plugin_info_get_module_name (info);
+  plugins = peas_engine_get_plugin_list (view->priv->engine);
+
+  for (; plugins != NULL; plugins = plugins->next)
+    {
+      PeasPluginInfo *plugin = (PeasPluginInfo *) plugins->data;
+
+      if (!peas_plugin_info_is_loaded (plugin))
+        continue;
+
+      /* Don't add builtin plugins if they are not shown */
+      if (!view->priv->show_builtin && peas_plugin_info_is_builtin (plugin))
+        continue;
+
+      if (peas_plugin_info_has_dependency (plugin, module_name))
+        dep_plugins = g_list_prepend (dep_plugins, plugin);
+    }
+
+  return dep_plugins;
+}
+
+static void
+toggle_enabled (PeasGtkPluginManagerView *view,
+                GtkTreeIter              *iter)
+{
+  PeasPluginInfo *info;
+
+  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, iter);
+
+  if (peas_plugin_info_is_loaded (info))
+    {
+      GList *dep_plugins;
+
+      dep_plugins = get_dependant_plugins (view, info);
+
+      if (dep_plugins != NULL)
+        {
+          GtkWindow *parent;
+          GtkWidget *dialog;
+          gint response;
+
+          parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (view)));
+
+          /* The dialog takes the list so don't free it */
+          dialog = peas_gtk_disable_plugins_dialog_new (parent, info,
+                                                        dep_plugins);
+
+          response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+          gtk_widget_destroy (dialog);
+
+          if (response != GTK_RESPONSE_OK)
+            return;
+        }
+    }
+
+  peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, iter);
+}
+
 static void
 plugin_list_changed_cb (PeasEngine               *engine,
                         GParamSpec               *pspec,
@@ -184,7 +253,7 @@ enabled_toggled_cb (GtkCellRendererToggle    *cell,
   if (gtk_tree_model_get_iter (model, &iter, path))
     {
       convert_iter_to_child_iter (view, &iter);
-      peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, &iter);
+      toggle_enabled (view, &iter);
     }
 
   gtk_tree_path_free (path);
@@ -244,7 +313,7 @@ enabled_menu_cb (GtkMenu                  *menu,
 
   convert_iter_to_child_iter (view, &iter);
 
-  peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, &iter);
+  toggle_enabled (view, &iter);
 }
 
 static void
@@ -594,7 +663,7 @@ peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
   convert_iter_to_child_iter (view, &iter);
 
   if (peas_gtk_plugin_manager_store_can_enable (view->priv->store, &iter))
-    peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, &iter);
+    toggle_enabled (view, &iter);
 }
 
 static void

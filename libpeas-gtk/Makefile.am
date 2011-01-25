@@ -24,12 +24,14 @@ INST_H_FILES = \
 	peas-gtk.h
 
 NOINST_H_FILES = \
+	peas-gtk-disable-plugins-dialog.h	\
 	peas-gtk-plugin-manager-store.h
 
 C_FILES = \
-	peas-gtk-configurable.c		\
-	peas-gtk-plugin-manager.c	\
-	peas-gtk-plugin-manager-store.c	\
+	peas-gtk-configurable.c			\
+	peas-gtk-plugin-manager.c		\
+	peas-gtk-disable-plugins-dialog.c	\
+	peas-gtk-plugin-manager-store.c		\
 	peas-gtk-plugin-manager-view.c
 
 libpeas_gtk_1_0_la_SOURCES = \
