@@ -45,17 +45,6 @@ on_extension_removed (PeasExtensionSet *set,
   peas_activatable_deactivate (PEAS_ACTIVATABLE (exten));
 }
 
-static gboolean
-on_delete_event (GtkWidget *window,
-                 GdkEvent  *event,
-                 gpointer   user_data)
-{
-  DemoWindow *dw = DEMO_WINDOW (window);
-  peas_extension_set_call (dw->exten_set, "deactivate");
-
-  return FALSE;
-}
-
 static void
 demo_window_init (DemoWindow *dw)
 {
@@ -79,7 +68,6 @@ demo_window_init (DemoWindow *dw)
 
   g_signal_connect (dw->exten_set, "extension-added", G_CALLBACK (on_extension_added), dw);
   g_signal_connect (dw->exten_set, "extension-removed", G_CALLBACK (on_extension_removed), dw);
-  g_signal_connect (dw, "delete-event", G_CALLBACK (on_delete_event), NULL);
 }
 
 static void
