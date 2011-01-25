@@ -86,8 +86,6 @@ main (int   argc, \
   _EXTENSION_TEST (loader, "properties-write-only", properties_write_only); \
   _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite); \
 \
-  g_object_unref (peas_engine_get_default ()); \
-\
   return g_test_run (); \
 }
 
