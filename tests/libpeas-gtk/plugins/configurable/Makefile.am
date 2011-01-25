@@ -16,4 +16,4 @@ libconfigurable_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
 
 noinst_DATA = configurable.plugin
 
-noinst_DIST = $(noinst_DATA)
+EXTRA_DIST = $(noinst_DATA)

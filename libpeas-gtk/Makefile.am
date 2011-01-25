@@ -47,7 +47,9 @@ if HAVE_INTROSPECTION
 	--add-include-path=$(top_builddir)/libpeas	\
 	--c-include=libpeas-gtk/peas-gtk.h		\
 	--warn-all
-  INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/libpeas
+  INTROSPECTION_COMPILER_ARGS = \
+	--includedir=$(top_srcdir)/libpeas		\
+	--includedir=$(top_builddir)/libpeas
 
   introspection_sources = $(INST_H_FILES) $(C_FILES)
 

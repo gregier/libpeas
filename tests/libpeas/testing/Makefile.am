@@ -1,7 +1,7 @@
 INCLUDES = \
 	-I$(top_srcdir)				\
 	-I$(srcdir)				\
-	-I../introspection			\
+	-I$(srcdir)/../introspection		\
 	$(PEAS_CFLAGS)				\
 	$(WARN_CFLAGS)				\
 	$(DISABLE_DEPRECATED)			\
