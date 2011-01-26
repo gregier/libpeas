@@ -85,22 +85,7 @@ handle_method_impl (ffi_cif  *cif,
 
   peas_extension_callv (instance, impl->method_name, arguments, &return_value);
 
-  for (i = 1; i < n_args; i++)
-    {
-      GIDirection direction;
-
-      g_callable_info_load_arg (impl->info, i, &arg_info);
-      direction = g_arg_info_get_direction (&arg_info);
-
-      if (direction == GI_DIRECTION_OUT || direction == GI_DIRECTION_INOUT)
-        {
-          g_arg_info_load_type (&arg_info, &type_info);
-          peas_gi_argument_to_pointer (&type_info, &arguments[i-1], args[i]);
-        }
-    }
-
   g_callable_info_load_return_type (impl->info, &return_type_info);
-
   if (g_type_info_get_tag (&return_type_info) != GI_TYPE_TAG_VOID)
     peas_gi_argument_to_pointer (&return_type_info, &return_value, result);
 }
