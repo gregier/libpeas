@@ -68,15 +68,6 @@
  *   peas_extension_call (exten, "deactivate", window);
  * }
  *
- * static gboolean
- * on_delete_event (GtkWidget        *window,
- *                  GdkEvent         *event,
- *                  PeasExtensionSet *set)
- * {
- *   peas_extension_set_call (set, "deactivate");
- *   return FALSE;
- * }
- *
  * PeasExtensionSet *
  * setup_extension_set (PeasEngine *engine,
  *                      GtkWindow  *window)
@@ -90,8 +81,6 @@
  *                     G_CALLBACK (on_extension_added), window);
  *   g_signal_connect (set, "extension-removed",
  *                     G_CALLBACK (on_extension_removed), window);
- *   g_signal_connect (window, "delete-event",
- *                     G_CALLBACK (on_delete_event), set);
  *   return set;
  * }
  * ]|
