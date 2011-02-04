@@ -94,6 +94,7 @@ if HAVE_INTROSPECTION
   Peas_1_0_gir_CFLAGS = $(PEAS_CFLAGS)
   Peas_1_0_gir_LIBS = libpeas-1.0.la
   Peas_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+  Peas_1_0_gir_EXPORT_PACKAGES = libpeas-1.0
 
   girdir = $(datadir)/gir-1.0
   gir_DATA = $(INTROSPECTION_GIRS)

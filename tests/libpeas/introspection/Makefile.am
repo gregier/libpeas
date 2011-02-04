@@ -38,10 +38,11 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(top_builddir)/libpeas
 introspection_sources = $(libintrospection_1_0_la_SOURCES)
 
 Introspection-1.0.gir: libintrospection-1.0.la
-Introspection_1_0_gir_INCLUDES = GObject-2.0 GIRepository-2.0 Peas-1.0
+Introspection_1_0_gir_INCLUDES = GObject-2.0 GIRepository-2.0
 Introspection_1_0_gir_CFLAGS = $(INTROSPECTION_INCLUDES)
 Introspection_1_0_gir_LIBS = libintrospection-1.0.la
 Introspection_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+Introspection_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(top_builddir)/libpeas/Peas-1.0.gir
 
 CLEANFILES = $(INTROSPECTION_GIRS) $(INTROSPECTION_TYPELIBS)
 
