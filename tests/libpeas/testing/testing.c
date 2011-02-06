@@ -116,6 +116,8 @@ testing_engine_new (void)
                                      "Introspection", "1.0", 0, &error);
       g_assert_no_error (error);
 
+      g_atexit (peas_engine_shutdown);
+
       initialized = TRUE;
     }
 

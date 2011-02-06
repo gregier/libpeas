@@ -344,6 +344,13 @@ peas_engine_constructor (GType                  type,
       return NULL;
     }
 
+  if (shutdown)
+    {
+      g_warning ("libpeas cannot create a plugin engine "
+                 "as it has been shutdown.");
+      return NULL;
+    }
+
   if (default_engine != NULL)
     return g_object_ref (G_OBJECT (default_engine));
 
@@ -1167,4 +1174,46 @@ peas_engine_get_default (void)
     return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE, NULL));
 
   return default_engine;
+}
+
+static void
+destroy_loaders (void)
+{
+  g_hash_table_destroy (loaders);
+  loaders = NULL;
+}
+
+/**
+ * peas_engine_shutdown:
+ *
+ * Frees memory shared by PeasEngines.
+ * No libpeas API should be called after calling this.
+ */
+void
+peas_engine_shutdown (void)
+{
+  if (shutdown)
+    return;
+
+  shutdown = TRUE;
+
+  if (default_engine != NULL)
+    {
+      /* Add a weak ref that will destroy the loaders hashtable,
+       * this way if the engine is still around it won't segfault
+       */
+      g_object_weak_ref (G_OBJECT (default_engine),
+                         (GWeakNotify) destroy_loaders, NULL);
+
+      g_object_unref (default_engine);
+
+      /* The weak-ref should set it to NULL */
+      if (default_engine != NULL)
+        {
+          default_engine = NULL;
+
+          g_warning ("libpeas failed to shutdown, "
+                     "the plugin engine was not freed.");
+        }
+    }
 }

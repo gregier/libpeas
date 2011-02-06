@@ -59,7 +59,7 @@ create_main_window (void)
   GtkWidget *button;
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Demo");
 
@@ -138,7 +138,9 @@ main (int    argc,
 
   gtk_main ();
 
-  g_object_unref (engine);
+  gtk_widget_destroy (main_window);
+
+  peas_engine_shutdown ();
 
   return 0;
 }

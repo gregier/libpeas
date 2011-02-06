@@ -295,6 +295,48 @@ test_engine_disable_loader (PeasEngine *engine)
   g_test_trap_assert_stderr ("*Loader 'C' cannot be disabled*");
 }
 
+static void
+test_engine_shutdown (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  /* Ref the engine to cause the shutdown to fail */
+  g_object_ref (engine);
+
+  /* libpeas fails to shutdown because the engine still has a ref */
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_shutdown ();
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*libpeas failed to shutdown*"
+                             "*plugin engine was not freed*");
+
+  /* Make sure that if an engine is around
+   * after shutdown the engine does not segfault.
+   */
+  info = peas_engine_get_plugin_info (engine, "loadable");
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  /* Free our extra ref and then the engine */
+  g_object_unref (engine);
+  testing_engine_free (engine);
+
+  /* Should be able to shutdown multiple times */
+  peas_engine_shutdown ();
+
+  /* Cannot get the default as libpeas has been shutdown */
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_get_default ();
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*libpeas cannot create a plugin "
+                              "engine as it has been shutdown*");
+}
+
 int
 main (int    argc,
       char **argv)
@@ -325,6 +367,9 @@ main (int    argc,
 
   TEST ("invalid-loader", invalid_loader);
   TEST ("disable-loader", disable_loader);
+
+  /* MUST be last */
+  TEST ("shutdown", shutdown);
 
 #undef TEST
 

@@ -108,6 +108,8 @@ testing_engine_new (void)
       g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error);
       g_assert_no_error (error);
 
+      g_atexit (peas_engine_shutdown);
+
       initialized = TRUE;
     }
 
