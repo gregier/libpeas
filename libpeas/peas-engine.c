@@ -295,12 +295,6 @@ add_loader (PeasEngine       *engine,
 static void
 peas_engine_init (PeasEngine *engine)
 {
-  if (!g_module_supported ())
-    {
-      g_warning ("libpeas is not able to initialize the plugins engine.");
-      return;
-    }
-
   engine->priv = G_TYPE_INSTANCE_GET_PRIVATE (engine,
                                               PEAS_TYPE_ENGINE,
                                               PeasEnginePrivate);
@@ -345,6 +339,14 @@ peas_engine_constructor (GType                  type,
                          GObjectConstructParam *construct_params)
 {
   GObject *object;
+
+  /* We don't support calling PeasEngine API without module support */
+  if (!g_module_supported ())
+    {
+      g_warning ("libpeas is not able to create the "
+                 "plugins engine as modules are not supported.");
+      return NULL;
+    }
 
   if (default_engine != NULL)
     return g_object_ref (G_OBJECT (default_engine));
