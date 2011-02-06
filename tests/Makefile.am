@@ -6,7 +6,7 @@ if ENABLE_GTK
 SUBDIRS += libpeas-gtk
 endif
 
-test test-gdb test-valgrind:
+test test-gdb test-valgrind test-callgrind:
 	@for subdir in $(SUBDIRS) ; do \
 	   test "$$subdir" = "plugins" || \
 	   ( cd $$subdir && \

@@ -28,6 +28,17 @@ test-valgrind: $(TEST_PROGS)
 	     --log-file=vgdump-$$test_prog $$test_prog ; \
 	 done
 
+test-callgrind: $(TEST_PROGS)
+	@test -z "$(TEST_PROGS)" || \
+	 for test_prog in $(TEST_PROGS) ; do \
+	   if test -e cgdump-$$test_prog; then \
+	     unlink cgdump-$$test_prog; \
+	   fi ; \
+	   libtool --mode=execute valgrind --tool=callgrind \
+	     --callgrind-out-file=cgdump-$$test_prog \
+	     --log-file=/dev/null $$test_prog ; \
+	 done
+
 generate-report: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 G_SLICE=debug-blocks $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
