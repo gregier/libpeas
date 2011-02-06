@@ -234,12 +234,6 @@ test_engine_loaded_plugins (PeasEngine *engine)
   g_assert (loaded_plugins == NULL);
   g_assert_cmpint (loaded, ==, 0);
 
-
-#ifdef CANNOT_TEST
-  /* Cannot be done as unrefing the engine causes
-   * issues when another test is run
-   */
-
   g_assert (peas_engine_load_plugin (engine, info));
 
   g_assert_cmpint (loaded, ==, 1);
@@ -254,15 +248,7 @@ test_engine_loaded_plugins (PeasEngine *engine)
   g_assert_cmpstr (loaded_plugins[0], ==, "loadable");
   g_assert (loaded_plugins[1] == NULL);
 
-  if (loaded_plugins != NULL)
-    g_strfreev (loaded_plugins);
-#endif
-
-  g_signal_handlers_disconnect_by_func (engine, load_plugin_cb, &loaded);
-  g_signal_handlers_disconnect_by_func (engine, unload_plugin_cb, &loaded);
-  g_signal_handlers_disconnect_by_func (engine,
-                                        notify_loaded_plugins_cb,
-                                        &loaded_plugins);
+  g_strfreev (loaded_plugins);
 }
 
 static void

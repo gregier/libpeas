@@ -32,6 +32,7 @@
 
 #include "testing.h"
 
+static PeasEngine *engine = NULL;
 static GLogFunc default_log_func;
 
 /* These are warning that just have to happen for testing
@@ -84,57 +85,54 @@ out:
 PeasEngine *
 testing_engine_new (void)
 {
-  PeasEngine *engine;
   GError *error = NULL;
   static gboolean initialized = FALSE;
 
-  if (initialized)
-    return peas_engine_get_default ();
+  if (engine != NULL)
+    return engine;
 
-  /* Don't always abort on warnings */
-  g_log_set_always_fatal (G_LOG_LEVEL_CRITICAL);
+  if (!initialized)
+    {
+      /* Don't always abort on warnings */
+      g_log_set_always_fatal (G_LOG_LEVEL_CRITICAL);
 
-  default_log_func = g_log_set_default_handler (log_handler, NULL);
+      default_log_func = g_log_set_default_handler (log_handler, NULL);
 
-  g_irepository_prepend_search_path (BUILDDIR "/libpeas");
-  g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
+      g_irepository_prepend_search_path (BUILDDIR "/libpeas");
+      g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
 
-  g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
+      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
 
-  g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
-  g_assert_no_error (error);
-  g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error);
-  g_assert_no_error (error);
+      g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
+      g_assert_no_error (error);
+      g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error);
+      g_assert_no_error (error);
+
+      initialized = TRUE;
+    }
 
   /* Must be after requiring typelibs */
   engine = peas_engine_get_default ();
 
+  g_object_add_weak_pointer (G_OBJECT (engine), (gpointer *) &engine);
+
   peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins", NULL);
   peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas-gtk/plugins", NULL);
-
-  initialized = TRUE;
 
   return engine;
 }
 
 void
-testing_engine_free (PeasEngine *engine)
+testing_engine_free (PeasEngine *engine_)
 {
-  const GList *plugins;
+  /* Incase a test needs to free the engine */
+  if (engine != NULL)
+    {
+      g_object_unref (engine_);
 
-  /* This causes errors during the next test:
-  g_object_unref (engine);*/
-
-  /* Otherwise the tests may cause each other to fail
-   * because they expected a plugin to be available
-   * but it failed loading making it unavailable
-   */
-  plugins = peas_engine_get_plugin_list (engine);
-  for (; plugins != NULL; plugins = plugins->next)
-    ((PeasPluginInfo *) plugins->data)->available = TRUE;
-
-  peas_engine_set_loaded_plugins (engine, NULL);
-  g_assert (peas_engine_get_loaded_plugins (engine) == NULL);
+      /* Make sure that at the end of every test the engine is freed */
+      g_assert (engine == NULL);
+    }
 }
 
 PeasPluginInfo *
