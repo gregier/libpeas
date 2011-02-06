@@ -40,7 +40,7 @@ static GLogFunc default_log_func;
  * Would be nice if we could assert that they were...
  */
 static const gchar *allowed_patterns[] = {
-  "*Plugin not found: does-not-exist*",
+  "*does-not-exist*",
   "*lib*loader.so*cannot open shared object file: No such file or directory*",
   "*Could not find 'IAge' in *info-missing-iage.plugin*",
   "*Could not find 'Module' in *info-missing-module.plugin*",

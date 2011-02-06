@@ -246,6 +246,18 @@ test_engine_loaded_plugins (PeasEngine *engine)
                                         &loaded_plugins);
 }
 
+static void
+test_engine_invalid_loader (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, "invalid-loader");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info));
+}
+
 #ifdef CANNOT_TEST
 static void
 test_engine_disable_loader (PeasEngine *engine)
@@ -292,6 +304,7 @@ main (int    argc,
 
   TEST ("loaded-plugins", loaded_plugins);
 
+  TEST ("invalid-loader", invalid_loader);
 #ifdef CANNOT_TEST
   TEST ("disable-loader", disable_loader);
 #endif
