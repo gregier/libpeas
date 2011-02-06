@@ -111,7 +111,6 @@ testing_engine_new (void)
 
   peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins", NULL);
   peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas-gtk/plugins", NULL);
-  peas_engine_rescan_plugins (engine);
 
   initialized = TRUE;
 
