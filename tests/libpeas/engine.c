@@ -240,7 +240,9 @@ test_engine_loaded_plugins (PeasEngine *engine)
   g_assert (loaded_plugins[1] == NULL);
 
   g_assert (peas_engine_unload_plugin (engine, info));
-  g_assert (loaded_plugins == NULL);
+
+  g_assert (loaded_plugins != NULL);
+  g_assert (loaded_plugins[0] == NULL);
   g_assert_cmpint (loaded, ==, 0);
 
   g_assert (peas_engine_load_plugin (engine, info));

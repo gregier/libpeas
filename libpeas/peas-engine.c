@@ -1074,7 +1074,7 @@ peas_engine_create_extension (PeasEngine     *engine,
  * to free it using g_strfreev().
  *
  * Returns: (transfer full): A newly-allocated %NULL-terminated
- * array of strings, or %NULL.
+ * array of strings.
  */
 gchar **
 peas_engine_get_loaded_plugins (PeasEngine *engine)
@@ -1094,16 +1094,7 @@ peas_engine_get_loaded_plugins (PeasEngine *engine)
         }
     }
 
-  /* Bug in GArray? */
-  if (array->len == 0)
-    {
-      g_array_free (array, TRUE);
-      return NULL;
-    }
-  else
-    {
-      return (gchar **) g_array_free (array, FALSE);
-    }
+  return (gchar **) g_array_free (array, FALSE);
 }
 
 static gboolean
