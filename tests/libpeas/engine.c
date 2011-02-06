@@ -76,6 +76,15 @@ test_engine_new (PeasEngine *engine)
 }
 
 static void
+test_engine_dispose (PeasEngine *engine)
+{
+  /* Yes this really has failed before */
+  g_object_run_dispose (G_OBJECT (engine));
+  g_object_run_dispose (G_OBJECT (engine));
+  g_object_run_dispose (G_OBJECT (engine));
+}
+
+static void
 test_engine_get_default (PeasEngine *engine)
 {
   g_assert (engine == peas_engine_get_default ());
@@ -351,6 +360,7 @@ main (int    argc,
               test_setup, test_runner, test_teardown)
 
   TEST ("new", new);
+  TEST ("dispose", dispose);
   TEST ("get-default", get_default);
 
   TEST ("load-plugin", load_plugin);
