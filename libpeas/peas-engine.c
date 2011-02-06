@@ -683,7 +683,7 @@ peas_engine_disable_loader (PeasEngine  *engine,
 
   loader_info = (LoaderInfo *) g_hash_table_lookup (engine->priv->loaders,
                                                     loader_id);
-  if (loader_info != NULL)
+  if (loader_info != NULL && loader_info->module != NULL)
     {
       g_warning ("Loader '%s' cannot be disabled as it is already loaded",
                  loader_id);
@@ -692,7 +692,8 @@ peas_engine_disable_loader (PeasEngine  *engine,
 
   /* By adding a NULL loader, we simulate a failed load attempt, effectively
    * disabling the loader for further use. */
-  add_loader (engine, loader_id, NULL, NULL);
+  if (loader_info == NULL)
+    add_loader (engine, loader_id, NULL, NULL);
 }
 
 /**
