@@ -91,7 +91,6 @@ struct _PeasEnginePrivate {
   GList *search_paths;
 
   GList *plugin_list;
-  GHashTable *loaders;
 
   guint in_dispose : 1;
 };
@@ -100,6 +99,9 @@ static void peas_engine_load_plugin_real   (PeasEngine     *engine,
                                             PeasPluginInfo *info);
 static void peas_engine_unload_plugin_real (PeasEngine     *engine,
                                             PeasPluginInfo *info);
+
+static gboolean shutdown = FALSE;
+static GHashTable *loaders = NULL;
 
 static void
 load_plugin_info (PeasEngine  *engine,
@@ -288,7 +290,7 @@ add_loader (PeasEngine       *engine,
   info->loader = loader;
   info->module = module;
 
-  g_hash_table_insert (engine->priv->loaders, g_strdup (loader_id), info);
+  g_hash_table_insert (loaders, g_strdup (loader_id), info);
   return info;
 }
 
@@ -300,12 +302,6 @@ peas_engine_init (PeasEngine *engine)
                                               PeasEnginePrivate);
 
   engine->priv->in_dispose = FALSE;
-
-  /* mapping from loadername -> loader object */
-  engine->priv->loaders = g_hash_table_new_full (hash_lowercase,
-                                                 (GEqualFunc) equal_lowercase,
-                                                 (GDestroyNotify) g_free,
-                                                 (GDestroyNotify) loader_destroy);
 }
 
 static void
@@ -328,7 +324,7 @@ loader_garbage_collect (const gchar *id,
 void
 peas_engine_garbage_collect (PeasEngine *engine)
 {
-  g_hash_table_foreach (engine->priv->loaders,
+  g_hash_table_foreach (loaders,
                         (GHFunc) loader_garbage_collect,
                         NULL);
 }
@@ -420,13 +416,6 @@ peas_engine_dispose (GObject *object)
 
       if (peas_plugin_info_is_loaded (info))
         peas_engine_unload_plugin (engine, info);
-    }
-
-  /* unref the loaders */
-  if (engine->priv->loaders != NULL)
-    {
-      g_hash_table_destroy (engine->priv->loaders);
-      engine->priv->loaders = NULL;
     }
 
   G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
@@ -574,6 +563,12 @@ peas_engine_class_init (PeasEngineClass *klass)
   /* We are doing some global initialization here as there is currently no
    * global init function for libpeas. */
   peas_debug_init ();
+
+  /* mapping from loadername -> loader object */
+  loaders = g_hash_table_new_full (hash_lowercase,
+                                   (GEqualFunc) equal_lowercase,
+                                   (GDestroyNotify) g_free,
+                                   (GDestroyNotify) loader_destroy);
 }
 
 static PeasObjectModule *
@@ -666,7 +661,7 @@ get_plugin_loader (PeasEngine     *engine,
 
   loader_id = info->loader;
 
-  loader_info = (LoaderInfo *) g_hash_table_lookup (engine->priv->loaders,
+  loader_info = (LoaderInfo *) g_hash_table_lookup (loaders,
                                                     loader_id);
 
   if (loader_info == NULL)
@@ -698,7 +693,7 @@ peas_engine_disable_loader (PeasEngine  *engine,
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  loader_info = (LoaderInfo *) g_hash_table_lookup (engine->priv->loaders,
+  loader_info = (LoaderInfo *) g_hash_table_lookup (loaders,
                                                     loader_id);
   if (loader_info != NULL && loader_info->module != NULL)
     {

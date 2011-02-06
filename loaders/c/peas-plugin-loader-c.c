@@ -61,9 +61,9 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
   PeasObjectModule *module;
   const gchar *module_name;
 
+  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     info);
-  module_name = peas_plugin_info_get_module_name (info);
+                                                     module_name);
 
   if (module == NULL)
     {
@@ -72,10 +72,8 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
                                        peas_plugin_info_get_module_dir (info),
                                        TRUE);
 
-      /* Infos are available for all the lifetime of the loader.
-       * If this changes, we should use weak refs or something */
-
-      g_hash_table_insert (cloader->priv->loaded_plugins, info, module);
+      g_hash_table_insert (cloader->priv->loaded_plugins,
+                           (gpointer) module_name, module);
       g_debug ("Insert module '%s' into C module set", module_name);
     }
 
@@ -97,9 +95,11 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
+  const gchar *module_name;
 
+  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     info);
+                                                     module_name);
   g_return_val_if_fail (module != NULL, FALSE);
 
   return peas_object_module_provides_object (module, exten_type);
@@ -116,9 +116,11 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   PeasObjectModule *module;
   GParameter *exten_parameters;
   gpointer instance;
+  const gchar *module_name;
 
+  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     info);
+                                                     module_name);
   g_return_val_if_fail (module != NULL, NULL);
 
   /* We want to add a "plugin-info" property so we can pass it to the extension
@@ -162,11 +164,13 @@ peas_plugin_loader_c_unload (PeasPluginLoader *loader,
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
   PeasObjectModule *module;
+  const gchar *module_name;
 
+  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     info);
+                                                     module_name);
 
-  g_debug ("Unloading plugin '%s'", peas_plugin_info_get_module_name (info));
+  g_debug ("Unloading plugin '%s'", module_name);
   g_type_module_unuse (G_TYPE_MODULE (module));
 }
 
@@ -177,7 +181,7 @@ peas_plugin_loader_c_init (PeasPluginLoaderC *self)
                                             PEAS_TYPE_PLUGIN_LOADER_C,
                                             PeasPluginLoaderCPrivate);
 
-  /* loaded_plugins maps PeasPluginInfo to a PeasObjectModule */
+  /* loaded_plugins maps PeasPluginInfo:module-name to a PeasObjectModule */
   self->priv->loaded_plugins = g_hash_table_new (g_direct_hash,
                                                  g_direct_equal);
 }
@@ -186,26 +190,6 @@ static void
 peas_plugin_loader_c_finalize (GObject *object)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (object);
-  GList *infos;
-  GList *item;
-
-  /* FIXME: this sanity check it's not efficient. Let's remove it
-   * once we are confident with the code */
-
-  infos = g_hash_table_get_keys (cloader->priv->loaded_plugins);
-
-  for (item = infos; item; item = item->next)
-    {
-      PeasPluginInfo *info = (PeasPluginInfo *) item->data;
-
-      if (peas_plugin_info_is_loaded (info))
-        {
-          g_warning ("There are still C plugins loaded during destruction");
-          break;
-        }
-    }
-
-  g_list_free (infos);
 
   g_hash_table_destroy (cloader->priv->loaded_plugins);
 
