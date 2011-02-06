@@ -4,13 +4,14 @@ TEST_PROGS =
 
 test: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
-	 $(GTESTER) --verbose $(TEST_PROGS)
+	 G_SLICE=debug-blocks $(GTESTER) --verbose $(TEST_PROGS)
 
 test-gdb: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
-	   $(GTESTER) --verbose $$test_prog || { \
-	     libtool --mode=execute gdb --ex "run --verbose" $$test_prog ; \
+	   G_SLICE=debug-blocks $(GTESTER) --verbose $$test_prog || { \
+	     G_SLICE=debug-blocks \
+	       libtool --mode=execute gdb --ex "run --verbose" $$test_prog ; \
 	     exit 1 ; \
 	   } \
 	 done
@@ -29,6 +30,6 @@ test-valgrind: $(TEST_PROGS)
 
 generate-report: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
-	 $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
+	 G_SLICE=debug-blocks $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
 
 CLEANFILES = vgdump-*
