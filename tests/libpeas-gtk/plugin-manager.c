@@ -330,10 +330,12 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
 
   info = peas_engine_get_plugin_info (fixture->engine, "configurable");
 
+  peas_engine_load_plugin (fixture->engine, info);
+
   testing_get_iter_for_plugin_info (fixture->view, info, &iter);
   gtk_tree_selection_select_iter (fixture->selection, &iter);
 
-  /* Must be first so we the window is added to the window group */
+  /* Must be first so the window is added to the window group */
   gtk_button_clicked (GTK_BUTTON (fixture->configure_button));
 
   window = find_window_by_title (GTK_WINDOW (fixture->window), "Configurable");

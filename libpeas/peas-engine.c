@@ -943,6 +943,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
+  g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
 
   loader = get_plugin_loader (engine, info);
   return peas_plugin_loader_create_extension (loader, info, extension_type,

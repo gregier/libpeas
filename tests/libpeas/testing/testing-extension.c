@@ -100,12 +100,9 @@ testing_extension_create_invalid_ (PeasEngine *engine)
       extension = peas_engine_create_extension (engine, info,
                                                 INTROSPECTION_TYPE_CALLABLE,
                                                 NULL);
-      /* Resident Modules */
-      g_object_unref (extension);
       exit (0);
     }
-  /* Resident modules cause this to fail?
-  g_test_trap_assert_failed ();*/
+  g_test_trap_assert_failed ();
 
   g_assert (peas_engine_load_plugin (engine, info));
 
