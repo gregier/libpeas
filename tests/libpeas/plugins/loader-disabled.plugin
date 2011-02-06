@@ -1,0 +1,8 @@
+[Plugin]
+Module=loader-disabled
+Loader=disabled
+IAge=2
+Name=Loader Disabled
+Description=This plugin has a disabled loader.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier

@@ -23,6 +23,7 @@
 #include <config.h>
 #endif
 
+#include <stdlib.h>
 #include <glib.h>
 #include <libpeas/peas.h>
 
@@ -258,24 +259,37 @@ test_engine_invalid_loader (PeasEngine *engine)
   g_assert (!peas_plugin_info_is_available (info));
 }
 
-#ifdef CANNOT_TEST
 static void
 test_engine_disable_loader (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  /* Cannot be run because the engine
-   * has already loaded the C plugin loader
+  /* We have to use an unused loader because loaders
+   * cannot be disabled after the loader has been loaded.
+   *
+   * The loader is disabled in testing_engine_new()
    */
 
-  info = peas_engine_get_plugin_info (engine, "loadable");
-
-  peas_engine_disable_loader (engine, "C");
+  info = peas_engine_get_plugin_info (engine, "loader-disabled");
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info));
+
+
+  info = peas_engine_get_plugin_info (engine, "loadable");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  /* Cannot disable the C loader as it has already been enabled */
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_disable_loader (engine, "C");
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*Loader 'C' cannot be disabled*");
 }
-#endif
 
 int
 main (int    argc,
@@ -305,9 +319,7 @@ main (int    argc,
   TEST ("loaded-plugins", loaded_plugins);
 
   TEST ("invalid-loader", invalid_loader);
-#ifdef CANNOT_TEST
   TEST ("disable-loader", disable_loader);
-#endif
 
 #undef TEST
 

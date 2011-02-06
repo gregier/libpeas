@@ -47,7 +47,8 @@ static const gchar *allowed_patterns[] = {
   "*Could not find 'Name' in *info-missing-name.plugin*",
   "*Error loading *info-missing-iage.plugin*",
   "*Error loading *info-missing-module.plugin*",
-  "*Error loading *info-missing-name.plugin*"
+  "*Error loading *info-missing-name.plugin*",
+  "*Could not find loader 'disabled'*"
 };
 
 static void
@@ -115,6 +116,9 @@ testing_engine_new (void)
 
   /* Must be after requiring typelibs */
   engine = peas_engine_get_default ();
+
+  /* Disabled here incase another tests tries to load it */
+  peas_engine_disable_loader (engine, "disabled");
 
   peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins", NULL);
   peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas/plugins", NULL);

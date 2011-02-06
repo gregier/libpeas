@@ -13,6 +13,7 @@ noinst_DATA = \
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
 	invalid-loader.plugin		\
+	loader-disabled.plugin		\
 	os-dependant-help.plugin
 
 EXTRA_DIST = $(noinst_DATA)
