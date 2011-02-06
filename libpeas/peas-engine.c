@@ -413,7 +413,16 @@ peas_engine_dispose (GObject *object)
       engine->priv->loaders = NULL;
     }
 
-  /* and finally free the infos */
+  G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
+}
+
+static void
+peas_engine_finalize (GObject *object)
+{
+  PeasEngine *engine = PEAS_ENGINE (object);
+  GList *item;
+
+  /* free the infos */
   for (item = engine->priv->plugin_list; item; item = item->next)
     _peas_plugin_info_unref (PEAS_PLUGIN_INFO (item->data));
 
@@ -426,14 +435,6 @@ peas_engine_dispose (GObject *object)
       g_free (sp->data_dir);
       g_slice_free (SearchPath, sp);
     }
-
-  G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
-}
-
-static void
-peas_engine_finalize (GObject *object)
-{
-  PeasEngine *engine = PEAS_ENGINE (object);
 
   g_list_free (engine->priv->plugin_list);
   g_list_free (engine->priv->search_paths);
