@@ -43,6 +43,7 @@ void testing_extension_test_runner_   (TestingExtensionFixture_ *fixture,
 
 void testing_extension_create_valid_              (PeasEngine *engine);
 void testing_extension_create_invalid_            (PeasEngine *engine);
+void testing_extension_reload_                    (PeasEngine *engine);
 void testing_extension_call_invalid_              (PeasEngine *engine);
 void testing_extension_call_no_args_              (PeasEngine *engine);
 void testing_extension_call_with_return_          (PeasEngine *engine);
@@ -74,6 +75,8 @@ main (int   argc, \
 \
   _EXTENSION_TEST (loader, "create-valid", create_valid); \
   _EXTENSION_TEST (loader, "create-invalid", create_invalid); \
+\
+  _EXTENSION_TEST (loader, "reload", reload); \
 \
   _EXTENSION_TEST (loader, "call-invalid", call_invalid); \
   _EXTENSION_TEST (loader, "call-no-args", call_no_args); \

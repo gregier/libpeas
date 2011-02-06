@@ -40,6 +40,8 @@ main (int   argc,
   _EXTENSION_TEST ("seed", "create-valid", create_valid);
   _EXTENSION_TEST ("seed", "create-invalid", create_invalid);
 
+  _EXTENSION_TEST ("seed", "reload", reload);
+
   _EXTENSION_TEST ("seed", "call-invalid", call_invalid);
   _EXTENSION_TEST ("seed", "call-no-args", call_no_args);
   _EXTENSION_TEST ("seed", "call-with-return", call_with_return);

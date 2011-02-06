@@ -40,6 +40,8 @@ main (int   argc,
   _EXTENSION_TEST ("python", "create-valid", create_valid);
   _EXTENSION_TEST ("python", "create-invalid", create_invalid);
 
+  _EXTENSION_TEST ("python", "reload", reload);
+
   _EXTENSION_TEST ("python", "call-invalid", call_invalid);
   _EXTENSION_TEST ("python", "call-no-args", call_no_args);
   _EXTENSION_TEST ("python", "call-with-return", call_with_return);

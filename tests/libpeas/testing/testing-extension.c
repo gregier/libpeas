@@ -136,6 +136,21 @@ testing_extension_create_invalid_ (PeasEngine *engine)
 }
 
 void
+testing_extension_reload_ (PeasEngine *engine)
+{
+  gint i;
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+
+  for (i = 0; i < 3; ++i)
+    {
+      g_assert (peas_engine_load_plugin (engine, info));
+      g_assert (peas_engine_unload_plugin (engine, info));
+    }
+}
+
+void
 testing_extension_call_invalid_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
