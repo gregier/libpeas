@@ -57,9 +57,27 @@ test_runner (TestFixture   *fixture,
 }
 
 static void
+test_engine_new (PeasEngine *engine)
+{
+  PeasEngine *new_engine;
+
+  /* Some bindings may allow creating a PeasEngine with
+   * g_object_new(). So make sure that we get the default
+   * engine and not a new engine or an assert.
+   */
+
+  new_engine = g_object_new (PEAS_TYPE_ENGINE, NULL);
+
+  g_assert (engine != NULL);
+  g_assert (engine == new_engine);
+
+  /* g_object_new() will give us a new ref */
+  g_object_unref (new_engine);
+}
+
+static void
 test_engine_get_default (PeasEngine *engine)
 {
-  g_assert (engine != NULL);
   g_assert (engine == peas_engine_get_default ());
 }
 
@@ -304,6 +322,7 @@ main (int    argc,
               (gpointer) test_engine_##ftest, \
               test_setup, test_runner, test_teardown)
 
+  TEST ("new", new);
   TEST ("get-default", get_default);
 
   TEST ("load-plugin", load_plugin);

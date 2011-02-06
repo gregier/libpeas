@@ -295,12 +295,6 @@ add_loader (PeasEngine       *engine,
 static void
 peas_engine_init (PeasEngine *engine)
 {
-  /* Set the default engine pointer, for peas_engine_get_default().
-   * We only allow one single instance of a PeasEngine subclass. */
-  g_assert (default_engine == NULL);
-  default_engine = engine;
-  g_object_add_weak_pointer (G_OBJECT (engine), (gpointer *) &default_engine);
-
   if (!g_module_supported ())
     {
       g_warning ("libpeas is not able to initialize the plugins engine.");
@@ -343,6 +337,26 @@ peas_engine_garbage_collect (PeasEngine *engine)
   g_hash_table_foreach (engine->priv->loaders,
                         (GHFunc) loader_garbage_collect,
                         NULL);
+}
+
+static GObject *
+peas_engine_constructor (GType                  type,
+                         guint                  n_construct_params,
+                         GObjectConstructParam *construct_params)
+{
+  GObject *object;
+
+  if (default_engine != NULL)
+    return g_object_ref (G_OBJECT (default_engine));
+
+  object = G_OBJECT_CLASS (peas_engine_parent_class)->constructor (type,
+                                                                   n_construct_params,
+                                                                   construct_params);
+
+  default_engine = PEAS_ENGINE (object);
+  g_object_add_weak_pointer (object, (gpointer *) &default_engine);
+
+  return object;
 }
 
 static void
@@ -448,6 +462,7 @@ peas_engine_class_init (PeasEngineClass *klass)
   GType the_type = G_TYPE_FROM_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  object_class->constructor = peas_engine_constructor;
   object_class->set_property = peas_engine_set_property;
   object_class->get_property = peas_engine_get_property;
   object_class->dispose = peas_engine_dispose;
