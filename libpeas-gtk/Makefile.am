@@ -54,11 +54,12 @@ if HAVE_INTROSPECTION
   introspection_sources = $(INST_H_FILES) $(C_FILES)
 
   PeasGtk-1.0.gir: libpeas-gtk-1.0.la
-  PeasGtk_1_0_gir_INCLUDES = GObject-2.0 $(GTK_TYPELIB) Peas-1.0
+  PeasGtk_1_0_gir_INCLUDES = GObject-2.0 $(GTK_TYPELIB)
   PeasGtk_1_0_gir_CFLAGS = $(PEAS_CFLAGS) $(PEAS_GTK_CFLAGS) -I$(top_srcdir)
   PeasGtk_1_0_gir_LIBS = libpeas-gtk-1.0.la
   PeasGtk_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
   PeasGtk_1_0_gir_EXPORT_PACKAGES = libpeas-gtk-1.0
+  PeasGtk_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(top_builddir)/libpeas/Peas-1.0.gir
 
   girdir = $(datadir)/gir-1.0
   gir_DATA = $(INTROSPECTION_GIRS)
