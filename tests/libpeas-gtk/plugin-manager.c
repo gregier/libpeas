@@ -382,6 +382,42 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
   g_list_free (list);
 }
 
+static void
+test_gtk_plugin_manager_gtkbuilder (TestFixture *fixture)
+{
+  GtkBuilder *builder;
+  GError *error = NULL;
+  PeasGtkPluginManager *manager;
+  PeasGtkPluginManagerView *view;
+  static const gchar *gtkbuilder_string =
+    "<?xml version='1.0' encoding='UTF-8'?>\n"
+    "<interface>\n"
+    "<object class='PeasGtkPluginManagerView' id='view'>\n"
+    "  <property name='show-builtin'>True</property>\n"
+    "</object>\n"
+    "<object class='PeasGtkPluginManager' id='manager'>\n"
+    "  <property name='view'>view</property>\n"
+    "</object>\n"
+    "</interface>";
+
+  builder = gtk_builder_new ();
+
+  gtk_builder_add_from_string (builder, gtkbuilder_string, -1, &error);
+  g_assert_no_error (error);
+
+  manager = PEAS_GTK_PLUGIN_MANAGER (gtk_builder_get_object (builder, "manager"));
+  g_assert (PEAS_GTK_IS_PLUGIN_MANAGER (manager));
+
+  view = PEAS_GTK_PLUGIN_MANAGER_VIEW (peas_gtk_plugin_manager_get_view (manager));
+
+  g_assert (G_OBJECT (view) == gtk_builder_get_object (builder, "view"));
+
+  g_assert (peas_gtk_plugin_manager_view_get_show_builtin (view));
+
+  /* Freeing the builder will free the objects */
+  g_object_unref (builder);
+}
+
 int
 main (int    argc,
       char **argv)
@@ -403,6 +439,8 @@ main (int    argc,
 
   TEST ("about-dialog", about_dialog);
   TEST ("configure-dialog", configure_dialog);
+
+  TEST ("gtkbuilder", gtkbuilder);
 
 #undef TEST
 
