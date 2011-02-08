@@ -69,6 +69,12 @@ struct _PeasGtkPluginManagerPrivate {
   GtkWidget *configure_button;
 };
 
+/* Properties */
+enum {
+  PROP_0,
+  PROP_VIEW
+};
+
 G_DEFINE_TYPE (PeasGtkPluginManager, peas_gtk_plugin_manager, GTK_TYPE_VBOX);
 
 static gboolean
@@ -356,7 +362,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 {
   GtkWidget *label;
   GtkWidget *hbuttonbox;
-  GtkTreeSelection *selection;
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
                                           PEAS_GTK_TYPE_PLUGIN_MANAGER,
@@ -387,9 +392,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_label_set_mnemonic_widget (GTK_LABEL (label), pm->priv->sw);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
 
-  pm->priv->view = peas_gtk_plugin_manager_view_new ();
-  gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
-
   hbuttonbox = gtk_hbutton_box_new ();
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
   gtk_box_set_spacing (GTK_BOX (hbuttonbox), 6);
@@ -415,13 +417,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                     G_CALLBACK (show_configure_cb),
                     pm);
 
-
-  /* When we create the manager, we always rescan the plugins directory
-     Must come after the view has connected to notify::plugin-list */
-  peas_engine_rescan_plugins (pm->priv->engine);
-
-  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
-
   g_signal_connect_after (pm->priv->engine,
                           "load-plugin",
                           G_CALLBACK (plugin_loaded_toggled_cb),
@@ -430,6 +425,65 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                           "unload-plugin",
                           G_CALLBACK (plugin_loaded_toggled_cb),
                           pm);
+}
+
+static void
+peas_gtk_plugin_manager_set_property (GObject      *object,
+                                      guint         prop_id,
+                                      const GValue *value,
+                                      GParamSpec   *pspec)
+{
+  PeasGtkPluginManager *pm = PEAS_GTK_PLUGIN_MANAGER (object);
+
+  switch (prop_id)
+    {
+    case PROP_VIEW:
+      pm->priv->view = g_value_get_object (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+peas_gtk_plugin_manager_get_property (GObject    *object,
+                                      guint       prop_id,
+                                      GValue     *value,
+                                      GParamSpec *pspec)
+{
+  PeasGtkPluginManager *pm = PEAS_GTK_PLUGIN_MANAGER (object);
+
+  switch (prop_id)
+    {
+    case PROP_VIEW:
+      g_value_set_object (value, peas_gtk_plugin_manager_get_view (pm));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+peas_gtk_plugin_manager_constructed (GObject *object)
+{
+  PeasGtkPluginManager *pm = PEAS_GTK_PLUGIN_MANAGER (object);
+  GtkTreeSelection *selection;
+
+  if (pm->priv->view == NULL)
+    pm->priv->view = peas_gtk_plugin_manager_view_new ();
+
+  gtk_widget_push_composite_child ();
+  gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
+  gtk_widget_pop_composite_child ();
+
+  /* When we create the manager, we always rescan the plugins directory
+     Must come after the view has connected to notify::plugin-list */
+  peas_engine_rescan_plugins (pm->priv->engine);
+
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
+
   g_signal_connect_swapped (selection,
                             "changed",
                             G_CALLBACK (selection_changed_cb),
@@ -470,7 +524,25 @@ peas_gtk_plugin_manager_class_init (PeasGtkPluginManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  object_class->set_property = peas_gtk_plugin_manager_set_property;
+  object_class->get_property = peas_gtk_plugin_manager_get_property;
+  object_class->constructed = peas_gtk_plugin_manager_constructed;
   object_class->dispose = peas_gtk_plugin_manager_dispose;
+
+  /**
+   * PeasGtkPluginManager:view:
+   *
+   * The #PeasGtkPluginManagerView shown in the #PeasGtkPluginManager.
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_VIEW,
+                                   g_param_spec_object ("view",
+                                                        "view",
+                                                        "The view shown in the manager",
+                                                        PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (object_class, sizeof (PeasGtkPluginManagerPrivate));
 }
