@@ -1,15 +1,14 @@
 # Czech translation for libpeas.
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
-#
-# Marek Černocký <marek@manet.cz>, 2010.
+# Marek Černocký <marek@manet.cz>, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-18 18:50+0000\n"
-"PO-Revision-Date: 2010-07-22 22:35+0200\n"
+"POT-Creation-Date: 2011-02-09 11:04+0000\n"
+"PO-Revision-Date: 2011-02-09 13:54+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,47 +18,67 @@ msgstr ""
 "X-Poedit-Language: Czech\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:177
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+#| msgid "Plugin"
+msgid "Plugin Manager"
+msgstr "Správce zásuvných modulů"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Zobrazení správce zásuvných modulů"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Show Builtin"
+msgstr "Zobrazit vestavěné"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "View"
+msgstr "Zobrazit"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:197
 msgid "There was an error displaying the help."
 msgstr "Vyskytla se chyba při zobrazení nápovědy."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:335
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:345
 msgid "C_onfigure"
 msgstr "Na_stavit"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:343
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:353
 msgid "_About"
 msgstr "O _aplikaci"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:364
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_Plugins:"
 msgstr "Zásuvné _moduly:"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:295
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:277
 msgid "_Enabled"
 msgstr "Povol_en"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:306
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:288
 msgid "E_nable All"
 msgstr "Po_volit vše"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:310
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:292
 msgid "_Disable All"
 msgstr "Za_kázat vše"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:467
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:462
 msgid "Enabled"
 msgstr "Povolen"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:488
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:483
 msgid "Plugin"
 msgstr "Zásuvný modul"
 
-#: ../peas-demo/peas-demo.c:39
+#: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
 msgstr "Spustit ze složky, ve které bylo sestaveno"
 
-#: ../peas-demo/peas-demo.c:130
+#: ../peas-demo/peas-demo.c:101
 msgid "- libpeas demo application"
 msgstr "- ukázková aplikace libpeas"
-
