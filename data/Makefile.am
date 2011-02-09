@@ -1,5 +1,9 @@
 SUBDIRS=icons
 
+if ENABLE_GLADE_CATALOG
+SUBDIRS+=glade
+endif
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libpeas-1.0.pc
 

@@ -29,6 +29,7 @@ Makefile.in
 /configure.lineno
 /data/libpeas-1.0.pc
 /data/libpeas-gtk-1.0.pc
+/data/glade/libpeas-gtk.xml
 /depcomp
 /libpeas-*.tar.bz2
 /libpeas/peas-marshal.h
