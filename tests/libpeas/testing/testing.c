@@ -28,7 +28,7 @@
 #include <glib.h>
 #include <girepository.h>
 
-#include "libpeas/peas-plugin-info-priv.h"
+#include "libpeas/peas-engine-priv.h"
 
 #include "testing.h"
 

@@ -27,6 +27,8 @@
 #include <glib.h>
 #include <libpeas/peas.h>
 
+#include "libpeas/peas-engine-priv.h"
+
 #include "testing/testing.h"
 
 typedef struct _TestFixture TestFixture;

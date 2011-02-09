@@ -29,6 +29,7 @@ INST_H_FILES =			\
 NOINST_H_FILES =			\
 	peas-debug.h			\
 	peas-dirs.h			\
+	peas-engine-priv.h		\
 	peas-extension-priv.h		\
 	peas-extension-subclasses.h	\
 	peas-helpers.h			\

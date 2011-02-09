@@ -140,7 +140,5 @@ main (int    argc,
 
   gtk_widget_destroy (main_window);
 
-  peas_engine_shutdown ();
-
   return 0;
 }

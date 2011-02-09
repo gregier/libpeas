@@ -69,7 +69,6 @@ struct _PeasEngineClass {
 
 GType             peas_engine_get_type            (void) G_GNUC_CONST;
 PeasEngine       *peas_engine_get_default         (void);
-void              peas_engine_shutdown            (void);
 
 void              peas_engine_add_search_path     (PeasEngine      *engine,
                                                    const gchar     *module_dir,
