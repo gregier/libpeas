@@ -56,6 +56,8 @@ struct _PeasGtkPluginManagerViewClass {
 
   void  (*populate_popup)   (PeasGtkPluginManagerView *view,
                              GtkMenu                  *menu);
+
+  gpointer padding[8];
 };
 
 GType           peas_gtk_plugin_manager_view_get_type             (void) G_GNUC_CONST;

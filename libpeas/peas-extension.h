@@ -70,6 +70,8 @@ struct _PeasExtensionClass {
                                            const gchar    *method,
                                            GIArgument     *args,
                                            GIArgument     *return_value);
+
+  gpointer padding[8];
 };
 
 /*

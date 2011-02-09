@@ -54,6 +54,8 @@ struct _PeasExtensionBase {
 
 struct _PeasExtensionBaseClass {
   GObjectClass parent_class;
+
+  gpointer padding[8];
 };
 
 /*

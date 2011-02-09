@@ -69,6 +69,8 @@ struct _PeasObjectModule {
 
 struct _PeasObjectModuleClass {
   GTypeModuleClass parent_class;
+
+  gpointer padding[8];
 };
 
 GType               peas_object_module_get_type               (void) G_GNUC_CONST;

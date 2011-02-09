@@ -52,6 +52,8 @@ struct _PeasGtkPluginManager
 struct _PeasGtkPluginManagerClass
 {
   GtkVBoxClass parent_class;
+
+  gpointer padding[8];
 };
 
 GType       peas_gtk_plugin_manager_get_type  (void)  G_GNUC_CONST;

@@ -68,6 +68,8 @@ struct _PeasExtensionSetClass {
   void       (*extension_removed)         (PeasExtensionSet *set,
                                            PeasPluginInfo   *info,
                                            PeasExtension    *exten);
+
+  gpointer padding[8];
 };
 
 /*

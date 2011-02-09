@@ -65,6 +65,8 @@ struct _PeasEngineClass {
 
   void     (*unload_plugin)               (PeasEngine     *engine,
                                            PeasPluginInfo *info);
+
+  gpointer padding[8];
 };
 
 GType             peas_engine_get_type            (void) G_GNUC_CONST;
