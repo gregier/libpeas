@@ -340,16 +340,14 @@ peas_engine_constructor (GType                  type,
   /* We don't support calling PeasEngine API without module support */
   if (!g_module_supported ())
     {
-      g_warning ("libpeas is not able to create the "
-                 "plugins engine as modules are not supported.");
-      return NULL;
+      g_error ("libpeas is not able to create the "
+               "plugins engine as modules are not supported.");
     }
 
   if (shutdown)
     {
-      g_warning ("libpeas cannot create a plugin engine "
-                 "as it has been shutdown.");
-      return NULL;
+      g_error ("libpeas cannot create a plugin engine "
+               "as it has been shutdown.");
     }
 
   if (default_engine != NULL)
