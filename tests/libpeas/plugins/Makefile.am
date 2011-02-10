@@ -12,8 +12,8 @@ noinst_DATA = \
 	info-missing-iage.plugin	\
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
-	invalid-loader.plugin		\
 	loader-disabled.plugin		\
+	nonexistent-loader.plugin	\
 	os-dependant-help.plugin
 
 EXTRA_DIST = $(noinst_DATA)

@@ -1,9 +1,9 @@
 [Plugin]
-Module=invalid-loader
+Module=nonexistent-loader
 Loader=does-not-exist
 IAge=2
-Name=Invalid Loader
-Description=This plugin has an invalid loader.
+Name=Nonexistent Loader
+Description=This plugin has a nonexistent loader.
 Authors=Garrett Regier
 Copyright=Copyright © 2011 Garrett Regier
 Website=http://live.gnome.org/Libpeas

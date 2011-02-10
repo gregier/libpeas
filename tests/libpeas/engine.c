@@ -265,11 +265,11 @@ test_engine_loaded_plugins (PeasEngine *engine)
 }
 
 static void
-test_engine_invalid_loader (PeasEngine *engine)
+test_engine_nonexistent_loader (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  info = peas_engine_get_plugin_info (engine, "invalid-loader");
+  info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
@@ -379,7 +379,7 @@ main (int    argc,
 
   TEST ("loaded-plugins", loaded_plugins);
 
-  TEST ("invalid-loader", invalid_loader);
+  TEST ("nonexistent-loader", nonexistent_loader);
   TEST ("disable-loader", disable_loader);
 
   /* MUST be last */
