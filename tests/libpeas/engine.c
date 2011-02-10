@@ -130,6 +130,23 @@ test_engine_load_plugin_with_self_dep (PeasEngine *engine)
 }
 
 static void
+test_engine_load_plugin_with_nonexistent_dep (PeasEngine *engine)
+{
+  GError *error = NULL;
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, "nonexistent-dep");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND);
+
+  g_error_free (error);
+}
+
+static void
 test_engine_unload_plugin (PeasEngine *engine)
 {
   PeasPluginInfo *info;
@@ -181,7 +198,7 @@ test_engine_unavailable_plugin (PeasEngine *engine)
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info));
+  g_assert (!peas_plugin_info_is_available (info, NULL));
 }
 
 static void
@@ -267,13 +284,18 @@ test_engine_loaded_plugins (PeasEngine *engine)
 static void
 test_engine_nonexistent_loader (PeasEngine *engine)
 {
+  GError *error = NULL;
   PeasPluginInfo *info;
 
   info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND);
+
+  g_error_free (error);
 }
 
 static void
@@ -291,7 +313,7 @@ test_engine_disable_loader (PeasEngine *engine)
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info));
+  g_assert (!peas_plugin_info_is_available (info, NULL));
 
 
   info = peas_engine_get_plugin_info (engine, "loadable");
@@ -370,6 +392,7 @@ main (int    argc,
   TEST ("load-plugin", load_plugin);
   TEST ("load-plugin-with-dep", load_plugin_with_dep);
   TEST ("load-plugin-with-self-dep", load_plugin_with_self_dep);
+  TEST ("load-plugin-with-nonexistent-dep", load_plugin_with_nonexistent_dep);
 
   TEST ("unload-plugin", unload_plugin);
   TEST ("unload-plugin-with-dep", unload_plugin_with_dep);

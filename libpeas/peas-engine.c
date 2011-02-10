@@ -768,7 +768,7 @@ load_plugin (PeasEngine     *engine,
   if (peas_plugin_info_is_loaded (info))
     return TRUE;
 
-  if (!peas_plugin_info_is_available (info))
+  if (!peas_plugin_info_is_available (info, NULL))
     return FALSE;
 
   /* We set the plugin info as loaded before trying to load the dependencies,
@@ -782,11 +782,23 @@ load_plugin (PeasEngine     *engine,
       if (!dep_info)
         {
           g_warning ("Plugin not found: %s", dependencies[i]);
+          g_set_error (&info->error,
+                       PEAS_PLUGIN_INFO_ERROR,
+                       PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
+                       _("Dependency '%s' was not found"),
+                       dependencies[i]);
           goto error;
         }
 
       if (!peas_engine_load_plugin (engine, dep_info))
-        goto error;
+        {
+          g_set_error (&info->error,
+                       PEAS_PLUGIN_INFO_ERROR,
+                       PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
+                       _("Dependency '%s' failed to load"),
+                       dep_info->name);
+          goto error;
+        }
     }
 
   loader = get_plugin_loader (engine, info);
@@ -795,12 +807,21 @@ load_plugin (PeasEngine     *engine,
     {
       g_warning ("Could not find loader '%s' for plugin '%s'",
                  info->loader, info->name);
+      g_set_error (&info->error,
+                   PEAS_PLUGIN_INFO_ERROR,
+                   PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
+                   _("Plugin loader '%s' was not found"),
+                   info->loader);
       goto error;
     }
 
   if (!peas_plugin_loader_load (loader, info))
     {
       g_warning ("Error loading plugin '%s'", info->name);
+      g_set_error (&info->error,
+                   PEAS_PLUGIN_INFO_ERROR,
+                   PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
+                   _("Failed to load"));
       goto error;
     }
 
@@ -839,7 +860,7 @@ peas_engine_load_plugin (PeasEngine     *engine,
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
-  if (!peas_plugin_info_is_available (info))
+  if (!peas_plugin_info_is_available (info, NULL))
     return FALSE;
 
   if (peas_plugin_info_is_loaded (info))
@@ -859,7 +880,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   PeasPluginLoader *loader;
 
   if (!peas_plugin_info_is_loaded (info) ||
-      !peas_plugin_info_is_available (info))
+      !peas_plugin_info_is_available (info, NULL))
     return;
 
   /* We set the plugin info as unloaded before trying to unload the
@@ -1133,7 +1154,7 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
       gboolean is_loaded;
       gboolean to_load;
 
-      if (!peas_plugin_info_is_available (info))
+      if (!peas_plugin_info_is_available (info, NULL))
         continue;
 
       module_name = peas_plugin_info_get_module_name (info);

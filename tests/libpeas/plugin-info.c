@@ -61,12 +61,14 @@ static void
 test_plugin_info_verify_full_info (PeasEngine *engine)
 {
   PeasPluginInfo *info;
+  GError *error = NULL;
   const gchar **authors;
 
   info = peas_engine_get_plugin_info (engine, "full-info");
 
   g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (peas_plugin_info_is_available (info));
+  g_assert (peas_plugin_info_is_available (info, &error));
+  g_assert_no_error (error);
   g_assert (peas_plugin_info_is_builtin (info));
 
   g_assert_cmpstr (peas_plugin_info_get_module_name (info), ==, "full-info");
@@ -95,11 +97,13 @@ static void
 test_plugin_info_verify_min_info (PeasEngine *engine)
 {
   PeasPluginInfo *info;
+  GError *error = NULL;
 
   info = peas_engine_get_plugin_info (engine, "min-info");
 
   g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (peas_plugin_info_is_available (info));
+  g_assert (peas_plugin_info_is_available (info, &error));
+  g_assert_no_error (error);
   g_assert (!peas_plugin_info_is_builtin (info));
 
   g_assert_cmpstr (peas_plugin_info_get_module_name (info), ==, "min-info");

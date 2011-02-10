@@ -13,6 +13,7 @@ noinst_DATA = \
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
 	loader-disabled.plugin		\
+	nonexistent-dep.plugin		\
 	nonexistent-loader.plugin	\
 	os-dependant-help.plugin
 

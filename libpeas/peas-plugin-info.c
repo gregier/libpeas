@@ -89,6 +89,8 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info->version);
   g_free (info->help_uri);
   g_strfreev (info->authors);
+  if (info->error != NULL)
+    g_error_free (info->error);
 
   g_free (info);
 }
@@ -104,6 +106,18 @@ peas_plugin_info_get_type (void)
                                              (GBoxedFreeFunc) _peas_plugin_info_unref);
 
   return the_type;
+}
+
+GQuark
+peas_plugin_info_error_quark (void)
+{
+  static volatile gsize quark = 0;
+
+	if (g_once_init_enter (&quark))
+		g_once_init_leave (&quark,
+		                   g_quark_from_static_string ("peas-plugin-info-error"));
+
+	return quark;
 }
 
 static void
@@ -361,18 +375,27 @@ peas_plugin_info_is_loaded (const PeasPluginInfo *info)
 /**
  * peas_plugin_info_is_available:
  * @info: A #PeasPluginInfo.
+ * @error: A #GError.
  *
  * Check if the plugin is available.
  *
  * A plugin is marked as not available when there is no loader available to
  * load it, or when there has been an error when trying to load it previously.
+ * If not available then @error will be set.
  *
  * Returns: %TRUE if the plugin is available.
  */
 gboolean
-peas_plugin_info_is_available (const PeasPluginInfo *info)
+peas_plugin_info_is_available (const PeasPluginInfo  *info,
+                               GError               **error)
 {
   g_return_val_if_fail (info != NULL, FALSE);
+
+  /* Uses g_propagate_error() so we get the right warning
+   * in the case that *error != NULL
+   */
+  if (error != NULL && info->error != NULL)
+    g_propagate_error (error, g_error_copy (info->error));
 
   return info->available != FALSE;
 }

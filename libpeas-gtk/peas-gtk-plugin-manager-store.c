@@ -66,7 +66,7 @@ update_plugin (PeasGtkPluginManagerStore *store,
   GdkPixbuf *icon_pixbuf = NULL;
 
   loaded = peas_plugin_info_is_loaded (info);
-  available = peas_plugin_info_is_available (info);
+  available = peas_plugin_info_is_available (info, NULL);
   builtin = peas_plugin_info_is_builtin (info);
 
   if (peas_plugin_info_get_description (info) == NULL)

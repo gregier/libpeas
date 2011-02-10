@@ -31,6 +31,33 @@ G_BEGIN_DECLS
 #define PEAS_PLUGIN_INFO(obj)   ((PeasPluginInfo *) (obj))
 
 /**
+ * PEAS_PLUGIN_INFO_ERROR:
+ *
+ * Error domain for PeasPluginInfo. Errors in this domain will
+ * be from the PeasPluginInfoError enumeration. See GError for
+ * more information on error domains.
+ */
+#define PEAS_PLUGIN_INFO_ERROR peas_plugin_info_error_quark ()
+
+/**
+ * PeasPluginInfoError:
+ * @PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED:
+ *      The plugin failed to load.
+ * @PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND:
+ *      The plugin's loader was not found.
+ * @PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND:
+ *      A dependancy of the plugin was not found.
+ * @PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED:
+ *      A dependancy of the plugin failed to load.
+ */
+typedef enum {
+  PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
+  PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
+  PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
+  PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED
+} PeasPluginInfoError;
+
+/**
  * PeasPluginInfo:
  *
  * The #PeasPluginInfo structure contains only private data and should only
@@ -39,9 +66,11 @@ G_BEGIN_DECLS
 typedef struct _PeasPluginInfo PeasPluginInfo;
 
 GType         peas_plugin_info_get_type         (void) G_GNUC_CONST;
+GQuark        peas_plugin_info_error_quark      (void);
 
 gboolean      peas_plugin_info_is_loaded        (const PeasPluginInfo *info);
-gboolean      peas_plugin_info_is_available     (const PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_available     (const PeasPluginInfo *info,
+                                                 GError               **error);
 gboolean      peas_plugin_info_is_builtin       (const PeasPluginInfo *info);
 
 const gchar  *peas_plugin_info_get_module_name  (const PeasPluginInfo *info);

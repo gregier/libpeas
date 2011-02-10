@@ -278,7 +278,7 @@ create_popup_menu (PeasGtkPluginManagerView *view)
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
                                   peas_plugin_info_is_loaded (info));
   g_signal_connect (item, "toggled", G_CALLBACK (enabled_menu_cb), view);
-  gtk_widget_set_sensitive (item, peas_plugin_info_is_available (info) &&
+  gtk_widget_set_sensitive (item, peas_plugin_info_is_available (info, NULL) &&
                                   !peas_plugin_info_is_builtin (info));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
@@ -454,6 +454,8 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
                     G_CALLBACK (plugin_list_changed_cb),
                     view);
 
+  gtk_widget_set_has_tooltip (GTK_WIDGET (view), TRUE);
+
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view), FALSE);
 
@@ -544,6 +546,51 @@ peas_gtk_plugin_manager_view_popup_menu (GtkWidget *widget)
 
   return TRUE;
 }
+
+static gboolean
+peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
+                                            gint        x,
+                                            gint        y,
+                                            gboolean    keyboard_mode,
+                                            GtkTooltip *tooltip)
+{
+  PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (widget);
+  gboolean is_row;
+  GtkTreeIter iter;
+  PeasPluginInfo *info;
+  GError *error = NULL;
+
+  is_row = gtk_tree_view_get_tooltip_context (GTK_TREE_VIEW (widget),
+                                              &x, &y, keyboard_mode,
+                                              NULL, NULL, &iter);
+
+  if (!is_row)
+    return FALSE;
+    
+  convert_iter_to_child_iter (view, &iter);
+
+  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
+
+  if (!peas_plugin_info_is_available (info, &error))
+    {
+      gchar *message;
+
+      message = g_strdup_printf (_("<b>The plugin '%s' could not be loaded</b>\n"
+                                   "An error occurred: %s"),
+                                 peas_plugin_info_get_name (info),
+                                 error->message);
+
+      gtk_tooltip_set_markup (tooltip, message);
+
+      g_free (message);
+      g_error_free (error);
+
+      return TRUE;
+    }
+
+  return FALSE;
+}
+  
 
 static void
 peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
@@ -646,6 +693,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 
   widget_class->button_press_event = peas_gtk_plugin_manager_view_button_press_event;
   widget_class->popup_menu = peas_gtk_plugin_manager_view_popup_menu;
+  widget_class->query_tooltip = peas_gtk_plugin_manager_view_query_tooltip;
 
   tree_view_class->row_activated = peas_gtk_plugin_manager_view_row_activated;
 
