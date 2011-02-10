@@ -69,7 +69,7 @@ struct _PeasGtkPluginManagerStoreClass {
 };
 
 GType                       peas_gtk_plugin_manager_store_get_type              (void) G_GNUC_CONST;
-PeasGtkPluginManagerStore  *peas_gtk_plugin_manager_store_new                   (void);
+PeasGtkPluginManagerStore  *peas_gtk_plugin_manager_store_new                   (PeasEngine                *engine);
 
 void                        peas_gtk_plugin_manager_store_reload                (PeasGtkPluginManagerStore *store);
 

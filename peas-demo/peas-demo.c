@@ -70,7 +70,7 @@ create_main_window (void)
   box = gtk_vbox_new (FALSE, 6);
   gtk_container_add (GTK_CONTAINER (window), box);
 
-  manager = peas_gtk_plugin_manager_new ();
+  manager = peas_gtk_plugin_manager_new (peas_engine_get_default ());
   gtk_box_pack_start (GTK_BOX (box), manager, TRUE, TRUE, 0);
 
   button_box = gtk_hbutton_box_new ();

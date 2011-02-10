@@ -72,6 +72,7 @@ struct _PeasGtkPluginManagerPrivate {
 /* Properties */
 enum {
   PROP_0,
+  PROP_ENGINE,
   PROP_VIEW
 };
 
@@ -372,9 +373,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   g_irepository_require (g_irepository_get_default (),
                          "PeasGtk", "1.0", 0, NULL);
 
-  /* Let's initialize the widgets of the plugin manager now. */
-  pm->priv->engine = g_object_ref (peas_engine_get_default ());
-
   gtk_box_set_spacing (GTK_BOX (pm), 6);
 
   gtk_widget_push_composite_child ();
@@ -416,15 +414,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                     "clicked",
                     G_CALLBACK (show_configure_cb),
                     pm);
-
-  g_signal_connect_after (pm->priv->engine,
-                          "load-plugin",
-                          G_CALLBACK (plugin_loaded_toggled_cb),
-                          pm);
-  g_signal_connect_after (pm->priv->engine,
-                          "unload-plugin",
-                          G_CALLBACK (plugin_loaded_toggled_cb),
-                          pm);
 }
 
 static void
@@ -437,6 +426,9 @@ peas_gtk_plugin_manager_set_property (GObject      *object,
 
   switch (prop_id)
     {
+    case PROP_ENGINE:
+      pm->priv->engine = g_value_get_object (value);
+      break;
     case PROP_VIEW:
       pm->priv->view = g_value_get_object (value);
       break;
@@ -456,6 +448,9 @@ peas_gtk_plugin_manager_get_property (GObject    *object,
 
   switch (prop_id)
     {
+    case PROP_ENGINE:
+      g_value_set_object (value, pm->priv->engine);
+      break;
     case PROP_VIEW:
       g_value_set_object (value, peas_gtk_plugin_manager_get_view (pm));
       break;
@@ -471,16 +466,22 @@ peas_gtk_plugin_manager_constructed (GObject *object)
   PeasGtkPluginManager *pm = PEAS_GTK_PLUGIN_MANAGER (object);
   GtkTreeSelection *selection;
 
+  if (pm->priv->engine == NULL)
+    pm->priv->engine = peas_engine_get_default ();
+
+  g_object_ref (pm->priv->engine);
+
+  /* When we create the manager, we always rescan the plugins directory
+   * Must come after the view has connected to notify::plugin-list
+   */
+  peas_engine_rescan_plugins (pm->priv->engine);
+
   if (pm->priv->view == NULL)
-    pm->priv->view = peas_gtk_plugin_manager_view_new ();
+    pm->priv->view = peas_gtk_plugin_manager_view_new (pm->priv->engine);
 
   gtk_widget_push_composite_child ();
   gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
   gtk_widget_pop_composite_child ();
-
-  /* When we create the manager, we always rescan the plugins directory
-     Must come after the view has connected to notify::plugin-list */
-  peas_engine_rescan_plugins (pm->priv->engine);
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
 
@@ -496,9 +497,20 @@ peas_gtk_plugin_manager_constructed (GObject *object)
                     "populate-popup",
                     G_CALLBACK (populate_popup_cb),
                     pm);
+  g_signal_connect_after (pm->priv->engine,
+                          "load-plugin",
+                          G_CALLBACK (plugin_loaded_toggled_cb),
+                          pm);
+  g_signal_connect_after (pm->priv->engine,
+                          "unload-plugin",
+                          G_CALLBACK (plugin_loaded_toggled_cb),
+                          pm);
 
   /* Update the button sensitivity */
   selection_changed_cb (pm);
+
+  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->constructed != NULL)
+    G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->constructed (object);
 }
 
 static void
@@ -530,6 +542,21 @@ peas_gtk_plugin_manager_class_init (PeasGtkPluginManagerClass *klass)
   object_class->dispose = peas_gtk_plugin_manager_dispose;
 
   /**
+   * PeasGtkPluginManager:engine:
+   *
+   * The #PeasEngine this manager is attached to.
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_ENGINE,
+                                   g_param_spec_object ("engine",
+                                                        "engine",
+                                                        "The PeasEngine this manager is attached to",
+                                                        PEAS_TYPE_ENGINE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
+
+  /**
    * PeasGtkPluginManager:view:
    *
    * The #PeasGtkPluginManagerView shown in the #PeasGtkPluginManager.
@@ -549,15 +576,21 @@ peas_gtk_plugin_manager_class_init (PeasGtkPluginManagerClass *klass)
 
 /**
  * peas_gtk_plugin_manager_new:
+ * @engine: (allow-none): A #PeasEngine, or %NULL.
  *
- * Creates a new plugin manager.
+ * Creates a new plugin manager for the given #PeasEngine.
+ *
+ * If @engine is %NULL, then the default engine will be used.
  *
  * Returns: the new #PeasGtkPluginManager.
  */
 GtkWidget *
-peas_gtk_plugin_manager_new (void)
+peas_gtk_plugin_manager_new (PeasEngine *engine)
 {
+  g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
+
   return GTK_WIDGET (g_object_new (PEAS_GTK_TYPE_PLUGIN_MANAGER,
+                                   "engine", engine,
                                    NULL));
 }
 

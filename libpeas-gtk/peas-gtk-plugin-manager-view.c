@@ -63,6 +63,7 @@ struct _PeasGtkPluginManagerViewPrivate {
 /* Properties */
 enum {
   PROP_0,
+  PROP_ENGINE,
   PROP_SHOW_BUILTIN
 };
 
@@ -447,15 +448,6 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
                                             PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
                                             PeasGtkPluginManagerViewPrivate);
 
-  view->priv->store = peas_gtk_plugin_manager_store_new ();
-  view->priv->engine = g_object_ref (peas_engine_get_default ());
-  g_signal_connect (view->priv->engine,
-                    "notify::plugin-list",
-                    G_CALLBACK (plugin_list_changed_cb),
-                    view);
-
-  gtk_widget_set_has_tooltip (GTK_WIDGET (view), TRUE);
-
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view), FALSE);
 
@@ -510,10 +502,6 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
                                        (GtkTreeViewSearchEqualFunc) name_search_cb,
                                        view,
                                        NULL);
-
-  /* Properly set the model */
-  view->priv->show_builtin = TRUE;
-  peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
 }
 
 static gboolean
@@ -619,6 +607,9 @@ peas_gtk_plugin_manager_view_set_property (GObject      *object,
 
   switch (prop_id)
     {
+    case PROP_ENGINE:
+      view->priv->engine = g_value_get_object (value);
+      break;
     case PROP_SHOW_BUILTIN:
       peas_gtk_plugin_manager_view_set_show_builtin (view,
                                                      g_value_get_boolean (value));
@@ -639,6 +630,9 @@ peas_gtk_plugin_manager_view_get_property (GObject    *object,
 
   switch (prop_id)
     {
+    case PROP_ENGINE:
+      g_value_set_object (value, view->priv->engine);
+      break;
     case PROP_SHOW_BUILTIN:
       g_value_set_boolean (value,
                            peas_gtk_plugin_manager_view_get_show_builtin (view));
@@ -647,6 +641,31 @@ peas_gtk_plugin_manager_view_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
+}
+
+static void
+peas_gtk_plugin_manager_view_constructed (GObject *object)
+{
+  PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
+
+  if (view->priv->engine == NULL)
+    view->priv->engine = peas_engine_get_default ();
+
+  g_object_ref (view->priv->engine);
+
+  view->priv->store = peas_gtk_plugin_manager_store_new (view->priv->engine);
+
+  /* Properly set the model */
+  view->priv->show_builtin = TRUE;
+  peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
+
+  g_signal_connect (view->priv->engine,
+                    "notify::plugin-list",
+                    G_CALLBACK (plugin_list_changed_cb),
+                    view);
+
+  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed != NULL)
+    G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed (object);
 }
 
 static void
@@ -689,6 +708,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 
   object_class->set_property = peas_gtk_plugin_manager_view_set_property;
   object_class->get_property = peas_gtk_plugin_manager_view_get_property;
+  object_class->constructed = peas_gtk_plugin_manager_view_constructed;
   object_class->dispose = peas_gtk_plugin_manager_view_dispose;
 
   widget_class->button_press_event = peas_gtk_plugin_manager_view_button_press_event;
@@ -696,6 +716,21 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
   widget_class->query_tooltip = peas_gtk_plugin_manager_view_query_tooltip;
 
   tree_view_class->row_activated = peas_gtk_plugin_manager_view_row_activated;
+
+  /**
+   * PeasGtkPLuginManagerView:engine:
+   *
+   * The #PeasEngine this view is attached to.
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_ENGINE,
+                                   g_param_spec_object ("engine",
+                                                        "engine",
+                                                        "The PeasEngine this view is attached to",
+                                                        PEAS_TYPE_ENGINE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
 
   /**
    * PeasGtkPluginManagerView:show-builtin:
@@ -736,15 +771,21 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
 
 /**
  * peas_gtk_plugin_manager_view_new:
+ * @engine: (allow-none): A #PeasEngine, or %NULL.
  *
- * Creates a new plugin manager view.
+ * Creates a new plugin manager view for the given #PeasEngine.
+ *
+ * If @engine is %NULL, then the default engine will be used.
  *
  * Returns: the new #PeasGtkPluginManagerView.
  */
 GtkWidget *
-peas_gtk_plugin_manager_view_new (void)
+peas_gtk_plugin_manager_view_new (PeasEngine *engine)
 {
+  g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
+
   return GTK_WIDGET (g_object_new (PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
+                                   "engine", engine,
                                    NULL));
 }
 
