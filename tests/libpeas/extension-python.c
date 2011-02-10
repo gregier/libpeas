@@ -35,6 +35,10 @@ main (int   argc,
 
   g_type_init ();
 
+  testing_init ();
+
+  peas_engine_enable_loader (peas_engine_get_default (), "python");
+
   testing_extension_set_plugin_ ("extension-" "python");
 
   _EXTENSION_TEST ("python", "create-valid", create_valid);
@@ -56,8 +60,6 @@ main (int   argc,
   _EXTENSION_TEST ("python", "properties-write-only", properties_write_only);
   _EXTENSION_TEST ("python", "properties-readwrite", properties_readwrite);
 #endif
-
-  g_object_unref (peas_engine_get_default ());
 
   return g_test_run ();
 }

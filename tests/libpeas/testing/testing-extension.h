@@ -24,6 +24,8 @@
 
 #include <libpeas/peas-engine.h>
 
+#include "testing.h"
+
 G_BEGIN_DECLS
 
 typedef struct _TestingExtensionFixture_ TestingExtensionFixture_;
@@ -70,6 +72,10 @@ main (int   argc, \
   g_test_init (&argc, &argv, NULL); \
 \
   g_type_init (); \
+\
+  testing_init (); \
+\
+  peas_engine_enable_loader (peas_engine_get_default (), loader); \
 \
   testing_extension_set_plugin_ ("extension-" loader); \
 \

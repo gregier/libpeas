@@ -77,7 +77,7 @@ void              peas_engine_add_search_path     (PeasEngine      *engine,
                                                    const gchar     *data_dir);
 
 /* plugin management */
-void              peas_engine_disable_loader      (PeasEngine      *engine,
+void              peas_engine_enable_loader       (PeasEngine      *engine,
                                                    const gchar     *loader_id);
 void              peas_engine_rescan_plugins      (PeasEngine      *engine);
 const GList      *peas_engine_get_plugin_list     (PeasEngine      *engine);

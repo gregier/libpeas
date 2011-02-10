@@ -303,6 +303,8 @@ peas_engine_init (PeasEngine *engine)
                                               PeasEnginePrivate);
 
   engine->priv->in_dispose = FALSE;
+
+  peas_engine_enable_loader (engine, "C");
 }
 
 static void
@@ -671,29 +673,31 @@ get_plugin_loader (PeasEngine     *engine,
                                                     loader_id);
 
   if (loader_info == NULL)
-    loader_info = load_plugin_loader (engine, loader_id);
+    return NULL;
 
   return loader_info->loader;
 }
 
 /**
- * peas_engine_disable_loader:
+ * peas_engine_enable_loader:
  * @engine: A #PeasEngine.
- * @loader_id: The id of the loader to inhibit.
+ * @loader_id: The id of the loader to enable.
  *
- * Disable a loader, avoiding using the plugins written using the
- * related language to be loaded. This method must be called before
- * any plugin relying on the loader @loader_id has been loaded.
+ * Enable a loader, enables a loader for plugins.
+ * The C plugin loader is always enabled.
  *
- * For instance, the following code will prevent any python plugin
+ * For instance, the following code will enable python plugin
  * from being loaded:
  * |[
- * peas_engine_disable_loader (engine, "python");
+ * peas_engine_enable_loader (engine, "python");
  * ]|
+ *
+ * Note: plugin loaders are shared across #PeasEngines so enabeling
+ *       a loader on one #PeasEngine will enable it on all #PeasEngines.
  **/
 void
-peas_engine_disable_loader (PeasEngine  *engine,
-                            const gchar *loader_id)
+peas_engine_enable_loader (PeasEngine  *engine,
+                           const gchar *loader_id)
 {
   LoaderInfo *loader_info;
 
@@ -701,17 +705,9 @@ peas_engine_disable_loader (PeasEngine  *engine,
 
   loader_info = (LoaderInfo *) g_hash_table_lookup (loaders,
                                                     loader_id);
-  if (loader_info != NULL && loader_info->module != NULL)
-    {
-      g_warning ("Loader '%s' cannot be disabled as it is already loaded",
-                 loader_id);
-      return;
-    }
 
-  /* By adding a NULL loader, we simulate a failed load attempt, effectively
-   * disabling the loader for further use. */
   if (loader_info == NULL)
-    add_loader (engine, loader_id, NULL, NULL);
+    load_plugin_loader (engine, loader_id);
 }
 
 /**
