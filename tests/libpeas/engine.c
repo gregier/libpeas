@@ -63,17 +63,16 @@ test_engine_new (PeasEngine *engine)
 {
   PeasEngine *new_engine;
 
-  /* Some bindings may allow creating a PeasEngine with
-   * g_object_new(). So make sure that we get the default
-   * engine and not a new engine or an assert.
-   */
-
-  new_engine = g_object_new (PEAS_TYPE_ENGINE, NULL);
+  new_engine = peas_engine_new ();
 
   g_assert (engine != NULL);
-  g_assert (engine == new_engine);
+  g_assert (new_engine != NULL);
 
-  /* g_object_new() will give us a new ref */
+  /* Does not return the same engine*/
+  g_assert (engine != new_engine);
+  /* peas_engine_new() sets the default engine */
+  g_assert (engine == peas_engine_get_default ());
+
   g_object_unref (new_engine);
 }
 
@@ -89,7 +88,14 @@ test_engine_dispose (PeasEngine *engine)
 static void
 test_engine_get_default (PeasEngine *engine)
 {
-  g_assert (engine == peas_engine_get_default ());
+  /* testing_engine_new() uses peas_engine_new()
+   * so this makes sure that peas_engine_get_default()
+   * acutally sets the default engine
+   */
+
+  g_object_unref (engine);
+
+  g_assert (peas_engine_get_default () == peas_engine_get_default ());
 }
 
 static void
@@ -322,29 +328,6 @@ test_engine_enable_loader (PeasEngine *engine)
 static void
 test_engine_shutdown (PeasEngine *engine)
 {
-  PeasPluginInfo *info;
-
-  /* Ref the engine to cause the shutdown to fail */
-  g_object_ref (engine);
-
-  /* libpeas fails to shutdown because the engine still has a ref */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_shutdown ();
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*libpeas failed to shutdown*"
-                             "*plugin engine was not freed*");
-
-  /* Make sure that if an engine is around
-   * after shutdown the engine does not segfault.
-   */
-  info = peas_engine_get_plugin_info (engine, "loadable");
-  g_assert (peas_engine_load_plugin (engine, info));
-
-  /* Free our extra ref and then the engine */
-  g_object_unref (engine);
   testing_engine_free (engine);
 
   /* Should be able to shutdown multiple times */
@@ -353,7 +336,7 @@ test_engine_shutdown (PeasEngine *engine)
   /* Cannot get the default as libpeas has been shutdown */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
     {
-      peas_engine_get_default ();
+      peas_engine_new ();
       exit (0);
     }
   g_test_trap_assert_failed ();

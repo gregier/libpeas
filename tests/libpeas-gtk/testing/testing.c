@@ -114,7 +114,7 @@ testing_engine_new (void)
     }
 
   /* Must be after requiring typelibs */
-  engine = peas_engine_get_default ();
+  engine = peas_engine_new ();
 
   g_object_add_weak_pointer (G_OBJECT (engine), (gpointer *) &engine);
 

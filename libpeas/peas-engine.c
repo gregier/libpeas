@@ -354,15 +354,15 @@ peas_engine_constructor (GType                  type,
                "as it has been shutdown.");
     }
 
-  if (default_engine != NULL)
-    return g_object_ref (G_OBJECT (default_engine));
-
   object = G_OBJECT_CLASS (peas_engine_parent_class)->constructor (type,
                                                                    n_construct_params,
                                                                    construct_params);
 
-  default_engine = PEAS_ENGINE (object);
-  g_object_add_weak_pointer (object, (gpointer *) &default_engine);
+  if (default_engine == NULL)
+    {
+      default_engine = PEAS_ENGINE (object);
+      g_object_add_weak_pointer (object, (gpointer *) &default_engine);
+    }
 
   return object;
 }
@@ -1187,6 +1187,22 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 }
 
 /**
+ * peas_engine_new:
+ *
+ * Return a new instance of #PeasEngine.
+ * If no default #PeasEngine has been instantiated yet,
+ * the first call of this function will set the default
+ * engine as the new instance of #PeasEngine.
+ *
+ * Returns: a new instance of #PeasEngine.
+ */
+PeasEngine *
+peas_engine_new (void)
+{
+  return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE, NULL));
+}
+
+/**
  * peas_engine_get_default:
  *
  * Return the existing instance of #PeasEngine or a subclass of it.
@@ -1198,20 +1214,14 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 PeasEngine *
 peas_engine_get_default (void)
 {
+  /* peas_engine_new() will cause the default to be set for us */
   if (default_engine == NULL)
-    return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE, NULL));
+    return peas_engine_new ();
 
   return default_engine;
 }
 
-static void
-destroy_loaders (void)
-{
-  g_hash_table_destroy (loaders);
-  loaders = NULL;
-}
-
-/**
+/*
  * peas_engine_shutdown:
  *
  * Frees memory shared by PeasEngines.
@@ -1225,23 +1235,9 @@ peas_engine_shutdown (void)
 
   shutdown = TRUE;
 
-  if (default_engine != NULL)
+  if (loaders != NULL)
     {
-      /* Add a weak ref that will destroy the loaders hashtable,
-       * this way if the engine is still around it won't segfault
-       */
-      g_object_weak_ref (G_OBJECT (default_engine),
-                         (GWeakNotify) destroy_loaders, NULL);
-
-      g_object_unref (default_engine);
-
-      /* The weak-ref should set it to NULL */
-      if (default_engine != NULL)
-        {
-          default_engine = NULL;
-
-          g_warning ("libpeas failed to shutdown, "
-                     "the plugin engine was not freed.");
-        }
+      g_hash_table_destroy (loaders);
+      loaders = NULL;
     }
 }
