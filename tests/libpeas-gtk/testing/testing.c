@@ -205,7 +205,9 @@ testing_show_widget (gpointer widget)
 
   g_assert (GTK_IS_WIDGET (widget));
 
-  if (GTK_IS_WINDOW (widget))
+  widget = gtk_widget_get_toplevel (GTK_WIDGET (widget));
+
+  if (gtk_widget_is_toplevel (GTK_WIDGET (widget)))
     window = widget;
   else
     {
@@ -218,8 +220,6 @@ testing_show_widget (gpointer widget)
 #if GTK_CHECK_VERSION(2,91,1)
   gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
 #endif
-
-  gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (widget));
 
   gtk_widget_show_all (window);
 
