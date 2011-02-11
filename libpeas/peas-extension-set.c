@@ -156,7 +156,6 @@ peas_extension_set_set_property (GObject      *object,
     {
     case PROP_ENGINE:
       set->priv->engine = g_value_get_object (value);
-      g_object_ref (set->priv->engine);
       break;
     case PROP_EXTENSION_TYPE:
       set->priv->exten_type = g_value_get_gtype (value);
@@ -259,8 +258,12 @@ static void
 peas_extension_set_constructed (GObject *object)
 {
   PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
-
   GList *plugins, *l;
+
+  if (set->priv->engine == NULL)
+    set->priv->engine = peas_engine_get_default ();
+
+  g_object_ref (set->priv->engine);
 
   plugins = (GList *) peas_engine_get_plugin_list (set->priv->engine);
   for (l = plugins; l; l = l->next)
@@ -559,12 +562,14 @@ peas_extension_set_callv (PeasExtensionSet *set,
 
 /**
  * peas_extension_set_newv:
- * @engine: A #PeasEngine.
+ * @engine: (allow-none): A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @n_parameters: the length of the @parameters array.
  * @parameters: (array length=n_parameters): an array of #GParameter.
  *
  * Create a new #PeasExtensionSet for the @exten_type extension type.
+ *
+ * If @engine is %NULL, then the default engine will be used.
  *
  * See peas_extension_set_new() for more information.
  *
@@ -580,7 +585,7 @@ peas_extension_set_newv (PeasEngine *engine,
 {
   PeasParameterArray construct_properties = { n_parameters, parameters };
 
-  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
 
   return PEAS_EXTENSION_SET (g_object_new (PEAS_TYPE_EXTENSION_SET,
@@ -592,13 +597,15 @@ peas_extension_set_newv (PeasEngine *engine,
 
 /**
  * peas_extension_set_new_valist: (skip)
- * @engine: A #PeasEngine.
+ * @engine: A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
  * @var_args: the value of the first property, followed optionally by more
  *   name/value pairs, followed by %NULL.
  *
  * Create a new #PeasExtensionSet for the @exten_type extension type.
+ *
+ * If @engine is %NULL, then the default engine will be used.
  *
  * See peas_extension_set_new() for more information.
  *
@@ -615,7 +622,7 @@ peas_extension_set_new_valist (PeasEngine  *engine,
   guint n_parameters;
   PeasExtensionSet *set;
 
-  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
 
   type_struct = _g_type_struct_ref (exten_type);
@@ -640,7 +647,7 @@ peas_extension_set_new_valist (PeasEngine  *engine,
 
 /**
  * peas_extension_set_new: (skip)
- * @engine: A #PeasEngine.
+ * @engine: A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
  * @Varargs: the value of the first property, followed optionally by more
@@ -655,6 +662,8 @@ peas_extension_set_new_valist (PeasEngine  *engine,
  * The property values passed to peas_extension_set_new() will be used for the
  * construction of new extension instances.
  *
+ * If @engine is %NULL, then the default engine will be used.
+ *
  * See peas_engine_create_extension() for more information.
  *
  * Returns: a new instance of #PeasExtensionSet.
@@ -668,7 +677,7 @@ peas_extension_set_new (PeasEngine  *engine,
   va_list var_args;
   PeasExtensionSet *set;
 
-  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
 
   va_start (var_args, first_property);
