@@ -201,6 +201,9 @@ peas_extension_call (PeasExtension *exten,
   va_list args;
   gboolean result;
 
+  g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
+  g_return_val_if_fail (method_name != NULL, FALSE);
+
   va_start (args, method_name);
   result = peas_extension_call_valist (exten, method_name, args);
   va_end (args);

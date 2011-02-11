@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "peas-object-module.h"
+#include "peas-plugin-loader.h"
 
 /**
  * SECTION:peas-object-module
@@ -389,6 +390,13 @@ peas_object_module_register_extension_factory (PeasObjectModule *module,
                                                GDestroyNotify    destroy_func)
 {
   InterfaceImplementation impl = { iface_type, factory_func, user_data, destroy_func };
+
+  g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
+  g_return_if_fail (factory_func != NULL);
+
+  if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
+    g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
+
   g_array_append_val (module->priv->implementations, impl);
 
   g_debug ("Registered extension for type '%s'", g_type_name (iface_type));
@@ -437,6 +445,14 @@ peas_object_module_register_extension_type (PeasObjectModule *module,
                                             GType             iface_type,
                                             GType             extension_type)
 {
+  g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
+
+  if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
+    {
+      g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
+      g_return_if_fail (g_type_is_a (extension_type, iface_type));
+    }
+
   peas_object_module_register_extension_factory (module,
                                                  iface_type,
                                                  create_gobject_from_type,

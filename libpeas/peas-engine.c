@@ -327,6 +327,8 @@ loader_garbage_collect (const gchar *id,
 void
 peas_engine_garbage_collect (PeasEngine *engine)
 {
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
+
   g_hash_table_foreach (loaders,
                         (GHFunc) loader_garbage_collect,
                         NULL);
@@ -702,6 +704,7 @@ peas_engine_enable_loader (PeasEngine  *engine,
   LoaderInfo *loader_info;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
+  g_return_if_fail (loader_id != NULL);
 
   loader_info = (LoaderInfo *) g_hash_table_lookup (loaders,
                                                     loader_id);
@@ -723,6 +726,8 @@ peas_engine_enable_loader (PeasEngine  *engine,
 const GList *
 peas_engine_get_plugin_list (PeasEngine *engine)
 {
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+
   return engine->priv->plugin_list;
 }
 
@@ -745,9 +750,14 @@ PeasPluginInfo *
 peas_engine_get_plugin_info (PeasEngine  *engine,
                              const gchar *plugin_name)
 {
-  GList *l = g_list_find_custom (engine->priv->plugin_list,
-                                 plugin_name,
-                                 (GCompareFunc) compare_plugin_info_and_name);
+  GList *l;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (plugin_name != NULL, NULL);
+
+  l = g_list_find_custom (engine->priv->plugin_list,
+                          plugin_name,
+                          (GCompareFunc) compare_plugin_info_and_name);
 
   return l == NULL ? NULL : (PeasPluginInfo *) l->data;
 }
@@ -854,6 +864,7 @@ gboolean
 peas_engine_load_plugin (PeasEngine     *engine,
                          PeasPluginInfo *info)
 {
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
 
   if (!peas_plugin_info_is_available (info, NULL))
@@ -921,6 +932,7 @@ gboolean
 peas_engine_unload_plugin (PeasEngine     *engine,
                            PeasPluginInfo *info)
 {
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
 
   if (!peas_plugin_info_is_loaded (info))
@@ -1095,8 +1107,12 @@ peas_engine_create_extension (PeasEngine     *engine,
 gchar **
 peas_engine_get_loaded_plugins (PeasEngine *engine)
 {
-  GArray *array = g_array_new (TRUE, FALSE, sizeof (gchar *));
+  GArray *array;
   GList *pl;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+
+  array = g_array_new (TRUE, FALSE, sizeof (gchar *));
 
   for (pl = engine->priv->plugin_list; pl; pl = pl->next)
     {
@@ -1145,6 +1161,8 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
                                 const gchar **plugin_names)
 {
   GList *pl;
+
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
 
   for (pl = engine->priv->plugin_list; pl; pl = pl->next)
     {

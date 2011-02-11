@@ -481,6 +481,9 @@ peas_extension_set_call (PeasExtensionSet *set,
   va_list args;
   gboolean result;
 
+  g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), FALSE);
+  g_return_val_if_fail (method_name != NULL, FALSE);
+
   va_start (args, method_name);
   result = peas_extension_set_call_valist (set, method_name, args);
   va_end (args);
@@ -577,6 +580,9 @@ peas_extension_set_newv (PeasEngine *engine,
 {
   PeasParameterArray construct_properties = { n_parameters, parameters };
 
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
+
   return PEAS_EXTENSION_SET (g_object_new (PEAS_TYPE_EXTENSION_SET,
                                            "engine", engine,
                                            "extension-type", exten_type,
@@ -608,6 +614,9 @@ peas_extension_set_new_valist (PeasEngine  *engine,
   GParameter *parameters;
   guint n_parameters;
   PeasExtensionSet *set;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
 
   type_struct = _g_type_struct_ref (exten_type);
 
@@ -658,6 +667,9 @@ peas_extension_set_new (PeasEngine  *engine,
 {
   va_list var_args;
   PeasExtensionSet *set;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
 
   va_start (var_args, first_property);
   set = peas_extension_set_new_valist (engine, exten_type, first_property, var_args);
