@@ -1,14 +1,14 @@
 # German translation for libpeas.
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
-# Mario Blättermann <mariobl@gnome.org>, 2010.
+# Mario Blättermann <mariobl@gnome.org>, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-22 11:00+0000\n"
-"PO-Revision-Date: 2010-07-26 00:37+0100\n"
+"POT-Creation-Date: 2011-02-11 10:38+0000\n"
+"PO-Revision-Date: 2011-02-11 22:50+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,47 +18,96 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:177
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "Plugin Manager"
+msgstr "Plugin-Verwaltung"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Ansicht der Plugin-Verwaltung"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Show Builtin"
+msgstr "Eingebaute anzeigen"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "View"
+msgstr "Ansicht"
+
+#: ../libpeas/peas-engine.c:784
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "Abhängigkeit »%s« wurde nicht gefunden"
+
+#: ../libpeas/peas-engine.c:794
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Abhängigkeit »%s« konnte nicht geladen werden"
+
+#: ../libpeas/peas-engine.c:809
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "Plugin-Lader »%s« wurde nicht gefunden"
+
+#: ../libpeas/peas-engine.c:820
+#, c-format
+msgid "Failed to load"
+msgstr "Laden fehlgeschlagen"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:197
 msgid "There was an error displaying the help."
 msgstr "Beim Anzeigen der Hilfe ist ein Fehler aufgetreten."
 
-#: ../libpeasui/peas-ui-plugin-manager.c:335
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:345
 msgid "C_onfigure"
 msgstr "K_onfigurieren"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:343
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:353
 msgid "_About"
 msgstr "_Info"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:364
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_Plugins:"
 msgstr "_Plugins:"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:295
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:277
 msgid "_Enabled"
 msgstr "Aktivi_ert"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:306
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:288
 msgid "E_nable All"
 msgstr "Alle aktiviere_n"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:310
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:292
 msgid "_Disable All"
 msgstr "Alle _deaktivieren"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:467
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:464
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:488
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:485
 msgid "Plugin"
 msgstr "Plugin"
 
-#: ../peas-demo/peas-demo.c:39
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:578
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>Das Plugin »%s« konnte nicht geladen werden</b>\n"
+"Ein Fehler ist aufgetreten: %s"
+
+#: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
 msgstr "Aus dem Erstellungsordner ausführen"
 
-#: ../peas-demo/peas-demo.c:130
+#: ../peas-demo/peas-demo.c:101
 msgid "- libpeas demo application"
 msgstr "- libpeas-Demoanwendung"
 
