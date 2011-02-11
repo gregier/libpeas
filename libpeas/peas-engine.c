@@ -1089,8 +1089,8 @@ peas_engine_create_extension (PeasEngine     *engine,
  * Please note that the returned array is a newly allocated one: you will need
  * to free it using g_strfreev().
  *
- * Returns: (transfer full): A newly-allocated %NULL-terminated
- * array of strings.
+ * Returns: (transfer full) (array zero-terminated=1): A newly-allocated
+ * %NULL-terminated array of strings.
  */
 gchar **
 peas_engine_get_loaded_plugins (PeasEngine *engine)
@@ -1131,11 +1131,14 @@ string_in_strv (const gchar  *needle,
 /**
  * peas_engine_set_loaded_plugins:
  * @engine: A #PeasEngine.
- * @plugin_names: A %NULL-terminated array of plugin names.
+ * @plugin_names: (allow-none) (array zero-terminated=1): A %NULL-terminated
+ *  array of plugin names, or %NULL.
  *
  * Sets the list of loaded plugins for @engine. When this function is called,
  * the #PeasEngine will load all the plugins whose names are in @plugin_names,
  * and ensures all other active plugins are unloaded.
+ *
+ * If @plugin_names is %NULL, all plugins will be unloaded.
  */
 void
 peas_engine_set_loaded_plugins (PeasEngine   *engine,

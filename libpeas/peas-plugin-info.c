@@ -608,11 +608,11 @@ peas_plugin_info_get_icon_name (const PeasPluginInfo *info)
  * peas_plugin_info_get_authors:
  * @info: A #PeasPluginInfo.
  *
- * Gets a NULL-terminated array of strings with the authors of the plugin.
+ * Gets a %NULL-terminated array of strings with the authors of the plugin.
  *
  * The relevant key in the plugin info file is "Authors".
  *
- * Returns: (transfer none): the plugin's author list.
+ * Returns: (transfer none) (array zero-terminated=1): the plugin's author list.
  */
 const gchar **
 peas_plugin_info_get_authors (const PeasPluginInfo *info)
