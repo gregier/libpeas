@@ -476,6 +476,28 @@ peas_gtk_plugin_manager_constructed (GObject *object)
    */
   peas_engine_rescan_plugins (pm->priv->engine);
 
+  /* For the view to behave as expected, we must ensure it uses the same
+   * engine as the manager itself.
+   */
+  if (pm->priv->view != NULL)
+    {
+      PeasEngine *engine;
+
+      g_object_get (pm->priv->view,
+                    "engine", &engine,
+                    NULL);
+
+      g_warn_if_fail (engine == pm->priv->engine);
+
+      if (engine != pm->priv->engine)
+        {
+          g_object_unref (pm->priv->view);
+          pm->priv->view = NULL;
+        }
+
+      g_object_unref (engine);
+    }
+
   if (pm->priv->view == NULL)
     pm->priv->view = peas_gtk_plugin_manager_view_new (pm->priv->engine);
 
