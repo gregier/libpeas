@@ -67,7 +67,9 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
 
   if (module == NULL)
     {
-      /* For now we force all modules to be resident */
+      /* Force all C modules to be resident in case they
+       * use libraries that do not deal well with reloading
+       */
       module = peas_object_module_new (module_name,
                                        peas_plugin_info_get_module_dir (info),
                                        TRUE);
