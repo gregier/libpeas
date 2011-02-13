@@ -279,22 +279,6 @@ loader_destroy (LoaderInfo *info)
   g_free (info);
 }
 
-static LoaderInfo *
-add_loader (PeasEngine       *engine,
-            const gchar      *loader_id,
-            PeasObjectModule *module,
-            PeasPluginLoader *loader)
-{
-  LoaderInfo *info;
-
-  info = g_new (LoaderInfo, 1);
-  info->loader = loader;
-  info->module = module;
-
-  g_hash_table_insert (loaders, g_strdup (loader_id), info);
-  return info;
-}
-
 static void
 peas_engine_init (PeasEngine *engine)
 {
@@ -620,62 +604,58 @@ try_to_open_loader_module (const gchar *loader_id,
   return module;
 }
 
-static LoaderInfo *
-load_plugin_loader (PeasEngine  *engine,
-                    const gchar *loader_id)
-{
-  guint i;
-  gchar *lc_loader_id;
-  PeasObjectModule *module;
-  PeasPluginLoader *loader;
-
-  /* We need to ensure we use the lowercase loader_id */
-  lc_loader_id = g_strdup (loader_id);
-  for (i = 0; lc_loader_id[i] != '\0'; ++i)
-    lc_loader_id[i] = g_ascii_tolower (lc_loader_id[i]);
-
-  module = try_to_open_loader_module (lc_loader_id, FALSE);
-  if (module == NULL)
-    module = try_to_open_loader_module (lc_loader_id, TRUE);
-
-  g_free (lc_loader_id);
-
-  if (module == NULL)
-    {
-      g_warning ("Loader '%s' could not be loaded", loader_id);
-      return add_loader (engine, loader_id, NULL, NULL);
-    }
-
-  loader = (PeasPluginLoader *) peas_object_module_create_object (module, PEAS_TYPE_PLUGIN_LOADER, 0, NULL);
-
-  if (loader == NULL || !PEAS_IS_PLUGIN_LOADER (loader))
-    {
-      g_warning ("Loader '%s' is not a valid PeasPluginLoader instance", loader_id);
-      if (loader != NULL && G_IS_OBJECT (loader))
-        g_object_unref (loader);
-      module = NULL;
-      loader = NULL;
-    }
-
-  g_type_module_unuse (G_TYPE_MODULE (module));
-
-  return add_loader (engine, loader_id, module, loader);
-}
-
 static PeasPluginLoader *
 get_plugin_loader (PeasEngine     *engine,
                    PeasPluginInfo *info)
 {
-  const gchar *loader_id;
   LoaderInfo *loader_info;
+  gchar *loader_id;
 
-  loader_id = info->loader;
+  loader_info = (LoaderInfo *) g_hash_table_lookup (loaders, info->loader);
 
-  loader_info = (LoaderInfo *) g_hash_table_lookup (loaders,
-                                                    loader_id);
-
+  /* The loader has not been enabled. */
   if (loader_info == NULL)
     return NULL;
+
+  /* The loader has already been loaded. */
+  if (loader_info->loader != NULL)
+    return loader_info->loader;
+
+  /* We need to ensure we use the lowercase loader_id */
+  loader_id = g_ascii_strdown (info->loader, -1);
+
+  loader_info->module = try_to_open_loader_module (loader_id, FALSE);
+  if (loader_info->module == NULL)
+    loader_info->module = try_to_open_loader_module (loader_id, TRUE);
+
+  g_free (loader_id);
+
+  if (loader_info->module == NULL)
+    {
+      g_hash_table_insert (loaders, loader_id, NULL);
+      return NULL;
+    }
+
+  loader_info->loader = PEAS_PLUGIN_LOADER (
+        peas_object_module_create_object (loader_info->module,
+                                          PEAS_TYPE_PLUGIN_LOADER,
+                                          0, NULL));
+
+  g_type_module_unuse (G_TYPE_MODULE (loader_info->module));
+
+  if (loader_info->loader == NULL ||
+      !PEAS_IS_PLUGIN_LOADER (loader_info->loader))
+    {
+      g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
+                 info->loader);
+
+      if (G_IS_OBJECT (loader_info->loader))
+        g_object_unref (loader_info->loader);
+
+      g_object_unref (loader_info->module);
+      g_hash_table_insert (loaders, info->loader, NULL);
+      return NULL;
+    }
 
   return loader_info->loader;
 }
@@ -694,23 +674,21 @@ get_plugin_loader (PeasEngine     *engine,
  * peas_engine_enable_loader (engine, "python");
  * ]|
  *
- * Note: plugin loaders are shared across #PeasEngines so enabeling
+ * Note: plugin loaders are shared across #PeasEngines so enabling
  *       a loader on one #PeasEngine will enable it on all #PeasEngines.
  **/
 void
 peas_engine_enable_loader (PeasEngine  *engine,
                            const gchar *loader_id)
 {
-  LoaderInfo *loader_info;
-
   g_return_if_fail (PEAS_IS_ENGINE (engine));
-  g_return_if_fail (loader_id != NULL);
+  g_return_if_fail (loader_id != NULL && *loader_id != '\0');
 
-  loader_info = (LoaderInfo *) g_hash_table_lookup (loaders,
-                                                    loader_id);
+  if (g_hash_table_lookup_extended (loaders, loader_id, NULL, NULL))
+    return;
 
-  if (loader_info == NULL)
-    load_plugin_loader (engine, loader_id);
+  /* The loader is loaded in get_plugin_loader() */
+  g_hash_table_insert (loaders, g_strdup (loader_id), g_new0 (LoaderInfo, 1));
 }
 
 /**
