@@ -632,7 +632,7 @@ get_plugin_loader (PeasEngine     *engine,
 
   if (loader_info->module == NULL)
     {
-      g_hash_table_insert (loaders, loader_id, NULL);
+      g_hash_table_insert (loaders, info->loader, NULL);
       return NULL;
     }
 
