@@ -73,8 +73,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   if (!g_atomic_int_dec_and_test (&info->refcount))
     return;
 
-  if (info->keys != NULL)
-    g_hash_table_destroy (info->keys);
   g_free (info->file);
   g_free (info->module_dir);
   g_free (info->data_dir);
@@ -120,78 +118,6 @@ peas_plugin_info_error_quark (void)
 	return quark;
 }
 
-static void
-value_free (GValue *value)
-{
-  g_value_unset (value);
-  g_free (value);
-}
-
-static void
-parse_extra_keys (PeasPluginInfo   *info,
-                  GKeyFile         *plugin_file,
-                  const gchar     **keys)
-{
-  guint i;
-
-  for (i = 0; keys[i] != NULL; i++)
-    {
-      GValue *value = NULL;
-      gboolean b;
-      GError *error = NULL;
-
-      if (g_str_equal (keys[i], "IAge") ||
-          g_str_equal (keys[i], "Module") ||
-          g_str_equal (keys[i], "Depends") ||
-          g_str_equal (keys[i], "Loader") ||
-          g_str_equal (keys[i], "Name") ||
-          g_str_has_prefix (keys[i], "Name[") ||
-          g_str_equal (keys[i], "Description") ||
-          g_str_has_prefix (keys[i], "Description[") ||
-          g_str_equal (keys[i], "Icon") ||
-          g_str_equal (keys[i], "Authors") ||
-          g_str_equal (keys[i], "Copyright") ||
-          g_str_equal (keys[i], "Website") ||
-          g_str_equal (keys[i], "Version") ||
-          g_str_has_prefix (keys[i], "Help") ||
-          g_str_equal (keys[i], "Builtin"))
-        continue;
-
-      b = g_key_file_get_boolean (plugin_file, "Plugin", keys[i], &error);
-      if (b == FALSE && error != NULL)
-        {
-          gchar *str;
-          g_error_free (error);
-          error = NULL;
-          str = g_key_file_get_string (plugin_file, "Plugin", keys[i], NULL);
-          if (str != NULL)
-            {
-              value = g_new0 (GValue, 1);
-              g_value_init (value, G_TYPE_STRING);
-              g_value_take_string (value, str);
-            }
-        }
-      else
-        {
-          value = g_new0 (GValue, 1);
-          g_value_init (value, G_TYPE_BOOLEAN);
-          g_value_set_boolean (value, b);
-        }
-
-      if (!value)
-        continue;
-
-      if (info->keys == NULL)
-        {
-          info->keys = g_hash_table_new_full (g_str_hash,
-                                              g_str_equal,
-                                              g_free,
-                                              (GDestroyNotify) value_free);
-        }
-      g_hash_table_insert (info->keys, g_strdup (keys[i]), value);
-    }
-}
-
 /*
  * _peas_plugin_info_new:
  * @filename: The filename where to read the plugin information.
@@ -210,7 +136,6 @@ _peas_plugin_info_new (const gchar *filename,
   PeasPluginInfo *info;
   GKeyFile *plugin_file = NULL;
   gchar *str;
-  gchar **keys;
   gint integer;
   gboolean b;
   GError *error = NULL;
@@ -329,11 +254,6 @@ _peas_plugin_info_new (const gchar *filename,
     g_clear_error (&error);
   else
     info->builtin = b;
-
-  /* Get extra keys */
-  keys = g_key_file_get_keys (plugin_file, "Plugin", NULL, NULL);
-  parse_extra_keys (info, plugin_file, (const gchar **) keys);
-  g_strfreev (keys);
 
   g_key_file_free (plugin_file);
 
@@ -716,25 +636,4 @@ peas_plugin_info_get_iage (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, 0);
 
   return info->iage;
-}
-
-/**
- * peas_plugin_info_get_keys:
- * @info: A #PeasPluginInfo.
- *
- * Gets a hash table of string keys present and #GValue values,
- * present in the plugin information file, but not handled
- * by libpeas. Note that libpeas only handles booleans and
- * strings, and that strings that are recognized as booleans,
- * as done by g_key_file_get_boolean(), will be of boolean type.
- *
- * Returns: a #GHashTable of string keys and #GValue values. Do
- * not free or destroy any data in this hashtable.
- **/
-const GHashTable *
-peas_plugin_info_get_keys (const PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, NULL);
-
-  return info->keys;
 }

@@ -90,8 +90,6 @@ const gchar  *peas_plugin_info_get_version      (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_help_uri     (const PeasPluginInfo *info);
 
 gint          peas_plugin_info_get_iage         (const PeasPluginInfo *info);
-const GHashTable *
-              peas_plugin_info_get_keys         (const PeasPluginInfo *info);
 
 G_END_DECLS
 
