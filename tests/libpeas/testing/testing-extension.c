@@ -97,9 +97,9 @@ testing_extension_create_invalid_ (PeasEngine *engine)
   /* Not loaded */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
     {
-      extension = peas_engine_create_extension (engine, info,
-                                                INTROSPECTION_TYPE_CALLABLE,
-                                                NULL);
+      peas_engine_create_extension (engine, info,
+                                    INTROSPECTION_TYPE_CALLABLE,
+                                    NULL);
       exit (0);
     }
   g_test_trap_assert_failed ();
@@ -109,9 +109,7 @@ testing_extension_create_invalid_ (PeasEngine *engine)
   /* Invalid GType */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
     {
-      extension = peas_engine_create_extension (engine, info,
-                                                G_TYPE_INVALID,
-                                                NULL);
+      peas_engine_create_extension (engine, info, G_TYPE_INVALID, NULL);
       exit (0);
     }
   g_test_trap_assert_failed ();
