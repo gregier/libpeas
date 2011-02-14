@@ -37,11 +37,14 @@ typedef struct _TestingCallablePlugin         TestingCallablePlugin;
 typedef struct _TestingCallablePluginClass    TestingCallablePluginClass;
 
 struct _TestingCallablePlugin {
-  PeasExtensionBase parent_instance;
+  /* Inherit from GObject and not PeasExtensionBase
+   * to check that it is possible
+   */
+  GObject parent_instance;
 };
 
 struct _TestingCallablePluginClass {
-  PeasExtensionBaseClass parent_class;
+  GObjectClass parent_class;
 };
 
 GType testing_callable_plugin_get_type (void) G_GNUC_CONST;

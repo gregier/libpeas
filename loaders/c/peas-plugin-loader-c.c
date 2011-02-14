@@ -119,32 +119,48 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   GParameter *exten_parameters;
   gpointer instance;
   const gchar *module_name;
+  gboolean is_extension_base;
 
   module_name = g_intern_string (peas_plugin_info_get_module_name (info));
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
   g_return_val_if_fail (module != NULL, NULL);
 
-  /* We want to add a "plugin-info" property so we can pass it to the extension
-   * if it inherits from PeasExtensionBase. No need to actually "duplicate" the
-   * GValues, a memcpy is sufficient as the source GValues are longer lived
-   * than our local copy. */
-  exten_parameters = g_new (GParameter, n_parameters + 1);
-  memcpy (exten_parameters, parameters, sizeof (GParameter) * n_parameters);
+  is_extension_base = g_type_is_a (exten_type, PEAS_TYPE_EXTENSION_BASE);
 
-  /* Initialize our additional property */
-  exten_parameters[n_parameters].name = g_intern_static_string ("plugin-info");
-  memset (&exten_parameters[n_parameters].value, 0, sizeof (GValue));
-  g_value_init (&exten_parameters[n_parameters].value, PEAS_TYPE_PLUGIN_INFO);
-  g_value_set_boxed (&exten_parameters[n_parameters].value, info);
+  if (!is_extension_base)
+    {
+      exten_parameters = parameters;
+    }
+  else
+    {
+      /* We want to add a "plugin-info" property so we can pass it to
+       * the extension if it inherits from PeasExtensionBase. No need to
+       * actually "duplicate" the GValues, a memcpy is sufficient as the
+       * source GValues are longer lived than our local copy.
+       */
+      exten_parameters = g_new (GParameter, n_parameters + 1);
+      memcpy (exten_parameters, parameters, sizeof (GParameter) * n_parameters);
+
+      /* Initialize our additional property */
+      exten_parameters[n_parameters].name = g_intern_static_string ("plugin-info");
+      memset (&exten_parameters[n_parameters].value, 0, sizeof (GValue));
+      g_value_init (&exten_parameters[n_parameters].value, PEAS_TYPE_PLUGIN_INFO);
+      g_value_set_boxed (&exten_parameters[n_parameters].value, info);
+
+      ++n_parameters;
+    }
 
   instance = peas_object_module_create_object (module,
                                                exten_type,
-                                               n_parameters + 1,
+                                               n_parameters,
                                                exten_parameters);
 
-  g_value_unset (&exten_parameters[n_parameters].value);
-  g_free (exten_parameters);
+  if (is_extension_base)
+    {
+      g_value_unset (&exten_parameters[n_parameters - 1].value);
+      g_free (exten_parameters);
+    }
 
   if (instance == NULL)
     {

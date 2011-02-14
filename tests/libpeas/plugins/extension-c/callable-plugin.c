@@ -37,7 +37,7 @@ static void introspection_callable_iface_init (IntrospectionCallableInterface *i
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingCallablePlugin,
                                 testing_callable_plugin,
-                                PEAS_TYPE_EXTENSION_BASE,
+                                G_TYPE_OBJECT,
                                 0,
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (INTROSPECTION_TYPE_CALLABLE,
                                                                introspection_callable_iface_init))
