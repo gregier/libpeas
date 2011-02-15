@@ -162,11 +162,15 @@ load_dir_real (PeasEngine  *engine,
     {
       gchar *filename = g_build_filename (module_dir, dirent, NULL);
 
-      if (g_str_has_suffix (dirent, ".plugin"))
-        load_plugin_info (engine, filename, module_dir, data_dir);
-
-      else if (recursions > 0 && g_file_test (filename, G_FILE_TEST_IS_DIR))
-        load_dir_real (engine, filename, data_dir, recursions - 1);
+      if (g_file_test (filename, G_FILE_TEST_IS_DIR))
+        {
+          if (recursions > 0)
+            load_dir_real (engine, filename, data_dir, recursions - 1);
+        }
+      else if (g_str_has_suffix (dirent, ".plugin"))
+        {
+          load_plugin_info (engine, filename, module_dir, data_dir);
+        }
 
       g_free (filename);
     }
