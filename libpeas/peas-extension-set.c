@@ -381,7 +381,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
    * @info: A #PeasPluginInfo.
    * @exten: A #PeasExtension.
    *
-   * The extension-added signal is emitted when a new extension is about to be
+   * The extension-removed signal is emitted when a new extension is about to be
    * removed from the #PeasExtensionSet. It happens when a plugin implementing
    * the extension set's extension type is unloaded, or when the
    * #PeasExtensionSet itself is destroyed.
