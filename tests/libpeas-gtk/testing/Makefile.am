@@ -7,7 +7,8 @@ INCLUDES = \
 	$(PEAS_GTK_CFLAGS)			\
 	$(WARN_CFLAGS)				\
 	$(DISABLE_DEPRECATED)			\
-	-DBUILDDIR="\"$(abs_top_builddir)\""
+	-DBUILDDIR="\"$(abs_top_builddir)\""	\
+	-DSRCDIR="\"$(abs_top_srcdir)\""
 
 libtesting_la_LDFLAGS = \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"

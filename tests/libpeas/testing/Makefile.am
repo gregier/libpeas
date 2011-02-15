@@ -5,7 +5,8 @@ INCLUDES = \
 	$(PEAS_CFLAGS)				\
 	$(WARN_CFLAGS)				\
 	$(DISABLE_DEPRECATED)			\
-	-DBUILDDIR="\"$(abs_top_builddir)\""
+	-DBUILDDIR="\"$(abs_top_builddir)\""	\
+	-DSRCDIR="\"$(abs_top_srcdir)\""
 
 noinst_LTLIBRARIES = libtesting.la
 

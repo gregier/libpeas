@@ -1,3 +1,5 @@
+include $(top_srcdir)/tests/Makefile.plugin
+
 INCLUDES = \
 	-I$(top_srcdir)		\
 	$(PEAS_CFLAGS)		\
@@ -14,6 +16,7 @@ libconfigurable_la_SOURCES = \
 libconfigurable_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 libconfigurable_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
 
-noinst_DATA = configurable.plugin
+noinst_PLUGIN = configurable.plugin
 
-EXTRA_DIST = $(noinst_DATA)
+EXTRA_DIST = $(noinst_PLUGIN)
+DISTCLEANFILES = $(noinst_PLUGIN)

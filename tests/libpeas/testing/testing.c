@@ -132,8 +132,10 @@ testing_engine_new (void)
 
   g_object_add_weak_pointer (G_OBJECT (engine), (gpointer *) &engine);
 
-  peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins", NULL);
-  peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas/plugins", NULL);
+  peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins",
+                                       SRCDIR   "/tests/plugins");
+  peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas/plugins",
+                                       SRCDIR   "/tests/libpeas/plugins");
 
   return engine;
 }

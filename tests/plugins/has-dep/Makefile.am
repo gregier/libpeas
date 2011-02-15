@@ -1,3 +1,5 @@
+include $(top_srcdir)/tests/Makefile.plugin
+
 INCLUDES = \
 	-I$(top_srcdir)		\
 	$(PEAS_CFLAGS)		\
@@ -13,6 +15,7 @@ libhas_dep_la_SOURCES = \
 libhas_dep_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 libhas_dep_la_LIBADD  = $(PEAS_LIBS)
 
-noinst_DATA = has-dep.plugin
+noinst_PLUGIN = has-dep.plugin
 
-EXTRA_DIST = $(noinst_DATA)
+EXTRA_DIST = $(noinst_PLUGIN)
+DISTCLEANFILES = $(noinst_PLUGIN)

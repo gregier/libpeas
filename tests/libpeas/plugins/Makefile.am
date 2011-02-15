@@ -1,3 +1,5 @@
+include $(top_srcdir)/tests/Makefile.plugin
+
 SUBDIRS = extension-c
 
 if ENABLE_PYTHON
@@ -8,7 +10,7 @@ if ENABLE_SEED
 SUBDIRS += extension-seed
 endif
 
-noinst_DATA = \
+noinst_PLUGIN = \
 	info-missing-iage.plugin	\
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
@@ -17,4 +19,5 @@ noinst_DATA = \
 	nonexistent-loader.plugin	\
 	os-dependant-help.plugin
 
-EXTRA_DIST = $(noinst_DATA)
+EXTRA_DIST = $(noinst_PLUGIN)
+DISTCLEANFILES = $(noinst_PLUGIN)

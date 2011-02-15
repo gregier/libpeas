@@ -1,3 +1,7 @@
-noinst_DATA = valid-custom-icon.plugin
+include $(top_srcdir)/tests/Makefile.plugin
 
-EXTRA_DIST = $(noinst_DATA)
+noinst_DATA = exists.png
+noinst_PLUGIN = valid-custom-icon.plugin
+
+EXTRA_DIST = $(noinst_DATA) $(noinst_PLUGIN)
+DISTCLEANFILES = $(noinst_PLUGIN)
