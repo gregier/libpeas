@@ -182,7 +182,7 @@ test_gtk_plugin_manager_view_reload (TestFixture *fixture)
   gtk_tree_selection_select_iter (fixture->selection, &iter);
   selected_info = testing_get_plugin_info_for_iter (fixture->view, &iter);
 
-  peas_engine_rescan_plugins (fixture->engine);
+  g_object_notify (G_OBJECT (fixture->engine), "plugin-list");
 
   g_assert (gtk_tree_selection_get_selected (fixture->selection, NULL, &iter));
   g_assert (testing_get_plugin_info_for_iter (fixture->view, &iter) == selected_info);

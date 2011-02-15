@@ -129,7 +129,12 @@ load_plugin_info (PeasEngine  *engine,
   if (peas_engine_get_plugin_info (engine, module_name) != NULL)
     _peas_plugin_info_unref (info);
   else
-    engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list, info);
+    {
+      engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list,
+                                                  info);
+
+      g_object_notify (G_OBJECT (engine), "plugin-list");
+    }
 }
 
 static void
@@ -192,6 +197,8 @@ peas_engine_rescan_plugins (PeasEngine *engine)
       return;
     }
 
+  g_object_freeze_notify (G_OBJECT (engine));
+
   /* Go and read everything from the provided search paths */
   for (item = engine->priv->search_paths; item != NULL; item = item->next)
     {
@@ -199,7 +206,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
       load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
     }
 
-  g_object_notify (G_OBJECT (engine), "plugin-list");
+  g_object_thaw_notify (G_OBJECT (engine));
 }
 
 /**
@@ -243,8 +250,9 @@ peas_engine_add_search_path (PeasEngine *engine,
    * the plugin list. */
   engine->priv->search_paths = g_list_append (engine->priv->search_paths, sp);
 
+  g_object_freeze_notify (G_OBJECT (engine));
   load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
-  g_object_notify (G_OBJECT (engine), "plugin-list");
+  g_object_thaw_notify (G_OBJECT (engine));
 }
 
 static guint
