@@ -295,7 +295,7 @@ static void
 loader_garbage_collect (const gchar *id,
                         LoaderInfo  *info)
 {
-  if (info->loader)
+  if (info != NULL && info->loader != NULL)
     peas_plugin_loader_garbage_collect (info->loader);
 }
 
