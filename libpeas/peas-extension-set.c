@@ -53,19 +53,17 @@
  * static void
  * on_extension_added (PeasExtensionSet *set,
  *                     PeasPluginInfo   *info,
- *                     PeasExtension    *exten,
- *                     GtkWindow        *window)
+ *                     PeasActivatable  *activatable)
  * {
- *   peas_extension_call (exten, "activate", window);
+ *   peas_activatable_activate (activatable);
  * }
  *
  * static void
  * on_extension_removed (PeasExtensionSet *set,
  *                       PeasPluginInfo   *info,
- *                       PeasExtension    *exten,
- *                       GtkWindow        *window)
+ *                       PeasActivatable  *activatable)
  * {
- *   peas_extension_call (exten, "deactivate", window);
+ *   peas_activatable_deactivate (activatable);
  * }
  *
  * PeasExtensionSet *
@@ -78,9 +76,9 @@
  *                                 "object", window, NULL);
  *   peas_extension_set_call (set, "activate");
  *   g_signal_connect (set, "extension-added",
- *                     G_CALLBACK (on_extension_added), window);
+ *                     G_CALLBACK (on_extension_added), NULL);
  *   g_signal_connect (set, "extension-removed",
- *                     G_CALLBACK (on_extension_removed), window);
+ *                     G_CALLBACK (on_extension_removed), NULL);
  *   return set;
  * }
  * ]|
