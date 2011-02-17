@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-09 11:04+0000\n"
-"PO-Revision-Date: 2011-02-09 13:54+0100\n"
+"POT-Creation-Date: 2011-02-11 10:38+0000\n"
+"PO-Revision-Date: 2011-02-17 08:19+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,6 @@ msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:2
-#| msgid "Plugin"
 msgid "Plugin Manager"
 msgstr "Správce zásuvných modulů"
 
@@ -38,6 +37,26 @@ msgstr "Zobrazit vestavěné"
 #: ../data/glade/libpeas-gtk.xml.in.h:5
 msgid "View"
 msgstr "Zobrazit"
+
+#: ../libpeas/peas-engine.c:784
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "Závislost „%s“ nebyla nenalezena"
+
+#: ../libpeas/peas-engine.c:794
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Načtení závislosti „%s“ selhalo"
+
+#: ../libpeas/peas-engine.c:809
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "Program „%s“ pro načítání zásuvných modulů nebyl nalezen"
+
+#: ../libpeas/peas-engine.c:820
+#, c-format
+msgid "Failed to load"
+msgstr "Selhalo načtení"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:197
 msgid "There was an error displaying the help."
@@ -67,13 +86,22 @@ msgstr "Po_volit vše"
 msgid "_Disable All"
 msgstr "Za_kázat vše"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:462
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:464
 msgid "Enabled"
 msgstr "Povolen"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:483
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:485
 msgid "Plugin"
 msgstr "Zásuvný modul"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:578
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>Zásuvný modul „%s“ nemohl být načten</b>\n"
+"Vyskytla se chyba: %s"
 
 #: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
