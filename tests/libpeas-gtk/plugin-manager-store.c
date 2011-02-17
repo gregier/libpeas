@@ -77,6 +77,8 @@ test_setup (TestFixture   *fixture,
 
   /* Set the model, filter and store */
   g_object_notify (G_OBJECT (fixture->tree_view), "model");
+
+  g_object_ref_sink (fixture->tree_view);
 }
 
 static void
@@ -84,6 +86,7 @@ test_teardown (TestFixture   *fixture,
                gconstpointer  data)
 {
   gtk_widget_destroy (GTK_WIDGET (fixture->tree_view));
+  g_object_unref (fixture->tree_view);
 
   testing_engine_free (fixture->engine);
 }

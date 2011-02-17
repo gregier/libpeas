@@ -83,6 +83,11 @@ test_engine_dispose (PeasEngine *engine)
   g_object_run_dispose (G_OBJECT (engine));
   g_object_run_dispose (G_OBJECT (engine));
   g_object_run_dispose (G_OBJECT (engine));
+
+  /* Seems we have to explicitly unref it
+   * because testing_engine_free() does not
+   */
+  g_object_unref (G_OBJECT (engine));
 }
 
 static void
@@ -96,6 +101,8 @@ test_engine_get_default (PeasEngine *engine)
   g_object_unref (engine);
 
   g_assert (peas_engine_get_default () == peas_engine_get_default ());
+
+  g_object_unref (peas_engine_get_default ());
 }
 
 static void
