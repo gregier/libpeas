@@ -101,6 +101,7 @@ peasdemo_second_time_finalize (GObject *object)
   g_debug (G_STRFUNC);
 
   g_object_unref (plugin->label);
+  g_object_unref (plugin->window);
 
   G_OBJECT_CLASS (peasdemo_second_time_parent_class)->finalize (object);
 }
