@@ -143,5 +143,7 @@ main (int    argc,
 
   gtk_widget_destroy (main_window);
 
+  g_object_unref (engine);
+
   return 0;
 }
