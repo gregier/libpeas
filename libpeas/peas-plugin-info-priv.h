@@ -29,7 +29,6 @@ struct _PeasPluginInfo {
   /*< private >*/
   gint refcount;
 
-  gchar *file;
   gchar *module_dir;
   gchar *data_dir;
 

@@ -73,7 +73,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   if (!g_atomic_int_dec_and_test (&info->refcount))
     return;
 
-  g_free (info->file);
   g_free (info->module_dir);
   g_free (info->data_dir);
   g_free (info->module_name);
@@ -144,7 +143,6 @@ _peas_plugin_info_new (const gchar *filename,
 
   info = g_new0 (PeasPluginInfo, 1);
   info->refcount = 1;
-  info->file = g_strdup (filename);
 
   plugin_file = g_key_file_new ();
   if (!g_key_file_load_from_file (plugin_file, filename, G_KEY_FILE_NONE, NULL))
@@ -267,7 +265,6 @@ _peas_plugin_info_new (const gchar *filename,
   return info;
 
 error:
-  g_free (info->file);
   g_free (info->module_name);
   g_free (info->name);
   g_free (info);
