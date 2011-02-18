@@ -167,26 +167,31 @@ testing_get_plugin_info_for_iter (PeasGtkPluginManagerView *view,
   return info;
 }
 
-void
+gboolean
 testing_get_iter_for_plugin_info (PeasGtkPluginManagerView *view,
                                   PeasPluginInfo           *info,
                                   GtkTreeIter              *iter)
 {
   GtkTreeModel *model;
-  gboolean found = FALSE;
+  GtkTreeIter pos_iter;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
 
-  g_assert (gtk_tree_model_get_iter_first (model, iter));
+  g_assert (gtk_tree_model_get_iter_first (model, &pos_iter));
 
   do
     {
-      if (testing_get_plugin_info_for_iter (view, iter) == info)
-        found = TRUE;
-    }
-  while (!found && gtk_tree_model_iter_next (model, iter));
+      if (testing_get_plugin_info_for_iter (view, &pos_iter) == info)
+        {
+          if (iter != NULL)
+            *iter = pos_iter;
 
-  g_assert (found);
+          return TRUE;
+        }
+    }
+  while (gtk_tree_model_iter_next (model, &pos_iter));
+
+  return FALSE;
 }
 
 static gboolean

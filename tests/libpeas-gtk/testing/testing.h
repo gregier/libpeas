@@ -32,7 +32,7 @@ void            testing_engine_free              (PeasEngine *engine);
 
 PeasPluginInfo *testing_get_plugin_info_for_iter (PeasGtkPluginManagerView *view,
                                                   GtkTreeIter              *iter);
-void            testing_get_iter_for_plugin_info (PeasGtkPluginManagerView *view,
+gboolean        testing_get_iter_for_plugin_info (PeasGtkPluginManagerView *view,
                                                   PeasPluginInfo           *info,
                                                   GtkTreeIter              *iter);
 

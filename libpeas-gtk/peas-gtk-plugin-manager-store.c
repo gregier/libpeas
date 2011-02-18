@@ -356,8 +356,11 @@ peas_gtk_plugin_manager_store_reload (PeasGtkPluginManagerStore *store)
 
       info = PEAS_PLUGIN_INFO (plugins->data);
 
-      gtk_list_store_append (list_store, &iter);
-      update_plugin (store, &iter, info);
+      if (!peas_plugin_info_is_hidden (info))
+        {
+          gtk_list_store_append (list_store, &iter);
+          update_plugin (store, &iter, info);
+        }
 
       plugins = plugins->next;
     }

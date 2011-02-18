@@ -175,7 +175,7 @@ verify_model (TestFixture    *fixture,
   gboolean model_can_enable, model_icon_visible, model_info_sensitive;
   gchar *model_icon_name;
 
-  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,     &model_can_enable,
@@ -241,7 +241,7 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
 
   /* Has description */
   info = peas_engine_get_plugin_info (fixture->engine, "configurable");
-  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,  &model_info,
@@ -252,7 +252,7 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
 
   /* Does not have description */
   info = peas_engine_get_plugin_info (fixture->engine, "min-info");
-  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,  &model_info,
@@ -273,7 +273,7 @@ verify_icon (TestFixture *fixture,
   gchar *model_icon_name;
 
   info = peas_engine_get_plugin_info (fixture->engine, plugin_name);
-  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN, &model_icon_pixbuf,
@@ -318,6 +318,18 @@ test_gtk_plugin_manager_store_invalid_stock_icon (TestFixture *fixture)
   verify_icon (fixture, "invalid-stock-icon", FALSE, "libpeas-plugin");
 }
 
+static void
+test_gtk_plugin_manager_store_hidden (TestFixture *fixture)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (fixture->engine, "hidden");
+
+  g_assert (peas_plugin_info_is_hidden (info));
+
+  g_assert (!testing_get_iter_for_plugin_info (fixture->view, info, NULL));
+}
+
 int
 main (int    argc,
       char **argv)
@@ -345,6 +357,8 @@ main (int    argc,
   TEST ("valid-stock-icon", valid_stock_icon);
   TEST ("invalid-custom-icon", invalid_custom_icon);
   TEST ("invalid-stock-icon", invalid_stock_icon);
+
+  TEST ("hidden", hidden);
 
 #undef TEST
 

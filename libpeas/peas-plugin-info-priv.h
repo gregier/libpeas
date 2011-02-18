@@ -55,6 +55,7 @@ struct _PeasPluginInfo {
   gint available : 1;
 
   guint builtin : 1;
+  guint hidden : 1;
 };
 
 PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,

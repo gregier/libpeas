@@ -72,6 +72,7 @@ gboolean      peas_plugin_info_is_loaded        (const PeasPluginInfo *info);
 gboolean      peas_plugin_info_is_available     (const PeasPluginInfo *info,
                                                  GError               **error);
 gboolean      peas_plugin_info_is_builtin       (const PeasPluginInfo *info);
+gboolean      peas_plugin_info_is_hidden        (const PeasPluginInfo *info);
 
 const gchar  *peas_plugin_info_get_module_name  (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_module_dir   (const PeasPluginInfo *info);

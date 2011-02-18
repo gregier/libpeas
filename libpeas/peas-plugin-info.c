@@ -253,6 +253,13 @@ _peas_plugin_info_new (const gchar *filename,
   else
     info->builtin = b;
 
+  /* Get Hidden */
+  b = g_key_file_get_boolean (plugin_file, "Plugin", "Hidden", &error);
+  if (error != NULL)
+    g_clear_error (&error);
+  else
+    info->hidden = b;
+
   g_key_file_free (plugin_file);
 
   info->module_dir = g_strdup (module_dir);
@@ -340,6 +347,30 @@ peas_plugin_info_is_builtin (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, TRUE);
 
   return info->builtin;
+}
+
+/**
+ * peas_plugin_info_is_hidden:
+ * @info: A #PeasPluginInfo.
+ *
+ * Check if the plugin is a hidden plugin.
+ *
+ * A hidden plugin is a plugin which cannot be seen by a
+ * user through a plugin manager (like #PeasGtkPluginManager). Loading and
+ * unloading such plugins is the responsibility of the application alone or
+ * through plugins that depend on them.
+ *
+ * The relevant key in the plugin info file is "Hidden".
+ *
+ * Returns: %TRUE if the plugin is a hidden plugin, %FALSE
+ * if not.
+ **/
+gboolean
+peas_plugin_info_is_hidden (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, FALSE);
+
+  return info->hidden;
 }
 
 /**
