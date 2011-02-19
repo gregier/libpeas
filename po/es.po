@@ -1,14 +1,14 @@
 # Spanish translation for libpeas.
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
-# Jorge González <jorgegonz@svn.gnome.org>, 2010.
+# Jorge González <jorgegonz@svn.gnome.org>, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-22 11:00+0000\n"
-"PO-Revision-Date: 2010-07-28 17:13+0200\n"
+"POT-Creation-Date: 2011-02-18 01:09+0000\n"
+"PO-Revision-Date: 2011-02-19 15:04+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,51 +16,130 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:177
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+#| msgid "Plugin"
+msgid "Plugin Manager"
+msgstr "Gestor de complementos"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Vista del gestor de complementos"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Show Builtin"
+msgstr "Mostrar incluidos"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "View"
+msgstr "Ver"
+
+#: ../libpeas/peas-engine.c:784
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "No se encontró la dependencia «%s»"
+
+#: ../libpeas/peas-engine.c:794
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Falló al cargar la dependencia «%s»"
+
+#: ../libpeas/peas-engine.c:809
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "No se encontró el cargador de complemento «%s»"
+
+#: ../libpeas/peas-engine.c:820
+#, c-format
+msgid "Failed to load"
+msgstr "Falló al cargar"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+msgid "Additional plugins must be disabled"
+msgstr "Se deben desactivar complementos adicionales"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr ""
+"Los siguientes complementos dependen de «%s» y también se desactivarán:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+#| msgid "Plugin"
+msgid "Plugins"
+msgstr "Complementos"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+msgid "An additional plugin must be disabled"
+msgstr "Se debe desactivar un complemento adicional"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"El complemento «%s» depende del complemento «%s».\n"
+"Si desactiva «%s» también desactivará «%s»."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+#| msgid "_Disable All"
+msgid "Disable Plugins"
+msgstr "Desactivar complementos"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:198
 msgid "There was an error displaying the help."
 msgstr "Hubo un error al mostrar la ayuda."
 
-#: ../libpeasui/peas-ui-plugin-manager.c:335
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:346
 msgid "C_onfigure"
 msgstr "C_onfigurar"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:343
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:354
 msgid "_About"
 msgstr "Acerca _de"
 
-#: ../libpeasui/peas-ui-plugin-manager.c:364
-#| msgid "Plugin"
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:380
 msgid "_Plugins:"
 msgstr "Co_mplementos:"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:295
-#| msgid "Enabled"
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:347
 msgid "_Enabled"
 msgstr "_Activado"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:306
-#| msgid "Enabled"
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:358
 msgid "E_nable All"
 msgstr "A_ctivar todos"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:310
-#| msgid "_Deactivate All"
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "_Disable All"
 msgstr "_Desactivar todos"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:467
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:525
 msgid "Enabled"
 msgstr "Activado"
 
-#: ../libpeasui/peas-ui-plugin-manager-view.c:488
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:546
 msgid "Plugin"
 msgstr "Complemento"
 
-#: ../peas-demo/peas-demo.c:39
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:635
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>No se pudo cargar el complemento «%s»</b>\n"
+"Ocurrió un error: %s"
+
+#: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
 msgstr "Ejecutar desde la carpeta de construcción"
 
-#: ../peas-demo/peas-demo.c:130
+#: ../peas-demo/peas-demo.c:101
 msgid "- libpeas demo application"
 msgstr "- libpeas aplicación de demostración"
 
