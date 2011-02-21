@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-08 08:19+0200\n"
-"PO-Revision-Date: 2011-01-08 08:19+0300\n"
+"POT-Creation-Date: 2011-02-21 19:37+0200\n"
+"PO-Revision-Date: 2011-02-21 19:37+0300\n"
 "Last-Translator: Khaled Hosny <khaledhosny@eglug.org>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,46 +18,125 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 "X-Generator: Virtaal 0.6.1\n"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:190
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Peas Gtk"
+msgstr ""
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "Plugin Manager"
+msgstr "مدير الملحقات"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "منظور مدير الملحقات"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Show Builtin"
+msgstr "أظهر المدمجة"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "View"
+msgstr "المنظور"
+
+#: ../libpeas/peas-engine.c:784
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "لم يُعثَر الاعتمادية '%s'"
+
+#: ../libpeas/peas-engine.c:794
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "فشل تحميل الاعتمادية '%s'"
+
+#: ../libpeas/peas-engine.c:809
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "لم يُعثر على مُحمّل الملحقات '%s'"
+
+#: ../libpeas/peas-engine.c:820
+#, c-format
+msgid "Failed to load"
+msgstr "فشل التحميل"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+msgid "Additional plugins must be disabled"
+msgstr "يجب تعطيل ملحقات إضافية"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "الملحقات التالية تعتمد على '%s' وستُعطّل أبضا:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+msgid "Plugins"
+msgstr "الملحقات"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+msgid "An additional plugin must be disabled"
+msgstr "يجب تعطيل ملحقة إضافية"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"الملحقة '%s' تعتمد على الملحقة '%s'.\n"
+"إذا عطّلت '%s' فستُعطّل '%s' أيضا."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+msgid "Disable Plugins"
+msgstr "عطّل الملحقات"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:198
 msgid "There was an error displaying the help."
 msgstr "حدث عطل في عرض هذه المساعدة."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:352
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:346
 msgid "C_onfigure"
 msgstr "ا_ضبط"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:360
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:354
 msgid "_About"
 msgstr "_عن"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:384
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:380
 msgid "_Plugins:"
 msgstr "المل_حقات:"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:294
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:347
 msgid "_Enabled"
 msgstr "_مفعّل"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:305
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:358
 msgid "E_nable All"
 msgstr "_فعّل الكل"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:309
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "_Disable All"
 msgstr "ع_طّل الكل"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:483
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:525
 msgid "Enabled"
 msgstr "مفعّل"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:504
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:546
 msgid "Plugin"
 msgstr "ملحقة"
 
-#: ../peas-demo/peas-demo.c:38
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:635
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>تعذّر تحميل الملحقة '%s'</b>\n"
+"حدث عُطل: %s"
+
+#: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
 msgstr "شغّل من دليل البناء"
 
-#: ../peas-demo/peas-demo.c:132
+#: ../peas-demo/peas-demo.c:101
 msgid "- libpeas demo application"
 msgstr "- تطبيق لتجربة libpeas"
