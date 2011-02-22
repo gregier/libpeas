@@ -219,6 +219,8 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   Py_DECREF (pyplinfo);
 
   exten = peas_extension_python_new (exten_type, pyobject);
+  Py_DECREF (pyobject);
+
   pyg_gil_state_release (state);
 
   return exten;

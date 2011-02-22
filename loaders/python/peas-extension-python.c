@@ -95,6 +95,7 @@ peas_extension_python_new (GType     gtype,
                                                  "extension-type", gtype,
                                                  NULL));
   pyexten->instance = instance;
+  Py_INCREF (instance);
 
   return PEAS_EXTENSION (pyexten);
 }
