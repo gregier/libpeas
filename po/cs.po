@@ -1,22 +1,22 @@
 # Czech translation for libpeas.
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
+#
 # Marek Černocký <marek@manet.cz>, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-11 10:38+0000\n"
-"PO-Revision-Date: 2011-02-17 08:19+0100\n"
+"POT-Creation-Date: 2011-02-18 01:09+0000\n"
+"PO-Revision-Date: 2011-02-23 15:01+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Poedit-Language: Czech\n"
-"X-Poedit-SourceCharset: utf-8\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Peas Gtk"
@@ -58,43 +58,75 @@ msgstr "Program „%s“ pro načítání zásuvných modulů nebyl nalezen"
 msgid "Failed to load"
 msgstr "Selhalo načtení"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:197
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+msgid "Additional plugins must be disabled"
+msgstr "Je nutné zakázat další zásuvné moduly"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Následující zásuvné moduly závisí na „%s“ a budou rovněž zakázány:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+#| msgid "Plugin"
+msgid "Plugins"
+msgstr "Zásuvné moduly"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+msgid "An additional plugin must be disabled"
+msgstr "Je nutné zakázat další zásuvné moduly"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"Zásuvný modul „%s“ závisí na zásuvném modulu „%s“.\n"
+"Pokud zakážete „%s“, bude rovněž zakázán „%s“."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+#| msgid "_Disable All"
+msgid "Disable Plugins"
+msgstr "Zakázat zásuvné moduly"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:198
 msgid "There was an error displaying the help."
 msgstr "Vyskytla se chyba při zobrazení nápovědy."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:345
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:346
 msgid "C_onfigure"
 msgstr "Na_stavit"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:353
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:354
 msgid "_About"
 msgstr "O _aplikaci"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:380
 msgid "_Plugins:"
 msgstr "Zásuvné _moduly:"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:277
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:347
 msgid "_Enabled"
 msgstr "Povol_en"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:288
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:358
 msgid "E_nable All"
 msgstr "Po_volit vše"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:292
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "_Disable All"
 msgstr "Za_kázat vše"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:464
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:525
 msgid "Enabled"
 msgstr "Povolen"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:485
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:546
 msgid "Plugin"
 msgstr "Zásuvný modul"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:578
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:635
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
