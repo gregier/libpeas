@@ -333,6 +333,14 @@ test_engine_enable_loader (PeasEngine *engine)
 }
 
 static void
+test_engine_nonexistent_search_path (PeasEngine *engine)
+{
+  /* We use /nowhere as it is also used in configure.ac */
+  peas_engine_add_search_path (engine, "/nowhere", NULL);
+}
+
+
+static void
 test_engine_shutdown (PeasEngine *engine)
 {
   testing_engine_free (engine);
@@ -383,6 +391,8 @@ main (int    argc,
 
   TEST ("nonexistent-loader", nonexistent_loader);
   TEST ("enable-loader", enable_loader);
+
+  TEST ("nonexistent-search-path", nonexistent_search_path);
 
   /* MUST be last */
   TEST ("shutdown", shutdown);
