@@ -50,6 +50,7 @@ static const gchar *allowed_patterns[] = {
   "*Error loading *info-missing-module.plugin*",
   "*Error loading *info-missing-name.plugin*",
   "*Could not find loader 'disabled'*",
+  "*Could not find loader 'invalid'*",
   "*Bad plugin file: *invalid.plugin*",
   "*Error loading *invalid.plugin*"
 };

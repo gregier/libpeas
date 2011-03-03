@@ -327,7 +327,15 @@ test_engine_enable_loader (PeasEngine *engine)
    * a plugin if it's loader is not enabled.
    */
 
-  info = peas_engine_get_plugin_info (engine, "loader-disabled");
+  info = peas_engine_get_plugin_info (engine, "disabled-loader");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, NULL));
+
+
+  info = peas_engine_get_plugin_info (engine, "invalid-loader");
+  peas_engine_enable_loader (engine, "invalid");
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
