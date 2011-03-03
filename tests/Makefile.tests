@@ -44,3 +44,5 @@ generate-report: $(TEST_PROGS)
 	 G_SLICE=debug-blocks $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
 
 CLEANFILES = vgdump-*
+
+.PHONY: test test-gdb test-valgrind test-callgrind generate-report
