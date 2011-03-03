@@ -5,6 +5,7 @@ loaderdir = $(libdir)/libpeas-1.0/loaders
 INCLUDES = \
 	-I$(top_srcdir)			\
 	$(PEAS_CFLAGS)			\
+	$(GCOV_CFLAGS)			\
 	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED)		\
 	$(PYGTK_CFLAGS)			\
@@ -21,7 +22,8 @@ libpythonloader_la_SOURCES = \
 	peas-plugin-loader-python.h
 
 libpythonloader_la_LDFLAGS = \
-	$(LOADER_LIBTOOL_FLAGS)
+	$(LOADER_LIBTOOL_FLAGS)	\
+	$(GCOV_LDFLAGS)
 
 libpythonloader_la_LIBADD = \
 	$(PEAS_LIBS)			\
@@ -30,3 +32,5 @@ libpythonloader_la_LIBADD = \
 	$(PYTHON_EXTRA_LIBS)		\
 	$(PYGTK_LIBS)
 
+gcov_sources = $(libpythonloader_la_SOURCES)
+include $(top_srcdir)/Makefile.gcov

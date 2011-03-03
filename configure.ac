@@ -142,6 +142,39 @@ if test "$os_osx" = "yes"; then
 fi
 
 dnl ================================================================
+dnl Coverage testing
+dnl ================================================================
+
+AC_ARG_ENABLE([gcov],
+	      [AS_HELP_STRING([--enable-gcov],
+			      [Whether to enable coverage testing (requires gcc and gcov) [default=no]])],
+	      [enable_gcov=$enable_val],
+	      [enable_gcov=no])
+
+if test "x$enable_gcov" = "xno"; then
+        found_gcov="no (disabled, use --enable-gcov to enable)"
+        AC_MSG_CHECKING([whether to build with coverage testing])
+else
+        enable_gcov=yes
+        AC_PATH_PROG([GCOV], [gcov], [enable_gcov=no])
+        AC_MSG_CHECKING([whether to build with coverage testing])
+
+        if test "x$enable_gcov" = "xno"; then
+                AC_MSG_ERROR([You need gcov to build with coverage testing])
+        elif test "x$GCC" = "xno"; then
+                AC_MSG_ERROR([You need to use gcc to build with coverage testing])
+        else
+                GCOV_CFLAGS="-g -O0 -fprofile-arcs -ftest-coverage"
+                GCOV_LDFLAGS="-lgcov"
+        fi
+fi
+AC_MSG_RESULT([$enable_gcov])
+
+AM_CONDITIONAL([GCOV_ENABLED], [test "x$enable_gcov" = "xyes"])
+AC_SUBST([GCOV_CFLAGS])
+AC_SUBST([GCOV_LDFLAGS])
+
+dnl ================================================================
 dnl Glade
 dnl ================================================================
 
@@ -377,6 +410,7 @@ Configuration:
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
         Build libpeas-gtk             : ${enable_gtk}
+        Coverage testing              : ${enable_gcov}
         Glade Catalog                 : ${found_glade_catalog}
         Seed JS support               : ${found_seed}
         Python support                : ${found_python}

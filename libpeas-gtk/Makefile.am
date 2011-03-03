@@ -5,10 +5,12 @@ INCLUDES = \
 	-I$(srcdir)			\
 	$(PEAS_CFLAGS)			\
 	$(PEAS_GTK_CFLAGS)		\
+	$(GCOV_CFLAGS)			\
 	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED)
 
 libpeas_gtk_1_0_la_LDFLAGS = \
+	$(GCOV_LDFLAGS) \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
@@ -29,8 +31,8 @@ NOINST_H_FILES = \
 
 C_FILES = \
 	peas-gtk-configurable.c			\
-	peas-gtk-plugin-manager.c		\
 	peas-gtk-disable-plugins-dialog.c	\
+	peas-gtk-plugin-manager.c		\
 	peas-gtk-plugin-manager-store.c		\
 	peas-gtk-plugin-manager-view.c
 
@@ -71,3 +73,6 @@ if HAVE_INTROSPECTION
 
   CLEANFILES = $(gir_DATA) $(typelib_DATA)
 endif
+
+gcov_sources = $(C_FILES)
+include $(top_srcdir)/Makefile.gcov

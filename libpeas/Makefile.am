@@ -5,12 +5,14 @@ INCLUDES =								\
 	-I$(srcdir)							\
 	$(PEAS_CFLAGS)							\
 	$(IGE_MAC_CFLAGS)						\
+	$(GCOV_CFLAGS)							\
 	$(WARN_CFLAGS)							\
 	$(DISABLE_DEPRECATED)						\
 	-DDATADIR=\""$(datadir)"\"					\
 	-DLIBDIR=\""$(libdir)"\"
 
 libpeas_1_0_la_LDFLAGS = \
+	$(GCOV_LDFLAGS) \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
@@ -39,20 +41,20 @@ NOINST_H_FILES =			\
 	peas-plugin-loader.h
 
 C_FILES =				\
+	peas-activatable.c		\
 	peas-debug.c			\
 	peas-dirs.c			\
-	peas-helpers.c			\
-	peas-i18n.c			\
-	peas-object-module.c		\
-	peas-introspection.c		\
-	peas-plugin-info.c		\
-	peas-plugin-loader.c		\
-	peas-extension-base.c		\
+	peas-engine.c			\
 	peas-extension.c		\
+	peas-extension-base.c		\
 	peas-extension-set.c		\
 	peas-extension-subclasses.c	\
-	peas-activatable.c		\
-	peas-engine.c
+	peas-helpers.c			\
+	peas-i18n.c			\
+	peas-introspection.c		\
+	peas-object-module.c		\
+	peas-plugin-info.c		\
+	peas-plugin-loader.c
 
 BUILT_SOURCES = \
 	peas-marshal.c			\
@@ -106,5 +108,7 @@ if HAVE_INTROSPECTION
   CLEANFILES += \
 	$(gir_DATA)		\
 	$(typelib_DATA)
-
 endif
+
+gcov_sources = $(C_FILES)
+include $(top_srcdir)/Makefile.gcov
