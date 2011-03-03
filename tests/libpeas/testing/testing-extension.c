@@ -67,6 +67,21 @@ testing_extension_test_runner_  (TestingExtensionFixture_ *fixture,
 }
 
 void
+testing_extension_garbage_collect_ (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+
+  /* See that we can collect the garbage when no plugins are loaded */
+  peas_engine_garbage_collect (engine);
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  peas_engine_garbage_collect (engine);
+}
+
+void
 testing_extension_create_valid_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;

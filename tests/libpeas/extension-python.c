@@ -42,6 +42,8 @@ main (int   argc,
 
   testing_extension_set_plugin_ ("extension-" "python");
 
+  _EXTENSION_TEST ("python", "garbage-collect", garbage_collect);
+
   _EXTENSION_TEST ("python", "create-valid", create_valid);
   _EXTENSION_TEST ("python", "create-invalid", create_invalid);
 

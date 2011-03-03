@@ -42,6 +42,8 @@ main (int   argc,
 
   testing_extension_set_plugin_ ("extension-" "seed");
 
+  _EXTENSION_TEST ("seed", "garbage-collect", garbage_collect);
+
   _EXTENSION_TEST ("seed", "create-valid", create_valid);
   _EXTENSION_TEST ("seed", "create-invalid", create_invalid);
 

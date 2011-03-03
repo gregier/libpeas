@@ -43,6 +43,7 @@ void testing_extension_test_teardown_ (TestingExtensionFixture_ *fixture,
 void testing_extension_test_runner_   (TestingExtensionFixture_ *fixture,
                                        gconstpointer             data);
 
+void testing_extension_garbage_collect_           (PeasEngine *engine);
 void testing_extension_create_valid_              (PeasEngine *engine);
 void testing_extension_create_invalid_            (PeasEngine *engine);
 void testing_extension_reload_                    (PeasEngine *engine);
@@ -79,6 +80,8 @@ main (int   argc, \
   g_object_unref (peas_engine_get_default ()); \
 \
   testing_extension_set_plugin_ ("extension-" loader); \
+\
+  _EXTENSION_TEST (loader, "garbage-collect", garbage_collect); \
 \
   _EXTENSION_TEST (loader, "create-valid", create_valid); \
   _EXTENSION_TEST (loader, "create-invalid", create_invalid); \
