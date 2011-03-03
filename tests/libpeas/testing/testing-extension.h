@@ -44,6 +44,8 @@ void testing_extension_test_runner_   (TestingExtensionFixture_ *fixture,
                                        gconstpointer             data);
 
 void testing_extension_garbage_collect_           (PeasEngine *engine);
+void testing_extension_provides_valid_            (PeasEngine *engine);
+void testing_extension_provides_invalid_          (PeasEngine *engine);
 void testing_extension_create_valid_              (PeasEngine *engine);
 void testing_extension_create_invalid_            (PeasEngine *engine);
 void testing_extension_reload_                    (PeasEngine *engine);
@@ -82,6 +84,9 @@ main (int   argc, \
   testing_extension_set_plugin_ ("extension-" loader); \
 \
   _EXTENSION_TEST (loader, "garbage-collect", garbage_collect); \
+\
+  _EXTENSION_TEST (loader, "provides-valid", provides_valid); \
+  _EXTENSION_TEST (loader, "provides-invalid", provides_invalid); \
 \
   _EXTENSION_TEST (loader, "create-valid", create_valid); \
   _EXTENSION_TEST (loader, "create-invalid", create_invalid); \

@@ -44,6 +44,9 @@ main (int   argc,
 
   _EXTENSION_TEST ("python", "garbage-collect", garbage_collect);
 
+  _EXTENSION_TEST ("python", "provides-valid", provides_valid);
+  _EXTENSION_TEST ("python", "provides-invalid", provides_invalid);
+
   _EXTENSION_TEST ("python", "create-valid", create_valid);
   _EXTENSION_TEST ("python", "create-invalid", create_invalid);
 

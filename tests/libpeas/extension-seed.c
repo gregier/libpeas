@@ -44,6 +44,9 @@ main (int   argc,
 
   _EXTENSION_TEST ("seed", "garbage-collect", garbage_collect);
 
+  _EXTENSION_TEST ("seed", "provides-valid", provides_valid);
+  _EXTENSION_TEST ("seed", "provides-invalid", provides_invalid);
+
   _EXTENSION_TEST ("seed", "create-valid", create_valid);
   _EXTENSION_TEST ("seed", "create-invalid", create_invalid);
 
