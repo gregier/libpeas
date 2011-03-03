@@ -14,6 +14,7 @@ noinst_PLUGIN = \
 	info-missing-iage.plugin	\
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
+	invalid.plugin			\
 	loader-disabled.plugin		\
 	nonexistent-dep.plugin		\
 	nonexistent-loader.plugin	\
