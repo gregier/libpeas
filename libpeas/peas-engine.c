@@ -942,6 +942,7 @@ peas_engine_provides_extension (PeasEngine     *engine,
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
   if (!peas_plugin_info_is_loaded (info))
     return FALSE;
@@ -982,6 +983,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
   loader = get_plugin_loader (engine, info);
   return peas_plugin_loader_create_extension (loader, info, extension_type,

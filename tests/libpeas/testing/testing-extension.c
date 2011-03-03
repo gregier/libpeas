@@ -132,10 +132,13 @@ testing_extension_create_invalid_ (PeasEngine *engine)
 
 
   /* GObject but not a GInterface */
-  extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ENGINE,
-                                            NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_create_extension (engine, info, PEAS_TYPE_ENGINE, NULL);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*CRITICAL*");
 
 
   /* Does not implement this GType */
