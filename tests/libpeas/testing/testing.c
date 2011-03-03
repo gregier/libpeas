@@ -114,8 +114,6 @@ testing_init (void)
                                  "Introspection", "1.0", 0, &error);
   g_assert_no_error (error);
 
-  g_atexit (peas_engine_shutdown);
-
   initialized = TRUE;
 }
 
@@ -151,4 +149,19 @@ testing_engine_free (PeasEngine *engine_)
       /* Make sure that at the end of every test the engine is freed */
       g_assert (engine == NULL);
     }
+}
+
+int
+testing_run_tests (void)
+{
+  int retval;
+
+  retval = g_test_run ();
+
+  /* Cannot call this with atexit() because
+   * gcov does not register that it was called.
+   */
+  peas_engine_shutdown ();
+
+  return retval;
 }

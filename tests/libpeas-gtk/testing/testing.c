@@ -143,6 +143,21 @@ testing_engine_free (PeasEngine *engine_)
     }
 }
 
+int
+testing_run_tests (void)
+{
+  int retval;
+
+  retval = g_test_run ();
+
+  /* Cannot call this with atexit() because
+   * gcov does not register that it was called.
+   */
+  peas_engine_shutdown ();
+
+  return retval;
+}
+
 PeasPluginInfo *
 testing_get_plugin_info_for_iter (PeasGtkPluginManagerView *view,
                                   GtkTreeIter              *iter)

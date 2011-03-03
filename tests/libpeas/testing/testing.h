@@ -31,6 +31,9 @@ void        testing_init        (void);
 PeasEngine *testing_engine_new  (void);
 void        testing_engine_free (PeasEngine *engine);
 
+int         testing_run_tests   (void);
+
+
 G_END_DECLS
 
 #endif /* __TESTING_H__ */

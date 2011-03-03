@@ -64,5 +64,5 @@ main (int   argc,
   _EXTENSION_TEST ("seed", "properties-readwrite", properties_readwrite);
 #endif
 
-  return g_test_run ();
+  return testing_run_tests ();
 }

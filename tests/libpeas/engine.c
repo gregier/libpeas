@@ -389,5 +389,5 @@ main (int    argc,
 
 #undef TEST
 
-  return g_test_run ();
+  return testing_run_tests ();
 }

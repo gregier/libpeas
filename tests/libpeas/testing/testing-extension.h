@@ -96,7 +96,7 @@ main (int   argc, \
   _EXTENSION_TEST (loader, "properties-write-only", properties_write_only); \
   _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite); \
 \
-  return g_test_run (); \
+  return testing_run_tests (); \
 }
 
 G_END_DECLS
