@@ -644,7 +644,7 @@ get_plugin_loader (PeasEngine     *engine,
 
   if (loader_info->module == NULL)
     {
-      g_hash_table_insert (loaders, info->loader, NULL);
+      g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
       return NULL;
     }
 
@@ -665,7 +665,7 @@ get_plugin_loader (PeasEngine     *engine,
         g_object_unref (loader_info->loader);
 
       g_object_unref (loader_info->module);
-      g_hash_table_insert (loaders, info->loader, NULL);
+      g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
       return NULL;
     }
 
