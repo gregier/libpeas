@@ -114,6 +114,9 @@ test_engine_load_plugin (PeasEngine *engine)
 
   g_assert (peas_engine_load_plugin (engine, info));
   g_assert (peas_plugin_info_is_loaded (info));
+
+  /* Check that we can load a plugin that is already loaded */
+  g_assert (peas_engine_load_plugin (engine, info));
 }
 
 static void
@@ -164,9 +167,12 @@ test_engine_unload_plugin (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  test_engine_load_plugin (engine);
-
   info = peas_engine_get_plugin_info (engine, "loadable");
+
+  /* Check that we can unload a plugin that is not loaded */
+  g_assert (peas_engine_unload_plugin (engine, info));
+
+  test_engine_load_plugin (engine);
 
   g_assert (peas_engine_unload_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
