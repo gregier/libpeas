@@ -361,6 +361,7 @@ test_engine_shutdown (PeasEngine *engine)
 
   /* Should be able to shutdown multiple times */
   peas_engine_shutdown ();
+  peas_engine_shutdown ();
 
   /* Cannot get the default as libpeas has been shutdown */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
