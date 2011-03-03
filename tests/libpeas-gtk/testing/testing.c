@@ -82,36 +82,40 @@ out:
   abort ();
 }
 
-PeasEngine *
-testing_engine_new (void)
+void
+testing_init (void)
 {
   GError *error = NULL;
   static gboolean initialized = FALSE;
 
+  if (initialized)
+    return;
+
+  /* Don't always abort on warnings */
+  g_log_set_always_fatal (G_LOG_LEVEL_CRITICAL);
+
+  default_log_func = g_log_set_default_handler (log_handler, NULL);
+
+  g_irepository_prepend_search_path (BUILDDIR "/libpeas");
+  g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
+
+  g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
+
+  g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
+  g_assert_no_error (error);
+  g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error);
+  g_assert_no_error (error);
+
+  initialized = TRUE;
+}
+
+PeasEngine *
+testing_engine_new (void)
+{
   if (engine != NULL)
     return engine;
 
-  if (!initialized)
-    {
-      /* Don't always abort on warnings */
-      g_log_set_always_fatal (G_LOG_LEVEL_CRITICAL);
-
-      default_log_func = g_log_set_default_handler (log_handler, NULL);
-
-      g_irepository_prepend_search_path (BUILDDIR "/libpeas");
-      g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
-
-      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
-
-      g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
-      g_assert_no_error (error);
-      g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error);
-      g_assert_no_error (error);
-
-      g_atexit (peas_engine_shutdown);
-
-      initialized = TRUE;
-    }
+  testing_init ();
 
   /* Must be after requiring typelibs */
   engine = peas_engine_new ();

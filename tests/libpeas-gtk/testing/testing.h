@@ -27,6 +27,8 @@
 
 G_BEGIN_DECLS
 
+void            testing_init                     (void);
+
 PeasEngine     *testing_engine_new               (void);
 void            testing_engine_free              (PeasEngine *engine);
 
