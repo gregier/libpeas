@@ -11,10 +11,12 @@ SUBDIRS += extension-seed
 endif
 
 noinst_PLUGIN = \
+	disabled-loader.plugin		\
 	info-missing-iage.plugin	\
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
-	loader-disabled.plugin		\
+	invalid.plugin			\
+	invalid-loader.plugin		\
 	nonexistent-dep.plugin		\
 	nonexistent-loader.plugin	\
 	os-dependant-help.plugin

@@ -67,6 +67,72 @@ testing_extension_test_runner_  (TestingExtensionFixture_ *fixture,
 }
 
 void
+testing_extension_garbage_collect_ (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+
+  /* See that we can collect the garbage when no plugins are loaded */
+  peas_engine_garbage_collect (engine);
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  peas_engine_garbage_collect (engine);
+}
+
+void
+testing_extension_provides_valid_ (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  g_assert (peas_engine_provides_extension (engine, info,
+                                            INTROSPECTION_TYPE_CALLABLE));
+}
+
+void
+testing_extension_provides_invalid_ (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+
+  /* Not loaded */
+  g_assert (!peas_engine_provides_extension (engine, info,
+                                             INTROSPECTION_TYPE_CALLABLE));
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  /* Invalid GType */
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_provides_extension (engine, info, G_TYPE_INVALID);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*CRITICAL*");
+
+
+  /* GObject but not a GInterface */
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_provides_extension (engine, info, PEAS_TYPE_ENGINE);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*CRITICAL*");
+
+
+  /* Does not implement this GType */
+  g_assert (!peas_engine_provides_extension (engine, info,
+                                             INTROSPECTION_TYPE_UNIMPLEMENTED));
+}
+
+void
 testing_extension_create_valid_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
@@ -117,10 +183,13 @@ testing_extension_create_invalid_ (PeasEngine *engine)
 
 
   /* GObject but not a GInterface */
-  extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ENGINE,
-                                            NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_create_extension (engine, info, PEAS_TYPE_ENGINE, NULL);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*CRITICAL*");
 
 
   /* Does not implement this GType */

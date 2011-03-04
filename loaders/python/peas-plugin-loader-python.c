@@ -556,7 +556,7 @@ peas_plugin_loader_python_init (PeasPluginLoaderPython *self)
   /* initialize python interpreter */
   peas_python_init (self);
 
-  /* loaded_plugins maps EggPluginsInfo to a PythonInfo */
+  /* loaded_plugins maps PeasPluginInfo to a PythonInfo */
   self->priv->loaded_plugins = g_hash_table_new_full (g_direct_hash,
                                                       g_direct_equal,
                                                       NULL,

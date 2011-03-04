@@ -42,6 +42,11 @@ main (int   argc,
 
   testing_extension_set_plugin_ ("extension-" "seed");
 
+  _EXTENSION_TEST ("seed", "garbage-collect", garbage_collect);
+
+  _EXTENSION_TEST ("seed", "provides-valid", provides_valid);
+  _EXTENSION_TEST ("seed", "provides-invalid", provides_invalid);
+
   _EXTENSION_TEST ("seed", "create-valid", create_valid);
   _EXTENSION_TEST ("seed", "create-invalid", create_invalid);
 
@@ -64,5 +69,5 @@ main (int   argc,
   _EXTENSION_TEST ("seed", "properties-readwrite", properties_readwrite);
 #endif
 
-  return g_test_run ();
+  return testing_run_tests ();
 }

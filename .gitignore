@@ -8,6 +8,7 @@
 *~
 *.stamp
 .*.sw[nop]
+*.gcov
 .deps
 .libs
 Makefile

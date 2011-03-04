@@ -114,6 +114,9 @@ test_engine_load_plugin (PeasEngine *engine)
 
   g_assert (peas_engine_load_plugin (engine, info));
   g_assert (peas_plugin_info_is_loaded (info));
+
+  /* Check that we can load a plugin that is already loaded */
+  g_assert (peas_engine_load_plugin (engine, info));
 }
 
 static void
@@ -164,9 +167,12 @@ test_engine_unload_plugin (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  test_engine_load_plugin (engine);
-
   info = peas_engine_get_plugin_info (engine, "loadable");
+
+  /* Check that we can unload a plugin that is not loaded */
+  g_assert (peas_engine_unload_plugin (engine, info));
+
+  test_engine_load_plugin (engine);
 
   g_assert (peas_engine_unload_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
@@ -219,7 +225,9 @@ load_plugin_cb (PeasEngine     *engine,
                 PeasPluginInfo *info,
                 gint           *loaded)
 {
-  ++(*loaded);
+  /* PeasEngine:load is not stopped if loading fails */
+  if (peas_plugin_info_is_loaded (info))
+    ++(*loaded);
 }
 
 static void
@@ -246,36 +254,69 @@ test_engine_loaded_plugins (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   gint loaded = 0;
+  gchar **load_plugins;
   gchar **loaded_plugins = NULL;
 
-  g_signal_connect (engine,
-                    "load-plugin",
-                    G_CALLBACK (load_plugin_cb),
-                    (gpointer) &loaded);
-  g_signal_connect (engine,
-                    "unload-plugin",
-                    G_CALLBACK (unload_plugin_cb),
-                    (gpointer) &loaded);
+  g_signal_connect_after (engine,
+                          "load-plugin",
+                          G_CALLBACK (load_plugin_cb),
+                          (gpointer) &loaded);
+  g_signal_connect_after (engine,
+                          "unload-plugin",
+                          G_CALLBACK (unload_plugin_cb),
+                          (gpointer) &loaded);
   g_signal_connect (engine,
                     "notify::loaded-plugins",
                     G_CALLBACK (notify_loaded_plugins_cb),
                     (gpointer) &loaded_plugins);
 
 
+  /* Need to cause the plugin to be unavailable */
+  info = peas_engine_get_plugin_info (engine, "unavailable");
+  g_assert (!peas_engine_load_plugin (engine, info));
+
   info = peas_engine_get_plugin_info (engine, "loadable");
 
-  g_assert (peas_engine_load_plugin (engine, info));
+  g_object_notify (G_OBJECT (engine), "loaded-plugins");
+
+
+  /* Unload all plugins */
+  peas_engine_set_loaded_plugins (engine, NULL);
+  g_assert_cmpint (loaded, ==, 0);
+  g_assert (loaded_plugins != NULL);
+  g_assert (loaded_plugins[0] == NULL);
+
+  load_plugins = g_new0 (gchar *, 1);
+  peas_engine_set_loaded_plugins (engine, (const gchar **) load_plugins);
+  g_strfreev (load_plugins);
+
+  g_assert_cmpint (loaded, ==, 0);
+  g_assert (loaded_plugins != NULL);
+  g_assert (loaded_plugins[0] == NULL);
+
+
+  /* Load a plugin */
+  load_plugins = g_new0 (gchar *, 2);
+  load_plugins[0] = g_strdup ("loadable");
+  peas_engine_set_loaded_plugins (engine, (const gchar **) load_plugins);
+  g_strfreev (load_plugins);
 
   g_assert_cmpint (loaded, ==, 1);
   g_assert (loaded_plugins != NULL);
   g_assert_cmpstr (loaded_plugins[0], ==, "loadable");
   g_assert (loaded_plugins[1] == NULL);
 
-  g_assert (peas_engine_unload_plugin (engine, info));
 
+  /* Try to load an unavailable plugin */
+  load_plugins = g_new0 (gchar *, 2);
+  load_plugins[0] = g_strdup ("unavailable");
+  peas_engine_set_loaded_plugins (engine, (const gchar **) load_plugins);
+  g_strfreev (load_plugins);
+
+  g_assert_cmpint (loaded, ==, 0);
   g_assert (loaded_plugins != NULL);
   g_assert (loaded_plugins[0] == NULL);
-  g_assert_cmpint (loaded, ==, 0);
+
 
   g_assert (peas_engine_load_plugin (engine, info));
 
@@ -321,7 +362,15 @@ test_engine_enable_loader (PeasEngine *engine)
    * a plugin if it's loader is not enabled.
    */
 
-  info = peas_engine_get_plugin_info (engine, "loader-disabled");
+  info = peas_engine_get_plugin_info (engine, "disabled-loader");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, NULL));
+
+
+  info = peas_engine_get_plugin_info (engine, "invalid-loader");
+  peas_engine_enable_loader (engine, "invalid");
 
   g_assert (!peas_engine_load_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
@@ -333,11 +382,20 @@ test_engine_enable_loader (PeasEngine *engine)
 }
 
 static void
+test_engine_nonexistent_search_path (PeasEngine *engine)
+{
+  /* We use /nowhere as it is also used in configure.ac */
+  peas_engine_add_search_path (engine, "/nowhere", NULL);
+}
+
+
+static void
 test_engine_shutdown (PeasEngine *engine)
 {
   testing_engine_free (engine);
 
   /* Should be able to shutdown multiple times */
+  peas_engine_shutdown ();
   peas_engine_shutdown ();
 
   /* Cannot get the default as libpeas has been shutdown */
@@ -384,10 +442,12 @@ main (int    argc,
   TEST ("nonexistent-loader", nonexistent_loader);
   TEST ("enable-loader", enable_loader);
 
+  TEST ("nonexistent-search-path", nonexistent_search_path);
+
   /* MUST be last */
   TEST ("shutdown", shutdown);
 
 #undef TEST
 
-  return g_test_run ();
+  return testing_run_tests ();
 }

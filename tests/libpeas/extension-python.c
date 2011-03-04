@@ -42,6 +42,11 @@ main (int   argc,
 
   testing_extension_set_plugin_ ("extension-" "python");
 
+  _EXTENSION_TEST ("python", "garbage-collect", garbage_collect);
+
+  _EXTENSION_TEST ("python", "provides-valid", provides_valid);
+  _EXTENSION_TEST ("python", "provides-invalid", provides_invalid);
+
   _EXTENSION_TEST ("python", "create-valid", create_valid);
   _EXTENSION_TEST ("python", "create-invalid", create_invalid);
 
@@ -62,5 +67,5 @@ main (int   argc,
   _EXTENSION_TEST ("python", "properties-readwrite", properties_readwrite);
 #endif
 
-  return g_test_run ();
+  return testing_run_tests ();
 }

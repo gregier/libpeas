@@ -61,7 +61,7 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
   PeasObjectModule *module;
   const gchar *module_name;
 
-  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
+  module_name = peas_plugin_info_get_module_name (info);
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
 
@@ -75,7 +75,7 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
                                        TRUE);
 
       g_hash_table_insert (cloader->priv->loaded_plugins,
-                           (gpointer) module_name, module);
+                           g_strdup (module_name), module);
       g_debug ("Insert module '%s' into C module set", module_name);
     }
 
@@ -99,7 +99,7 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
   PeasObjectModule *module;
   const gchar *module_name;
 
-  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
+  module_name = peas_plugin_info_get_module_name (info);
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
   g_return_val_if_fail (module != NULL, FALSE);
@@ -120,7 +120,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   gpointer instance;
   const gchar *module_name;
 
-  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
+  module_name = peas_plugin_info_get_module_name (info);
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
   g_return_val_if_fail (module != NULL, NULL);
@@ -172,7 +172,7 @@ peas_plugin_loader_c_unload (PeasPluginLoader *loader,
   PeasObjectModule *module;
   const gchar *module_name;
 
-  module_name = g_intern_string (peas_plugin_info_get_module_name (info));
+  module_name = peas_plugin_info_get_module_name (info);
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
 
@@ -188,8 +188,10 @@ peas_plugin_loader_c_init (PeasPluginLoaderC *self)
                                             PeasPluginLoaderCPrivate);
 
   /* loaded_plugins maps PeasPluginInfo:module-name to a PeasObjectModule */
-  self->priv->loaded_plugins = g_hash_table_new (g_direct_hash,
-                                                 g_direct_equal);
+  self->priv->loaded_plugins = g_hash_table_new_full (g_str_hash,
+                                                      g_str_equal,
+                                                      g_free,
+                                                      NULL);
 }
 
 static void

@@ -3,9 +3,11 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc --enable-introspection
 
 SUBDIRS = libpeas loaders
+GCOVDIRS = libpeas loaders
 
 if ENABLE_GTK
 SUBDIRS += libpeas-gtk peas-demo
+GCOVDIRS += libpeas-gtk
 endif
 
 SUBDIRS += tests data po docs
@@ -30,4 +32,22 @@ test test-gdb test-valgrind test-callgrind test-report perf-report full-report: 
 demo: all
 	@cd peas-demo && $(MAKE) $(AM_MAKEFLAGS) $(@)
 
-.PHONY: all test test-gdb test-report perf-report full-report demo
+if GCOV_ENABLED
+
+gcov: test
+	@for dir in $(GCOVDIRS); do \
+	   (cd $$dir && $(MAKE) $(AM_MAKEFLAGS) $(@)); \
+	 done
+
+all-local:
+	@find . -name "*.gcda" -delete && find . -name "*.[ch].gcov" -delete
+
+else
+
+gcov:
+	@echo "You need to reconfigure with --enable-gcov"
+
+endif	# GCOV_ENABLED
+
+.PHONY: test test-gdb test-valgrind test-callgrind \
+        test-report perf-report full-report gcov demo

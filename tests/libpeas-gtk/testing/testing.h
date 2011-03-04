@@ -27,8 +27,12 @@
 
 G_BEGIN_DECLS
 
+void            testing_init                     (void);
+
 PeasEngine     *testing_engine_new               (void);
 void            testing_engine_free              (PeasEngine *engine);
+
+int             testing_run_tests                (void);
 
 PeasPluginInfo *testing_get_plugin_info_for_iter (PeasGtkPluginManagerView *view,
                                                   GtkTreeIter              *iter);

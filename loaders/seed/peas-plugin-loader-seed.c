@@ -241,15 +241,21 @@ peas_plugin_loader_seed_unload (PeasPluginLoader *loader,
     return;
 
   g_hash_table_remove (sloader->loaded_plugins, info);
-  seed_value_unprotect (sinfo->context, sinfo->extensions);
-  seed_context_unref (sinfo->context);
-  g_slice_free (SeedInfo, sinfo);
 }
 
 static void
 peas_plugin_loader_seed_garbage_collect (PeasPluginLoader *loader)
 {
   seed_context_collect (seed->context);
+}
+
+static void
+destroy_seed_info (SeedInfo *info)
+{
+  seed_value_unprotect (info->context, info->extensions);
+  seed_context_unref (info->context);
+
+  g_slice_free (SeedInfo, info);
 }
 
 static void
@@ -261,13 +267,28 @@ peas_plugin_loader_seed_init (PeasPluginLoaderSeed *sloader)
   if (!seed)
     seed = seed_init (NULL, NULL);
 
-  sloader->loaded_plugins = g_hash_table_new (g_direct_hash, g_direct_equal);
+  sloader->loaded_plugins = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+                                                   NULL,
+                                                   (GDestroyNotify) destroy_seed_info);
+}
+
+static void
+peas_plugin_loader_seed_finalize (GObject *object)
+{
+  PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (object);
+
+  g_hash_table_destroy (sloader->loaded_plugins);
+
+  G_OBJECT_CLASS (peas_plugin_loader_seed_parent_class)->finalize (object);
 }
 
 static void
 peas_plugin_loader_seed_class_init (PeasPluginLoaderSeedClass *klass)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasPluginLoaderClass *loader_class = PEAS_PLUGIN_LOADER_CLASS (klass);
+
+  object_class->finalize = peas_plugin_loader_seed_finalize;
 
   loader_class->add_module_directory = peas_plugin_loader_seed_add_module_directory;
   loader_class->load = peas_plugin_loader_seed_load;
