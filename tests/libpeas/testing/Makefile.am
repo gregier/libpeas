@@ -2,6 +2,7 @@ INCLUDES = \
 	-I$(top_srcdir)				\
 	-I$(srcdir)				\
 	-I$(srcdir)/../introspection		\
+	-I$(srcdir)/../../testing-util		\
 	$(PEAS_CFLAGS)				\
 	$(WARN_CFLAGS)				\
 	$(DISABLE_DEPRECATED)			\
@@ -16,7 +17,8 @@ libtesting_la_LDFLAGS = \
 libtesting_la_LIBADD = \
 	$(PEAS_LIBS)					\
 	$(top_builddir)/libpeas/libpeas-1.0.la		\
-	../introspection/libintrospection-1.0.la
+	../introspection/libintrospection-1.0.la	\
+	../../testing-util/libtesting-util.la
 
 libtesting_la_SOURCES = \
 	testing.c		\

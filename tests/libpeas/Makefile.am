@@ -3,10 +3,11 @@ include $(top_srcdir)/tests/Makefile.tests
 SUBDIRS = introspection plugins testing
 
 INCLUDES = \
-	-I$(top_srcdir)		\
-	-I$(srcdir)		\
-	$(PEAS_CFLAGS)		\
-	$(WARN_CFLAGS)		\
+	-I$(top_srcdir)			\
+	-I$(srcdir)			\
+	-I$(srcdir)/../testing-util	\
+	$(PEAS_CFLAGS)			\
+	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED)
 
 noinst_PROGRAMS = $(TEST_PROGS)
@@ -14,8 +15,9 @@ noinst_PROGRAMS = $(TEST_PROGS)
 progs_ldadd = \
 	$(PEAS_LIBS)				\
 	$(top_builddir)/libpeas/libpeas-1.0.la	\
+	./introspection/libintrospection-1.0.la	\
 	./testing/libtesting.la			\
-	./introspection/libintrospection-1.0.la
+	../testing-util/libtesting-util.la
 
 
 TEST_PROGS     += engine

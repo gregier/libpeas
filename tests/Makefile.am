@@ -1,6 +1,6 @@
 GTESTER_REPORT = gtester-report
 
-SUBDIRS = plugins libpeas
+SUBDIRS = plugins testing-util libpeas
 
 if ENABLE_GTK
 SUBDIRS += libpeas-gtk
@@ -8,7 +8,7 @@ endif
 
 test test-gdb test-valgrind test-callgrind:
 	@for subdir in $(SUBDIRS) ; do \
-	   test "$$subdir" = "plugins" || \
+	   test "$$subdir" = "plugins" -o "$$subdir" = "testing-util" || \
 	   ( cd $$subdir && \
 	     if ! $(MAKE) $(AM_MAKEFLAGS) -n run-test-hook 2>/dev/null 1>&2 ; then \
 	       $(MAKE) $(AM_MAKEFLAGS) $(@) ; \

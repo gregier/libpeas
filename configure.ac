@@ -398,6 +398,7 @@ tests/plugins/builtin/Makefile
 tests/plugins/has-dep/Makefile
 tests/plugins/loadable/Makefile
 tests/plugins/self-dep/Makefile
+tests/testing-util/Makefile
 ])
 
 AC_OUTPUT

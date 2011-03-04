@@ -1,8 +1,8 @@
 /*
- * testing.h
+ * testing-util.h
  * This file is part of libpeas
  *
- * Copyright (C) 2010 - Garrett Regier
+ * Copyright (C) 2011 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -19,22 +19,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __TESTING_H__
-#define __TESTING_H__
+#ifndef __TESTING_UTIL_H__
+#define __TESTING_UTIL_H__
 
 #include <libpeas/peas-engine.h>
-#include <testing-util.h>
 
 G_BEGIN_DECLS
 
-void        testing_init        (void);
+void        testing_util_init        (void);
 
-PeasEngine *testing_engine_new  (void);
+PeasEngine *testing_util_engine_new  (void);
+void        testing_util_engine_free (PeasEngine *engine);
 
-/* libtesting-util functions which do not need to be overridden */
-#define testing_engine_free testing_util_engine_free
-#define testing_run_tests   testing_util_run_tests
+int         testing_util_run_tests   (void);
 
 G_END_DECLS
 
-#endif /* __TESTING_H__ */
+#endif /* __TESTING_UTIL_H__ */

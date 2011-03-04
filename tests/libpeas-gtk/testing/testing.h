@@ -24,15 +24,13 @@
 
 #include <libpeas/peas.h>
 #include <libpeas-gtk/peas-gtk.h>
+#include <testing-util.h>
 
 G_BEGIN_DECLS
 
 void            testing_init                     (void);
 
 PeasEngine     *testing_engine_new               (void);
-void            testing_engine_free              (PeasEngine *engine);
-
-int             testing_run_tests                (void);
 
 PeasPluginInfo *testing_get_plugin_info_for_iter (PeasGtkPluginManagerView *view,
                                                   GtkTreeIter              *iter);
@@ -41,6 +39,10 @@ gboolean        testing_get_iter_for_plugin_info (PeasGtkPluginManagerView *view
                                                   GtkTreeIter              *iter);
 
 void            testing_show_widget              (gpointer                  widget);
+
+/* libtesting-util functions which do not need to be overridden */
+#define testing_engine_free testing_util_engine_free
+#define testing_run_tests   testing_util_run_tests
 
 G_END_DECLS
 

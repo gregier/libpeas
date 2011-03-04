@@ -8,6 +8,7 @@ run-test-hook:
 INCLUDES = \
 	-I$(top_srcdir)			\
 	-I$(srcdir)			\
+	-I$(srcdir)/../testing-util	\
 	$(PEAS_CFLAGS)			\
 	$(PEAS_GTK_CFLAGS)		\
 	$(WARN_CFLAGS)			\
@@ -20,7 +21,8 @@ progs_ldadd = \
 	$(PEAS_GTK_LIBS)				\
 	$(top_builddir)/libpeas/libpeas-1.0.la		\
 	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
-	./testing/libtesting.la
+	./testing/libtesting.la				\
+	../testing-util/libtesting-util.la
 
 TEST_PROGS += \
 	plugin-manager		\
