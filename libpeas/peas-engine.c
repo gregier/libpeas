@@ -821,6 +821,8 @@ load_plugin (PeasEngine     *engine,
       goto error;
     }
 
+  g_debug ("Loaded plugin '%s'", info->module_name);
+
   return TRUE;
 
 error:
@@ -902,6 +904,8 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
 
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
+
+  g_debug ("Unloaded plugin '%s'", info->module_name);
 
   if (!engine->priv->in_dispose)
     g_object_notify (G_OBJECT (engine), "loaded-plugins");
