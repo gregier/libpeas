@@ -23,6 +23,8 @@
 #include <config.h>
 #endif
 
+#include <string.h>
+
 #include <gobject/gvaluecollector.h>
 
 #include "peas-helpers.h"
@@ -97,6 +99,8 @@ _valist_to_parameter_list (GType         the_type,
         {
           n_allocated_params += 16;
           *params = g_renew (GParameter, *params, n_allocated_params);
+          memset (*params + sizeof (GParameter) * (n_allocated_params - 16),
+                  0, sizeof (GParameter) * 16);
         }
 
       (*params)[*n_params].name = name;
