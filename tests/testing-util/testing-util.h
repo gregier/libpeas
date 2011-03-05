@@ -26,12 +26,15 @@
 
 G_BEGIN_DECLS
 
-void        testing_util_init        (void);
+void        testing_util_init          (void);
 
-PeasEngine *testing_util_engine_new  (void);
-void        testing_util_engine_free (PeasEngine *engine);
+PeasEngine *testing_util_engine_new    (void);
+void        testing_util_engine_free   (PeasEngine *engine);
 
-int         testing_util_run_tests   (void);
+int         testing_util_run_tests     (void);
+
+void        testing_util_push_log_hook (const gchar *pattern);
+void        testing_util_pop_log_hook  (void);
 
 G_END_DECLS
 

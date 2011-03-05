@@ -61,7 +61,7 @@ testing_extension_test_teardown_ (TestingExtensionFixture_ *fixture,
 
 void
 testing_extension_test_runner_  (TestingExtensionFixture_ *fixture,
-                               gconstpointer             data)
+                                 gconstpointer             data)
 {
   ((void (*) (PeasEngine *engine)) data) (fixture->engine);
 }
@@ -99,6 +99,8 @@ testing_extension_provides_invalid_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
+  testing_util_push_log_hook ("*assertion `G_TYPE_IS_INTERFACE (*)' failed");
+
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
   /* Not loaded */
@@ -108,23 +110,11 @@ testing_extension_provides_invalid_ (PeasEngine *engine)
   g_assert (peas_engine_load_plugin (engine, info));
 
   /* Invalid GType */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_provides_extension (engine, info, G_TYPE_INVALID);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*CRITICAL*");
+  peas_engine_provides_extension (engine, info, G_TYPE_INVALID);
 
 
   /* GObject but not a GInterface */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_provides_extension (engine, info, PEAS_TYPE_ENGINE);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*CRITICAL*");
+  peas_engine_provides_extension (engine, info, PEAS_TYPE_ENGINE);
 
 
   /* Does not implement this GType */
@@ -156,51 +146,37 @@ void
 testing_extension_create_invalid_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
+  PeasExtension *extension;
+
+  testing_util_push_log_hook ("*assertion `peas_plugin_info_is_loaded (*)' failed");
+  testing_util_push_log_hook ("*assertion `G_TYPE_IS_INTERFACE (*)' failed");
+  testing_util_push_log_hook ("*does not provide a 'IntrospectionUnimplemented' extension");
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
   /* Not loaded */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_create_extension (engine, info,
-                                    INTROSPECTION_TYPE_CALLABLE,
-                                    NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_CALLABLE,
+                                            NULL);
+  g_assert (!PEAS_IS_EXTENSION (extension));
 
   g_assert (peas_engine_load_plugin (engine, info));
 
   /* Invalid GType */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_create_extension (engine, info, G_TYPE_INVALID, NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*CRITICAL*");
+  extension = peas_engine_create_extension (engine, info, G_TYPE_INVALID, NULL);
+  g_assert (!PEAS_IS_EXTENSION (extension));
 
 
   /* GObject but not a GInterface */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_create_extension (engine, info, PEAS_TYPE_ENGINE, NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*CRITICAL*");
+  extension = peas_engine_create_extension (engine, info, PEAS_TYPE_ENGINE, NULL);
+  g_assert (!PEAS_IS_EXTENSION (extension));
 
 
   /* Does not implement this GType */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_create_extension (engine, info,
-                                    INTROSPECTION_TYPE_UNIMPLEMENTED,
-                                    NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*WARNING*");
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_UNIMPLEMENTED,
+                                            NULL);
+  g_assert (!PEAS_IS_EXTENSION (extension));
 }
 
 void
@@ -224,6 +200,8 @@ testing_extension_call_invalid_ (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
 
+  testing_util_push_log_hook ("*Method 'IntrospectionCallable.invalid' not found*");
+
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
   g_assert (peas_engine_load_plugin (engine, info));
@@ -232,13 +210,7 @@ testing_extension_call_invalid_ (PeasEngine *engine)
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_extension_call (extension, "invalid", NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*Method 'IntrospectionCallable.invalid' not found*");
+  peas_extension_call (extension, "invalid", NULL);
 
   g_object_unref (extension);
 }
@@ -362,6 +334,9 @@ testing_extension_properties_construct_only_ (PeasEngine *engine)
   PeasExtension *extension;
   gchar *construct_only;
 
+  testing_util_push_log_hook ("*property \"construct-only\" * "
+                              "can't be set after construction");
+
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
   FILE *saved_stdout = stdout;
@@ -377,18 +352,11 @@ testing_extension_properties_construct_only_ (PeasEngine *engine)
                                             "construct-only", "my-construct-only",
                                             NULL);
 
-
   g_object_get (extension, "construct-only", &construct_only, NULL);
   g_assert_cmpstr (construct_only, ==, "my-construct-only");
   g_free (construct_only);
 
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      g_object_set (extension, "construct-only", "other-construct-only", NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*WARNING*");
+  g_object_set (extension, "construct-only", "other-construct-only", NULL);
 
   g_object_unref (extension);
 }
@@ -399,6 +367,8 @@ testing_extension_properties_read_only_ (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
   gchar *read_only;
+
+  testing_util_push_log_hook ("*property `read-only' * is not writable");
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
@@ -412,13 +382,7 @@ testing_extension_properties_read_only_ (PeasEngine *engine)
   g_assert_cmpstr (read_only, ==, "read-only");
   g_free (read_only);
 
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      g_object_set (extension, "read-only", "my-read-only", NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*WARNING*");
+  g_object_set (extension, "read-only", "my-read-only", NULL);
 
   g_object_unref (extension);
 }
@@ -428,6 +392,9 @@ testing_extension_properties_write_only_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
+  gchar *write_only = NULL;
+
+  testing_util_push_log_hook ("*property `write-only' * is not readable");
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
@@ -437,16 +404,7 @@ testing_extension_properties_write_only_ (PeasEngine *engine)
                                             INTROSPECTION_TYPE_PROPERTIES,
                                             NULL);
 
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      gchar *write_only = NULL;
-
-      g_object_get (extension, "write-only", &write_only, NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*WARNING*");
-
+  g_object_get (extension, "write-only", &write_only, NULL);
   g_object_set (extension, "write-only", "my-write-only", NULL);
 
   g_object_unref (extension);

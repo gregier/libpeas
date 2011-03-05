@@ -129,19 +129,16 @@ test_plugin_info_has_dep (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
+  testing_util_push_log_hook ("*assertion `module_name != NULL' failed");
+
   info = peas_engine_get_plugin_info (engine, "full-info");
 
   g_assert (peas_plugin_info_has_dependency (info, "something"));
   g_assert (peas_plugin_info_has_dependency (info, "something-else"));
   g_assert (!peas_plugin_info_has_dependency (info, "does-not-exist"));
 
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_plugin_info_has_dependency (info, NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*CRITICAL*");
+
+  peas_plugin_info_has_dependency (info, NULL);
 
 
   info = peas_engine_get_plugin_info (engine, "min-info");

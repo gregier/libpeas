@@ -32,13 +32,22 @@
 
 #include "testing-util.h"
 
-static PeasEngine *engine = NULL;
-static GLogFunc default_log_func;
+typedef struct {
+  const gchar *pattern;
+  gboolean hit;
+} LogHook;
 
-/* These are warning that just have to happen for testing
- * purposes and as such we don't want to abort on them.
+static PeasEngine *engine = NULL;
+static GPtrArray *log_hooks = NULL;
+
+/* These are warnings and criticals that just have to happen
+ * for testing purposes and as such we don't want to abort on them.
  *
- * Would be nice if we could assert that they were...
+ * If the warnings are for specific tests use
+ * testing_push_log_hook() and testing_pop_log_hook() which
+ * will assert that the warning or critical actually happened.
+ *
+ * Don't bother putting errors in here as GLib always aborts on errors.
  */
 static const gchar *allowed_patterns[] = {
   "*does-not-exist*",
@@ -49,8 +58,6 @@ static const gchar *allowed_patterns[] = {
   "*Error loading *info-missing-iage.plugin*",
   "*Error loading *info-missing-module.plugin*",
   "*Error loading *info-missing-name.plugin*",
-  "*Could not find loader 'disabled'*",
-  "*Could not find loader 'invalid'*",
   "*Bad plugin file: *invalid.plugin*",
   "*Error loading *invalid.plugin*"
 };
@@ -61,33 +68,57 @@ log_handler (const gchar    *log_domain,
              const gchar    *message,
              gpointer        user_data)
 {
-  gint i;
+  guint i;
 
+  /* We always want to log debug, info and message logs */
   if ((log_level & G_LOG_LEVEL_DEBUG) != 0 ||
       (log_level & G_LOG_LEVEL_INFO) != 0 ||
       (log_level & G_LOG_LEVEL_MESSAGE) != 0)
     {
-      default_log_func (log_domain, log_level, message, user_data);
+      g_log_default_handler (log_domain, log_level, message, user_data);
       return;
     }
 
-  if ((log_level & G_LOG_LEVEL_CRITICAL) != 0 ||
-      (log_level & G_LOG_LEVEL_ERROR) != 0)
+  /* Don't bother trying to match errors as GLib always aborts on them */
+  if ((log_level & G_LOG_LEVEL_ERROR) != 0)
     {
-      goto out;
+      g_log_default_handler (log_domain, log_level, message, user_data);
+
+      /* Call abort() as GLib may call G_BREAKPOINT() instead */
+      abort ();
     }
 
+  for (i = 0; i < log_hooks->len; ++i)
+    {
+      LogHook *hook = g_ptr_array_index (log_hooks, i);
+
+      if (g_pattern_match_simple (hook->pattern, message))
+        {
+          hook->hit = TRUE;
+          return;
+        }
+    }
+
+  /* Check the allowed_patterns after the log hooks to
+   * avoid issues when an allowed_pattern would match a hook
+   */
   for (i = 0; i < G_N_ELEMENTS (allowed_patterns); ++i)
     {
       if (g_pattern_match_simple (allowed_patterns[i], message))
         return;
     }
 
-out:
+  /* Warnings and criticals are not allowed to be unhandled */
+  if ((log_level & G_LOG_LEVEL_WARNING) != 0)
+    message = g_strdup_printf ("Unhandled warning: %s: %s", log_domain, message);
+  else
+    message = g_strdup_printf ("Unhandled critical: %s: %s", log_domain, message);
 
-  default_log_func (log_domain, log_level, message, user_data);
+  /* Use the default log handler directly to avoid recurse complaints */
+  g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,
+                         message, user_data);
 
-  /* Make sure we abort for warnings */
+  /* The default handler does not actually abort */
   abort ();
 }
 
@@ -100,10 +131,10 @@ testing_util_init (void)
   if (initialized)
     return;
 
-  /* Don't always abort on warnings */
-  g_log_set_always_fatal (G_LOG_LEVEL_CRITICAL);
+  /* Don't abort on warnings or criticals */
+  g_log_set_always_fatal (G_LOG_LEVEL_ERROR);
 
-  default_log_func = g_log_set_default_handler (log_handler, NULL);
+  g_log_set_default_handler (log_handler, NULL);
 
   g_irepository_prepend_search_path (BUILDDIR "/libpeas");
 
@@ -111,6 +142,8 @@ testing_util_init (void)
 
   g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
   g_assert_no_error (error);
+
+  log_hooks = g_ptr_array_new_with_free_func (g_free);
 
   initialized = TRUE;
 }
@@ -145,6 +178,10 @@ testing_util_engine_free (PeasEngine *engine_)
       /* Make sure that at the end of every test the engine is freed */
       g_assert (engine == NULL);
     }
+
+  /* Pop the log hooks so the test cases don't have to */
+  while (log_hooks->len > 0)
+    testing_util_pop_log_hook ();
 }
 
 int
@@ -154,10 +191,44 @@ testing_util_run_tests (void)
 
   retval = g_test_run ();
 
+  g_ptr_array_unref (log_hooks);
+
   /* Cannot call this with atexit() because
    * gcov does not register that it was called.
    */
   peas_engine_shutdown ();
 
   return retval;
+}
+
+void
+testing_util_push_log_hook (const gchar *pattern)
+{
+  LogHook *hook;
+
+  g_return_if_fail (log_hooks != NULL);
+  g_return_if_fail (pattern != NULL && *pattern != '\0');
+
+  hook = g_new (LogHook, 1);
+  hook->pattern = pattern;
+  hook->hit = FALSE;
+
+  g_ptr_array_add (log_hooks, hook);
+}
+
+/* Optional - see testing_util_engine_free() */
+void
+testing_util_pop_log_hook (void)
+{
+  LogHook *hook;
+
+  g_return_if_fail (log_hooks != NULL);
+  g_return_if_fail (log_hooks->len > 0);
+  
+  hook = g_ptr_array_index (log_hooks, log_hooks->len - 1);
+
+  if (!hook->hit)
+    g_error ("Log hook was not triggered: '%s'", hook->pattern);
+
+  g_ptr_array_remove_index (log_hooks, log_hooks->len - 1);
 }

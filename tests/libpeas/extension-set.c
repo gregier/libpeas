@@ -179,15 +179,11 @@ test_extension_set_call_valid (TestFixture *fixture)
 static void
 test_extension_set_call_invalid (TestFixture *fixture)
 {
+  testing_util_push_log_hook ("*Method 'PeasActivatable.invalid' not found*");
+
   test_extension_set_activate (fixture);
 
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_extension_set_call (fixture->extension_set, "invalid", NULL);
-      exit (0);
-    }
-  g_test_trap_assert_failed ();
-  g_test_trap_assert_stderr ("*Method 'PeasActivatable.invalid' not found*");
+  peas_extension_set_call (fixture->extension_set, "invalid", NULL);
 }
 
 int

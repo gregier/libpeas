@@ -1036,6 +1036,11 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   GParameter *parameters;
   PeasExtension *exten;
 
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (info != NULL, NULL);
+  g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
+
   type_struct = _g_type_struct_ref (extension_type);
 
   if (!_valist_to_parameter_list (extension_type, type_struct, first_property,
@@ -1092,6 +1097,11 @@ peas_engine_create_extension (PeasEngine     *engine,
 {
   va_list var_args;
   PeasExtension *exten;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (info != NULL, NULL);
+  g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
   va_start (var_args, first_property);
   exten = peas_engine_create_extension_valist (engine, info, extension_type,
