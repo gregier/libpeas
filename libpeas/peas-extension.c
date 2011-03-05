@@ -240,7 +240,10 @@ peas_extension_call_valist (PeasExtension *exten,
   g_return_val_if_fail (method_name != NULL, FALSE);
 
   callable_info = peas_gi_get_method_info (exten->priv->exten_type, method_name);
-  g_return_val_if_fail (callable_info != NULL, FALSE);
+
+  /* Already warned */
+  if (callable_info == NULL)
+    return FALSE;
 
   n_args = g_callable_info_get_n_args (callable_info);
   g_return_val_if_fail (n_args >= 0, FALSE);
