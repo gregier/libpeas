@@ -83,25 +83,25 @@ find_python_extension_type (PeasPluginInfo *info,
   pytype = PyObject_GetAttrString (pygtype, "pytype");
   g_return_val_if_fail (pytype != NULL, NULL);
 
-  if (pytype == Py_None)
-    return NULL;
-
-  while (PyDict_Next (locals, &pos, &key, &value))
+  if (pytype != Py_None)
     {
-      if (!PyType_Check (value))
-        continue;
-
-      switch (PyObject_IsSubclass (value, pytype))
+      while (PyDict_Next (locals, &pos, &key, &value))
         {
-        case 1:
-          Py_DECREF (pygtype);
-          return (PyTypeObject *) value;
-        case 0:
-          continue;
-        case -1:
-        default:
-          PyErr_Print ();
-          continue;
+          if (!PyType_Check (value))
+            continue;
+
+          switch (PyObject_IsSubclass (value, pytype))
+            {
+            case 1:
+              Py_DECREF (pygtype);
+              return (PyTypeObject *) value;
+            case 0:
+              continue;
+            case -1:
+            default:
+              PyErr_Print ();
+              continue;
+            }
         }
     }
 
@@ -300,6 +300,8 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
     }
 
   add_python_info (pyloader, info, pymodule);
+
+  Py_DECREF (pymodule);
 
   pyg_gil_state_release (state);
 
