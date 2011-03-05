@@ -83,14 +83,14 @@ _valist_to_parameter_list (GType         the_type,
   name = first_property_name;
   while (name)
     {
-      gchar *error = NULL;
+      gchar *error_msg = NULL;
       GParamSpec *pspec = _g_type_struct_find_property (the_type, type_struct, name);
 
       if (!pspec)
         {
           g_warning ("%s: type '%s' has no property named '%s'",
                      G_STRFUNC, g_type_name (the_type), name);
-          return FALSE;
+          goto error;
         }
 
       if (*n_params >= n_allocated_params)
@@ -101,17 +101,28 @@ _valist_to_parameter_list (GType         the_type,
 
       (*params)[*n_params].name = name;
       G_VALUE_COLLECT_INIT (&(*params)[*n_params].value, pspec->value_type,
-                            args, 0, &error);
-      if (error)
-        {
-          g_warning ("%s: %s", G_STRFUNC, error);
-          g_free (error);
-          g_value_unset (&(*params)[*n_params].value);
-          return FALSE;
-        }
+                            args, 0, &error_msg);
+
       (*n_params)++;
+
+      if (error_msg)
+        {
+          g_warning ("%s: %s", G_STRFUNC, error_msg);
+          g_free (error_msg);
+          goto error;
+        }
+
       name = va_arg (args, gchar*);
     }
 
   return TRUE;
+
+error:
+
+  for (; *n_params > 0; --(*n_params))
+    g_value_unset (&(*params)[*n_params].value);
+
+  g_free (*params);
+
+  return FALSE;
 }
