@@ -172,11 +172,10 @@ AC_ARG_ENABLE([gcov],
 	      [enable_gcov=no])
 
 if test "x$enable_gcov" = "xno"; then
-        found_gcov="no (disabled, use --enable-gcov to enable)"
+        enable_gcov="no (disabled, use --enable-gcov to enable)"
         AC_MSG_CHECKING([whether to build with coverage testing])
 else
-        enable_gcov=yes
-        AC_PATH_PROG([GCOV], [gcov], [enable_gcov=no])
+        AC_PATH_PROG([enable_gcov], [gcov], [no])
         AC_MSG_CHECKING([whether to build with coverage testing])
 
         if test "x$enable_gcov" = "xno"; then
@@ -184,6 +183,7 @@ else
         elif test "x$GCC" = "xno"; then
                 AC_MSG_ERROR([You need to use gcc to build with coverage testing])
         else
+                enable_gcov=yes
                 GCOV_CFLAGS="-g -O0 -fprofile-arcs -ftest-coverage"
                 GCOV_LDFLAGS="-lgcov"
         fi
