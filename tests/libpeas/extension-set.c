@@ -30,10 +30,6 @@
 
 #include "testing/testing.h"
 
-/* TODO:
- *        - Check that extensions sets only contain extensions of their type
- */
-
 typedef struct _TestFixture TestFixture;
 
 struct _TestFixture {
@@ -136,6 +132,10 @@ test_extension_set_activate (PeasEngine *engine)
       g_assert (peas_engine_load_plugin (engine, info));
     }
 
+  /* Load a plugin that does not provide a PeasActivatable */
+  info = peas_engine_get_plugin_info (engine, "extension-c");
+  g_assert (peas_engine_load_plugin (engine, info));
+
   g_assert_cmpint (active, ==, G_N_ELEMENTS (loadable_plugins));
 
   g_object_unref (extension_set);
@@ -158,6 +158,10 @@ test_extension_set_deactivate (PeasEngine *engine)
   sync_active_extensions (extension_set, &active);
 
   test_extension_set_activate (engine);
+
+  /* Unload the plugin that does not provide a PeasActivatable */
+  info = peas_engine_get_plugin_info (engine, "extension-c");
+  g_assert (peas_engine_unload_plugin (engine, info));
 
   /* To keep deps in order */
   for (i = G_N_ELEMENTS (loadable_plugins); i > 0; --i)
