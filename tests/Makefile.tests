@@ -61,6 +61,6 @@ generate-report: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 G_SLICE=debug-blocks $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
 
-CLEANFILES = vgdump-*
+CLEANFILES = cgdump-* vgdump-*
 
 .PHONY: test test-gdb test-valgrind test-callgrind generate-report
