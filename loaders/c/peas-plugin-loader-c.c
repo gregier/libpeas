@@ -31,8 +31,7 @@
 #include <libpeas/peas-object-module.h>
 #include <libpeas/peas-extension-base.h>
 
-struct _PeasPluginLoaderCPrivate
-{
+struct _PeasPluginLoaderCPrivate {
   GHashTable *loaded_plugins;
 };
 
@@ -76,7 +75,6 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
 
       g_hash_table_insert (cloader->priv->loaded_plugins,
                            g_strdup (module_name), module);
-      g_debug ("Insert module '%s' into C module set", module_name);
     }
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
@@ -102,7 +100,6 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
   module_name = peas_plugin_info_get_module_name (info);
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
-  g_return_val_if_fail (module != NULL, FALSE);
 
   return peas_object_module_provides_object (module, exten_type);
 }
@@ -123,7 +120,6 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   module_name = peas_plugin_info_get_module_name (info);
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
-  g_return_val_if_fail (module != NULL, NULL);
 
   /* We want to add a "plugin-info" property so we can pass it to
    * the extension if it inherits from PeasExtensionBase. No need to
@@ -151,12 +147,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   g_free (exten_parameters);
 
   if (instance == NULL)
-    {
-      g_debug ("Plugin '%s' does not provide a '%s' extension",
-               peas_plugin_info_get_module_name (info),
-               g_type_name (exten_type));
-      return NULL;
-    }
+    return NULL;
 
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, exten_type), NULL);
@@ -176,7 +167,6 @@ peas_plugin_loader_c_unload (PeasPluginLoader *loader,
   module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
                                                      module_name);
 
-  g_debug ("Unloading plugin '%s'", module_name);
   g_type_module_unuse (G_TYPE_MODULE (module));
 }
 

@@ -54,7 +54,7 @@ typedef struct {
 
 static PyObject *PyGObject_Type;
 
-static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
+static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
                                                              const gchar            *module_path);
 
 G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER);
@@ -123,9 +123,6 @@ peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
-  if (pyinfo == NULL)
-    return FALSE;
-
   state = pyg_gil_state_ensure ();
   extension_type = find_python_extension_type (info, exten_type, pyinfo->module);
   pyg_gil_state_release (state);
@@ -151,9 +148,6 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   PeasExtension *exten;
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
-
-  if (pyinfo == NULL)
-    return NULL;
 
   state = pyg_gil_state_ensure ();
 
@@ -318,17 +312,6 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
                                   PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PythonInfo *pyinfo;
-  PyGILState_STATE state;
-
-  pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
-
-  if (!pyinfo)
-    return;
-
-  state = pyg_gil_state_ensure ();
-  Py_XDECREF (pyinfo->module);
-  pyg_gil_state_release (state);
 
   g_hash_table_remove (pyloader->priv->loaded_plugins, info);
 }
@@ -356,12 +339,10 @@ run_gc (PeasPluginLoaderPython *loader)
 static void
 peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
-  PeasPluginLoaderPython *pyloader;
+  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
 
-  if (!Py_IsInitialized ())
+  if (pyloader->priv->init_failed)
     return;
-
-  pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
 
   /*
    * We both run the GC right now and we schedule
@@ -406,15 +387,15 @@ peas_python_shutdown (PeasPluginLoaderPython *loader)
  */
 /* NOTE: This must be called with the GIL held */
 static gboolean
-peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *self,
+peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
                                            const gchar            *module_path)
 {
   PyObject *pathlist, *pathstring;
 
-  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (self), FALSE);
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (pyloader), FALSE);
   g_return_val_if_fail (module_path != NULL, FALSE);
 
-  if (!Py_IsInitialized ())
+  if (pyloader->priv->init_failed)
     return FALSE;
 
   pathlist = PySys_GetObject ((char*) "path");
@@ -450,6 +431,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
   if (prgname != NULL)
     argv[0] = prgname;
 
+  /* See http://docs.python.org/c-api/init.html#PySys_SetArgvEx */
 #if PY_VERSION_HEX < 0x02060600
   PySys_SetArgv (1, (char**) argv);
   PyRun_SimpleString ("import sys; sys.path.pop(0)\n");
@@ -540,27 +522,29 @@ static void
 destroy_python_info (PythonInfo *info)
 {
   PyGILState_STATE state = pyg_gil_state_ensure ();
-  Py_XDECREF (info->module);
+
+  Py_DECREF (info->module);
+
   pyg_gil_state_release (state);
 
   g_free (info);
 }
 
 static void
-peas_plugin_loader_python_init (PeasPluginLoaderPython *self)
+peas_plugin_loader_python_init (PeasPluginLoaderPython *pyloader)
 {
-  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
-                                            PEAS_TYPE_PLUGIN_LOADER_PYTHON,
-                                            PeasPluginLoaderPythonPrivate);
+  pyloader->priv = G_TYPE_INSTANCE_GET_PRIVATE (pyloader,
+                                                PEAS_TYPE_PLUGIN_LOADER_PYTHON,
+                                                PeasPluginLoaderPythonPrivate);
 
   /* initialize python interpreter */
-  peas_python_init (self);
+  peas_python_init (pyloader);
 
   /* loaded_plugins maps PeasPluginInfo to a PythonInfo */
-  self->priv->loaded_plugins = g_hash_table_new_full (g_direct_hash,
-                                                      g_direct_equal,
-                                                      NULL,
-                                                      (GDestroyNotify) destroy_python_info);
+  pyloader->priv->loaded_plugins = g_hash_table_new_full (g_direct_hash,
+                                                          g_direct_equal,
+                                                          NULL,
+                                                          (GDestroyNotify) destroy_python_info);
 }
 
 static void

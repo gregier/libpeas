@@ -143,8 +143,6 @@ peas_plugin_loader_seed_provides_extension  (PeasPluginLoader *loader,
   SeedValue extension;
 
   sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
-  if (!sinfo)
-    return FALSE;
 
   extension = seed_object_get_property (sinfo->context,
                                         sinfo->extensions,
@@ -166,14 +164,14 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
   guint i, j;
 
   sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
-  if (!sinfo)
-    return NULL;
 
   /* FIXME: instantiate new object and pass the parameters */
   extension_methods = seed_object_get_property (sinfo->context,
                                                 sinfo->extensions,
                                                 g_type_name (exten_type));
-  if (!extension_methods || seed_value_is_undefined (sinfo->context, extension_methods) || seed_value_is_null (sinfo->context, extension_methods))
+  if (!extension_methods ||
+      seed_value_is_undefined (sinfo->context, extension_methods) ||
+      seed_value_is_null (sinfo->context, extension_methods))
     return NULL;
 
   if (!seed_value_is_object (sinfo->context, extension_methods))
@@ -234,11 +232,6 @@ peas_plugin_loader_seed_unload (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
 {
   PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
-  SeedInfo *sinfo;
-
-  sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
-  if (!sinfo)
-    return;
 
   g_hash_table_remove (sloader->loaded_plugins, info);
 }
