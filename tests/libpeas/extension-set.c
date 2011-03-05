@@ -110,6 +110,32 @@ test_extension_set_create_valid (PeasEngine *engine)
 }
 
 static void
+test_extension_set_create_invalid (PeasEngine *engine)
+{
+  PeasExtensionSet *extension_set;
+
+  testing_util_push_log_hook ("*assertion `G_TYPE_IS_INTERFACE (*)' failed");
+  testing_util_push_log_hook ("*type 'PeasActivatable' has no property named 'invalid-property'");
+
+  /* Invalid GType */
+  extension_set = peas_extension_set_new (engine, G_TYPE_INVALID, NULL);
+  g_assert (!PEAS_IS_EXTENSION_SET (extension_set));
+
+
+  /* GObject but not a GInterface */
+  extension_set = peas_extension_set_new (engine, G_TYPE_OBJECT, NULL);
+  g_assert (!PEAS_IS_EXTENSION_SET (extension_set));
+
+
+  /* Interface does not have an 'invalid-property' property */
+  extension_set = peas_extension_set_new (engine,
+                                          PEAS_TYPE_ACTIVATABLE,
+                                          "invalid-property", "does-not-exist",
+                                          NULL);
+  g_assert (!PEAS_IS_EXTENSION_SET (extension_set));
+}
+
+static void
 test_extension_set_activate (PeasEngine *engine)
 {
   gint i, active;
@@ -252,6 +278,7 @@ main (int    argc,
               test_setup, test_runner, test_teardown)
 
   TEST ("create-valid", create_valid);
+  TEST ("create-invalid", create_invalid);
 
   TEST ("activate", activate);
   TEST ("deactivate", deactivate);
