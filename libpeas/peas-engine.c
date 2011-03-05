@@ -1025,7 +1025,9 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   if (!_valist_to_parameter_list (extension_type, type_struct, first_property,
                                   var_args, &parameters, &n_parameters))
     {
-      g_return_val_if_reached (NULL);
+      /* Already warned */
+      _g_type_struct_unref (extension_type, type_struct);
+      return NULL;
     }
 
   exten = peas_engine_create_extensionv (engine, info, extension_type,

@@ -631,8 +631,9 @@ peas_extension_set_new_valist (PeasEngine  *engine,
   if (!_valist_to_parameter_list (exten_type, type_struct, first_property,
                                   var_args, &parameters, &n_parameters))
     {
-      /* WARNING */
-      g_return_val_if_reached (NULL);
+      /* Already warned */
+      _g_type_struct_unref (exten_type, type_struct);
+      return NULL;
     }
 
   set = peas_extension_set_newv (engine, exten_type, n_parameters, parameters);
