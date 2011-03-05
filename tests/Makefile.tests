@@ -6,6 +6,8 @@ test: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 G_SLICE=debug-blocks $(GTESTER) --verbose $(TEST_PROGS)
 
+if GDB_ENABLED
+
 test-gdb: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
@@ -15,6 +17,15 @@ test-gdb: $(TEST_PROGS)
 	     exit 1 ; \
 	   } \
 	 done
+
+else
+
+test-gdb:
+	@echo "You need GDB"
+
+endif # GDB_ENABLED
+
+if VALGRIND_ENABLED
 
 test-valgrind: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \
@@ -28,7 +39,7 @@ test-valgrind: $(TEST_PROGS)
 	     --log-file=vgdump-$$test_prog $$test_prog ; \
 	 done
 
-test-callgrind: $(TEST_PROGS)
+test-callgrind:
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
 	   if test -e cgdump-$$test_prog; then \
@@ -38,6 +49,13 @@ test-callgrind: $(TEST_PROGS)
 	     --callgrind-out-file=cgdump-$$test_prog \
 	     --log-file=/dev/null $$test_prog ; \
 	 done
+
+else
+
+test-valgrind test-callgrind:
+	@echo "You need to Valgrind"
+
+endif # VALGRIND_ENABLED
 
 generate-report: $(TEST_PROGS)
 	@test -z "$(TEST_PROGS)" || \

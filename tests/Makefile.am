@@ -65,7 +65,8 @@ test-report perf-report full-report:
 	 $(GTESTER_REPORT) $@.xml >$@.html ; \
 	 rm -rf "$$GTESTER_LOGDIR" ;
 
-.PHONY: test test-gdb test-valgrind test-report perf-report full-report
+.PHONY: test test-gdb test-valgrind test-callgrind \
+	test-report perf-report full-report
 
 check-local: test
 

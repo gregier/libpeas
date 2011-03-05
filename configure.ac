@@ -142,6 +142,26 @@ if test "$os_osx" = "yes"; then
 fi
 
 dnl ================================================================
+dnl Check for GDB
+dnl ================================================================
+
+if test "x$GCC" = "xno"; then
+  enable_gdb=no
+else
+  AC_PATH_PROG([enable_gdb], [gdb], [no])
+fi
+
+AM_CONDITIONAL([GDB_ENABLED], [test "x$enable_gdb" != "xno"])
+
+dnl ================================================================
+dnl Check for Valgrind
+dnl ================================================================
+
+AC_PATH_PROG([enable_valgrind], [valgrind], [no])
+
+AM_CONDITIONAL([VALGRIND_ENABLED], [test "x$enable_valgrind" != "xno"])
+
+dnl ================================================================
 dnl Coverage testing
 dnl ================================================================
 

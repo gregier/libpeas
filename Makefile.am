@@ -26,8 +26,32 @@ dist-hook:
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
 
-test test-gdb test-valgrind test-callgrind test-report perf-report full-report: all
+test test-report perf-report full-report: all
 	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
+
+if GDB_ENABLED
+
+test-gdb:
+	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
+
+else
+
+test-gdb:
+	@echo "You need to GDB"
+
+endif # GDB_ENABLED
+
+if VALGRIND_ENABLED
+
+test-valgrind test-callgrind:
+	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
+
+else
+
+test-valgrind test-callgrind:
+	@echo "You need to Valgrind"
+
+endif # VALGRIND_ENABLED
 
 demo: all
 	@cd peas-demo && $(MAKE) $(AM_MAKEFLAGS) $(@)
