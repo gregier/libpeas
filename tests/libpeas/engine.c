@@ -151,6 +151,8 @@ test_engine_load_plugin_with_nonexistent_dep (PeasEngine *engine)
   GError *error = NULL;
   PeasPluginInfo *info;
 
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' for plugin '*'");
+
   info = peas_engine_get_plugin_info (engine, "nonexistent-dep");
 
   g_assert (!peas_engine_load_plugin (engine, info));
@@ -212,6 +214,8 @@ static void
 test_engine_unavailable_plugin (PeasEngine *engine)
 {
   PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' for plugin '*'");
 
   info = peas_engine_get_plugin_info (engine, "unavailable");
 
@@ -278,6 +282,8 @@ test_engine_loaded_plugins (PeasEngine *engine)
   gint loaded = 0;
   gchar **load_plugins;
   gchar **loaded_plugins = NULL;
+
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' for plugin '*'");
 
   g_signal_connect_after (engine,
                           "load-plugin",
@@ -362,6 +368,8 @@ test_engine_nonexistent_loader (PeasEngine *engine)
 {
   GError *error = NULL;
   PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("Could not find loader 'does-not-exist' for plugin '*'");
 
   info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
 

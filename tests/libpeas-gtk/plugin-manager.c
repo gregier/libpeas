@@ -172,6 +172,8 @@ test_gtk_plugin_manager_about_button_sensitivity (TestFixture *fixture)
   GtkTreeIter iter;
   PeasPluginInfo *info;
 
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' for plugin '*'");
+
   /* Must come first otherwise the first iter may
    * be after a revealed builtin plugin
    */
@@ -197,6 +199,8 @@ test_gtk_plugin_manager_configure_button_sensitivity (TestFixture *fixture)
 {
   GtkTreeIter iter;
   PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' for plugin '*'");
 
   /* Must come first otherwise the first iter may
    * be after a revealed builtin plugin

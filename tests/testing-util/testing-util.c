@@ -50,16 +50,7 @@ static GPtrArray *log_hooks = NULL;
  * Don't bother putting errors in here as GLib always aborts on errors.
  */
 static const gchar *allowed_patterns[] = {
-  "*does-not-exist*",
-  "*lib*loader.so*cannot open shared object file: No such file or directory*",
-  "*Could not find 'IAge' in *info-missing-iage.plugin*",
-  "*Could not find 'Module' in *info-missing-module.plugin*",
-  "*Could not find 'Name' in *info-missing-name.plugin*",
-  "*Error loading *info-missing-iage.plugin*",
-  "*Error loading *info-missing-module.plugin*",
-  "*Error loading *info-missing-name.plugin*",
-  "*Bad plugin file: *invalid.plugin*",
-  "*Error loading *invalid.plugin*"
+  "*lib*loader.so*cannot open shared object file: No such file or directory*"
 };
 
 static void
