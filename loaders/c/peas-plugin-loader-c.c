@@ -82,6 +82,7 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
       g_warning ("Could not load plugin module: '%s'",
                  peas_plugin_info_get_name (info));
 
+      g_object_unref (module);
       return FALSE;
     }
 
