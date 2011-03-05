@@ -777,7 +777,8 @@ load_plugin (PeasEngine     *engine,
       dep_info = peas_engine_get_plugin_info (engine, dependencies[i]);
       if (!dep_info)
         {
-          g_warning ("Plugin not found: %s", dependencies[i]);
+          g_warning ("Could not find plugin '%s' for plugin '%s'",
+                     dependencies[i], info->name);
           g_set_error (&info->error,
                        PEAS_PLUGIN_INFO_ERROR,
                        PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
