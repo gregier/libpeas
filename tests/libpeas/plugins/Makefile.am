@@ -19,6 +19,7 @@ noinst_PLUGIN = \
 	invalid-loader.plugin		\
 	nonexistent-dep.plugin		\
 	nonexistent-loader.plugin	\
+	not-loadable.plugin		\
 	os-dependant-help.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)

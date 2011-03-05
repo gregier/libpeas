@@ -221,6 +221,28 @@ test_engine_unavailable_plugin (PeasEngine *engine)
 }
 
 static void
+test_engine_not_loadable_plugin (PeasEngine *engine)
+{
+  GError *error = NULL;
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*libnot-loadable.so: cannot open shared "
+                              "object file: No such file or directory");
+  testing_util_push_log_hook ("Could not load plugin module: 'Not loadable'");
+  testing_util_push_log_hook ("Error loading plugin 'Not loadable'");
+
+  info = peas_engine_get_plugin_info (engine, "not-loadable");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED);
+
+  g_error_free (error);
+}
+
+static void
 load_plugin_cb (PeasEngine     *engine,
                 PeasPluginInfo *info,
                 gint           *loaded)
@@ -439,6 +461,7 @@ main (int    argc,
   TEST ("unload-plugin-with-self-dep", unload_plugin_with_self_dep);
 
   TEST ("unavailable-plugin", unavailable_plugin);
+  TEST ("not-loadable-plugin", not_loadable_plugin);
 
   TEST ("loaded-plugins", loaded_plugins);
 
