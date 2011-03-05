@@ -18,7 +18,9 @@ libextension_c_la_SOURCES = \
 	properties-plugin.h
 
 libextension_c_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
-libextension_c_la_LIBADD  = $(PEAS_LIBS)
+libextension_c_la_LIBADD = \
+	$(PEAS_LIBS)						\
+	$(builddir)/../../introspection/libintrospection-1.0.la
 
 noinst_PLUGIN = extension-c.plugin
 
