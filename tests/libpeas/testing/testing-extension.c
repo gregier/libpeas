@@ -156,7 +156,6 @@ void
 testing_extension_create_invalid_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
-  PeasExtension *extension;
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
@@ -193,10 +192,15 @@ testing_extension_create_invalid_ (PeasEngine *engine)
 
 
   /* Does not implement this GType */
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_UNIMPLEMENTED,
-                                            NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
+    {
+      peas_engine_create_extension (engine, info,
+                                    INTROSPECTION_TYPE_UNIMPLEMENTED,
+                                    NULL);
+      exit (0);
+    }
+  g_test_trap_assert_failed ();
+  g_test_trap_assert_stderr ("*WARNING*");
 }
 
 void

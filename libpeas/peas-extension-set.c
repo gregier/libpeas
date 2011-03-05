@@ -198,12 +198,14 @@ add_extension (PeasExtensionSet *set,
   if (!peas_plugin_info_is_loaded (info))
     return;
 
+  if (!peas_engine_provides_extension (set->priv->engine, info,
+                                       set->priv->exten_type))
+    return;
+
   exten = peas_engine_create_extensionv (set->priv->engine, info,
                                          set->priv->exten_type,
                                          set->priv->n_parameters,
                                          set->priv->parameters);
-  if (!exten)
-    return;
 
 /*  peas_plugin_info_ref (info); */
 

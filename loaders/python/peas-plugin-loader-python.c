@@ -106,8 +106,7 @@ find_python_extension_type (PeasPluginInfo *info,
     }
 
   Py_DECREF (pygtype);
-  g_debug ("No '%s' derivative found in Python plugin '%s'",
-           g_type_name (exten_type), peas_plugin_info_get_name (info));
+
   return NULL;
 }
 
