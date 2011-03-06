@@ -36,57 +36,24 @@ typedef struct _TestFixture TestFixture;
 
 struct _TestFixture {
   PeasEngine *engine;
-  GtkTreeView *tree_view;
-  PeasGtkPluginManagerView *view;
-  GtkTreeSelection *selection;
   GtkTreeModel *model;
-  GtkListStore *store;
+  PeasGtkPluginManagerStore *store;
 };
-
-static void
-notify_model_cb (GtkTreeView *view,
-                 GParamSpec  *pspec,
-                 TestFixture *fixture)
-{
-  fixture->model = gtk_tree_view_get_model (fixture->tree_view);
-
-  if (GTK_IS_TREE_MODEL_FILTER (fixture->model))
-    {
-      GtkTreeModelFilter *filter = GTK_TREE_MODEL_FILTER (fixture->model);
-      fixture->store = GTK_LIST_STORE (gtk_tree_model_filter_get_model (filter));
-    }
-  else
-    {
-      fixture->store = GTK_LIST_STORE (fixture->model);
-    }
-}
 
 static void
 test_setup (TestFixture   *fixture,
             gconstpointer  data)
 {
   fixture->engine = testing_engine_new ();
-  fixture->tree_view = GTK_TREE_VIEW (peas_gtk_plugin_manager_view_new (NULL));
-  fixture->view = PEAS_GTK_PLUGIN_MANAGER_VIEW (fixture->tree_view);
-  fixture->selection = gtk_tree_view_get_selection (fixture->tree_view);
-
-  g_signal_connect (fixture->view,
-                    "notify::model",
-                    G_CALLBACK (notify_model_cb),
-                    fixture);
-
-  /* Set the model, filter and store */
-  g_object_notify (G_OBJECT (fixture->tree_view), "model");
-
-  g_object_ref_sink (fixture->tree_view);
+  fixture->store = peas_gtk_plugin_manager_store_new (fixture->engine);
+  fixture->model = GTK_TREE_MODEL (fixture->store);
 }
 
 static void
 test_teardown (TestFixture   *fixture,
                gconstpointer  data)
 {
-  gtk_widget_destroy (GTK_WIDGET (fixture->tree_view));
-  g_object_unref (fixture->tree_view);
+  g_object_unref (fixture->store);
 
   testing_engine_free (fixture->engine);
 }
@@ -108,12 +75,13 @@ test_gtk_plugin_manager_store_sorted (TestFixture *fixture)
 
   g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
 
-  info2 = testing_get_plugin_info_for_iter (fixture->view, &iter);
+  info2 = peas_gtk_plugin_manager_store_get_plugin (fixture->store, &iter);
 
   while (gtk_tree_model_iter_next (fixture->model, &iter))
     {
       info1 = info2;
-      info2 = testing_get_plugin_info_for_iter (fixture->view, &iter);
+      info2 = peas_gtk_plugin_manager_store_get_plugin (fixture->store, &iter);
+
       g_assert_cmpint (g_utf8_collate (peas_plugin_info_get_name (info1),
                                        peas_plugin_info_get_name (info2)),
                        <, 0);
@@ -125,22 +93,15 @@ test_gtk_plugin_manager_store_plugin_loaded (TestFixture *fixture)
 {
   GtkTreeIter iter;
   PeasPluginInfo *info;
-  gboolean active;
 
   g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
-  info = testing_get_plugin_info_for_iter (fixture->view, &iter);
+  info = peas_gtk_plugin_manager_store_get_plugin (fixture->store, &iter);
 
-  gtk_tree_model_get (fixture->model, &iter,
-                      PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN, &active,
-                      -1);
-  g_assert (!active);
+  g_assert (!peas_gtk_plugin_manager_store_get_enabled (fixture->store, &iter));
 
   peas_engine_load_plugin (fixture->engine, info);
 
-  gtk_tree_model_get (fixture->model, &iter,
-                      PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN, &active,
-                      -1);
-  g_assert (active);
+  g_assert (peas_gtk_plugin_manager_store_get_enabled (fixture->store, &iter));
 }
 
 static void
@@ -148,19 +109,15 @@ test_gtk_plugin_manager_store_plugin_unloaded (TestFixture *fixture)
 {
   GtkTreeIter iter;
   PeasPluginInfo *info;
-  gboolean active;
 
   test_gtk_plugin_manager_store_plugin_loaded (fixture);
 
   g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
-  info = testing_get_plugin_info_for_iter (fixture->view, &iter);
+  info = peas_gtk_plugin_manager_store_get_plugin (fixture->store, &iter);
 
   peas_engine_unload_plugin (fixture->engine, info);
 
-  gtk_tree_model_get (fixture->model, &iter,
-                      PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN, &active,
-                      -1);
-  g_assert (!active);
+  g_assert (!peas_gtk_plugin_manager_store_get_enabled (fixture->store, &iter));
 }
 
 static void
@@ -175,7 +132,8 @@ verify_model (TestFixture    *fixture,
   gboolean model_can_enable, model_icon_visible, model_info_sensitive;
   gchar *model_icon_name;
 
-  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
+  g_assert (peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
+                                                                &iter, info));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,     &model_can_enable,
@@ -223,8 +181,6 @@ test_gtk_plugin_manager_store_verify_builtin (TestFixture *fixture)
 {
   PeasPluginInfo *info;
 
-  peas_gtk_plugin_manager_view_set_show_builtin (fixture->view, TRUE);
-
   info = peas_engine_get_plugin_info (fixture->engine, "builtin");
 
   verify_model (fixture, info, FALSE, "libpeas-plugin", FALSE, FALSE);
@@ -243,7 +199,8 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
 
   /* Has description */
   info = peas_engine_get_plugin_info (fixture->engine, "configurable");
-  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
+  g_assert (peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
+                                                                &iter, info));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,  &model_info,
@@ -254,7 +211,8 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
 
   /* Does not have description */
   info = peas_engine_get_plugin_info (fixture->engine, "min-info");
-  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
+  g_assert (peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
+                                                                &iter, info));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,  &model_info,
@@ -275,7 +233,8 @@ verify_icon (TestFixture *fixture,
   gchar *model_icon_name;
 
   info = peas_engine_get_plugin_info (fixture->engine, plugin_name);
-  g_assert (testing_get_iter_for_plugin_info (fixture->view, info, &iter));
+  g_assert (peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
+                                                                &iter, info));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN, &model_icon_pixbuf,
@@ -324,12 +283,14 @@ static void
 test_gtk_plugin_manager_store_hidden (TestFixture *fixture)
 {
   PeasPluginInfo *info;
+  GtkTreeIter iter;
 
   info = peas_engine_get_plugin_info (fixture->engine, "hidden");
 
   g_assert (peas_plugin_info_is_hidden (info));
 
-  g_assert (!testing_get_iter_for_plugin_info (fixture->view, info, NULL));
+  g_assert (!peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
+                                                                 &iter, info));
 }
 
 int
