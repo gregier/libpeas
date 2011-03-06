@@ -35,12 +35,7 @@ main (int   argc,
 
   g_type_init ();
 
-  testing_init ();
-
-  peas_engine_enable_loader (peas_engine_get_default (), "seed");
-  g_object_unref (peas_engine_get_default ());
-
-  testing_extension_set_plugin_ ("extension-" "seed");
+  _EXTENSION_TESTS_INIT ("seed");
 
   _EXTENSION_TEST ("seed", "garbage-collect", garbage_collect);
 

@@ -25,4 +25,14 @@
 
 #include "testing/testing-extension.h"
 
-EXTENSION_TESTS ("python")
+int
+main (int   argc,
+      char *argv[])
+{
+  g_test_init (&argc, &argv, NULL);
+  g_type_init ();
+
+  EXTENSION_TESTS ("python");
+
+  return testing_run_tests ();
+}

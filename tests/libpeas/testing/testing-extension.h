@@ -59,6 +59,12 @@ void testing_extension_properties_read_only_      (PeasEngine *engine);
 void testing_extension_properties_write_only_     (PeasEngine *engine);
 void testing_extension_properties_readwrite_      (PeasEngine *engine);
 
+#define _EXTENSION_TESTS_INIT(loader) \
+  testing_init (); \
+  peas_engine_enable_loader (peas_engine_get_default (), loader); \
+  g_object_unref (peas_engine_get_default ()); \
+  testing_extension_set_plugin_ ("extension-" loader);
+
 
 #define _EXTENSION_TEST(loader, path, ftest) \
   g_test_add ("/extension/" loader "/" path, TestingExtensionFixture_, \
@@ -68,20 +74,7 @@ void testing_extension_properties_readwrite_      (PeasEngine *engine);
               testing_extension_test_teardown_);
 
 #define EXTENSION_TESTS(loader) \
-int \
-main (int   argc, \
-      char *argv[]) \
-{ \
-  g_test_init (&argc, &argv, NULL); \
-\
-  g_type_init (); \
-\
-  testing_init (); \
-\
-  peas_engine_enable_loader (peas_engine_get_default (), loader); \
-  g_object_unref (peas_engine_get_default ()); \
-\
-  testing_extension_set_plugin_ ("extension-" loader); \
+  _EXTENSION_TESTS_INIT(loader); \
 \
   _EXTENSION_TEST (loader, "garbage-collect", garbage_collect); \
 \
@@ -102,10 +95,7 @@ main (int   argc, \
   _EXTENSION_TEST (loader, "properties-construct-only", properties_construct_only); \
   _EXTENSION_TEST (loader, "properties-read-only", properties_read_only); \
   _EXTENSION_TEST (loader, "properties-write-only", properties_write_only); \
-  _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite); \
-\
-  return testing_run_tests (); \
-}
+  _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite);
 
 G_END_DECLS
 
