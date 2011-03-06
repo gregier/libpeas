@@ -280,6 +280,8 @@ name_search_cb (GtkTreeModel             *model,
   if (info == NULL)
     return FALSE;
 
+  g_print ("name_search_cb: %s", peas_plugin_info_get_name (info));
+
   normalized_string = g_utf8_normalize (peas_plugin_info_get_name (info), -1, G_NORMALIZE_ALL);
   normalized_key = g_utf8_normalize (key, -1, G_NORMALIZE_ALL);
   case_normalized_string = g_utf8_casefold (normalized_string, -1);

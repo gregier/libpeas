@@ -419,14 +419,19 @@ gboolean
 peas_gtk_plugin_manager_store_get_enabled (PeasGtkPluginManagerStore *store,
                                            GtkTreeIter               *iter)
 {
+  GValue value = { 0 };
   gboolean enabled;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store), FALSE);
   g_return_val_if_fail (iter != NULL, FALSE);
 
-  gtk_tree_model_get (GTK_TREE_MODEL (store), iter,
-                      PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN, &enabled,
-                      -1);
+  gtk_tree_model_get_value (GTK_TREE_MODEL (store), iter,
+                            PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN, &value);
+
+  g_return_val_if_fail (G_VALUE_HOLDS_BOOLEAN (&value), FALSE);
+  enabled = g_value_get_boolean (&value);
+
+  g_value_unset (&value);
 
   return enabled;
 }
@@ -496,14 +501,19 @@ gboolean
 peas_gtk_plugin_manager_store_can_enable (PeasGtkPluginManagerStore *store,
                                           GtkTreeIter               *iter)
 {
+  GValue value = { 0 };
   gboolean can_enable;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store), FALSE);
   g_return_val_if_fail (iter != NULL, FALSE);
 
-  gtk_tree_model_get (GTK_TREE_MODEL (store), iter,
-                      PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN, &can_enable,
-                      -1);
+  gtk_tree_model_get_value (GTK_TREE_MODEL (store), iter,
+                            PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN, &value);
+
+  g_return_val_if_fail (G_VALUE_HOLDS_BOOLEAN (&value), FALSE);
+  can_enable = g_value_get_boolean (&value);
+
+  g_value_unset (&value);
 
   return can_enable;
 }
@@ -521,14 +531,19 @@ PeasPluginInfo *
 peas_gtk_plugin_manager_store_get_plugin (PeasGtkPluginManagerStore *store,
                                           GtkTreeIter               *iter)
 {
+  GValue value = { 0 };
   PeasPluginInfo *info;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store), NULL);
   g_return_val_if_fail (iter != NULL, NULL);
 
-  gtk_tree_model_get (GTK_TREE_MODEL (store), iter,
-                      PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN, &info,
-                      -1);
+  gtk_tree_model_get_value (GTK_TREE_MODEL (store), iter,
+                            PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN, &value);
+
+  g_return_val_if_fail (G_VALUE_HOLDS_POINTER (&value), NULL);
+  info = g_value_get_pointer (&value);
+
+  g_value_unset (&value);
 
   /* We register it as a pointer instead
    * of a boxed so no need to unref it
