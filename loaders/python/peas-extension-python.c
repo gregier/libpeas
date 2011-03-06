@@ -68,6 +68,24 @@ peas_extension_python_set_property (GObject      *object,
     }
 }
 
+static void
+peas_extension_python_get_property (GObject      *object,
+                                    guint         prop_id,
+                                    GValue       *value,
+                                    GParamSpec   *pspec)
+{
+  PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (object);
+
+  switch (prop_id)
+    {
+    case PROP_INSTANCE:
+      g_value_set_pointer (value, pyexten->instance);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
 static gboolean
 peas_extension_python_call (PeasExtension *exten,
                             GType          gtype,
@@ -117,6 +135,7 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
   object_class->set_property = peas_extension_python_set_property;
+  object_class->get_property = peas_extension_python_get_property;
   object_class->dispose = peas_extension_python_dispose;
 
   extension_class->call = peas_extension_python_call;
@@ -126,7 +145,7 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
                                    g_param_spec_pointer ("instance",
                                                         "Extension Instance",
                                                         "The Python Extension Instance",
-                                                        G_PARAM_WRITABLE |
+                                                        G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT_ONLY));
 }
 

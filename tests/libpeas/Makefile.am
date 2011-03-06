@@ -31,6 +31,7 @@ extension_c_LDADD    = $(progs_ldadd)
 if ENABLE_PYTHON
 TEST_PROGS               += extension-python
 extension_python_SOURCES  = extension-python.c
+extension_python_CFLAGS   = $(PYGTK_CFLAGS) $(PYTHON_CFLAGS)
 extension_python_LDADD    = $(progs_ldadd)
 endif
 
