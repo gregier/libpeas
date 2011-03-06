@@ -385,12 +385,14 @@ menu_position_under_tree_view (GtkMenu     *menu,
     }
   else
     {
-      *x = 0;
-      *y = 0;
+      /* Hide the popup during testing */
+      *x = gdk_screen_width ();
+      *y = gdk_screen_height ();
+      *push_in = FALSE;
+      return;
     }
 
-  if (gtk_widget_get_realized (GTK_WIDGET (tree_view)) &&
-      gtk_tree_selection_get_selected (selection, NULL, &iter))
+  if (gtk_tree_selection_get_selected (selection, NULL, &iter))
     {
       GtkTreeModel *model;
       GtkTreePath *path;

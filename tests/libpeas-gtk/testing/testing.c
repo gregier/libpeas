@@ -121,6 +121,68 @@ testing_get_iter_for_plugin_info (PeasGtkPluginManagerView *view,
   return FALSE;
 }
 
+static void
+populate_popup_cb (PeasGtkPluginManagerView  *view,
+                   GtkMenu                   *popup,
+                   GtkMenu                  **popup_out)
+{
+  *popup_out = popup;
+}
+
+GtkMenuItem *
+testing_get_popup_menu_item (PeasGtkPluginManagerView *view,
+                             const gchar              *menu_label)
+{
+  GtkTreeModel *model;
+  GtkTreeSelection *selection;
+  GtkTreeIter iter;
+  GList *menu_items;
+  GList *menu_item;
+  GtkMenu *popup = NULL;
+  GtkMenuItem *item = NULL;
+  gboolean success = FALSE;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
+
+  /* Need to have a plugin selected to create the popup menu */
+  if (!gtk_tree_selection_get_selected (selection, NULL, NULL))
+    {
+      g_assert (gtk_tree_model_get_iter_first (model, &iter));
+      gtk_tree_selection_select_iter (selection, &iter);
+    }
+
+  g_signal_connect (view,
+                    "populate-popup",
+                    G_CALLBACK (populate_popup_cb),
+                    &popup);
+
+  g_signal_emit_by_name (view, "popup-menu", &success);
+  g_assert (success);
+  g_assert (popup != NULL);
+
+  gtk_menu_popdown (popup);
+
+  menu_items = gtk_container_get_children (GTK_CONTAINER (popup));
+
+  for (menu_item = menu_items; menu_item != NULL; menu_item = menu_item->next)
+    {
+      const gchar *label;
+
+      item = GTK_MENU_ITEM (menu_item->data);
+      label = gtk_menu_item_get_label (item);
+
+      if (g_strcmp0 (label, menu_label) == 0)
+        break;
+    }
+
+  g_list_free (menu_items);
+
+  g_assert (item != NULL);
+
+  return item;
+}
+
 static gboolean
 delete_event_cb (GtkWidget *window,
                  GdkEvent  *event,

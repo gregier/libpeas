@@ -424,6 +424,53 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
 }
 
 static void
+test_gtk_plugin_manager_popup_menu_about_dialog (TestFixture *fixture)
+{
+  GtkTreeIter iter;
+  PeasPluginInfo *info;
+  GtkMenuItem *about_item;
+  GtkWidget *window;
+
+  info = peas_engine_get_plugin_info (fixture->engine, "loadable");
+
+  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  gtk_tree_selection_select_iter (fixture->selection, &iter);
+
+  about_item = testing_get_popup_menu_item (fixture->view, "_About");
+  gtk_menu_item_activate (about_item);
+
+  window = find_window_by_title (GTK_WINDOW (fixture->window),
+                                 "About Loadable");
+  g_assert (GTK_IS_DIALOG (window));
+
+  gtk_widget_destroy (window);
+}
+
+static void
+test_gtk_plugin_manager_popup_menu_configure_dialog (TestFixture *fixture)
+{
+  GtkTreeIter iter;
+  PeasPluginInfo *info;
+  GtkMenuItem *configure_item;
+  GtkWidget *window;
+
+  info = peas_engine_get_plugin_info (fixture->engine, "configurable");
+
+  peas_engine_load_plugin (fixture->engine, info);
+
+  testing_get_iter_for_plugin_info (fixture->view, info, &iter);
+  gtk_tree_selection_select_iter (fixture->selection, &iter);
+
+  configure_item = testing_get_popup_menu_item (fixture->view, "C_onfigure");
+  gtk_menu_item_activate (configure_item);
+
+  window = find_window_by_title (GTK_WINDOW (fixture->window), "Configurable");
+  g_assert (GTK_IS_DIALOG (window));
+
+  gtk_widget_destroy (window);
+}
+
+static void
 test_gtk_plugin_manager_gtkbuilder (void)
 {
   GtkBuilder *builder;
@@ -484,6 +531,9 @@ main (int    argc,
 
   TEST ("about-dialog", about_dialog);
   TEST ("configure-dialog", configure_dialog);
+
+  TEST ("popup-menu/about-dialog", popup_menu_about_dialog);
+  TEST ("popup-menu/configure-dialog", popup_menu_configure_dialog);
 
   TEST_FUNC ("gtkbuilder", gtkbuilder);
 

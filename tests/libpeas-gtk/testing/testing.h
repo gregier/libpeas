@@ -38,6 +38,9 @@ gboolean        testing_get_iter_for_plugin_info (PeasGtkPluginManagerView *view
                                                   PeasPluginInfo           *info,
                                                   GtkTreeIter              *iter);
 
+GtkMenuItem *   testing_get_popup_menu_item      (PeasGtkPluginManagerView *view,
+                                                  const gchar              *menu_label);
+
 void            testing_show_widget              (gpointer                  widget);
 
 /* libtesting-util functions which do not need to be overridden */

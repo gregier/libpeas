@@ -239,65 +239,13 @@ test_gtk_plugin_manager_view_enable_builtin_plugin (TestFixture *fixture)
 }
 
 static void
-populate_popup_cb (PeasGtkPluginManagerView  *view,
-                   GtkMenu                   *popup,
-                   GtkMenu                  **popup_out)
-{
-  *popup_out = popup;
-}
-
-static GtkMenuItem *
-get_popup_menu_item (TestFixture *fixture,
-                     const gchar *menu_label)
-{
-  GtkTreeIter iter;
-  GList *menu_items;
-  GList *menu_item;
-  GtkMenu *popup = NULL;
-  GtkMenuItem *item = NULL;
-  gboolean success = FALSE;
-
-  /* Need to have a plugin selected to create the popup menu */
-  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
-  gtk_tree_selection_select_iter (fixture->selection, &iter);
-
-  g_signal_connect (fixture->view,
-                    "populate-popup",
-                    G_CALLBACK (populate_popup_cb),
-                    &popup);
-
-  g_signal_emit_by_name (fixture->view, "popup-menu", &success);
-  g_assert (success);
-  g_assert (popup != NULL);
-
-  menu_items = gtk_container_get_children (GTK_CONTAINER (popup));
-
-  for (menu_item = menu_items; menu_item != NULL; menu_item = menu_item->next)
-    {
-      const gchar *label;
-
-      item = GTK_MENU_ITEM (menu_item->data);
-      label = gtk_menu_item_get_label (item);
-
-      if (g_strcmp0 (label, menu_label) == 0)
-        break;
-    }
-
-  g_list_free (menu_items);
-
-  g_assert (item != NULL);
-
-  return item;
-}
-
-static void
 test_gtk_plugin_manager_view_popup_menu_enabled (TestFixture *fixture)
 {
   PeasPluginInfo *info;
   GtkMenuItem *enabled_item;
 
   info = peas_engine_get_plugin_info (fixture->engine, "loadable");
-  enabled_item = get_popup_menu_item (fixture, "_Enabled");
+  enabled_item = testing_get_popup_menu_item (fixture->view, "_Enabled");
 
   g_assert (!peas_plugin_info_is_loaded (info));
   peas_gtk_plugin_manager_view_set_selected_plugin (fixture->view, info);
@@ -324,7 +272,7 @@ test_gtk_plugin_manager_view_popup_menu_enable_all (TestFixture *fixture)
   testing_util_push_log_hook ("Error loading plugin '* Info'");
   testing_util_push_log_hook ("Could not find plugin 'does-not-exist' *");
 
-  enable_all_item = get_popup_menu_item (fixture, "E_nable All");
+  enable_all_item = testing_get_popup_menu_item (fixture->view, "E_nable All");
   gtk_menu_item_activate (enable_all_item);
 
   g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
@@ -362,7 +310,7 @@ test_gtk_plugin_manager_view_popup_menu_disable_all (TestFixture *fixture)
   testing_util_push_log_hook ("Error loading plugin '* Info'");
   testing_util_push_log_hook ("Could not find plugin 'does-not-exist' *");
 
-  disable_all_item = get_popup_menu_item (fixture, "_Disable All");
+  disable_all_item = testing_get_popup_menu_item (fixture->view, "_Disable All");
 
   g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
 
