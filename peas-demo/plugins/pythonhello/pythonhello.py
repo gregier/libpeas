@@ -36,7 +36,7 @@ class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
 
     def do_activate(self):
         window = self.object
-        print "PythonHelloPlugin.do_activate", repr(window)
+        print("PythonHelloPlugin.do_activate", repr(window))
         window._pythonhello_label = Gtk.Label()
         window._pythonhello_label.set_text(LABEL_STRING)
         window._pythonhello_label.show()
@@ -44,12 +44,12 @@ class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
 
     def do_deactivate(self):
         window = self.object
-        print "PythonHelloPlugin.do_deactivate", repr(window)
+        print("PythonHelloPlugin.do_deactivate", repr(window))
         window.get_child().remove(window._pythonhello_label)
         window._pythonhello_label.destroy()
 
     def do_update_state(self):
-        print "PythonHelloPlugin.do_update_state", repr(self.object)
+        print("PythonHelloPlugin.do_update_state", repr(self.object))
 
 class PythonHelloConfigurable(gobject.GObject, PeasGtk.Configurable):
     __gtype_name__ = 'PythonHelloConfigurable'

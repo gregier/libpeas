@@ -379,8 +379,13 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
   if (pyloader->priv->init_failed)
     return FALSE;
 
-  pathlist = PySys_GetObject ((char*) "path");
+  pathlist = PySys_GetObject ((char *) "path");
+
+#if PY_VERSION_HEX < 0x03000000
   pathstring = PyString_FromString (module_path);
+#else
+  pathstring = PyUnicode_FromString (module_path);
+#endif
 
   if (PySequence_Contains (pathlist, pathstring) == 0)
     PyList_Insert (pathlist, 0, pathstring);
@@ -389,12 +394,42 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
   return TRUE;
 }
 
+#if PY_VERSION_HEX >= 0x03000000
+static wchar_t *
+peas_wchar_from_str (const gchar *str)
+{
+  wchar_t *outbuf;
+  gsize argsize, count;
+
+  argsize = mbstowcs (NULL, str, 0);
+  if (argsize == (gsize)-1)
+    {
+      g_warning ("Could not convert argument to wchar_t string.");
+      return NULL;
+    }
+
+  outbuf = g_new (wchar_t, argsize + 1);
+  count = mbstowcs (outbuf, str, argsize + 1);
+  if (count == (gsize)-1)
+    {
+      g_warning ("Could not convert argument to wchar_t string.");
+      return NULL;
+    }
+
+  return outbuf;
+}
+#endif
+
 static gboolean
 peas_python_init (PeasPluginLoaderPython *loader)
 {
   PyObject *mdict, *gobject, *gi, *gettext, *install, *gettext_args;
-  const char *argv[] = { "", NULL };
   gchar *prgname;
+#if PY_VERSION_HEX < 0x03000000
+  const char *argv[] = { "", NULL };
+#else
+  wchar_t *argv[] = { L"", NULL };
+#endif
 
   /* We are trying to initialize Python for the first time,
      set init_failed to FALSE only if the entire initialization process
@@ -410,14 +445,27 @@ peas_python_init (PeasPluginLoaderPython *loader)
 
   prgname = g_get_prgname ();
   if (prgname != NULL)
-    argv[0] = prgname;
+    {
+#if PY_VERSION_HEX < 0x03000000
+      argv[0] = prgname;
+#else
+      argv[0] = peas_wchar_from_str (prgname);
+#endif
+    }
 
   /* See http://docs.python.org/c-api/init.html#PySys_SetArgvEx */
 #if PY_VERSION_HEX < 0x02060600
   PySys_SetArgv (1, (char**) argv);
   PyRun_SimpleString ("import sys; sys.path.pop(0)\n");
-#else
+#elif PY_VERSION_HEX < 0x03000000
   PySys_SetArgvEx (1, (char**) argv, 0);
+#elif PY_VERSION_HEX < 0x03010300
+  PySys_SetArgv (1, argv);
+  PyRun_SimpleString ("import sys; sys.path.pop(0)\n");
+  g_free (argv[0]);
+#else
+  PySys_SetArgvEx (1, argv, 0);
+  g_free (argv[0]);
 #endif
 
   /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
