@@ -433,7 +433,7 @@ menu_position_under_tree_view (GtkMenu     *menu,
   *push_in = TRUE;
 }
 
-static void
+static gboolean
 show_popup_menu (GtkTreeView              *tree_view,
                  PeasGtkPluginManagerView *view,
                  GdkEventButton           *event)
@@ -444,7 +444,7 @@ show_popup_menu (GtkTreeView              *tree_view,
   view->priv->popup_menu = create_popup_menu (view);
 
   if (view->priv->popup_menu == NULL)
-    return;
+    return FALSE;
 
   gtk_menu_attach_to_widget (GTK_MENU (view->priv->popup_menu),
                              GTK_WIDGET (view),
@@ -464,6 +464,8 @@ show_popup_menu (GtkTreeView              *tree_view,
       gtk_menu_shell_select_first (GTK_MENU_SHELL (view->priv->popup_menu),
                                    FALSE);
     }
+
+  return TRUE;
 }
 
 static void
@@ -573,19 +575,15 @@ peas_gtk_plugin_manager_view_button_press_event (GtkWidget      *tree_view,
   if (event->type != GDK_BUTTON_PRESS || event->button != 3 || !handled)
     return handled;
 
-  show_popup_menu (GTK_TREE_VIEW (tree_view), view, event);
-
-  return TRUE;
+  return show_popup_menu (GTK_TREE_VIEW (tree_view), view, event);
 }
 
 static gboolean
-peas_gtk_plugin_manager_view_popup_menu (GtkWidget *widget)
+peas_gtk_plugin_manager_view_popup_menu (GtkWidget *tree_view)
 {
-  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+  PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view);
 
-  show_popup_menu (tree_view, PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view), NULL);
-
-  return TRUE;
+  return show_popup_menu (GTK_TREE_VIEW (tree_view), view, NULL);
 }
 
 static gboolean
