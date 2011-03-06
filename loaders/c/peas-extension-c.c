@@ -30,9 +30,32 @@
 
 G_DEFINE_TYPE (PeasExtensionC, peas_extension_c, PEAS_TYPE_EXTENSION);
 
+enum {
+  PROP_0,
+  PROP_INSTANCE
+};
+
 static void
 peas_extension_c_init (PeasExtensionC *cexten)
 {
+}
+
+static void
+peas_extension_c_set_property (GObject      *object,
+                               guint         prop_id,
+                               const GValue *value,
+                               GParamSpec   *pspec)
+{
+  PeasExtensionC *cexten = PEAS_EXTENSION_C (object);
+
+  switch (prop_id)
+    {
+    case PROP_INSTANCE:
+      cexten->instance = g_value_get_object (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
 }
 
 static gboolean
@@ -54,7 +77,7 @@ static void
 peas_extension_c_dispose (GObject *object)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (object);
-  
+
   if (cexten->instance)
     {
       g_object_unref (cexten->instance);
@@ -70,23 +93,30 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
+  object_class->set_property = peas_extension_c_set_property;
   object_class->dispose = peas_extension_c_dispose;
 
   extension_class->call = peas_extension_c_call;
+
+  g_object_class_install_property (object_class,
+                                   PROP_INSTANCE,
+                                   g_param_spec_object ("instance",
+                                                        "Extension Instance",
+                                                        "The C Extension Instance",
+                                                        G_TYPE_OBJECT,
+                                                        G_PARAM_WRITABLE |
+                                                        G_PARAM_CONSTRUCT_ONLY));
 }
 
 PeasExtension *
 peas_extension_c_new (GType    gtype,
                       GObject *instance)
 {
-  PeasExtensionC *cexten;
   GType real_type;
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_C, gtype);
-  cexten = PEAS_EXTENSION_C (g_object_new (real_type,
-                                           "extension-type", gtype,
-                                           NULL));
-  cexten->instance = instance;
-
-  return PEAS_EXTENSION (cexten);
+  return PEAS_EXTENSION (g_object_new (real_type,
+                                       "extension-type", gtype,
+                                       "instance", instance,
+                                       NULL));
 }
