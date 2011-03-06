@@ -32,7 +32,6 @@ G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
 
 enum {
   PROP_0,
-  PROP_EXTEN_TYPE,
   PROP_JS_CONTEXT,
   PROP_JS_OBJECT,
 };
