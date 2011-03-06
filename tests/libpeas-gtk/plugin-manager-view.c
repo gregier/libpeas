@@ -238,6 +238,157 @@ test_gtk_plugin_manager_view_enable_builtin_plugin (TestFixture *fixture)
   gtk_tree_path_free (path);
 }
 
+static void
+populate_popup_cb (PeasGtkPluginManagerView  *view,
+                   GtkMenu                   *popup,
+                   GtkMenu                  **popup_out)
+{
+  *popup_out = popup;
+}
+
+static GtkMenuItem *
+get_popup_menu_item (TestFixture *fixture,
+                     const gchar *menu_label)
+{
+  GtkTreeIter iter;
+  GList *menu_items;
+  GList *menu_item;
+  GtkMenu *popup = NULL;
+  GtkMenuItem *item = NULL;
+  gboolean success = FALSE;
+
+  /* Need to have a plugin selected to create the popup menu */
+  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
+  gtk_tree_selection_select_iter (fixture->selection, &iter);
+
+  g_signal_connect (fixture->view,
+                    "populate-popup",
+                    G_CALLBACK (populate_popup_cb),
+                    &popup);
+
+  g_signal_emit_by_name (fixture->view, "popup-menu", &success);
+  g_assert (success);
+  g_assert (popup != NULL);
+
+  menu_items = gtk_container_get_children (GTK_CONTAINER (popup));
+
+  for (menu_item = menu_items; menu_item != NULL; menu_item = menu_item->next)
+    {
+      const gchar *label;
+
+      item = GTK_MENU_ITEM (menu_item->data);
+      label = gtk_menu_item_get_label (item);
+
+      if (g_strcmp0 (label, menu_label) == 0)
+        break;
+    }
+
+  g_list_free (menu_items);
+
+  g_assert (item != NULL);
+
+  return item;
+}
+
+static void
+test_gtk_plugin_manager_view_popup_menu_enabled (TestFixture *fixture)
+{
+  PeasPluginInfo *info;
+  GtkMenuItem *enabled_item;
+
+  info = peas_engine_get_plugin_info (fixture->engine, "loadable");
+  enabled_item = get_popup_menu_item (fixture, "_Enabled");
+
+  g_assert (!peas_plugin_info_is_loaded (info));
+  peas_gtk_plugin_manager_view_set_selected_plugin (fixture->view, info);
+
+  gtk_menu_item_activate (enabled_item);
+  g_assert (peas_plugin_info_is_loaded (info));
+
+  gtk_menu_item_activate (enabled_item);
+  g_assert (!peas_plugin_info_is_loaded (info));
+}
+
+static void
+test_gtk_plugin_manager_view_popup_menu_enable_all (TestFixture *fixture)
+{
+  GtkTreeIter iter;
+  PeasPluginInfo *info;
+  GtkMenuItem *enable_all_item;
+
+  testing_util_push_log_hook ("*-icon: * cannot open shared object file*");
+  testing_util_push_log_hook ("Could not load plugin module: '* Icon'");
+  testing_util_push_log_hook ("Error loading plugin '* Icon'");
+  testing_util_push_log_hook ("*-info: * cannot open shared object file*");
+  testing_util_push_log_hook ("Could not load plugin module: '* Info'");
+  testing_util_push_log_hook ("Error loading plugin '* Info'");
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' *");
+
+  enable_all_item = get_popup_menu_item (fixture, "E_nable All");
+  gtk_menu_item_activate (enable_all_item);
+
+  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
+
+  do
+    {
+      gtk_tree_selection_select_iter (fixture->selection, &iter);
+      info = peas_gtk_plugin_manager_view_get_selected_plugin (fixture->view);
+
+      if (peas_plugin_info_is_builtin (info) ||
+          !peas_plugin_info_is_available (info, NULL))
+        {
+          g_assert (!peas_plugin_info_is_loaded (info));
+        }
+      else
+        {
+          g_assert (peas_plugin_info_is_loaded (info));
+        }
+    }
+  while (gtk_tree_model_iter_next (fixture->model, &iter));
+}
+
+static void
+test_gtk_plugin_manager_view_popup_menu_disable_all (TestFixture *fixture)
+{
+  GtkTreeIter iter;
+  PeasPluginInfo *info;
+  GtkMenuItem *disable_all_item;
+
+  testing_util_push_log_hook ("*-icon: * cannot open shared object file*");
+  testing_util_push_log_hook ("Could not load plugin module: '* Icon'");
+  testing_util_push_log_hook ("Error loading plugin '* Icon'");
+  testing_util_push_log_hook ("*-info: * cannot open shared object file*");
+  testing_util_push_log_hook ("Could not load plugin module: '* Info'");
+  testing_util_push_log_hook ("Error loading plugin '* Info'");
+  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' *");
+
+  disable_all_item = get_popup_menu_item (fixture, "_Disable All");
+
+  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
+
+  do
+    {
+      gtk_tree_selection_select_iter (fixture->selection, &iter);
+      info = peas_gtk_plugin_manager_view_get_selected_plugin (fixture->view);
+
+      peas_engine_load_plugin (fixture->engine, info);
+    }
+  while (gtk_tree_model_iter_next (fixture->model, &iter));
+
+  gtk_menu_item_activate (disable_all_item);
+
+  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
+
+  do
+    {
+      gtk_tree_selection_select_iter (fixture->selection, &iter);
+      info = peas_gtk_plugin_manager_view_get_selected_plugin (fixture->view);
+
+      g_assert (!peas_plugin_info_is_loaded (info));
+    }
+  while (gtk_tree_model_iter_next (fixture->model, &iter));
+}
+
 int
 main (int    argc,
       char **argv)
@@ -260,6 +411,10 @@ main (int    argc,
 
   TEST ("enable-plugin", enable_plugin);
   TEST ("enable-builtin-plugin", enable_builtin_plugin);
+
+  TEST ("popup-menu/enabled", popup_menu_enabled);
+  TEST ("popup-menu/enable_all", popup_menu_enable_all);
+  TEST ("popup-menu/disable_all", popup_menu_disable_all);
 
 #undef TEST
 

@@ -378,9 +378,19 @@ menu_position_under_tree_view (GtkMenu     *menu,
   selection = gtk_tree_view_get_selection (tree_view);
 
   window = gtk_widget_get_window (GTK_WIDGET (tree_view));
-  gdk_window_get_origin (window, x, y);
 
-  if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+  if (GDK_IS_WINDOW (window))
+    {
+      gdk_window_get_origin (window, x, y);
+    }
+  else
+    {
+      *x = 0;
+      *y = 0;
+    }
+
+  if (gtk_widget_get_realized (GTK_WIDGET (tree_view)) &&
+      gtk_tree_selection_get_selected (selection, NULL, &iter))
     {
       GtkTreeModel *model;
       GtkTreePath *path;
