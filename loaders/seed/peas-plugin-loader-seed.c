@@ -41,28 +41,6 @@ typedef struct {
 
 static SeedEngine *seed = NULL;
 
-static void
-peas_plugin_loader_seed_add_module_directory (PeasPluginLoader *loader,
-                                              const gchar      *module_dir)
-{
-  gchar **sp = seed_engine_get_search_path (seed);
-
-  if (sp)
-    {
-      gchar *orig_sp = g_strjoinv (":", sp);
-      gchar *new_sp = g_strconcat (module_dir, ":", orig_sp, NULL);
-
-      seed_engine_set_search_path (seed, new_sp);
-
-      g_free (new_sp);
-      g_free (orig_sp);
-    }
-  else
-    {
-      seed_engine_set_search_path (seed, module_dir);
-    }
-}
-
 static gchar *
 get_script_for_plugin_info (PeasPluginInfo   *info,
                             SeedContext       context)
@@ -283,7 +261,6 @@ peas_plugin_loader_seed_class_init (PeasPluginLoaderSeedClass *klass)
 
   object_class->finalize = peas_plugin_loader_seed_finalize;
 
-  loader_class->add_module_directory = peas_plugin_loader_seed_add_module_directory;
   loader_class->load = peas_plugin_loader_seed_load;
   loader_class->provides_extension = peas_plugin_loader_seed_provides_extension;
   loader_class->create_extension = peas_plugin_loader_seed_create_extension;

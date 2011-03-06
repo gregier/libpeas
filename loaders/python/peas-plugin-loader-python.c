@@ -234,26 +234,6 @@ add_python_info (PeasPluginLoaderPython *loader,
   g_hash_table_insert (loader->priv->loaded_plugins, info, pyinfo);
 }
 
-static void
-peas_plugin_loader_python_add_module_directory (PeasPluginLoader *loader,
-                                                const gchar      *module_dir)
-{
-  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PyGILState_STATE state;
-
-  /* Bail if we failed to initialise Python, since adding a module path won't
-   * help us, and calling the GIL functions will cause a crash. */
-  if (pyloader->priv->init_failed)
-    return;
-
-  state = pyg_gil_state_ensure ();
-
-  g_debug ("Adding '%s' as a module path for the Python loader", module_dir);
-  peas_plugin_loader_python_add_module_path (pyloader, module_dir);
-
-  pyg_gil_state_release (state);
-}
-
 static gboolean
 peas_plugin_loader_python_load (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
@@ -567,7 +547,6 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
 
   object_class->finalize = peas_plugin_loader_python_finalize;
 
-  loader_class->add_module_directory = peas_plugin_loader_python_add_module_directory;
   loader_class->load = peas_plugin_loader_python_load;
   loader_class->unload = peas_plugin_loader_python_unload;
   loader_class->create_extension = peas_plugin_loader_python_create_extension;

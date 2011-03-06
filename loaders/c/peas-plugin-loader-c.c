@@ -45,13 +45,6 @@ peas_register_types (PeasObjectModule *module)
                                               PEAS_TYPE_PLUGIN_LOADER_C);
 }
 
-static void
-peas_plugin_loader_c_add_module_directory (PeasPluginLoader *loader,
-                                           const gchar      *module_dir)
-{
-  /* This is a no-op for C modules... */
-}
-
 static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader *loader,
                            PeasPluginInfo   *info)
@@ -203,7 +196,6 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
 
   object_class->finalize = peas_plugin_loader_c_finalize;
 
-  loader_class->add_module_directory = peas_plugin_loader_c_add_module_directory;
   loader_class->load = peas_plugin_loader_c_load;
   loader_class->unload = peas_plugin_loader_c_unload;
   loader_class->provides_extension = peas_plugin_loader_c_provides_extension;

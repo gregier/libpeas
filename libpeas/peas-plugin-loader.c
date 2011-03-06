@@ -37,20 +37,6 @@ peas_plugin_loader_class_init (PeasPluginLoaderClass *klass)
 {
 }
 
-void
-peas_plugin_loader_add_module_directory (PeasPluginLoader *loader,
-                                         const gchar      *module_dir)
-{
-  PeasPluginLoaderClass *klass;
-
-  g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
-
-  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_if_fail (klass->add_module_directory != NULL);
-
-  klass->add_module_directory (loader, module_dir);
-}
-
 gboolean
 peas_plugin_loader_load (PeasPluginLoader *loader,
                          PeasPluginInfo   *info)
