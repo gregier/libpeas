@@ -24,6 +24,36 @@
 #endif
 
 #include "testing/testing-extension.h"
+#include "introspection/introspection-callable.h"
+
+static void
+extension_c_instance_refcount (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  GObject *instance;
+
+  info = peas_engine_get_plugin_info (engine, "extension-c");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_CALLABLE,
+                                            NULL);
+
+  g_assert (PEAS_IS_EXTENSION (extension));
+
+  g_object_get (extension, "instance", &instance, NULL);
+
+  /* The refcount of the returned object should be 2:
+   *  - one ref for the PeasExtension
+   *  - one ref added by g_object_get()
+   */
+  g_assert_cmpint (instance->ref_count, ==, 2);
+  g_object_unref (instance);
+
+  g_object_unref (extension);
+}
 
 int
 main (int   argc,
@@ -33,6 +63,8 @@ main (int   argc,
   g_type_init ();
 
   EXTENSION_TESTS ("c");
+
+  EXTENSION_TEST_ADD ("c", "instance-refcount", extension_c_instance_refcount);
 
   return testing_run_tests ();
 }

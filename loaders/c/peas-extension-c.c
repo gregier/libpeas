@@ -58,6 +58,24 @@ peas_extension_c_set_property (GObject      *object,
     }
 }
 
+static void
+peas_extension_c_get_property (GObject      *object,
+                               guint         prop_id,
+                               GValue       *value,
+                               GParamSpec   *pspec)
+{
+  PeasExtensionC *cexten = PEAS_EXTENSION_C (object);
+
+  switch (prop_id)
+    {
+    case PROP_INSTANCE:
+      g_value_set_object (value, cexten->instance);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
 static gboolean
 peas_extension_c_call (PeasExtension *exten,
                        GType          gtype,
@@ -94,6 +112,7 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
   object_class->set_property = peas_extension_c_set_property;
+  object_class->get_property = peas_extension_c_get_property;
   object_class->dispose = peas_extension_c_dispose;
 
   extension_class->call = peas_extension_c_call;
@@ -104,7 +123,7 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
                                                         "Extension Instance",
                                                         "The C Extension Instance",
                                                         G_TYPE_OBJECT,
-                                                        G_PARAM_WRITABLE |
+                                                        G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT_ONLY));
 }
 
