@@ -31,7 +31,7 @@ test test-report perf-report full-report: all
 
 if GDB_ENABLED
 
-test-gdb:
+test-gdb: all
 	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
 
 else
@@ -43,7 +43,7 @@ endif # GDB_ENABLED
 
 if VALGRIND_ENABLED
 
-test-valgrind test-callgrind:
+test-valgrind test-callgrind: all
 	@cd tests && $(MAKE) $(AM_MAKEFLAGS) $(@)
 
 else
