@@ -267,6 +267,7 @@ name_search_cb (GtkTreeModel             *model,
                 GtkTreeIter              *iter,
                 PeasGtkPluginManagerView *view)
 {
+  GtkTreeIter child_iter = *iter;
   PeasPluginInfo *info;
   gchar *normalized_string;
   gchar *normalized_key;
@@ -275,7 +276,8 @@ name_search_cb (GtkTreeModel             *model,
   gint key_len;
   gboolean retval;
 
-  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, iter);
+  convert_iter_to_child_iter (view, &child_iter);
+  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &child_iter);
 
   if (info == NULL)
     return FALSE;
