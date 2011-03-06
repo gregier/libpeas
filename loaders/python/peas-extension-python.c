@@ -48,14 +48,20 @@ peas_extension_python_call (PeasExtension *exten,
                             GIArgument    *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
+  PyGILState_STATE state;
   GObject *instance;
+  gboolean success;
 
   if (gtype == G_TYPE_INVALID)
     gtype = peas_extension_get_extension_type (exten);
 
-  instance = pygobject_get (pyexten->instance);
+  state = pyg_gil_state_ensure ();
 
-  return peas_method_apply (instance, gtype, method_name, args, retval);
+  instance = pygobject_get (pyexten->instance);
+  success = peas_method_apply (instance, gtype, method_name, args, retval);
+
+  pyg_gil_state_release (state);
+  return success;
 }
 
 static void
@@ -65,8 +71,12 @@ peas_extension_python_dispose (GObject *object)
 
   if (pyexten->instance)
     {
+      PyGILState_STATE state = pyg_gil_state_ensure ();
+
       Py_DECREF (pyexten->instance);
       pyexten->instance = NULL;
+
+      pyg_gil_state_release (state);
     }
 
   G_OBJECT_CLASS (peas_extension_python_parent_class)->dispose (object);
