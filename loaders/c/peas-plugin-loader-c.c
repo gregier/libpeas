@@ -76,6 +76,7 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
                  peas_plugin_info_get_name (info));
 
       g_object_unref (module);
+      g_hash_table_remove (cloader->priv->loaded_plugins, module_name);
       return FALSE;
     }
 
