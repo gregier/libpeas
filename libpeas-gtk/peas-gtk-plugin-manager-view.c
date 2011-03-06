@@ -198,24 +198,6 @@ plugin_list_changed_cb (PeasEngine               *engine,
 
   peas_gtk_plugin_manager_store_reload (view->priv->store);
 
-  if (info == NULL)
-    {
-      GtkTreeModel *model;
-      GtkTreeIter iter;
-
-      model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
-
-      if (gtk_tree_model_get_iter_first (model, &iter))
-        {
-          PeasGtkPluginManagerStore *store;
-
-          store = PEAS_GTK_PLUGIN_MANAGER_STORE (view->priv->store);
-
-          convert_iter_to_child_iter (view, &iter);
-          info = peas_gtk_plugin_manager_store_get_plugin (store, &iter);
-        }
-    }
-
   if (info != NULL)
     peas_gtk_plugin_manager_view_set_selected_plugin (view, info);
 }
