@@ -51,6 +51,7 @@ Makefile.in
 /missing
 /mkinstalldirs
 /omf.make
+/peas-demo/plugins/valahello/peasdemo-vala-hello-plugin.c
 /po/*.header
 /po/*.gmo
 /po/*.mo

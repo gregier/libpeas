@@ -7,3 +7,7 @@ endif
 if ENABLE_SEED
 SUBDIRS += seedhello
 endif
+
+if ENABLE_VALA
+SUBDIRS += valahello
+endif

@@ -317,7 +317,7 @@ else
 	dnl it's not required for building libpeas, merely to use it properly.
 fi
 
-if test "$enable_python" = "yes" -a "$found_python" = "no"; then
+if test "$enable_python" = "yes" -a "$found_python" != "yes"; then
 	AC_MSG_ERROR([$found_python])
 fi
 
@@ -334,6 +334,34 @@ if test "$found_python" = "yes"; then
 fi
 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "$found_python" = "yes"])
+
+dnl ================================================================
+dnl Vala
+dnl ================================================================
+
+VALA_REQUIRED=0.11.1
+
+AC_ARG_ENABLE([vala],
+	      AS_HELP_STRING([--enable-vala],[Enable Vala support]),
+	      [enable_vala=$enableval],
+	      [enable_vala=auto])
+
+if test "$enable_vala" = "no"; then
+	found_vala="no (disabled, use --enable-vala to enable)"
+else
+	AM_PROG_VALAC($VALA_REQUIRED)
+	if test "$VALAC" = ""; then
+		found_vala="no (valac >= $VALA_REQUIRED not found)"
+	else
+		found_vala="yes"
+	fi
+fi
+
+if test "$enable_vala" = "yes" -a "$found_vala" != "yes"; then
+	AC_MSG_ERROR([$found_vala])
+fi
+
+AM_CONDITIONAL([ENABLE_VALA],[test "$found_vala" = "yes"])
 
 dnl ================================================================
 dnl Documentation
@@ -398,6 +426,7 @@ peas-demo/plugins/helloworld/Makefile
 peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
 peas-demo/plugins/seedhello/Makefile
+peas-demo/plugins/valahello/Makefile
 po/Makefile.in
 tests/Makefile
 tests/libpeas/Makefile
@@ -435,4 +464,5 @@ Configuration:
         Glade Catalog                 : ${found_glade_catalog}
         Seed JS support               : ${found_seed}
         Python support                : ${found_python}
+        Vala support                  : ${found_vala}
 "
