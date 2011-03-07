@@ -81,9 +81,9 @@ find_python_extension_type (PeasPluginInfo *info,
 
   pygtype = pyg_type_wrapper_new (exten_type);
   pytype = PyObject_GetAttrString (pygtype, "pytype");
-  g_return_val_if_fail (pytype != NULL, NULL);
+  g_warn_if_fail (pytype != NULL);
 
-  if (pytype != Py_None)
+  if (pytype != NULL && pytype != Py_None)
     {
       while (PyDict_Next (locals, &pos, &key, &value))
         {
