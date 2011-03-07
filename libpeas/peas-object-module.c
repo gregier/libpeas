@@ -72,15 +72,6 @@ struct _PeasObjectModulePrivate {
   guint resident : 1;
 };
 
-static void
-peas_object_module_register_types (PeasObjectModule *module)
-{
-  g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
-  g_return_if_fail (module->priv->register_func != NULL);
-
-  module->priv->register_func (module);
-}
-
 static gboolean
 peas_object_module_load (GTypeModule *gmodule)
 {
@@ -133,7 +124,7 @@ peas_object_module_load (GTypeModule *gmodule)
   if (module->priv->resident)
     g_module_make_resident (module->priv->library);
 
-  peas_object_module_register_types (module);
+  module->priv->register_func (module);
 
   return TRUE;
 }
