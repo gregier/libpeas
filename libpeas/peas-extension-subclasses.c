@@ -272,37 +272,31 @@ static void
 extension_subclass_init (GObjectClass *klass,
                          GType         exten_type)
 {
-  GIInterfaceInfo *iface_info;
-  gint n_props, i;
+  guint n_props, i;
+  gpointer iface_vtable;
+  GParamSpec **properties;
 
   g_debug ("Initializing class '%s'", G_OBJECT_CLASS_NAME (klass));
 
-  klass->set_property = extension_subclass_set_property;
-  klass->get_property = extension_subclass_get_property;
+  iface_vtable = g_type_default_interface_peek (exten_type);
+  properties = g_object_interface_list_properties (iface_vtable, &n_props);
 
-  iface_info = g_irepository_find_by_gtype (NULL, exten_type);
-  g_return_if_fail (iface_info != NULL);
-  g_return_if_fail (g_base_info_get_type (iface_info) == GI_INFO_TYPE_INTERFACE);
-
-  n_props = g_interface_info_get_n_properties (iface_info);
-
-  for (i = 0; i < n_props; ++i)
+  if (n_props > 0)
     {
-      GIPropertyInfo *prop_info;
+      klass->set_property = extension_subclass_set_property;
+      klass->get_property = extension_subclass_get_property;
 
-      prop_info = g_interface_info_get_property (iface_info, i);
+      for (i = 0; i < n_props; ++i)
+        {
+          const gchar *property_name = g_param_spec_get_name (properties[i]);
 
-      g_object_class_override_property (klass, i + 1,
-                                        g_base_info_get_name (prop_info));
+          g_object_class_override_property (klass, i + 1, property_name);
 
-      g_debug ("Overrided '%s:%s' for '%s' proxy",
-               g_type_name (exten_type), g_base_info_get_name (prop_info),
-               G_OBJECT_CLASS_NAME (klass));
-
-      g_base_info_unref (prop_info);
+          g_debug ("Overrided '%s:%s' for '%s' proxy",
+                   g_type_name (exten_type), property_name,
+                   G_OBJECT_CLASS_NAME (klass));
+        }
     }
-
-  g_base_info_unref (iface_info);
 
   g_debug ("Initialized class '%s'", G_OBJECT_CLASS_NAME (klass));
 }
