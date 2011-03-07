@@ -25,47 +25,4 @@
 
 #include "testing/testing-extension.h"
 
-/*#define EXTENSION_TESTS("python")*/
-
-int
-main (int   argc,
-      char *argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-  g_type_init ();
-
-  testing_init ();
-
-  peas_engine_enable_loader (peas_engine_get_default (), "python");
-  g_object_unref (peas_engine_get_default ());
-
-  testing_extension_set_plugin_ ("extension-" "python");
-
-  _EXTENSION_TEST ("python", "garbage-collect", garbage_collect);
-
-  _EXTENSION_TEST ("python", "provides-valid", provides_valid);
-  _EXTENSION_TEST ("python", "provides-invalid", provides_invalid);
-
-  _EXTENSION_TEST ("python", "create-valid", create_valid);
-  _EXTENSION_TEST ("python", "create-invalid", create_invalid);
-
-  _EXTENSION_TEST ("python", "reload", reload);
-
-  _EXTENSION_TEST ("python", "call-invalid", call_invalid);
-  _EXTENSION_TEST ("python", "call-no-args", call_no_args);
-  _EXTENSION_TEST ("python", "call-with-return", call_with_return);
-  _EXTENSION_TEST ("python", "call-single-arg", call_single_arg);
-  _EXTENSION_TEST ("python", "call-multi-args", call_multi_args);
-
-#ifdef PYTHON_EXTENSION_PROPERTIES_DONT_WORK
-  /* Some tests don't fail when they should */
-
-  _EXTENSION_TEST ("python", "properties-construct-only", properties_construct_only);
-  _EXTENSION_TEST ("python", "properties-read-only", properties_read_only);
-  _EXTENSION_TEST ("python", "properties-write-only", properties_write_only);
-  _EXTENSION_TEST ("python", "properties-readwrite", properties_readwrite);
-#endif
-
-  return testing_run_tests ();
-}
+EXTENSION_TESTS ("python")

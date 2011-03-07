@@ -22,17 +22,10 @@ class CallablePythonPlugin(gobject.GObject, Introspection.Callable):
 class PropertiesPythonPlugin(gobject.GObject, Introspection.Properties):
     __gtype_name__ = "PropertiesPythonPlugin"
 
-    construct_only = gobject.property(type=str, #default="construct-only",
-                                      flags=(gobject.PARAM_READWRITE |
-                                             gobject.PARAM_CONSTRUCT_ONLY))
+    construct_only = gobject.property(type=str)
 
-    read_only = gobject.property(type=str, #default="read-only",
-                                 flags=gobject.PARAM_READABLE)
+    read_only = gobject.property(type=str, default="read-only")
                                       
-    write_only = gobject.property(type=str, #default="write-only",
-                                  flags=(gobject.PARAM_WRITABLE |
-                                         gobject.PARAM_CONSTRUCT))
+    write_only = gobject.property(type=str)
 
-    readwrite = gobject.property(type=str, #default="readwrite",
-                                 flags=(gobject.PARAM_READWRITE |
-                                        gobject.PARAM_CONSTRUCT))
+    readwrite = gobject.property(type=str, default="readwrite")
