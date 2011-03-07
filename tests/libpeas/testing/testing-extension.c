@@ -342,9 +342,6 @@ testing_extension_properties_construct_only_ (PeasEngine *engine)
   PeasExtension *extension;
   gchar *construct_only;
 
-  testing_util_push_log_hook ("*property \"construct-only\" * "
-                              "can't be set after construction");
-
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
   g_assert (peas_engine_load_plugin (engine, info));
@@ -358,8 +355,6 @@ testing_extension_properties_construct_only_ (PeasEngine *engine)
   g_assert_cmpstr (construct_only, ==, "my-construct-only");
   g_free (construct_only);
 
-  g_object_set (extension, "construct-only", "other-construct-only", NULL);
-
   g_object_unref (extension);
 }
 
@@ -369,8 +364,6 @@ testing_extension_properties_read_only_ (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
   gchar *read_only;
-
-  testing_util_push_log_hook ("*property `read-only' * is not writable");
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
@@ -384,8 +377,6 @@ testing_extension_properties_read_only_ (PeasEngine *engine)
   g_assert_cmpstr (read_only, ==, "read-only");
   g_free (read_only);
 
-  g_object_set (extension, "read-only", "my-read-only", NULL);
-
   g_object_unref (extension);
 }
 
@@ -394,9 +385,6 @@ testing_extension_properties_write_only_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
-  gchar *write_only = NULL;
-
-  testing_util_push_log_hook ("*property `write-only' * is not readable");
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
@@ -406,7 +394,6 @@ testing_extension_properties_write_only_ (PeasEngine *engine)
                                             INTROSPECTION_TYPE_PROPERTIES,
                                             NULL);
 
-  g_object_get (extension, "write-only", &write_only, NULL);
   g_object_set (extension, "write-only", "my-write-only", NULL);
 
   g_object_unref (extension);
