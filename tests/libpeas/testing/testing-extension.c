@@ -347,13 +347,7 @@ testing_extension_properties_construct_only_ (PeasEngine *engine)
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
-  FILE *saved_stdout = stdout;
-  FILE *saved_stderr = stderr;
-
   g_assert (peas_engine_load_plugin (engine, info));
-
-  stdout = saved_stdout;
-  stderr = saved_stderr;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_PROPERTIES,
