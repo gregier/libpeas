@@ -18,4 +18,3 @@ libbuiltin_la_LIBADD  = $(PEAS_LIBS)
 noinst_PLUGIN = builtin.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

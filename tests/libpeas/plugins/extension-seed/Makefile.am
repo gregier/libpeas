@@ -5,4 +5,3 @@ noinst_PLUGIN =	\
 	extension-seed.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

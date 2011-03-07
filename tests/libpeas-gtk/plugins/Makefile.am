@@ -9,4 +9,3 @@ noinst_PLUGIN = \
 	valid-stock-icon.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

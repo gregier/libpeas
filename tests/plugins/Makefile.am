@@ -12,4 +12,3 @@ noinst_PLUGIN = \
 	unavailable.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

@@ -25,4 +25,3 @@ libextension_c_la_LIBADD = \
 noinst_PLUGIN = extension-c.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

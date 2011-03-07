@@ -8,4 +8,3 @@ noinst_PLUGIN = \
 	extension-python.pyc
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

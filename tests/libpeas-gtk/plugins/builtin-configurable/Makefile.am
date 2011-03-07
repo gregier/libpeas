@@ -21,4 +21,3 @@ libbuiltin_configurable_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
 noinst_PLUGIN = builtin-configurable.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

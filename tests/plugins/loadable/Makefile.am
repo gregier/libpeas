@@ -18,4 +18,3 @@ libloadable_la_LIBADD  = $(PEAS_LIBS)
 noinst_PLUGIN = loadable.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

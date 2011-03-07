@@ -23,4 +23,3 @@ noinst_PLUGIN = \
 	os-dependant-help.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)

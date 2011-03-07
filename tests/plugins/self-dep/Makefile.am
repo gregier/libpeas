@@ -18,4 +18,3 @@ libself_dep_la_LIBADD  = $(PEAS_LIBS)
 noinst_PLUGIN = self-dep.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
-DISTCLEANFILES = $(noinst_PLUGIN)
