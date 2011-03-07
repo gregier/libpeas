@@ -43,7 +43,7 @@ introspection_properties_default_init (IntrospectionPropertiesInterface *iface)
     {
       DEFINE_PROP ("construct-only", G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
       DEFINE_PROP ("read-only", G_PARAM_READABLE);
-      DEFINE_PROP ("write-only", G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
+      DEFINE_PROP ("write-only", G_PARAM_WRITABLE);
       DEFINE_PROP ("readwrite", G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
       initialized = TRUE;

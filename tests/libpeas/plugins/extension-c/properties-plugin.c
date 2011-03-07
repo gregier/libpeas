@@ -82,7 +82,7 @@ testing_properties_plugin_set_property (GObject      *object,
       break;
 
     case PROP_WRITE_ONLY:
-      /* Don't bother actually doing anythin */
+      /* Don't bother actually doing anything */
       break;
 
     case PROP_READWRITE:
