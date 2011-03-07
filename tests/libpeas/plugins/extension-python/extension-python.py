@@ -2,7 +2,7 @@
 # ex:set ts=4 et sw=4 ai:
 
 import gobject
-from gi.repository import Introspection
+from gi.repository import Introspection, Peas
 
 class CallablePythonPlugin(gobject.GObject, Introspection.Callable):
     __gtype_name__ = "CallablePythonPlugin"
@@ -29,3 +29,17 @@ class PropertiesPythonPlugin(gobject.GObject, Introspection.Properties):
     write_only = gobject.property(type=str)
 
     readwrite = gobject.property(type=str, default="readwrite")
+
+class ActivatablePythonExtension(gobject.GObject, Peas.Activatable):
+    __gtype_name__ = "ActivatablePythonExtension"
+
+    object = gobject.property(type=gobject.GObject)
+
+    def do_activate(self):
+        pass
+
+    def do_deactivate(self):
+        pass
+
+    def update_state(self):
+        pass

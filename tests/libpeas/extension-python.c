@@ -2,7 +2,7 @@
  * extension-python.c
  * This file is part of libpeas
  *
- * Copyright (C) 2011 - Garrett Regier
+ * Copyright (C) 2011 - Steve Frécinaux, Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -25,6 +25,8 @@
 
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
+#include <libpeas/peas-activatable.h>
+
 #include <pygobject.h>
 
 static void
@@ -57,6 +59,47 @@ extension_python_instance_refcount (PeasEngine *engine)
   g_object_unref (extension);
 }
 
+static void
+extension_python_activatable_subject_refcount (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  GObject *object;
+  PyObject *wrapper;
+
+  info = peas_engine_get_plugin_info (engine, "extension-python");
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  /* Create the 'object' property value, to be similar to a GtkWindow
+   * instance: a sunk GInitiallyUnowned object. */
+  object = g_object_new (G_TYPE_INITIALLY_UNOWNED, NULL);
+  g_object_ref_sink (object);
+  g_assert_cmpint (object->ref_count, ==, 1);
+
+  /* we pre-create the wrapper to make it easier to check reference count */
+  extension = peas_engine_create_extension (engine, info,
+                                            PEAS_TYPE_ACTIVATABLE,
+                                            "object", object,
+                                            NULL);
+  g_assert (PEAS_IS_EXTENSION (extension));
+
+  /* The python wrapper created around our dummy object should have increased
+   * its refcount by 1.
+   */
+  g_assert_cmpint (object->ref_count, ==, 2);
+
+  /* Ensure the python wrapper is only reffed once, by the extension */
+  wrapper = g_object_get_data (object, "PyGObject::wrapper");
+  g_assert_cmpint (wrapper->ob_refcnt, ==, 1);
+
+  g_assert_cmpint (((GObject *)extension)->ref_count, ==, 1);
+  g_object_unref (extension);
+
+  /* We unreffed the extension, so it should have been destroyed and our dummy
+   * object refcount should be back to 1. */
+  g_assert_cmpint (object->ref_count, ==, 1);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -67,6 +110,7 @@ main (int   argc,
   EXTENSION_TESTS ("python");
 
   EXTENSION_TEST_ADD ("python", "instance-refcount", extension_python_instance_refcount);
+  EXTENSION_TEST_ADD ("python", "activatable-subject-refcount", extension_python_activatable_subject_refcount);
 
   return testing_run_tests ();
 }
