@@ -144,7 +144,7 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   PyObject *pyobject;
   PyObject *pyplinfo;
   PyGILState_STATE state;
-  PeasExtension *exten;
+  PeasExtension *exten = NULL;
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
@@ -153,29 +153,23 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   pytype = find_python_extension_type (info, exten_type, pyinfo->module);
 
   if (pytype == NULL)
-    {
-      pyg_gil_state_release (state);
-      return NULL;
-    }
+    goto out;
 
   the_type = pyg_type_from_object ((PyObject *) pytype);
 
   if (the_type == G_TYPE_INVALID)
-    {
-      pyg_gil_state_release (state);
-      return NULL;
-    }
+    goto out;
 
-  /* FIXME: we don't release the gil state here. */
-  g_return_val_if_fail (g_type_is_a (the_type, exten_type), NULL);
+  if (!g_type_is_a (the_type, exten_type))
+    {
+      g_warn_if_fail (g_type_is_a (the_type, exten_type));
+      goto out;
+    }
 
   object = g_object_newv (the_type, n_parameters, parameters);
 
   if (!object)
-    {
-      pyg_gil_state_release (state);
-      return NULL;
-    }
+    goto out;
 
   pyobject = pygobject_new (object);
   g_object_unref (object);
@@ -187,6 +181,8 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
 
   exten = peas_extension_python_new (exten_type, pyobject);
   Py_DECREF (pyobject);
+
+out:
 
   pyg_gil_state_release (state);
 
