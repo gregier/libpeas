@@ -8,7 +8,6 @@ INCLUDES = \
 	$(GCOV_CFLAGS)			\
 	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED)		\
-	$(PYGTK_CFLAGS)			\
 	$(PYTHON_CFLAGS)		\
 	-DPEAS_PYEXECDIR=\""$(pyexecdir)"\" \
 	-DPEAS_LOCALEDIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
@@ -27,10 +26,7 @@ libpythonloader_la_LDFLAGS = \
 
 libpythonloader_la_LIBADD = \
 	$(PEAS_LIBS)			\
-	$(PYTHON_LIB_LOC)		\
-	$(PYTHON_LIBS)			\
-	$(PYTHON_EXTRA_LIBS)		\
-	$(PYGTK_LIBS)
+	$(PYTHON_LIBS)
 
 gcov_sources = $(libpythonloader_la_SOURCES)
 include $(top_srcdir)/Makefile.gcov
