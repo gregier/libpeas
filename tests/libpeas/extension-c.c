@@ -27,7 +27,7 @@
 #include "introspection/introspection-callable.h"
 
 static void
-extension_c_instance_refcount (PeasEngine *engine)
+test_extension_c_instance_refcount (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
@@ -62,9 +62,9 @@ main (int   argc,
   g_test_init (&argc, &argv, NULL);
   g_type_init ();
 
-  EXTENSION_TESTS ("c");
+  EXTENSION_TESTS (c);
 
-  EXTENSION_TEST_ADD ("c", "instance-refcount", extension_c_instance_refcount);
+  EXTENSION_TEST (c, "instance-refcount", instance_refcount);
 
   return testing_run_tests ();
 }

@@ -25,8 +25,6 @@
 
 #include "testing/testing-extension.h"
 
-/*#define EXTENSION_TESTS("seed")*/
-
 int
 main (int   argc,
       char *argv[])
@@ -35,33 +33,33 @@ main (int   argc,
 
   g_type_init ();
 
-  _EXTENSION_TESTS_INIT ("seed");
+  _EXTENSION_TESTS_INIT (seed);
 
-  _EXTENSION_TEST ("seed", "garbage-collect", garbage_collect);
+  _EXTENSION_TEST (seed, "garbage-collect", garbage_collect);
 
-  _EXTENSION_TEST ("seed", "provides-valid", provides_valid);
-  _EXTENSION_TEST ("seed", "provides-invalid", provides_invalid);
+  _EXTENSION_TEST (seed, "provides-valid", provides_valid);
+  _EXTENSION_TEST (seed, "provides-invalid", provides_invalid);
 
-  _EXTENSION_TEST ("seed", "create-valid", create_valid);
-  _EXTENSION_TEST ("seed", "create-invalid", create_invalid);
+  _EXTENSION_TEST (seed, "create-valid", create_valid);
+  _EXTENSION_TEST (seed, "create-invalid", create_invalid);
 
-  _EXTENSION_TEST ("seed", "reload", reload);
+  _EXTENSION_TEST (seed, "reload", reload);
 
-  _EXTENSION_TEST ("seed", "call-invalid", call_invalid);
-  _EXTENSION_TEST ("seed", "call-no-args", call_no_args);
-  _EXTENSION_TEST ("seed", "call-with-return", call_with_return);
+  _EXTENSION_TEST (seed, "call-invalid", call_invalid);
+  _EXTENSION_TEST (seed, "call-no-args", call_no_args);
+  _EXTENSION_TEST (seed, "call-with-return", call_with_return);
 #ifdef SEED_EXTENSION_CALL_WITH_ARG_DONT_WORK
-  _EXTENSION_TEST ("seed", "call-single-arg", call_single_arg);
-  _EXTENSION_TEST ("seed", "call-multi-args", call_multi_args);
+  _EXTENSION_TEST (seed, "call-single-arg", call_single_arg);
+  _EXTENSION_TEST (seed, "call-multi-args", call_multi_args);
 #endif
 
 #ifdef SEED_EXTENSION_PROPERTIES_DONT_WORK
   /* Some tests don't fail when they should */
 
-  _EXTENSION_TEST ("seed", "properties-construct-only", properties_construct_only);
-  _EXTENSION_TEST ("seed", "properties-read-only", properties_read_only);
-  _EXTENSION_TEST ("seed", "properties-write-only", properties_write_only);
-  _EXTENSION_TEST ("seed", "properties-readwrite", properties_readwrite);
+  _EXTENSION_TEST (seed, "properties-construct-only", properties_construct_only);
+  _EXTENSION_TEST (seed, "properties-read-only", properties_read_only);
+  _EXTENSION_TEST (seed, "properties-write-only", properties_write_only);
+  _EXTENSION_TEST (seed, "properties-readwrite", properties_readwrite);
 #endif
 
   return testing_run_tests ();

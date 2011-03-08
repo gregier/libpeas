@@ -61,16 +61,16 @@ void testing_extension_properties_readwrite_      (PeasEngine *engine);
 
 #define _EXTENSION_TESTS_INIT(loader) \
   testing_init (); \
-  peas_engine_enable_loader (peas_engine_get_default (), loader); \
+  peas_engine_enable_loader (peas_engine_get_default (), #loader); \
   g_object_unref (peas_engine_get_default ()); \
-  testing_extension_set_plugin_ ("extension-" loader);
+  testing_extension_set_plugin_ ("extension-" #loader)
 
 #define _EXTENSION_TEST(loader, path, ftest) \
-  g_test_add ("/extension/" loader "/" path, TestingExtensionFixture_, \
+  g_test_add ("/extension/" #loader "/" path, TestingExtensionFixture_, \
               (gpointer) testing_extension_##ftest##_, \
               testing_extension_test_setup_, \
               testing_extension_test_runner_, \
-              testing_extension_test_teardown_);
+              testing_extension_test_teardown_)
 
 #define EXTENSION_TESTS(loader) \
   _EXTENSION_TESTS_INIT(loader); \
@@ -97,12 +97,12 @@ void testing_extension_properties_readwrite_      (PeasEngine *engine);
   _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite);
 
 /* This macro is there to add loader-specific tests. */
-#define EXTENSION_TEST_ADD(loader, path, func) \
-  g_test_add ("/extension/" loader "/" path, TestingExtensionFixture_, \
-              (gpointer) func, \
+#define EXTENSION_TEST(loader, path, func) \
+  g_test_add ("/extension/" #loader "/" path, TestingExtensionFixture_, \
+              (gpointer) test_extension_##loader##_##func, \
               testing_extension_test_setup_, \
               testing_extension_test_runner_, \
-              testing_extension_test_teardown_);
+              testing_extension_test_teardown_)
 
 G_END_DECLS
 

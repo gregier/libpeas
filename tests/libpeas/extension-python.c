@@ -30,7 +30,7 @@
 #include <pygobject.h>
 
 static void
-extension_python_instance_refcount (PeasEngine *engine)
+test_extension_python_instance_refcount (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
@@ -60,7 +60,7 @@ extension_python_instance_refcount (PeasEngine *engine)
 }
 
 static void
-extension_python_activatable_subject_refcount (PeasEngine *engine)
+test_extension_python_activatable_subject_refcount (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
@@ -81,6 +81,7 @@ extension_python_activatable_subject_refcount (PeasEngine *engine)
                                             PEAS_TYPE_ACTIVATABLE,
                                             "object", object,
                                             NULL);
+
   g_assert (PEAS_IS_EXTENSION (extension));
 
   /* The python wrapper created around our dummy object should have increased
@@ -107,10 +108,10 @@ main (int   argc,
   g_test_init (&argc, &argv, NULL);
   g_type_init ();
 
-  EXTENSION_TESTS ("python");
+  EXTENSION_TESTS (python);
 
-  EXTENSION_TEST_ADD ("python", "instance-refcount", extension_python_instance_refcount);
-  EXTENSION_TEST_ADD ("python", "activatable-subject-refcount", extension_python_activatable_subject_refcount);
+  EXTENSION_TEST (python, "instance-refcount", instance_refcount);
+  EXTENSION_TEST (python, "activatable-subject-refcount", activatable_subject_refcount);
 
   return testing_run_tests ();
 }
