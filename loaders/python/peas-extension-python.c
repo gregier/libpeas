@@ -35,55 +35,9 @@
 
 G_DEFINE_TYPE (PeasExtensionPython, peas_extension_python, PEAS_TYPE_EXTENSION);
 
-enum {
-  PROP_0,
-  PROP_INSTANCE
-};
-
 static void
 peas_extension_python_init (PeasExtensionPython *pyexten)
 {
-}
-
-static void
-peas_extension_python_set_property (GObject      *object,
-                                    guint         prop_id,
-                                    const GValue *value,
-                                    GParamSpec   *pspec)
-{
-  PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (object);
-  PyGILState_STATE state;
-
-  switch (prop_id)
-    {
-    case PROP_INSTANCE:
-      pyexten->instance = g_value_get_pointer (value);
-
-      state = pyg_gil_state_ensure ();
-      Py_INCREF (pyexten->instance);
-      pyg_gil_state_release (state);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
-}
-
-static void
-peas_extension_python_get_property (GObject      *object,
-                                    guint         prop_id,
-                                    GValue       *value,
-                                    GParamSpec   *pspec)
-{
-  PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (object);
-
-  switch (prop_id)
-    {
-    case PROP_INSTANCE:
-      g_value_set_pointer (value, pyexten->instance);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
 }
 
 static gboolean
@@ -134,19 +88,9 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
-  object_class->set_property = peas_extension_python_set_property;
-  object_class->get_property = peas_extension_python_get_property;
   object_class->dispose = peas_extension_python_dispose;
 
   extension_class->call = peas_extension_python_call;
-
-  g_object_class_install_property (object_class,
-                                   PROP_INSTANCE,
-                                   g_param_spec_pointer ("instance",
-                                                        "Extension Instance",
-                                                        "The Python Extension Instance",
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY));
 }
 
 PeasExtension *
@@ -157,8 +101,12 @@ peas_extension_python_new (GType     gtype,
   GType real_type;
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_PYTHON, gtype);
-  return PEAS_EXTENSION (g_object_new (real_type,
-                                       "extension-type", gtype,
-                                       "instance", instance,
-                                       NULL));
+  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (real_type,
+                                                 "extension-type", gtype,
+                                                 NULL));
+
+  pyexten->instance = instance;
+  Py_INCREF (instance);
+
+  return PEAS_EXTENSION (pyexten);
 }

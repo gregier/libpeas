@@ -30,52 +30,15 @@
 
 G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
 
-enum {
-  PROP_0,
-  PROP_JS_CONTEXT,
-  PROP_JS_OBJECT,
-};
-
 typedef struct {
   GITypeInfo *type_info;
   GIArgument *ptr;
 } OutArg;
 
+
 static void
 peas_extension_seed_init (PeasExtensionSeed *sexten)
 {
-}
-
-static void
-peas_extension_seed_set_property (GObject      *object,
-                                  guint         prop_id,
-                                  const GValue *value,
-                                  GParamSpec   *pspec)
-{
-  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
-
-  switch (prop_id)
-    {
-    case PROP_JS_CONTEXT:
-      sexten->js_context = g_value_get_pointer (value);
-      break;
-    case PROP_JS_OBJECT:
-      sexten->js_object = g_value_get_pointer (value);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
-}
-
-static void
-peas_extension_seed_constructed (GObject *object)
-{
-  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
-
-  /* We do this here as we can't be sure the context is already set when
-   * the "JS_PLUGIN" property is set. */
-  seed_context_ref (sexten->js_context);
-  seed_value_protect (sexten->js_context, sexten->js_object);
 }
 
 static void
@@ -384,27 +347,9 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
-  object_class->set_property = peas_extension_seed_set_property;
-  object_class->constructed = peas_extension_seed_constructed;
   object_class->dispose = peas_extension_seed_dispose;
 
   extension_class->call = peas_extension_seed_call;
-
-  g_object_class_install_property (object_class,
-                                   PROP_JS_CONTEXT,
-                                   g_param_spec_pointer ("js-context",
-                                                         "JavaScript Context",
-                                                         "A Seed JavaScript context",
-                                                         G_PARAM_WRITABLE |
-                                                         G_PARAM_CONSTRUCT_ONLY));
-
-  g_object_class_install_property (object_class,
-                                   PROP_JS_OBJECT,
-                                   g_param_spec_pointer ("js-object",
-                                                         "JavaScript Object",
-                                                         "A Seed JavaScript object",
-                                                         G_PARAM_WRITABLE |
-                                                         G_PARAM_CONSTRUCT_ONLY));
 }
 
 PeasExtension *
@@ -412,15 +357,22 @@ peas_extension_seed_new (GType       exten_type,
                          SeedContext js_context,
                          SeedObject  js_object)
 {
+  PeasExtensionSeed *sexten;
   GType real_type;
 
   g_return_val_if_fail (js_context != NULL, NULL);
   g_return_val_if_fail (js_object != NULL, NULL);
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_SEED, exten_type);
-  return PEAS_EXTENSION (g_object_new (real_type,
-                                       "extension-type", exten_type,
-                                       "js-context", js_context,
-                                       "js-object", js_object,
-                                       NULL));
+  sexten = PEAS_EXTENSION_SEED (g_object_new (real_type,
+                                              "extension-type", exten_type,
+                                              NULL));
+
+  sexten->js_context = js_context;
+  sexten->js_object = js_object;
+
+  seed_context_ref (sexten->js_context);
+  seed_value_protect (sexten->js_context, sexten->js_object);
+
+  return PEAS_EXTENSION (sexten);
 }

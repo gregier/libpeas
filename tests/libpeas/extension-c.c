@@ -23,6 +23,8 @@
 #include <config.h>
 #endif
 
+#include "loaders/c/peas-extension-c.h"
+
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
 
@@ -43,14 +45,12 @@ test_extension_c_instance_refcount (PeasEngine *engine)
 
   g_assert (PEAS_IS_EXTENSION (extension));
 
-  g_object_get (extension, "instance", &instance, NULL);
+  instance = ((PeasExtensionC *) extension)->instance;
 
-  /* The refcount of the returned object should be 2:
+  /* The refcount of the returned object should be 1:
    *  - one ref for the PeasExtension
-   *  - one ref added by g_object_get()
    */
-  g_assert_cmpint (instance->ref_count, ==, 2);
-  g_object_unref (instance);
+  g_assert_cmpint (instance->ref_count, ==, 1);
 
   g_object_unref (extension);
 }

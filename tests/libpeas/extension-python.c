@@ -23,11 +23,13 @@
 #include <config.h>
 #endif
 
+#include <pygobject.h>
+
+#include <libpeas/peas-activatable.h>
+#include "loaders/python/peas-extension-python.h"
+
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
-#include <libpeas/peas-activatable.h>
-
-#include <pygobject.h>
 
 static void
 test_extension_python_instance_refcount (PeasEngine *engine)
@@ -46,11 +48,8 @@ test_extension_python_instance_refcount (PeasEngine *engine)
 
   g_assert (PEAS_IS_EXTENSION (extension));
 
-  g_object_get (extension, "instance", &instance, NULL);
+  instance = ((PeasExtensionPython *) extension)->instance;
 
-  /* The property getter for PeasExtensionPython.instance doesn't increment the
-   * refcount, so the refcount here should be 1.
-   */
   g_assert_cmpint (instance->ob_refcnt, ==, 1);
 
   /* The internal extension GObject should only be reffed by its python wrapper. */
@@ -93,7 +92,7 @@ test_extension_python_activatable_subject_refcount (PeasEngine *engine)
   wrapper = g_object_get_data (object, "PyGObject::wrapper");
   g_assert_cmpint (wrapper->ob_refcnt, ==, 1);
 
-  g_assert_cmpint (((GObject *)extension)->ref_count, ==, 1);
+  g_assert_cmpint (G_OBJECT (extension)->ref_count, ==, 1);
   g_object_unref (extension);
 
   /* We unreffed the extension, so it should have been destroyed and our dummy
