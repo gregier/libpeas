@@ -298,6 +298,8 @@ extension_subclass_init (GObjectClass *klass,
         }
     }
 
+  g_free (properties);
+
   g_debug ("Initialized class '%s'", G_OBJECT_CLASS_NAME (klass));
 }
 
