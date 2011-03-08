@@ -99,6 +99,8 @@ test_extension_python_activatable_subject_refcount (PeasEngine *engine)
   /* We unreffed the extension, so it should have been destroyed and our dummy
    * object refcount should be back to 1. */
   g_assert_cmpint (object->ref_count, ==, 1);
+
+  g_object_unref (object);
 }
 
 int
