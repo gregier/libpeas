@@ -273,7 +273,7 @@ PYTHON_REQUIRED=2.5.2
 
 dnl Used by the Python loader to check the PyGObject version at runtime
 PYGOBJECT_MAJOR_VERSION=2
-PYGOBJECT_MINOR_VERSION=20
+PYGOBJECT_MINOR_VERSION=28
 PYGOBJECT_MICRO_VERSION=0
 PYGOBJECT_REQUIRED=$PYGOBJECT_MAJOR_VERSION.$PYGOBJECT_MINOR_VERSION.$PYGOBJECT_MICRO_VERSION
 
@@ -309,7 +309,7 @@ else
 	AC_MSG_CHECKING([for PyGObject availability.])
 	if test "$found_python" = "yes"; then
 		PKG_CHECK_EXISTS([pygobject-2.0 >= $PYGOBJECT_REQUIRED],,
-				 [found_python="no (pygobject >= $PYGOBJECT_REQURED) not found)"])
+				 [found_python="no (pygobject >= $PYGOBJECT_REQUIRED) not found)"])
 	fi
 	AC_MSG_RESULT([$found_python])
 
