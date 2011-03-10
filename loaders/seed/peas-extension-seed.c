@@ -36,9 +36,102 @@ typedef struct {
 } OutArg;
 
 
+gboolean seed_gvalue_from_seed_value (SeedContext    ctx,
+                                      SeedValue      val,
+                                      GType          type,
+                                      GValue        *gval,
+                                      SeedException *exception);
+
 static void
 peas_extension_seed_init (PeasExtensionSeed *sexten)
 {
+}
+
+static gchar *
+convert_property_name (const gchar *pname)
+{
+  gint i;
+  gchar *prop_name;
+
+  prop_name = g_strdup (pname);
+
+  for (i = 0; prop_name[i] != '\0'; ++i)
+    {
+      if (prop_name[i] == '-')
+        prop_name[i] = '_';
+    }
+
+  return prop_name;
+}
+
+static void
+peas_extension_seed_get_property (GObject    *object,
+                                  guint       prop_id,
+                                  GValue     *value,
+                                  GParamSpec *pspec)
+{
+  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
+  SeedValue seed_value;
+  SeedException exc = NULL;
+  gchar *prop_name;
+
+  /* Don't add properties as they could shadow the instance's */
+
+  prop_name = convert_property_name (pspec->name);
+
+  seed_value = seed_object_get_property (sexten->js_context, sexten->js_object,
+                                         prop_name);
+
+  g_free (prop_name);
+
+
+  seed_gvalue_from_seed_value (sexten->js_context, seed_value,
+                               pspec->value_type, value, &exc);
+
+  if (exc != NULL)
+    {
+      gchar *exc_string;
+
+      exc_string = seed_exception_to_string (sexten->js_context, exc);
+      g_warning ("Seed Exception: %s", exc_string);
+
+      g_free (exc_string);
+    }
+}
+
+static void
+peas_extension_seed_set_property (GObject      *object,
+                                  guint         prop_id,
+                                  const GValue *value,
+                                  GParamSpec   *pspec)
+{
+  PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (object);
+  SeedValue seed_value;
+  SeedException exc = NULL;
+  gchar *prop_name;
+
+  /* Don't add properties as they could shadow the instance's */
+
+  seed_value = seed_value_from_gvalue (sexten->js_context,
+                                       (GValue *) value, &exc);
+
+  if (exc != NULL)
+    {
+      gchar *exc_string;
+
+      exc_string = seed_exception_to_string (sexten->js_context, exc);
+      g_warning ("Seed Exception: %s", exc_string);
+
+      g_free (exc_string);
+      return;
+    }
+
+  prop_name = convert_property_name (pspec->name);
+
+  seed_object_set_property (sexten->js_context, sexten->js_object,
+                            prop_name, seed_value);
+
+  g_free (prop_name);
 }
 
 static void
@@ -196,12 +289,12 @@ set_return_value (OutArg        *arg,
 
 static gboolean
 peas_extension_seed_call (PeasExtension *exten,
-                          GType          exten_type,
                           const gchar   *method_name,
                           GIArgument    *args,
                           GIArgument    *retval)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
+  GType exten_type;
   SeedValue js_method;
   GICallableInfo *func_info;
   GITypeInfo *retval_info;
@@ -216,8 +309,7 @@ peas_extension_seed_call (PeasExtension *exten,
   g_return_val_if_fail (sexten->js_context != NULL, FALSE);
   g_return_val_if_fail (sexten->js_object != NULL, FALSE);
 
-  if (exten_type == G_TYPE_INVALID)
-    exten_type = peas_extension_get_extension_type (exten);
+  exten_type = peas_extension_get_extension_type (exten);
 
   /* Fetch the JS method we want to call */
   js_method = seed_object_get_property (sexten->js_context,
@@ -347,6 +439,8 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
+  object_class->set_property = peas_extension_seed_set_property;
+  object_class->get_property = peas_extension_seed_get_property;
   object_class->dispose = peas_extension_seed_dispose;
 
   extension_class->call = peas_extension_seed_call;

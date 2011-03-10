@@ -37,17 +37,42 @@ peas_extension_c_init (PeasExtensionC *cexten)
 
 static gboolean
 peas_extension_c_call (PeasExtension *exten,
-                       GType          gtype,
                        const gchar   *method_name,
                        GIArgument    *args,
                        GIArgument    *retval)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (exten);
+  GType gtype;
 
-  if (gtype == G_TYPE_INVALID)
-    gtype = peas_extension_get_extension_type (exten);
+  gtype = peas_extension_get_extension_type (exten);
 
   return peas_method_apply (cexten->instance, gtype, method_name, args, retval);
+}
+
+static void
+peas_extension_c_set_property (GObject      *object,
+                               guint         prop_id,
+                               const GValue *value,
+                               GParamSpec   *pspec)
+{
+  PeasExtensionC *cexten = PEAS_EXTENSION_C (object);
+
+  /* Don't add properties as they could shadow the instance's */
+
+  g_object_set_property (cexten->instance, pspec->name, value);
+}
+
+static void
+peas_extension_c_get_property (GObject      *object,
+                               guint         prop_id,
+                               GValue       *value,
+                               GParamSpec   *pspec)
+{
+  PeasExtensionC *cexten = PEAS_EXTENSION_C (object);
+
+  /* Don't add properties as they could shadow the instance's */
+
+  g_object_get_property (cexten->instance, pspec->name, value);
 }
 
 static void
@@ -71,6 +96,8 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
   object_class->dispose = peas_extension_c_dispose;
+  object_class->get_property = peas_extension_c_get_property;
+  object_class->set_property = peas_extension_c_set_property;
 
   extension_class->call = peas_extension_c_call;
 }

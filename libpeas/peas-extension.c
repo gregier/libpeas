@@ -290,5 +290,5 @@ peas_extension_callv (PeasExtension *exten,
   g_return_val_if_fail (method_name != NULL, FALSE);
 
   klass = PEAS_EXTENSION_GET_CLASS (exten);
-  return klass->call (exten, G_TYPE_INVALID, method_name, args, return_value);
+  return klass->call (exten, method_name, args, return_value);
 }

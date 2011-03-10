@@ -53,14 +53,10 @@ main (int   argc,
   _EXTENSION_TEST (seed, "call-multi-args", call_multi_args);
 #endif
 
-#ifdef SEED_EXTENSION_PROPERTIES_DONT_WORK
-  /* Some tests don't fail when they should */
-
   _EXTENSION_TEST (seed, "properties-construct-only", properties_construct_only);
   _EXTENSION_TEST (seed, "properties-read-only", properties_read_only);
   _EXTENSION_TEST (seed, "properties-write-only", properties_write_only);
   _EXTENSION_TEST (seed, "properties-readwrite", properties_readwrite);
-#endif
 
   return testing_run_tests ();
 }

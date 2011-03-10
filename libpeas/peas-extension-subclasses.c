@@ -215,6 +215,12 @@ implement_interface_methods (gpointer iface,
            g_type_name (exten_type), g_type_name (proxy_type));
 }
 
+static gpointer
+get_parent_class (GObject *object)
+{
+  return g_type_class_peek (g_type_parent (G_TYPE_FROM_INSTANCE (object)));
+}
+
 static void
 extension_subclass_set_property (GObject      *object,
                                  guint         prop_id,
@@ -222,8 +228,6 @@ extension_subclass_set_property (GObject      *object,
                                  GParamSpec   *pspec)
 {
   PeasExtension *exten = PEAS_EXTENSION (object);
-  GIArgument args[2];
-  GIArgument return_value;
 
   /* This will have already been set on the real instance */
   if ((pspec->flags & G_PARAM_CONSTRUCT_ONLY) != 0)
@@ -237,13 +241,8 @@ extension_subclass_set_property (GObject      *object,
            G_OBJECT_TYPE_NAME (object),
            g_param_spec_get_name (pspec));
 
-  args[0].v_string = (gchar *) g_param_spec_get_name (pspec);
-  args[1].v_pointer = (gpointer) value;
-
-  PEAS_EXTENSION_GET_CLASS (object)->call (exten,
-                                           G_TYPE_OBJECT,
-                                           "set_property",
-                                           args, &return_value);
+  G_OBJECT_CLASS (get_parent_class (object))->set_property (object, prop_id,
+                                                            value, pspec);
 }
 
 static void
@@ -252,20 +251,12 @@ extension_subclass_get_property (GObject    *object,
                                  GValue     *value,
                                  GParamSpec *pspec)
 {
-  GIArgument args[2];
-  GIArgument return_value;
-
   g_debug ("Getting '%s:%s'",
            G_OBJECT_TYPE_NAME (object),
            g_param_spec_get_name (pspec));
 
-  args[0].v_string = (gchar *) g_param_spec_get_name (pspec);
-  args[1].v_pointer = value;
-
-  PEAS_EXTENSION_GET_CLASS (object)->call (PEAS_EXTENSION (object),
-                                           G_TYPE_OBJECT,
-                                           "get_property",
-                                           args, &return_value);
+  G_OBJECT_CLASS (get_parent_class (object))->get_property (object, prop_id,
+                                                            value, pspec);
 }
 
 static void

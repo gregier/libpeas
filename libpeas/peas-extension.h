@@ -66,7 +66,6 @@ struct _PeasExtensionClass {
 
   /*< private >*/
   gboolean   (*call)                      (PeasExtension  *exten,
-                                           GType           gtype,
                                            const gchar    *method,
                                            GIArgument     *args,
                                            GIArgument     *return_value);

@@ -42,18 +42,17 @@ peas_extension_python_init (PeasExtensionPython *pyexten)
 
 static gboolean
 peas_extension_python_call (PeasExtension *exten,
-                            GType          gtype,
                             const gchar   *method_name,
                             GIArgument    *args,
                             GIArgument    *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
+  GType gtype;
   PyGILState_STATE state;
   GObject *instance;
   gboolean success;
 
-  if (gtype == G_TYPE_INVALID)
-    gtype = peas_extension_get_extension_type (exten);
+  gtype = peas_extension_get_extension_type (exten);
 
   state = pyg_gil_state_ensure ();
 
@@ -62,6 +61,46 @@ peas_extension_python_call (PeasExtension *exten,
 
   pyg_gil_state_release (state);
   return success;
+}
+
+static void
+peas_extension_python_set_property (GObject      *object,
+                                    guint         prop_id,
+                                    const GValue *value,
+                                    GParamSpec   *pspec)
+{
+  PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (object);
+  PyGILState_STATE state;
+  GObject *instance;
+
+  /* Don't add properties as they could shadow the instance's */
+
+  state = pyg_gil_state_ensure ();
+
+  instance = pygobject_get (pyexten->instance);
+  g_object_set_property (instance, pspec->name, value);
+
+  pyg_gil_state_release (state);
+}
+
+static void
+peas_extension_python_get_property (GObject      *object,
+                                    guint         prop_id,
+                                    GValue       *value,
+                                    GParamSpec   *pspec)
+{
+  PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (object);
+  PyGILState_STATE state;
+  GObject *instance;
+
+  /* Don't add properties as they could shadow the instance's */
+
+  state = pyg_gil_state_ensure ();
+
+  instance = pygobject_get (pyexten->instance);
+  g_object_get_property (instance, pspec->name, value);
+
+  pyg_gil_state_release (state);
 }
 
 static void
@@ -89,6 +128,8 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
   PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
 
   object_class->dispose = peas_extension_python_dispose;
+  object_class->get_property = peas_extension_python_get_property;
+  object_class->set_property = peas_extension_python_set_property;
 
   extension_class->call = peas_extension_python_call;
 }

@@ -12,7 +12,10 @@ callable_extension = {
   }
 };
 
-properties_extension = {};
+properties_extension = {
+  read_only: "read-only",
+  readwrite: "readwrite"
+};
 
 extensions = {
   "IntrospectionCallable": callable_extension,
