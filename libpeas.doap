@@ -6,7 +6,7 @@
 
   <name xml:lang="en">libpeas</name>
   <shortdesc xml:lang="en">A GObject plugins library</shortdesc>
-  <homepage rdf:resource="http://git.gnome.org/browse/libpeas" />
+  <homepage rdf:resource="http://live.gnome.org/Libpeas" />
 
   <maintainer>
     <foaf:Person>
