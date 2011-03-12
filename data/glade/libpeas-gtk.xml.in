@@ -18,6 +18,7 @@
   <glade-widget-classes>
     <glade-widget-class name="PeasGtkPluginManagerView" _title="Plugin Manager View" generic-name="pluginmanagerview">
       <properties>
+        <!-- Translators: Whether builtin plugins should appear in the view (property name) -->
         <property id="show-builtin" _name="Show Builtin" default="False" />
 
         <!-- Disable GtkTreeView properties that should never be modified -->
