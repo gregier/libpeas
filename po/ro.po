@@ -6,9 +6,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-29 16:23+0000\n"
-"PO-Revision-Date: 2011-03-13 02:50+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpea"
+"s&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2011-03-13 12:25+0000\n"
+"PO-Revision-Date: 2011-03-14 02:21+0200\n"
 "Last-Translator: Lucian Adrian Grijincu <lucian.grijincu@gmail.com>\n"
 "Language-Team: Romanian Gnome Team <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -19,46 +20,129 @@ msgstr ""
 "20)) ? 1 : 2);;\n"
 "X-Generator: Virtaal 0.6.1\n"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:190
-msgid "There was an error displaying the help."
-msgstr "A apărut o eroare când se afișa fereastra de ajutor"
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:352
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+#| msgid "Plugin"
+msgid "Plugin Manager"
+msgstr "Manager de module"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Vizualizare manager de module"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr "Arată modulele integrate"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "View"
+msgstr "Vizualizare"
+
+#: ../libpeas/peas-engine.c:785
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "Dependența „%s” nu a fost găsită"
+
+#: ../libpeas/peas-engine.c:795
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Dependența „%s” nu a putut fi încărcată"
+
+#: ../libpeas/peas-engine.c:810
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "Încărcător de module „%s” nu a fost găsit"
+
+#: ../libpeas/peas-engine.c:821
+#, c-format
+msgid "Failed to load"
+msgstr "Nu a putut fi încărcat"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+msgid "Additional plugins must be disabled"
+msgstr "Module suplimentare trebuie să fie dezactivate"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Următoarele module depind de „%s” și vor fi și ele dezactivate:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+#| msgid "Plugin"
+msgid "Plugins"
+msgstr "Module"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+msgid "An additional plugin must be disabled"
+msgstr "Un plugin suplimentar trebuie să fie dezactivat"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"Modulul „%s” depinde de modulul „%s”.\n"
+"Dacă dezactivați modulul „%s”, va fi dezactivat și „%s”."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+#| msgid "_Disable All"
+msgid "Disable Plugins"
+msgstr "Dezactivează module"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:198
+msgid "There was an error displaying the help."
+msgstr "A apărut o eroare când se afișa ajutorul."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:346
 msgid "C_onfigure"
 msgstr "C_onfigurează"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:360
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:354
 msgid "_About"
 msgstr "_Despre"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:384
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:380
 msgid "_Plugins:"
 msgstr "_Module:"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:294
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:331
 msgid "_Enabled"
 msgstr "_Activat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:305
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:342
 msgid "E_nable All"
-msgstr "A_ctivează-le pe toate"
+msgstr "Activează-le pe _toate"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:309
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:346
 msgid "_Disable All"
 msgstr "_Dezactivează-le pe toate"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:483
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:511
 msgid "Enabled"
 msgstr "Activat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:504
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:532
 msgid "Plugin"
 msgstr "Modul"
 
-#: ../peas-demo/peas-demo.c:38
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:617
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>Modulul „%s” nu a putut fi încărcat</b>\n"
+"A apărut o eroare: %s"
+
+#: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
 msgstr "Rulează din dosarul în care a fost construit programul"
 
-#: ../peas-demo/peas-demo.c:132
+#: ../peas-demo/peas-demo.c:101
 msgid "- libpeas demo application"
 msgstr "- libpeas aplicație demo"
