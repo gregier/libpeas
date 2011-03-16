@@ -42,17 +42,17 @@ msgstr "Προβολή"
 #: ../libpeas/peas-engine.c:785
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr "Η εξάρτηση '%s' δεν βρέθηκε"
+msgstr "Δε βρέθηκε η εξάρτηση «%s»"
 
 #: ../libpeas/peas-engine.c:795
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr "Η εξάρτηση '%s'απέτυχε να φορτωθεί"
+msgstr "Αποτυχία φόρτωσης της εξάρτησης «%s»"
 
 #: ../libpeas/peas-engine.c:810
 #, c-format
 msgid "Plugin loader '%s' was not found"
-msgstr "Η φόρτωση προσθέτου '%s' δεν βρέθηκε"
+msgstr "Δε βρέθηκε ο φορτωτής του προσθέτου «%s»"
 
 #: ../libpeas/peas-engine.c:821
 #, c-format
@@ -66,7 +66,7 @@ msgstr "Πρέπει να απενεργοποιηθούν επιπλέον πρ
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr "Τα ακόλουθα πρόσθετα βασίζονται '%s' και θα απενεργοποιηθούν επίσης:"
+msgstr "Τα ακόλουθα πρόσθετα βασίζονται στο «%s» και θα απενεργοποιηθούν επίσης:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
 msgid "Plugins"
@@ -82,8 +82,8 @@ msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
-"Το πρόσθετο '%s' εξαρτάται από το πρόσθετο '%s'.\n"
-"Αν απενεργοποίησετε το '%s', το '%s' θα απενεργοποιηθεί επίσης."
+"Το πρόσθετο «%s» εξαρτάται από το πρόσθετο «%s».\n"
+"Αν απενεργοποίησετε το «%s», το «%s» θα απενεργοποιηθεί επίσης."
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
 msgid "Disable Plugins"
@@ -131,7 +131,7 @@ msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
 "An error occurred: %s"
 msgstr ""
-"<b>Το πρόσθετο '%s' δεν μπορούσε να φορτωθεί</b>\n"
+"<b>Το πρόσθετο «%s» δε μπόρεσε να φορτωθεί</b>\n"
 "Προέκυψε σφάλμα: %s"
 
 #: ../peas-demo/peas-demo.c:40
