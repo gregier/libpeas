@@ -32,7 +32,7 @@ G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
 
 typedef struct {
   GITypeInfo type_info;
-  GIArgument *ptr;
+  gpointer ptr;
 } OutArg;
 
 
@@ -224,54 +224,54 @@ set_return_value (OutArg        *arg,
   switch (g_type_info_get_tag (&arg->type_info))
     {
     case GI_TYPE_TAG_BOOLEAN:
-      arg->ptr->v_boolean = seed_value_to_boolean (ctx, value, exc);
+      *((gboolean *) arg->ptr) = seed_value_to_boolean (ctx, value, exc);
       break;
     case GI_TYPE_TAG_INT8:
-      arg->ptr->v_int8 = seed_value_to_int (ctx, value, exc);
+      *((gint8 *) arg->ptr) = seed_value_to_int (ctx, value, exc);
       break;
     case GI_TYPE_TAG_UINT8:
-      arg->ptr->v_uint8 = seed_value_to_uint (ctx, value, exc);
+      *((guint8 *) arg->ptr) = seed_value_to_uint (ctx, value, exc);
       break;
     case GI_TYPE_TAG_INT16:
-      arg->ptr->v_int16 = seed_value_to_int (ctx, value, exc);
+      *((gint16 *) arg->ptr) = seed_value_to_int (ctx, value, exc);
       break;
     case GI_TYPE_TAG_UINT16:
-      arg->ptr->v_uint16 = seed_value_to_uint (ctx, value, exc);
+      *((guint16 *) arg->ptr) = seed_value_to_uint (ctx, value, exc);
       break;
     case GI_TYPE_TAG_INT32:
-      arg->ptr->v_int32 = seed_value_to_long (ctx, value, exc);
+      *((gint32 *) arg->ptr) = seed_value_to_long (ctx, value, exc);
       break;
     case GI_TYPE_TAG_UNICHAR:
     case GI_TYPE_TAG_UINT32:
-      arg->ptr->v_uint32 = seed_value_to_ulong (ctx, value, exc);
+      *((guint32 *) arg->ptr) = seed_value_to_ulong (ctx, value, exc);
       break;
     case GI_TYPE_TAG_INT64:
-      arg->ptr->v_int64 = seed_value_to_int64 (ctx, value, exc);
+      *((gint64 *) arg->ptr) = seed_value_to_int64 (ctx, value, exc);
       break;
     case GI_TYPE_TAG_UINT64:
-      arg->ptr->v_uint64 = seed_value_to_uint64 (ctx, value, exc);
+      *((guint64 *) arg->ptr) = seed_value_to_uint64 (ctx, value, exc);
       break;
     case GI_TYPE_TAG_FLOAT:
-      arg->ptr->v_float = seed_value_to_float (ctx, value, exc);
+      *((gfloat *) arg->ptr) = seed_value_to_float (ctx, value, exc);
       break;
     case GI_TYPE_TAG_DOUBLE:
-      arg->ptr->v_double = seed_value_to_double (ctx, value, exc);
+      *((gdouble *) arg->ptr) = seed_value_to_double (ctx, value, exc);
       break;
 
     case GI_TYPE_TAG_GTYPE:
       /* apparently, GType is meant to be a gsize, from gobject/gtype.h in glib */
-      arg->ptr->v_size = seed_value_to_ulong (ctx, value, exc);
+      *((gsize *) arg->ptr) = seed_value_to_ulong (ctx, value, exc);
       break;
 
     case GI_TYPE_TAG_UTF8:
-      arg->ptr->v_string = seed_value_to_string (ctx, value, exc);
+      *((gchar **) arg->ptr) = seed_value_to_string (ctx, value, exc);
       break;
     case GI_TYPE_TAG_FILENAME:
-      arg->ptr->v_string = seed_value_to_filename (ctx, value, exc);
+      *((gchar **) arg->ptr) = seed_value_to_filename (ctx, value, exc);
       break;
 
     case GI_TYPE_TAG_INTERFACE:
-      arg->ptr->v_pointer = seed_value_to_object (ctx, value, exc);
+      *((gpointer *) arg->ptr) = seed_value_to_object (ctx, value, exc);
       break;
 
     /* FIXME */
@@ -280,7 +280,7 @@ set_return_value (OutArg        *arg,
     case GI_TYPE_TAG_GSLIST:
     case GI_TYPE_TAG_GHASH:
     case GI_TYPE_TAG_ERROR:
-      arg->ptr->v_pointer = NULL;
+      *((gpointer *) arg->ptr) = NULL;
 
     default:
       g_return_if_reached ();
@@ -297,13 +297,14 @@ peas_extension_seed_call (PeasExtension *exten,
   GType exten_type;
   SeedValue js_method;
   GICallableInfo *func_info;
-  gint n_args;
-  guint n_in_args, n_out_args, i;
+  gint n_args, i;
   SeedValue *js_in_args;
   OutArg *out_args;
   SeedValue js_ret, val;
   SeedException exc = NULL;
   gchar *exc_string;
+  gint n_in_args = 0;
+  gint n_out_args = 0;
 
   g_return_val_if_fail (sexten->js_context != NULL, FALSE);
   g_return_val_if_fail (sexten->js_object != NULL, FALSE);
@@ -336,8 +337,6 @@ peas_extension_seed_call (PeasExtension *exten,
 
   n_args = g_callable_info_get_n_args (func_info);
   g_return_val_if_fail (n_args >= 0, FALSE);
-  n_in_args = 0;
-  n_out_args = 0;
 
   js_in_args = g_new0 (SeedValue, n_args);
   out_args = g_new0 (OutArg, n_args + 1);
@@ -346,10 +345,7 @@ peas_extension_seed_call (PeasExtension *exten,
    * the common behaviour for GI-based bindings */
   g_callable_info_load_return_type (func_info, &out_args[0].type_info);
   if (g_type_info_get_tag (&out_args[0].type_info) != GI_TYPE_TAG_VOID)
-    {
-      out_args[0].ptr = retval;
-      n_out_args = 1;
-    }
+    out_args[n_out_args++].ptr = &retval->v_pointer;
 
   /* Handle the other arguments */
   for (i = 0; i < n_args && exc == NULL; i++)
@@ -369,7 +365,7 @@ peas_extension_seed_call (PeasExtension *exten,
                                                   &exc);
           break;
         case GI_DIRECTION_OUT:
-          out_args[n_out_args].ptr = &args[i];
+          out_args[n_out_args].ptr = args[i].v_pointer;
           g_arg_info_load_type (&arg_info, &out_args[n_out_args].type_info);
           n_out_args++;
           break;

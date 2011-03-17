@@ -7,7 +7,7 @@ callable_extension = {
   call_single_arg: function() {
     return true
   },
-  call_mulit_args: function() {
+  call_multi_args: function() {
     return [ true, true, true ]
   }
 };

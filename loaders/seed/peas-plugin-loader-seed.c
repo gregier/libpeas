@@ -177,7 +177,7 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
     }
 
   /* Set the properties as well, cannot use
-   * g_object_set_property because it may be construct-only
+   * g_object_set_property() because it may be construct-only
    */
   for (i = 0; i < n_parameters; i++)
     {
