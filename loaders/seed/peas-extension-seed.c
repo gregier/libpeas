@@ -31,7 +31,7 @@
 G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
 
 typedef struct {
-  GITypeInfo *type_info;
+  GITypeInfo type_info;
   GIArgument *ptr;
 } OutArg;
 
@@ -221,7 +221,7 @@ set_return_value (OutArg        *arg,
                   SeedException *exc)
 {
   g_debug (G_STRFUNC);
-  switch (g_type_info_get_tag (arg->type_info))
+  switch (g_type_info_get_tag (&arg->type_info))
     {
     case GI_TYPE_TAG_BOOLEAN:
       arg->ptr->v_boolean = seed_value_to_boolean (ctx, value, exc);
@@ -297,7 +297,6 @@ peas_extension_seed_call (PeasExtension *exten,
   GType exten_type;
   SeedValue js_method;
   GICallableInfo *func_info;
-  GITypeInfo *retval_info;
   gint n_args;
   guint n_in_args, n_out_args, i;
   SeedValue *js_in_args;
@@ -345,37 +344,33 @@ peas_extension_seed_call (PeasExtension *exten,
 
   /* We put the return value first in the out tuple, as it seems to be
    * the common behaviour for GI-based bindings */
-  retval_info = g_callable_info_get_return_type (func_info);
-  if (g_type_info_get_tag (retval_info) != GI_TYPE_TAG_VOID)
+  g_callable_info_load_return_type (func_info, &out_args[0].type_info);
+  if (g_type_info_get_tag (&out_args[0].type_info) != GI_TYPE_TAG_VOID)
     {
       out_args[0].ptr = retval;
-      out_args[0].type_info = retval_info;
-      g_base_info_ref ((GIBaseInfo *) retval_info);
       n_out_args = 1;
     }
-  g_base_info_unref ((GIBaseInfo *) retval_info);
 
   /* Handle the other arguments */
   for (i = 0; i < n_args && exc == NULL; i++)
     {
       GIArgInfo arg_info;
-      GITypeInfo *arg_type_info;
+      GITypeInfo arg_type_info;
 
       g_callable_info_load_arg (func_info, i, &arg_info);
-      arg_type_info = g_arg_info_get_type (&arg_info);
 
       switch (g_arg_info_get_direction (&arg_info))
         {
         case GI_DIRECTION_IN:
+          g_arg_info_load_type (&arg_info, &arg_type_info);
           js_in_args[n_in_args++] = get_argument (sexten->js_context,
                                                   &args[i],
-                                                  arg_type_info,
+                                                  &arg_type_info,
                                                   &exc);
           break;
         case GI_DIRECTION_OUT:
           out_args[n_out_args].ptr = &args[i];
-          out_args[n_out_args].type_info = arg_type_info;
-          g_base_info_ref ((GIBaseInfo *) arg_type_info);
+          g_arg_info_load_type (&arg_info, &out_args[n_out_args].type_info);
           n_out_args++;
           break;
         default:
@@ -385,8 +380,6 @@ peas_extension_seed_call (PeasExtension *exten,
                                "Argument direction 'inout' not supported yet");
           break;
         }
-
-      g_base_info_unref ((GIBaseInfo *) arg_type_info);
     }
   if (exc != NULL)
     goto cleanup;
@@ -418,8 +411,7 @@ peas_extension_seed_call (PeasExtension *exten,
     }
 
 cleanup:
-  for (i = 0; i < n_out_args; i++)
-    g_base_info_unref ((GIBaseInfo *) out_args[i].type_info);
+
   g_free (out_args);
   g_free (js_in_args);
   g_base_info_unref ((GIBaseInfo *) func_info);
