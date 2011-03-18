@@ -89,21 +89,19 @@ peas_plugin_loader_seed_load (PeasPluginLoader *loader,
       seed_context_unref (context);
       return FALSE;
     }
-  else
+
+  global = seed_context_get_global_object (context);
+  extensions = seed_object_get_property (context, global, "extensions");
+
+  if (seed_value_is_object (context, extensions))
     {
-      global = seed_context_get_global_object (context);
-      extensions = seed_object_get_property (context, global, "extensions");
+      sinfo = (SeedInfo *) g_slice_new (SeedInfo);
+      sinfo->context = context;
+      sinfo->extensions = extensions;
+      seed_context_ref (context);
+      seed_value_protect (context, extensions);
 
-      if (seed_value_is_object (context, extensions))
-        {
-          sinfo = (SeedInfo *) g_slice_new (SeedInfo);
-          sinfo->context = context;
-          sinfo->extensions = extensions;
-          seed_context_ref (context);
-          seed_value_protect (context, extensions);
-
-          g_hash_table_insert (sloader->loaded_plugins, info, sinfo);
-        }
+      g_hash_table_insert (sloader->loaded_plugins, info, sinfo);
     }
 
   seed_context_unref (context);
@@ -188,8 +186,10 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
        * conventional '-', to make them accessible through this.property_name */
       key = g_strdup (parameters[i].name);
       for (j = 0; key[j] != '\0'; j++)
-        if (key[j] == '-')
-          key[j] = '_';
+        {
+          if (key[j] == '-')
+            key[j] = '_';
+        }
 
       value = seed_value_from_gvalue (sinfo->context,
                                       &parameters[i].value,

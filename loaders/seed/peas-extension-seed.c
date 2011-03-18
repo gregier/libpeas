@@ -150,9 +150,9 @@ peas_extension_seed_dispose (GObject *object)
 }
 
 static SeedValue
-get_argument (SeedContext ctx,
-              GIArgument *arg,
-              GITypeInfo *arg_type_info,
+get_argument (SeedContext    ctx,
+              GIArgument    *arg,
+              GITypeInfo    *arg_type_info,
               SeedException *exc)
 {
   /* Notes: According to GCC 4.4,
@@ -220,9 +220,11 @@ set_return_value (OutArg        *arg,
                   SeedValue      value,
                   SeedException *exc)
 {
-  g_debug (G_STRFUNC);
   switch (g_type_info_get_tag (&arg->type_info))
     {
+    case GI_TYPE_TAG_VOID:
+      g_assert_not_reached ();
+      break;
     case GI_TYPE_TAG_BOOLEAN:
       *((gboolean *) arg->ptr) = seed_value_to_boolean (ctx, value, exc);
       break;
@@ -389,21 +391,20 @@ peas_extension_seed_call (PeasExtension *exten,
   if (exc != NULL)
     goto cleanup;
 
-  switch (n_out_args)
+  if (n_out_args == 1)
     {
-    case 0:
-      break;
-    case 1:
       set_return_value (&out_args[0], sexten->js_context, js_ret, exc);
-      break;
-    default:
-      if (seed_value_is_object (sexten->js_context, js_ret))
-        for (i = 0; i < n_out_args && exc == NULL; i++)
-          {
-            val = seed_object_get_property_at_index (sexten->js_context, js_ret, i, exc);
-            if (exc == NULL)
-              set_return_value (&out_args[i], sexten->js_context, val, exc);
-          }
+    }
+  else if (n_out_args > 0 && seed_value_is_object (sexten->js_context, js_ret))
+    {
+      for (i = 0; i < n_out_args && exc == NULL; i++)
+        {
+          val = seed_object_get_property_at_index (sexten->js_context, js_ret,
+                                                   i, exc);
+
+          if (exc == NULL)
+            set_return_value (&out_args[i], sexten->js_context, val, exc);
+        }
     }
 
 cleanup:
