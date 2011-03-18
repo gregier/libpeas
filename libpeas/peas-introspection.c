@@ -58,6 +58,8 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
             switch (g_type_info_get_tag (&arg_type_info))
               {
               case GI_TYPE_TAG_VOID:
+                cur_arg->v_pointer = va_arg (va_args, gpointer);
+                break;
               case GI_TYPE_TAG_BOOLEAN:
                 cur_arg->v_boolean = va_arg (va_args, gboolean);
                 break;
@@ -177,6 +179,8 @@ peas_gi_argument_to_pointer (GITypeInfo     *type_info,
   switch (g_type_info_get_tag (type_info))
     {
     case GI_TYPE_TAG_VOID:
+      *((gpointer **) ptr) = arg->v_pointer;
+      break;
     case GI_TYPE_TAG_BOOLEAN:
       *((gboolean *) ptr) = arg->v_boolean;
       break;
@@ -242,6 +246,8 @@ peas_gi_pointer_to_argument (GITypeInfo     *type_info,
   switch (g_type_info_get_tag (type_info))
     {
     case GI_TYPE_TAG_VOID:
+      arg->v_pointer = *((gpointer **) ptr);
+      break;
     case GI_TYPE_TAG_BOOLEAN:
       arg->v_boolean = *((gboolean *) ptr);
       break;
