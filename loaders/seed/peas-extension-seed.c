@@ -353,31 +353,22 @@ peas_extension_seed_call (PeasExtension *exten,
   for (i = 0; i < n_args && exc == NULL; i++)
     {
       GIArgInfo arg_info;
-      GITypeInfo arg_type_info;
+      GIDirection direction;
 
       g_callable_info_load_arg (func_info, i, &arg_info);
+      direction = g_arg_info_get_direction (&arg_info);
+      g_arg_info_load_type (&arg_info, &out_args[n_out_args].type_info);
 
-      switch (g_arg_info_get_direction (&arg_info))
+      if (direction == GI_DIRECTION_IN || direction == GI_DIRECTION_INOUT)
         {
-        case GI_DIRECTION_IN:
-          g_arg_info_load_type (&arg_info, &arg_type_info);
           js_in_args[n_in_args++] = get_argument (sexten->js_context,
                                                   &args[i],
-                                                  &arg_type_info,
+                                                  &out_args[n_out_args].type_info,
                                                   &exc);
-          break;
-        case GI_DIRECTION_OUT:
-          out_args[n_out_args].ptr = args[i].v_pointer;
-          g_arg_info_load_type (&arg_info, &out_args[n_out_args].type_info);
-          n_out_args++;
-          break;
-        default:
-          seed_make_exception (sexten->js_context,
-                               &exc,
-                               "dir_not_supported",
-                               "Argument direction 'inout' not supported yet");
-          break;
         }
+
+      if (direction == GI_DIRECTION_OUT || direction == GI_DIRECTION_INOUT)
+        out_args[n_out_args++].ptr = args[i].v_pointer;
     }
   if (exc != NULL)
     goto cleanup;
