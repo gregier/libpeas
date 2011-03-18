@@ -37,7 +37,7 @@ test-valgrind: all
 	     libtool --mode=execute valgrind --leak-check=full \
 	     --leak-resolution=high --num-callers=20 \
 	     --suppressions=$(top_srcdir)/tests/valgrind.suppressions \
-	     --log-file=vgdump-$$test_prog $$test_prog ; \
+	     --log-file=vgdump-$$test_prog $$test_prog || exit 1 ; \
 	 done
 
 test-callgrind: all
@@ -48,7 +48,7 @@ test-callgrind: all
 	   fi ; \
 	   libtool --mode=execute valgrind --tool=callgrind \
 	     --callgrind-out-file=cgdump-$$test_prog \
-	     --log-file=/dev/null $$test_prog ; \
+	     --log-file=/dev/null $$test_prog || exit 1 ; \
 	 done
 
 else
