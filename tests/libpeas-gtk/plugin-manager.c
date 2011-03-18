@@ -376,11 +376,11 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
     {
       if (GTK_IS_BUTTON (list_it->data))
         {
-          const gchar *label = gtk_button_get_label (GTK_BUTTON (list_it->data));
+          const gchar *text = gtk_button_get_label (GTK_BUTTON (list_it->data));
 
-          if (g_strcmp0 (label, GTK_STOCK_CLOSE) == 0)
+          if (g_strcmp0 (text, GTK_STOCK_CLOSE) == 0)
             close_button = GTK_WIDGET (list_it->data);
-          else if (g_strcmp0 (label, GTK_STOCK_HELP) == 0)
+          else if (g_strcmp0 (text, GTK_STOCK_HELP) == 0)
             help_button = GTK_WIDGET (list_it->data);
         }
     }
