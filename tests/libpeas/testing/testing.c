@@ -46,6 +46,8 @@ testing_init (void)
                                  BUILDDIR "/tests/libpeas/introspection",
                                  "Introspection", "1.0", 0, &error);
   g_assert_no_error (error);
+
+  initialized = TRUE;
 }
 
 PeasEngine *
