@@ -129,8 +129,6 @@ test_plugin_info_has_dep (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("*assertion `module_name != NULL' failed");
-
   info = peas_engine_get_plugin_info (engine, "full-info");
 
   g_assert (peas_plugin_info_has_dependency (info, "something"));
@@ -138,11 +136,9 @@ test_plugin_info_has_dep (PeasEngine *engine)
   g_assert (!peas_plugin_info_has_dependency (info, "does-not-exist"));
 
 
-  peas_plugin_info_has_dependency (info, NULL);
-
-
   info = peas_engine_get_plugin_info (engine, "min-info");
 
+  g_assert_cmpstr (peas_plugin_info_get_dependencies (info)[0], ==, NULL);
   g_assert (!peas_plugin_info_has_dependency (info, "does-not-exist"));
 }
 
