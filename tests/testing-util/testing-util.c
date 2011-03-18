@@ -142,8 +142,10 @@ testing_util_init (void)
 PeasEngine *
 testing_util_engine_new (void)
 {
-  if (engine != NULL)
-    return engine;
+  /* testing_util_engine_free() checks that the
+   * engine is freed so only one engine can be created
+   */
+  g_assert (engine == NULL);
 
   testing_util_init ();
 
