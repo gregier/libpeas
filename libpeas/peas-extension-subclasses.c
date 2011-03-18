@@ -334,7 +334,8 @@ peas_extension_register_subclass (GType parent_type,
         GSIZE_TO_POINTER (extension_type),
         0,
         0,
-        (GInstanceInitFunc) extension_subclass_instance_init
+        (GInstanceInitFunc) extension_subclass_instance_init,
+        NULL
       };
       GInterfaceInfo iface_info = {
         (GInterfaceInitFunc) implement_interface_methods,
