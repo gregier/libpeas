@@ -68,7 +68,7 @@ test_engine_new (PeasEngine *engine)
   g_assert (engine != NULL);
   g_assert (new_engine != NULL);
 
-  /* Does not return the same engine*/
+  /* Does not return the same engine */
   g_assert (engine != new_engine);
   /* peas_engine_new() sets the default engine */
   g_assert (engine == peas_engine_get_default ());
@@ -93,11 +93,6 @@ test_engine_dispose (PeasEngine *engine)
 static void
 test_engine_get_default (void)
 {
-  /* testing_engine_new() uses peas_engine_new()
-   * so this makes sure that peas_engine_get_default()
-   * acutally sets the default engine
-   */
-
   g_assert (peas_engine_get_default () == peas_engine_get_default ());
 
   g_object_unref (peas_engine_get_default ());
@@ -421,7 +416,7 @@ test_engine_shutdown (void)
   peas_engine_shutdown ();
   peas_engine_shutdown ();
 
-  /* Cannot get the default as libpeas has been shutdown */
+  /* Cannot create an engine because libpeas has been shutdown */
   if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
     {
       peas_engine_new ();

@@ -44,7 +44,7 @@ static GPtrArray *log_hooks = NULL;
  * for testing purposes and as such we don't want to abort on them.
  *
  * If the warnings are for specific tests use
- * testing_push_log_hook() and testing_pop_log_hook() which
+ * testing_util_push_log_hook() and testing_util_pop_log_hook() which
  * will assert that the warning or critical actually happened.
  *
  * Don't bother putting errors in here as GLib always aborts on errors.
@@ -163,7 +163,7 @@ testing_util_engine_new (void)
 void
 testing_util_engine_free (PeasEngine *engine_)
 {
-  /* Incase a test needs to free the engine */
+  /* In case a test needs to free the engine */
   if (engine != NULL)
     {
       g_object_unref (engine_);
