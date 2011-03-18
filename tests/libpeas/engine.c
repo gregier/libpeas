@@ -91,14 +91,12 @@ test_engine_dispose (PeasEngine *engine)
 }
 
 static void
-test_engine_get_default (PeasEngine *engine)
+test_engine_get_default (void)
 {
   /* testing_engine_new() uses peas_engine_new()
    * so this makes sure that peas_engine_get_default()
    * acutally sets the default engine
    */
-
-  g_object_unref (engine);
 
   g_assert (peas_engine_get_default () == peas_engine_get_default ());
 
@@ -423,10 +421,8 @@ test_engine_nonexistent_search_path (PeasEngine *engine)
 
 
 static void
-test_engine_shutdown (PeasEngine *engine)
+test_engine_shutdown (void)
 {
-  testing_engine_free (engine);
-
   /* Should be able to shutdown multiple times */
   peas_engine_shutdown ();
   peas_engine_shutdown ();
@@ -455,9 +451,12 @@ main (int    argc,
               (gpointer) test_engine_##ftest, \
               test_setup, test_runner, test_teardown)
 
+#define TEST_FUNC(path, ftest) \
+  g_test_add_func ("/engine/" path, test_engine_##ftest)
+
   TEST ("new", new);
   TEST ("dispose", dispose);
-  TEST ("get-default", get_default);
+  TEST_FUNC ("get-default", get_default);
 
   TEST ("load-plugin", load_plugin);
   TEST ("load-plugin-with-dep", load_plugin_with_dep);
@@ -479,7 +478,7 @@ main (int    argc,
   TEST ("nonexistent-search-path", nonexistent_search_path);
 
   /* MUST be last */
-  TEST ("shutdown", shutdown);
+  TEST_FUNC ("shutdown", shutdown);
 
 #undef TEST
 
