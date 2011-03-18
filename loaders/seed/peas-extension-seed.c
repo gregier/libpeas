@@ -120,6 +120,7 @@ get_argument (SeedContext ctx,
       return seed_value_from_uint (ctx, arg->v_uint16, exc);
     case GI_TYPE_TAG_INT32:
       return seed_value_from_long (ctx, arg->v_int32, exc);
+    case GI_TYPE_TAG_UNICHAR:
     case GI_TYPE_TAG_UINT32:
       return seed_value_from_ulong (ctx, arg->v_uint32, exc);
     case GI_TYPE_TAG_INT64:
@@ -184,6 +185,7 @@ set_return_value (OutArg        *arg,
     case GI_TYPE_TAG_INT32:
       arg->ptr->v_int32 = seed_value_to_long (ctx, value, exc);
       break;
+    case GI_TYPE_TAG_UNICHAR:
     case GI_TYPE_TAG_UINT32:
       arg->ptr->v_uint32 = seed_value_to_ulong (ctx, value, exc);
       break;

@@ -76,6 +76,7 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
               case GI_TYPE_TAG_INT32:
                 cur_arg->v_int32 = va_arg (va_args, gint32);
                 break;
+              case GI_TYPE_TAG_UNICHAR:
               case GI_TYPE_TAG_UINT32:
                 cur_arg->v_uint32 = va_arg (va_args, guint32);
                 break;
@@ -194,6 +195,7 @@ peas_gi_argument_to_pointer (GITypeInfo     *type_info,
     case GI_TYPE_TAG_INT32:
       *((gint32 *) ptr) = arg->v_int32;
       break;
+    case GI_TYPE_TAG_UNICHAR:
     case GI_TYPE_TAG_UINT32:
       *((guint32 *) ptr) = arg->v_uint32;
       break;
@@ -258,6 +260,7 @@ peas_gi_pointer_to_argument (GITypeInfo     *type_info,
     case GI_TYPE_TAG_INT32:
       arg->v_int32 = *((gint32 *) ptr);
       break;
+    case GI_TYPE_TAG_UNICHAR:
     case GI_TYPE_TAG_UINT32:
       arg->v_uint32 = *((guint32 *) ptr);
       break;
