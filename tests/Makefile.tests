@@ -2,13 +2,13 @@ GTESTER = gtester
 
 TEST_PROGS =
 
-test: $(TEST_PROGS)
+test: all
 	@test -z "$(TEST_PROGS)" || \
 	 G_SLICE=debug-blocks $(GTESTER) --verbose $(TEST_PROGS)
 
 if GDB_ENABLED
 
-test-gdb: $(TEST_PROGS)
+test-gdb: all
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
 	   G_SLICE=debug-blocks $(GTESTER) --verbose $$test_prog || { \
@@ -27,7 +27,7 @@ endif # GDB_ENABLED
 
 if VALGRIND_ENABLED
 
-test-valgrind: $(TEST_PROGS)
+test-valgrind: all
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
 	   if test -e vgdump-$$test_prog; then \
@@ -39,7 +39,7 @@ test-valgrind: $(TEST_PROGS)
 	     --log-file=vgdump-$$test_prog $$test_prog ; \
 	 done
 
-test-callgrind:
+test-callgrind: all
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
 	   if test -e cgdump-$$test_prog; then \
@@ -57,7 +57,7 @@ test-valgrind test-callgrind:
 
 endif # VALGRIND_ENABLED
 
-generate-report: $(TEST_PROGS)
+generate-report: all
 	@test -z "$(TEST_PROGS)" || \
 	 G_SLICE=debug-blocks $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
 

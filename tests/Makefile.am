@@ -6,7 +6,7 @@ if ENABLE_GTK
 SUBDIRS += libpeas-gtk
 endif
 
-test test-gdb test-valgrind test-callgrind:
+test test-gdb test-valgrind test-callgrind: all
 	@for subdir in $(SUBDIRS) ; do \
 	   test "$$subdir" = "plugins" -o "$$subdir" = "testing-util" || \
 	   ( cd $$subdir && \
@@ -23,7 +23,7 @@ test test-gdb test-valgrind test-callgrind:
 # test-report: run tests and generate report
 # perf-report: run tests with -m perf and generate report
 # full-report: run tests with -m perf -m slow and generate report
-test-report perf-report full-report:
+test-report perf-report full-report: all
 	@export GTESTER_LOGDIR=`mktemp -d "$(abs_srcdir)/.testlogs-XXXXXX"` ; \
 	 if test -d "$(top_srcdir)/.git" ; then \
 	   export REVISION="`git describe`" ;  \
