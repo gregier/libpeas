@@ -36,6 +36,7 @@ test-valgrind: all
 	   G_SLICE=always-malloc G_DEBUG=gc-friendly,resident-modules \
 	     libtool --mode=execute valgrind --leak-check=full \
 	     --leak-resolution=high --num-callers=20 \
+	     --suppressions=$(top_srcdir)/tests/valgrind.suppressions \
 	     --log-file=vgdump-$$test_prog $$test_prog ; \
 	 done
 
