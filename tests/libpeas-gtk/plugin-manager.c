@@ -394,7 +394,7 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
 }
 
 static void
-test_gtk_plugin_manager_gtkbuilder (TestFixture *fixture)
+test_gtk_plugin_manager_gtkbuilder (void)
 {
   GtkBuilder *builder;
   GError *error = NULL;
@@ -442,6 +442,10 @@ main (int    argc,
               (gpointer) test_gtk_plugin_manager_##ftest, \
               test_setup, test_runner, test_teardown)
 
+#define TEST_FUNC(path, ftest) \
+  g_test_add_func ("/gtk/plugin-manager/" path, \
+                   test_gtk_plugin_manager_##ftest)
+
   TEST ("about-button-sensitivity", about_button_sensitivity);
   TEST ("configure-button-sensitivity", configure_button_sensitivity);
 
@@ -451,7 +455,7 @@ main (int    argc,
   TEST ("about-dialog", about_dialog);
   TEST ("configure-dialog", configure_dialog);
 
-  TEST ("gtkbuilder", gtkbuilder);
+  TEST_FUNC ("gtkbuilder", gtkbuilder);
 
 #undef TEST
 
