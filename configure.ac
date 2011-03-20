@@ -339,6 +339,27 @@ dnl ================================================================
 dnl Vala
 dnl ================================================================
 
+# AM_PROG_VALAC errors if a different version of vala is found
+# so we copied, renamed and fixed it
+# Autoconf support for the Vala compiler
+# Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+AC_DEFUN([CHECK_VALAC],
+[AC_PATH_PROG([VALAC], [valac], [])
+ AS_IF([test -z "$VALAC"],
+   [AC_MSG_WARN([No Vala compiler found.  You will not be able to compile .vala source files.])],
+   [AS_IF([test -n "$1"],
+      [AC_MSG_CHECKING([$VALAC is at least version $1])
+       am__vala_version=`$VALAC --version | sed 's/Vala  *//'`
+       AS_VERSION_COMPARE([$1], ["$am__vala_version"],
+         [AC_MSG_RESULT([yes])],
+         [AC_MSG_RESULT([yes])],
+         [AC_MSG_RESULT([no])])])])
+])
+
 VALA_REQUIRED=0.11.1
 
 AC_ARG_ENABLE([vala],
@@ -349,7 +370,7 @@ AC_ARG_ENABLE([vala],
 if test "$enable_vala" = "no"; then
 	found_vala="no (disabled, use --enable-vala to enable)"
 else
-	AM_PROG_VALAC($VALA_REQUIRED)
+	CHECK_VALAC($VALA_REQUIRED)
 	if test "$VALAC" = ""; then
 		found_vala="no (valac >= $VALA_REQUIRED not found)"
 	else
