@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-03-12 13:45+0000\n"
-"PO-Revision-Date: 2011-02-25 21:18+0800\n"
-"Last-Translator: Yinghua Wang <wantinghard@gmail.com>\n"
+"POT-Creation-Date: 2011-03-19 19:14+0000\n"
+"PO-Revision-Date: 2011-03-20 10:24+0800\n"
+"Last-Translator: Xhacker Liu <liu.dongyuan@gmail.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,12 +30,10 @@ msgstr "插件管理器视图"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
 #: ../data/glade/libpeas-gtk.xml.in.h:5
-#, fuzzy
 msgid "Show Builtin"
 msgstr "显示内置插件"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:6
-#, fuzzy
 msgid "View"
 msgstr "查看"
 
