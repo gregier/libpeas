@@ -778,7 +778,7 @@ load_plugin (PeasEngine     *engine,
       if (!dep_info)
         {
           g_warning ("Could not find plugin '%s' for plugin '%s'",
-                     dependencies[i], info->name);
+                     dependencies[i], peas_plugin_info_get_module_name (info));
           g_set_error (&info->error,
                        PEAS_PLUGIN_INFO_ERROR,
                        PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
@@ -793,7 +793,7 @@ load_plugin (PeasEngine     *engine,
                        PEAS_PLUGIN_INFO_ERROR,
                        PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
                        _("Dependency '%s' failed to load"),
-                       dep_info->name);
+                       peas_plugin_info_get_name (dep_info));
           goto error;
         }
     }
@@ -803,7 +803,7 @@ load_plugin (PeasEngine     *engine,
   if (loader == NULL)
     {
       g_warning ("Could not find loader '%s' for plugin '%s'",
-                 info->loader, info->name);
+                 info->loader, peas_plugin_info_get_module_name (info));
       g_set_error (&info->error,
                    PEAS_PLUGIN_INFO_ERROR,
                    PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
@@ -814,7 +814,8 @@ load_plugin (PeasEngine     *engine,
 
   if (!peas_plugin_loader_load (loader, info))
     {
-      g_warning ("Error loading plugin '%s'", info->name);
+      g_warning ("Error loading plugin '%s'",
+                 peas_plugin_info_get_module_name (info));
       g_set_error (&info->error,
                    PEAS_PLUGIN_INFO_ERROR,
                    PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
@@ -822,7 +823,7 @@ load_plugin (PeasEngine     *engine,
       goto error;
     }
 
-  g_debug ("Loaded plugin '%s'", info->module_name);
+  g_debug ("Loaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
   return TRUE;
 
@@ -906,7 +907,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
 
-  g_debug ("Unloaded plugin '%s'", info->module_name);
+  g_debug ("Unloaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
   if (!engine->priv->in_dispose)
     g_object_notify (G_OBJECT (engine), "loaded-plugins");

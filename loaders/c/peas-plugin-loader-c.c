@@ -72,9 +72,7 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
     {
-      g_warning ("Could not load plugin module: '%s'",
-                 peas_plugin_info_get_name (info));
-
+      g_warning ("Could not load plugin module: '%s'", module_name);
       g_object_unref (module);
       g_hash_table_remove (cloader->priv->loaded_plugins, module_name);
       return FALSE;

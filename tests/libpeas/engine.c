@@ -225,8 +225,8 @@ test_engine_not_loadable_plugin (PeasEngine *engine)
 
   testing_util_push_log_hook ("*libnot-loadable.so: cannot open shared "
                               "object file: No such file or directory");
-  testing_util_push_log_hook ("Could not load plugin module: 'Not loadable'");
-  testing_util_push_log_hook ("Error loading plugin 'Not loadable'");
+  testing_util_push_log_hook ("Could not load plugin module: 'not-loadable'");
+  testing_util_push_log_hook ("Error loading plugin 'not-loadable'");
 
   info = peas_engine_get_plugin_info (engine, "not-loadable");
 
