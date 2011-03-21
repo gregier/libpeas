@@ -22,7 +22,7 @@
 #ifndef __PEAS_EXTENSION_PYTHON_H__
 #define __PEAS_EXTENSION_PYTHON_H__
 
-#include <libpeas/peas-extension.h>
+#include <libpeas/peas-extension-priv.h>
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
  * <libpeas/peas-extension.h>, so we unset it here to avoid a warning.
  * Yep, that's bad. */

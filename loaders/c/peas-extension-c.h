@@ -22,7 +22,7 @@
 #ifndef __PEAS_EXTENSION_C_H__
 #define __PEAS_EXTENSION_C_H__
 
-#include <libpeas/peas-extension.h>
+#include <libpeas/peas-extension-priv.h>
 
 G_BEGIN_DECLS
 

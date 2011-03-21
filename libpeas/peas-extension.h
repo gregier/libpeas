@@ -32,13 +32,9 @@ G_BEGIN_DECLS
  */
 #define PEAS_TYPE_EXTENSION            (peas_extension_get_type())
 #define PEAS_EXTENSION(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), PEAS_TYPE_EXTENSION, PeasExtension))
-#define PEAS_EXTENSION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), PEAS_TYPE_EXTENSION, PeasExtensionClass))
 #define PEAS_IS_EXTENSION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), PEAS_TYPE_EXTENSION))
-#define PEAS_IS_EXTENSION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION))
-#define PEAS_EXTENSION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_EXTENSION, PeasExtensionClass))
 
 typedef struct _PeasExtension         PeasExtension;
-typedef struct _PeasExtensionClass    PeasExtensionClass;
 typedef struct _PeasExtensionPrivate  PeasExtensionPrivate;
 
 /**
@@ -52,25 +48,6 @@ struct _PeasExtension {
 
   /*< private >*/
   PeasExtensionPrivate *priv;
-};
-
-/**
- * PeasExtensionClass:
- *
- * The #PeasExtensionClass structure contains only private data and should
- * only be accessed using the provided API.  You should not inherit from this
- * class.
- */
-struct _PeasExtensionClass {
-  GObjectClass parent_class;
-
-  /*< private >*/
-  gboolean   (*call)                      (PeasExtension  *exten,
-                                           const gchar    *method,
-                                           GIArgument     *args,
-                                           GIArgument     *return_value);
-
-  gpointer padding[8];
 };
 
 /*

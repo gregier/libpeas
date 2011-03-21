@@ -203,27 +203,6 @@ testing_extension_reload_ (PeasEngine *engine)
 }
 
 void
-testing_extension_call_invalid_ (PeasEngine *engine)
-{
-  PeasPluginInfo *info;
-  PeasExtension *extension;
-
-  testing_util_push_log_hook ("*Method 'IntrospectionCallable.invalid' not found*");
-
-  info = peas_engine_get_plugin_info (engine, extension_plugin);
-
-  g_assert (peas_engine_load_plugin (engine, info));
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
-                                            NULL);
-
-  peas_extension_call (extension, "invalid", NULL);
-
-  g_object_unref (extension);
-}
-
-void
 testing_extension_call_no_args_ (PeasEngine *engine)
 {
   PeasPluginInfo *info;

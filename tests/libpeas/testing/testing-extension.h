@@ -49,7 +49,6 @@ void testing_extension_provides_invalid_          (PeasEngine *engine);
 void testing_extension_create_valid_              (PeasEngine *engine);
 void testing_extension_create_invalid_            (PeasEngine *engine);
 void testing_extension_reload_                    (PeasEngine *engine);
-void testing_extension_call_invalid_              (PeasEngine *engine);
 void testing_extension_call_no_args_              (PeasEngine *engine);
 void testing_extension_call_with_return_          (PeasEngine *engine);
 void testing_extension_call_single_arg_           (PeasEngine *engine);
@@ -85,7 +84,6 @@ void testing_extension_properties_readwrite_      (PeasEngine *engine);
 \
   _EXTENSION_TEST (loader, "reload", reload); \
 \
-  _EXTENSION_TEST (loader, "call-invalid", call_invalid); \
   _EXTENSION_TEST (loader, "call-no-args", call_no_args); \
   _EXTENSION_TEST (loader, "call-with-return", call_with_return); \
   _EXTENSION_TEST (loader, "call-single-arg", call_single_arg); \

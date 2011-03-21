@@ -22,9 +22,25 @@
 #ifndef __PEAS_EXTENSION_PRIV_H__
 #define __PEAS_EXTENSION_PRIV_H__
 
-#include "peas-extension-priv.h"
+#include "peas-extension.h"
 
 G_BEGIN_DECLS
+
+#define PEAS_EXTENSION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), PEAS_TYPE_EXTENSION, PeasExtensionClass))
+#define PEAS_IS_EXTENSION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_EXTENSION))
+#define PEAS_EXTENSION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_EXTENSION, PeasExtensionClass))
+
+typedef struct _PeasExtensionClass    PeasExtensionClass;
+
+struct _PeasExtensionClass {
+  GObjectClass parent_class;
+
+  /*< private >*/
+  gboolean   (*call)                      (PeasExtension  *exten,
+                                           const gchar    *method,
+                                           GIArgument     *args,
+                                           GIArgument     *return_value);
+};
 
 struct _PeasExtensionPrivate {
   GType exten_type;
