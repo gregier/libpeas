@@ -23,7 +23,52 @@
 #include <config.h>
 #endif
 
+#include <seed.h>
+
+#include "loaders/seed/peas-extension-seed.h"
+
 #include "testing/testing-extension.h"
+#include "introspection/introspection-callable.h"
+
+gboolean seed_gvalue_from_seed_value (SeedContext    ctx,
+                                      SeedValue      val,
+                                      GType          type,
+                                      GValue        *gval,
+                                      SeedException *exception);
+
+static void
+test_extension_seed_plugin_info (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  PeasExtensionSeed *sexten;
+  SeedValue seed_value;
+  GValue gvalue = { 0 };
+
+  info = peas_engine_get_plugin_info (engine, "extension-seed");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_CALLABLE,
+                                            NULL);
+
+  g_assert (PEAS_IS_EXTENSION (extension));
+
+  sexten = (PeasExtensionSeed *) extension;
+  seed_value = seed_object_get_property (sexten->js_context, sexten->js_object,
+                                         "plugin_info");
+
+  g_assert (seed_gvalue_from_seed_value (sexten->js_context, seed_value,
+                                         PEAS_TYPE_PLUGIN_INFO, &gvalue,
+                                         NULL));
+
+  g_assert (g_value_get_boxed (&gvalue) == info);
+
+  g_value_unset (&gvalue);
+
+  g_object_unref (extension);
+}
 
 int
 main (int   argc,
@@ -34,6 +79,8 @@ main (int   argc,
   g_type_init ();
 
   EXTENSION_TESTS (seed);
+
+  EXTENSION_TEST (seed, "plugin-info", plugin_info);
 
   return testing_run_tests ();
 }

@@ -32,13 +32,14 @@ if ENABLE_PYTHON
 TEST_PROGS               += extension-python
 extension_python_SOURCES  = extension-python.c
 extension_python_CFLAGS   = $(PYTHON_CFLAGS)
-extension_python_LDADD    = $(progs_ldadd)
+extension_python_LDADD    = $(progs_ldadd) $(PYTHON_LIBS)
 endif
 
 if ENABLE_SEED
 TEST_PROGS             += extension-seed
 extension_seed_SOURCES  = extension-seed.c
-extension_seed_LDADD    = $(progs_ldadd)
+extension_seed_CFLAGS   = $(SEED_CFLAGS)
+extension_seed_LDADD    = $(progs_ldadd)  $(SEED_LIBS)
 endif
 
 TEST_PROGS            += extension-set

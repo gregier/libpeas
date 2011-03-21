@@ -102,6 +102,32 @@ test_extension_python_activatable_subject_refcount (PeasEngine *engine)
   g_object_unref (object);
 }
 
+static void
+test_extension_python_plugin_info (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  PyObject *instance;
+  PyObject *plugin_info;
+
+  info = peas_engine_get_plugin_info (engine, "extension-python");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_CALLABLE,
+                                            NULL);
+
+  g_assert (PEAS_IS_EXTENSION (extension));
+
+  instance = ((PeasExtensionPython *) extension)->instance;
+
+  plugin_info = PyObject_GetAttrString (instance, "plugin_info");
+  g_assert (((PyGBoxed *) plugin_info)->boxed == info);
+
+  g_object_unref (extension);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -113,6 +139,7 @@ main (int   argc,
 
   EXTENSION_TEST (python, "instance-refcount", instance_refcount);
   EXTENSION_TEST (python, "activatable-subject-refcount", activatable_subject_refcount);
+  EXTENSION_TEST (python, "plugin-info", plugin_info);
 
   return testing_run_tests ();
 }

@@ -23,10 +23,12 @@
 #include <config.h>
 #endif
 
+#include "libpeas/peas-extension-base.h"
 #include "loaders/c/peas-extension-c.h"
 
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
+#include "introspection/introspection-properties.h"
 
 static void
 test_extension_c_instance_refcount (PeasEngine *engine)
@@ -55,6 +57,31 @@ test_extension_c_instance_refcount (PeasEngine *engine)
   g_object_unref (extension);
 }
 
+static void
+test_extension_c_plugin_info (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+  PeasExtensionBase *instance;
+
+  info = peas_engine_get_plugin_info (engine, "extension-c");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            NULL);
+
+  g_assert (PEAS_IS_EXTENSION (extension));
+
+  instance = (PeasExtensionBase *) ((PeasExtensionC *) extension)->instance;
+
+  g_assert (PEAS_IS_EXTENSION_BASE (instance));
+  g_assert (peas_extension_base_get_plugin_info (instance) == info);
+
+  g_object_unref (extension);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -65,6 +92,7 @@ main (int   argc,
   EXTENSION_TESTS (c);
 
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
+  EXTENSION_TEST (c, "plugin-info", plugin_info);
 
   return testing_run_tests ();
 }
