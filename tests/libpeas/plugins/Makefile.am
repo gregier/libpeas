@@ -2,6 +2,10 @@ include $(top_srcdir)/tests/Makefile.plugin
 
 SUBDIRS = extension-c
 
+if ENABLE_GJS
+SUBDIRS += extension-gjs
+endif
+
 if ENABLE_PYTHON
 SUBDIRS += extension-python
 endif

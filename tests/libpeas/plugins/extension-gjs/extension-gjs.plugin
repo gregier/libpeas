@@ -1,0 +1,9 @@
+[Plugin]
+Module=extension-gjs
+Loader=gjs
+IAge=2
+Name=Extension GJS
+Description=This plugin is for the GJS PeasExtension tests.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier
+Website=http://live.gnome.org/Libpeas

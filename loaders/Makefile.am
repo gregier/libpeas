@@ -1,5 +1,9 @@
 SUBDIRS = c
 
+if ENABLE_GJS
+SUBDIRS += gjs
+endif
+
 if ENABLE_PYTHON
 SUBDIRS += python
 endif

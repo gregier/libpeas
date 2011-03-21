@@ -28,6 +28,13 @@ TEST_PROGS          += extension-c
 extension_c_SOURCES  = extension-c.c
 extension_c_LDADD    = $(progs_ldadd)
 
+if ENABLE_GJS
+TEST_PROGS            += extension-gjs
+extension_gjs_SOURCES  = extension-gjs.c
+extension_gjs_CFLAGS   = $(GJS_CFLAGS)
+extension_gjs_LDADD    = $(progs_ldadd) $(GJS_LIBS)
+endif
+
 if ENABLE_PYTHON
 TEST_PROGS               += extension-python
 extension_python_SOURCES  = extension-python.c

@@ -125,6 +125,7 @@ main (int    argc,
   peas_engine_add_search_path (engine, plugin_dir, plugin_dir);
   g_free (plugin_dir);
 
+  peas_engine_enable_loader (engine, "gjs");
   peas_engine_enable_loader (engine, "python");
   peas_engine_enable_loader (engine, "seed");
 

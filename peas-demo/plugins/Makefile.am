@@ -1,5 +1,9 @@
 SUBDIRS = helloworld secondtime
 
+if ENABLE_GJS
+SUBDIRS += gjshello
+endif
+
 if ENABLE_PYTHON
 SUBDIRS += pythonhello
 endif
