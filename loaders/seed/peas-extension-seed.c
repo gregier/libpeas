@@ -340,8 +340,8 @@ peas_extension_seed_call (PeasExtension *exten,
   n_args = g_callable_info_get_n_args (func_info);
   g_return_val_if_fail (n_args >= 0, FALSE);
 
-  js_in_args = g_new0 (SeedValue, n_args);
-  out_args = g_new0 (OutArg, n_args + 1);
+  js_in_args = g_newa (SeedValue, n_args);
+  out_args = g_newa (OutArg, n_args + 1);
 
   /* We put the return value first in the out tuple, as it seems to be
    * the common behaviour for GI-based bindings */
@@ -400,8 +400,6 @@ peas_extension_seed_call (PeasExtension *exten,
 
 cleanup:
 
-  g_free (out_args);
-  g_free (js_in_args);
   g_base_info_unref ((GIBaseInfo *) func_info);
 
   if (exc == NULL)
