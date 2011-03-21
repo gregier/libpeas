@@ -138,6 +138,8 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
   SeedValue extension_methods, extension;
   gchar **property_names;
   guint i, j;
+  SeedValue value;
+  GValue gvalue = { 0 };
 
   sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
 
@@ -180,7 +182,6 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
   for (i = 0; i < n_parameters; i++)
     {
       gchar *key;
-      SeedValue value;
 
       /* We want to normalize the property names to have a '_' instead of the
        * conventional '-', to make them accessible through this.property_name */
@@ -203,6 +204,15 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
     }
 
   g_strfreev (property_names);
+
+  /* Set the plugin info as an attribute of the instance */
+  g_value_init (&gvalue, PEAS_TYPE_PLUGIN_INFO);
+  g_value_set_boxed (&gvalue, info);
+
+  value = seed_value_from_gvalue (sinfo->context, &gvalue, NULL);
+  seed_object_set_property (sinfo->context, extension, "plugin_info", value);
+
+  g_value_unset (&gvalue);
 
   return peas_extension_seed_new (exten_type, sinfo->context, extension);
 }
