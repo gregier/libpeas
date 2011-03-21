@@ -44,6 +44,10 @@
 
 G_DEFINE_ABSTRACT_TYPE (PeasExtensionBase, peas_extension_base, G_TYPE_OBJECT);
 
+struct _PeasExtensionBasePrivate {
+  PeasPluginInfo *info;
+};
+
 /* properties */
 enum {
   PROP_0,
@@ -84,7 +88,7 @@ peas_extension_base_set_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_PLUGIN_INFO:
-      extbase->plugin_info = g_value_dup_boxed (value);
+      extbase->priv->info = g_value_dup_boxed (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -95,6 +99,9 @@ peas_extension_base_set_property (GObject      *object,
 static void
 peas_extension_base_init (PeasExtensionBase *extbase)
 {
+  extbase->priv = G_TYPE_INSTANCE_GET_PRIVATE (extbase,
+                                               PEAS_TYPE_EXTENSION_BASE,
+                                               PeasExtensionBasePrivate);
 }
 
 static void
@@ -102,8 +109,8 @@ peas_extension_base_finalize (GObject *object)
 {
   PeasExtensionBase *extbase = PEAS_EXTENSION_BASE (object);
 
-  if (extbase->plugin_info != NULL)
-    _peas_plugin_info_unref (extbase->plugin_info);
+  if (extbase->priv->info != NULL)
+    _peas_plugin_info_unref (extbase->priv->info);
 
   G_OBJECT_CLASS (peas_extension_base_parent_class)->finalize (object);
 }
@@ -136,6 +143,8 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
                                                         NULL,
                                                         G_PARAM_READABLE |
                                                         G_PARAM_STATIC_STRINGS));
+
+  g_type_class_add_private (klass, sizeof (PeasExtensionBasePrivate));
 }
 
 /**
@@ -151,7 +160,7 @@ peas_extension_base_get_plugin_info (PeasExtensionBase *extbase)
 {
   g_return_val_if_fail (PEAS_IS_EXTENSION_BASE (extbase), NULL);
 
-  return extbase->plugin_info;
+  return extbase->priv->info;
 }
 
 /**
@@ -169,5 +178,5 @@ peas_extension_base_get_data_dir (PeasExtensionBase *extbase)
 {
   g_return_val_if_fail (PEAS_IS_EXTENSION_BASE (extbase), NULL);
 
-  return g_strdup (peas_plugin_info_get_data_dir (extbase->plugin_info));
+  return g_strdup (peas_plugin_info_get_data_dir (extbase->priv->info));
 }

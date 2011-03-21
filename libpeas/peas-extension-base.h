@@ -43,13 +43,14 @@ G_BEGIN_DECLS
  *
  * Base class for C extensions.
  */
-typedef struct _PeasExtensionBase       PeasExtensionBase;
-typedef struct _PeasExtensionBaseClass  PeasExtensionBaseClass;
+typedef struct _PeasExtensionBase        PeasExtensionBase;
+typedef struct _PeasExtensionBaseClass   PeasExtensionBaseClass;
+typedef struct _PeasExtensionBasePrivate PeasExtensionBasePrivate;
 
 struct _PeasExtensionBase {
   GObject parent;
 
-  PeasPluginInfo *plugin_info;
+  PeasExtensionBasePrivate *priv;
 };
 
 struct _PeasExtensionBaseClass {
