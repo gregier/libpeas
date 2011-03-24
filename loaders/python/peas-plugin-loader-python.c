@@ -217,7 +217,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
     {
       g_warning ("Cannot load Python plugin '%s' since libpeas was "
                  "not able to initialize the Python interpreter",
-                 peas_plugin_info_get_modul_name (info));
+                 peas_plugin_info_get_module_name (info));
 
       return FALSE;
     }
