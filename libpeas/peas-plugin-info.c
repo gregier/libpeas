@@ -135,7 +135,6 @@ _peas_plugin_info_new (const gchar *filename,
   PeasPluginInfo *info;
   GKeyFile *plugin_file = NULL;
   gchar *str;
-  gint integer;
   gboolean b;
   GError *error = NULL;
 
@@ -150,15 +149,6 @@ _peas_plugin_info_new (const gchar *filename,
       g_warning ("Bad plugin file: '%s'", filename);
       goto error;
     }
-
-  if (!g_key_file_has_key (plugin_file, "Plugin", "IAge", NULL))
-    {
-      g_warning ("Could not find 'IAge' in '%s'", filename);
-      goto error;
-    }
-
-  integer = g_key_file_get_integer (plugin_file, "Plugin", "IAge", NULL);
-  info->iage = integer <= 0 ? 0 : integer;
 
   /* Get module name */
   str = g_key_file_get_string (plugin_file, "Plugin", "Module", NULL);
@@ -646,22 +636,4 @@ peas_plugin_info_get_help_uri (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->help_uri;
-}
-
-/**
- * peas_plugin_info_get_iage:
- * @info: A #PeasPluginInfo.
- *
- * Gets the interface age of the plugin.
- *
- * The relevant key in the plugin info file is "IAge".
- *
- * Returns: the interface age of the plugin or %0 if not known.
- **/
-gint
-peas_plugin_info_get_iage (const PeasPluginInfo *info)
-{
-  g_return_val_if_fail (info != NULL, 0);
-
-  return info->iage;
 }

@@ -44,7 +44,6 @@ struct _PeasPluginInfo {
   gchar *website;
   gchar *version;
   gchar *help_uri;
-  guint iage;
 
   GError *error;
 

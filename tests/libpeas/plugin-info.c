@@ -86,7 +86,6 @@ test_plugin_info_verify_full_info (PeasEngine *engine)
   g_assert_cmpstr (peas_plugin_info_get_copyright (info), ==, "Copyright © 2010 Garrett Regier");
   g_assert_cmpstr (peas_plugin_info_get_version (info), ==, "1.0");
   g_assert_cmpstr (peas_plugin_info_get_help_uri (info), ==, "http://git.gnome.org/browse/libpeas");
-  g_assert_cmpint (peas_plugin_info_get_iage (info), ==, 2);
 
   authors = peas_plugin_info_get_authors (info);
   g_assert (authors != NULL && authors[1] == NULL);
@@ -119,7 +118,6 @@ test_plugin_info_verify_min_info (PeasEngine *engine)
   g_assert_cmpstr (peas_plugin_info_get_copyright (info), ==, NULL);
   g_assert_cmpstr (peas_plugin_info_get_version (info), ==, NULL);
   g_assert_cmpstr (peas_plugin_info_get_help_uri (info), ==, NULL);
-  g_assert_cmpint (peas_plugin_info_get_iage (info), ==, 2);
 
   g_assert (peas_plugin_info_get_authors (info) == NULL);
 }
@@ -140,12 +138,6 @@ test_plugin_info_has_dep (PeasEngine *engine)
 
   g_assert_cmpstr (peas_plugin_info_get_dependencies (info)[0], ==, NULL);
   g_assert (!peas_plugin_info_has_dependency (info, "does-not-exist"));
-}
-
-static void
-test_plugin_info_missing_iage (PeasEngine *engine)
-{
-  g_assert (peas_engine_get_plugin_info (engine, "invalid-info-iage") == NULL);
 }
 
 static void
@@ -197,7 +189,6 @@ main (int    argc,
 
   TEST ("has-dep", has_dep);
 
-  TEST ("missing-iage", missing_iage);
   TEST ("missing-module", missing_module);
   TEST ("missing-name", missing_name);
 

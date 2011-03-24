@@ -12,7 +12,6 @@ endif
 
 noinst_PLUGIN = \
 	disabled-loader.plugin		\
-	info-missing-iage.plugin	\
 	info-missing-module.plugin	\
 	info-missing-name.plugin	\
 	invalid.plugin			\
