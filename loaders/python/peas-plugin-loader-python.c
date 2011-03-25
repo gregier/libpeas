@@ -323,11 +323,14 @@ peas_python_shutdown (PeasPluginLoaderPython *loader)
       loader->priv->idle_gc = 0;
     }
 
-  run_gc_protected ();
+  if (!loader->priv->init_failed)
+    run_gc_protected ();
 
   if (loader->priv->must_finalize_python)
     {
-      pyg_gil_state_ensure ();
+      if (!loader->priv->init_failed)
+        pyg_gil_state_ensure ();
+
       Py_Finalize ();
     }
 }
