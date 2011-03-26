@@ -341,7 +341,11 @@ selection_changed_cb (PeasGtkPluginManager *pm)
     gtk_label_set_text (GTK_LABEL (pm->priv->plugin_copyright), copyright);
 
   if (website != NULL)
-    gtk_label_set_text (GTK_LABEL (pm->priv->plugin_website), website);
+    {
+      text = g_markup_printf_escaped ("<a href='%s'>%s</a>", website, website);
+      gtk_label_set_markup (GTK_LABEL (pm->priv->plugin_website), text);
+      g_free (text);
+    }
 }
 
 static void
