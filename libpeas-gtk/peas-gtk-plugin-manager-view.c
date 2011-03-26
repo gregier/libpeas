@@ -853,6 +853,7 @@ void
 peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
                                                gboolean                  show_builtin)
 {
+  GtkTreeSelection *selection;
   GtkTreeIter iter;
   gboolean iter_set;
 
@@ -863,9 +864,14 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
   if (view->priv->show_builtin == show_builtin)
     return;
 
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
+
   /* We must get the selected iter before setting if builtin
      plugins should be shown so the proper model is set */
-  iter_set = peas_gtk_plugin_manager_view_get_selected_iter (view, &iter);
+  iter_set = gtk_tree_selection_get_selected (selection, NULL, &iter);
+
+  if (iter_set)
+    convert_iter_to_child_iter (view, &iter);
 
   view->priv->show_builtin = show_builtin;
 
@@ -889,8 +895,8 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
       g_object_unref (model);
     }
 
-  if (iter_set)
-    peas_gtk_plugin_manager_view_set_selected_iter (view, &iter);
+  if (iter_set && convert_child_iter_to_iter (view, &iter))
+    gtk_tree_selection_select_iter (selection, &iter);
 
   g_object_notify (G_OBJECT (view), "show-builtin");
 }
@@ -909,57 +915,6 @@ peas_gtk_plugin_manager_view_get_show_builtin (PeasGtkPluginManagerView *view)
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_VIEW (view), FALSE);
 
   return view->priv->show_builtin;
-}
-
-/**
- * peas_gtk_plugin_manager_view_set_selected_iter:
- * @view: A #PeasGtkPluginManagerView.
- * @iter: A #GtkTreeIter.
- *
- * Selects @iter.
- */
-void
-peas_gtk_plugin_manager_view_set_selected_iter (PeasGtkPluginManagerView *view,
-                                                GtkTreeIter              *iter)
-{
-  GtkTreeSelection *selection;
-
-  g_return_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_VIEW (view));
-  g_return_if_fail (iter != NULL);
-
-  if (!convert_child_iter_to_iter (view, iter))
-    return;
-
-  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
-  gtk_tree_selection_select_iter (selection, iter);
-}
-
-/**
- * peas_gtk_plugin_manager_view_get_selected_iter:
- * @view: A #PeasGtkPluginManagerView.
- * @iter: A #GtkTreeIter.
- *
- * Returns if @iter was set to the selected plugin.
- *
- * Returns: if @iter was set.
- */
-gboolean
-peas_gtk_plugin_manager_view_get_selected_iter (PeasGtkPluginManagerView *view,
-                                                GtkTreeIter              *iter)
-{
-  GtkTreeSelection *selection;
-
-  g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_VIEW (view), FALSE);
-  g_return_val_if_fail (iter != NULL, FALSE);
-
-  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
-
-  if (!gtk_tree_selection_get_selected (selection, NULL, iter))
-    return FALSE;
-
-  convert_iter_to_child_iter (view, iter);
-
-  return TRUE;
 }
 
 /**
@@ -1000,13 +955,19 @@ peas_gtk_plugin_manager_view_set_selected_plugin (PeasGtkPluginManagerView *view
 PeasPluginInfo *
 peas_gtk_plugin_manager_view_get_selected_plugin (PeasGtkPluginManagerView *view)
 {
+  GtkTreeSelection *selection;
   GtkTreeIter iter;
   PeasPluginInfo *info = NULL;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_VIEW (view), NULL);
 
-  if (peas_gtk_plugin_manager_view_get_selected_iter (view, &iter))
-    info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
+
+  if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+    {
+      convert_iter_to_child_iter (view, &iter);
+      info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
+    }
 
   return info;
 }

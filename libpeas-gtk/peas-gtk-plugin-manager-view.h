@@ -67,11 +67,6 @@ void            peas_gtk_plugin_manager_view_set_show_builtin     (PeasGtkPlugin
                                                                    gboolean                  show_builtin);
 gboolean        peas_gtk_plugin_manager_view_get_show_builtin     (PeasGtkPluginManagerView *view);
 
-void            peas_gtk_plugin_manager_view_set_selected_iter    (PeasGtkPluginManagerView *view,
-                                                                   GtkTreeIter              *iter);
-gboolean        peas_gtk_plugin_manager_view_get_selected_iter    (PeasGtkPluginManagerView *view,
-                                                                   GtkTreeIter              *iter);
-
 void            peas_gtk_plugin_manager_view_set_selected_plugin  (PeasGtkPluginManagerView *view,
                                                                    PeasPluginInfo           *info);
 PeasPluginInfo *peas_gtk_plugin_manager_view_get_selected_plugin  (PeasGtkPluginManagerView *view);
