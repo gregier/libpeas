@@ -97,6 +97,7 @@ test_plugin_info_verify_min_info (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   GError *error = NULL;
+  const gchar **authors;
 
   info = peas_engine_get_plugin_info (engine, "min-info");
 
@@ -119,7 +120,8 @@ test_plugin_info_verify_min_info (PeasEngine *engine)
   g_assert_cmpstr (peas_plugin_info_get_version (info), ==, NULL);
   g_assert_cmpstr (peas_plugin_info_get_help_uri (info), ==, NULL);
 
-  g_assert (peas_plugin_info_get_authors (info) == NULL);
+  authors = peas_plugin_info_get_authors (info);
+  g_assert (authors != NULL && authors[0] == NULL);
 }
 
 static void

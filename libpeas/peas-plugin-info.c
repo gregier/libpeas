@@ -209,6 +209,8 @@ _peas_plugin_info_new (const gchar *filename,
   /* Get Authors */
   info->authors = g_key_file_get_string_list (plugin_file, "Plugin",
                                               "Authors", NULL, NULL);
+  if (info->authors == NULL)
+    info->authors = g_new0 (gchar *, 1);
 
   /* Get Copyright */
   str = g_key_file_get_string (plugin_file, "Plugin", "Copyright", NULL);
