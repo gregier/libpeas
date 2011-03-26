@@ -616,10 +616,10 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
     {
       gchar *message;
 
-      message = g_strdup_printf (_("<b>The plugin '%s' could not be loaded</b>\n"
-                                   "An error occurred: %s"),
-                                 peas_plugin_info_get_name (info),
-                                 error->message);
+      message = g_markup_printf_escaped (_("<b>The plugin '%s' could not be "
+                                           "loaded</b>\nAn error occurred: %s"),
+                                         peas_plugin_info_get_name (info),
+                                         error->message);
 
       gtk_tooltip_set_markup (tooltip, message);
 
