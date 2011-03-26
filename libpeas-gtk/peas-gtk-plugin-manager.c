@@ -63,9 +63,16 @@ struct _PeasGtkPluginManagerPrivate {
   GtkWidget *sw;
   GtkWidget *view;
 
-  GtkWidget *about;
-
-  GtkWidget *about_button;
+  GtkWidget *plugin_info;
+  GtkWidget *plugin_title;
+  GtkWidget *desc_label;
+  GtkWidget *plugin_desc;
+  GtkWidget *authors_label;
+  GtkWidget *plugin_authors;
+  GtkWidget *copyright_label;
+  GtkWidget *plugin_copyright;
+  GtkWidget *website_label;
+  GtkWidget *plugin_website;
   GtkWidget *configure_button;
 };
 
@@ -80,6 +87,19 @@ enum {
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkPluginManager, peas_gtk_plugin_manager, GTK_TYPE_BOX);
+
+#if !GTK_CHECK_VERSION(2,18,0)
+#define gtk_widget_set_visible (widget, visible) \
+  G_STMT_BEGIN \
+    { \
+      if (visible) \
+        gtk_widget_show (widget); \
+      else \
+        gtk_widget_hide (widget); \
+    } \
+  G_STMT_END
+#endif
+
 
 static gboolean
 plugin_is_configurable (PeasGtkPluginManager *pm,
@@ -97,51 +117,8 @@ static void
 update_button_sensitivity (PeasGtkPluginManager *pm,
                            PeasPluginInfo       *info)
 {
-  gtk_widget_set_sensitive (pm->priv->about_button, info != NULL);
   gtk_widget_set_sensitive (pm->priv->configure_button,
                             plugin_is_configurable (pm, info));
-}
-
-static void
-show_about_cb (GtkWidget            *widget,
-               PeasGtkPluginManager *pm)
-{
-  PeasGtkPluginManagerView *view;
-  PeasPluginInfo *info;
-
-  view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
-
-  info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
-  g_return_if_fail (info != NULL);
-
-  /* if there is another about dialog already open destroy it */
-  if (pm->priv->about)
-    gtk_widget_destroy (pm->priv->about);
-
-  pm->priv->about = GTK_WIDGET (g_object_new (GTK_TYPE_ABOUT_DIALOG,
-                                              "program-name", peas_plugin_info_get_name (info),
-                                              "copyright", peas_plugin_info_get_copyright (info),
-                                              "authors", peas_plugin_info_get_authors (info),
-                                              "comments", peas_plugin_info_get_description (info),
-                                              "website", peas_plugin_info_get_website (info),
-                                              "logo-icon-name", peas_plugin_info_get_icon_name (info),
-                                              "version", peas_plugin_info_get_version (info),
-                                              NULL));
-
-  gtk_window_set_destroy_with_parent (GTK_WINDOW (pm->priv->about), TRUE);
-
-  g_signal_connect (pm->priv->about,
-                    "response",
-                    G_CALLBACK (gtk_widget_destroy),
-                    NULL);
-  g_signal_connect (pm->priv->about,
-                    "destroy",
-                    G_CALLBACK (gtk_widget_destroyed),
-                    &pm->priv->about);
-
-  gtk_window_set_transient_for (GTK_WINDOW (pm->priv->about),
-                                GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm))));
-  gtk_widget_show (pm->priv->about);
 }
 
 static void
@@ -303,11 +280,68 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 {
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
+  gchar *text;
+  const gchar *desc;
+  const gchar **authors;
+  const gchar *copyright;
+  const gchar *website;
 
   view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
 
+  gtk_widget_set_visible (pm->priv->plugin_info, info != NULL);
+
+  if (info == NULL)
+      return;
+
   update_button_sensitivity (pm, info);
+
+  /* The plugin is required to have a name */
+  text = g_markup_printf_escaped ("<span size='x-large'>%s</span>",
+                                  peas_plugin_info_get_name (info));
+  gtk_label_set_markup (GTK_LABEL (pm->priv->plugin_title), text);
+  g_free (text);
+
+
+  /* These are all optional */
+  desc = peas_plugin_info_get_description (info);
+  authors = peas_plugin_info_get_authors (info);
+  copyright = peas_plugin_info_get_copyright (info);
+  website = peas_plugin_info_get_website (info);
+
+  gtk_widget_set_visible (pm->priv->desc_label, desc != NULL);
+  gtk_widget_set_visible (pm->priv->plugin_desc, desc != NULL);
+  gtk_widget_set_visible (pm->priv->authors_label, authors[0] != NULL);
+  gtk_widget_set_visible (pm->priv->plugin_authors, authors[0] != NULL);
+  gtk_widget_set_visible (pm->priv->copyright_label, copyright != NULL);
+  gtk_widget_set_visible (pm->priv->plugin_copyright, copyright != NULL);
+  gtk_widget_set_visible (pm->priv->website_label, website != NULL);
+  gtk_widget_set_visible (pm->priv->plugin_website, website != NULL);
+
+  if (desc != NULL)
+    gtk_label_set_text (GTK_LABEL (pm->priv->plugin_desc), desc);
+
+  if (authors[0] != NULL && authors[1] == NULL)
+    {
+      gtk_label_set_markup (GTK_LABEL (pm->priv->authors_label),
+                            _("<b>Author:</b>"));
+      gtk_label_set_text (GTK_LABEL (pm->priv->plugin_authors), authors[0]);
+    }
+  else if (authors[0] != NULL)
+    {
+      gtk_label_set_markup (GTK_LABEL (pm->priv->authors_label),
+                            _("<b>Authors:</b>"));
+
+      text = g_strjoinv ("\n", (gchar **) authors);
+      gtk_label_set_text (GTK_LABEL (pm->priv->plugin_authors), text);
+      g_free (text);
+    }
+
+  if (copyright != NULL)
+    gtk_label_set_text (GTK_LABEL (pm->priv->plugin_copyright), copyright);
+
+  if (website != NULL)
+    gtk_label_set_text (GTK_LABEL (pm->priv->plugin_website), website);
 }
 
 static void
@@ -327,10 +361,30 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
   g_signal_connect (item, "activate", G_CALLBACK (show_configure_cb), pm);
   gtk_widget_set_sensitive (item, plugin_is_configurable (pm, info));
   gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+}
 
-  item = gtk_image_menu_item_new_from_stock (GTK_STOCK_ABOUT, NULL);
-  g_signal_connect (item, "activate", G_CALLBACK (show_about_cb), pm);
-  gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+static void
+add_section (GtkWidget     *box,
+             const gchar  *title,
+             GtkWidget    **title_label,
+             GtkWidget    **plugin_label)
+{
+  GtkWidget *section_box;
+
+  section_box = gtk_vbox_new (0, FALSE);
+  gtk_box_pack_start (GTK_BOX (box), section_box, FALSE, FALSE, 0);
+
+  *title_label =  gtk_label_new (title);
+  gtk_label_set_use_markup (GTK_LABEL (*title_label), TRUE);
+  gtk_label_set_justify (GTK_LABEL (*title_label), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (*title_label), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (section_box), *title_label, FALSE, FALSE, 0);
+
+  *plugin_label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL (*plugin_label), TRUE);
+  gtk_label_set_justify (GTK_LABEL (*plugin_label), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (*plugin_label), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (section_box), *plugin_label, FALSE, FALSE, 0);
 }
 
 static void
@@ -347,43 +401,62 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   g_irepository_require (g_irepository_get_default (),
                          "PeasGtk", "1.0", 0, NULL);
 
-  gtk_box_set_spacing (GTK_BOX (pm), 6);
+  gtk_box_set_spacing (GTK_BOX (pm), 12);
   gtk_orientable_set_orientation (GTK_ORIENTABLE (pm),
-                                  GTK_ORIENTATION_VERTICAL);
+                                  GTK_ORIENTATION_HORIZONTAL);
 
   gtk_widget_push_composite_child ();
 
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->sw),
-                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_NEVER, GTK_POLICY_NEVER);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                        GTK_SHADOW_IN);
-  gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, FALSE, FALSE, 0);
 
-  hbuttonbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_box_set_spacing (GTK_BOX (hbuttonbox), 6);
+
+  pm->priv->plugin_info = gtk_vbox_new (FALSE, 12);
+  gtk_box_pack_start (GTK_BOX (pm), pm->priv->plugin_info, TRUE, TRUE, 0);
+
+  pm->priv->plugin_title = gtk_label_new (NULL);
+  gtk_label_set_justify (GTK_LABEL (pm->priv->plugin_title), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (pm->priv->plugin_title), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (pm->priv->plugin_info), pm->priv->plugin_title,
+                      FALSE, FALSE, 0);
+
+  add_section (pm->priv->plugin_info, _("<b>Description:</b>"),
+               &pm->priv->desc_label, &pm->priv->plugin_desc);
+  gtk_label_set_line_wrap (GTK_LABEL (pm->priv->plugin_desc), TRUE);
+
+  add_section (pm->priv->plugin_info, NULL,
+               &pm->priv->authors_label, &pm->priv->plugin_authors);
+  add_section (pm->priv->plugin_info, _("<b>Copyright:</b>"),
+               &pm->priv->copyright_label, &pm->priv->plugin_copyright);
+  add_section (pm->priv->plugin_info, _("<b>Website:</b>"),
+               &pm->priv->website_label, &pm->priv->plugin_website);
+
+  hbuttonbox = gtk_hbutton_box_new ();
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
-  gtk_box_pack_start (GTK_BOX (pm), hbuttonbox, FALSE, FALSE, 0);
-
-  pm->priv->about_button = gtk_button_new_from_stock (GTK_STOCK_ABOUT);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->about_button);
+  gtk_box_pack_end (GTK_BOX (pm->priv->plugin_info), hbuttonbox,
+                    FALSE, FALSE, 0);
 
   pm->priv->configure_button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->configure_button);
+  gtk_box_pack_start (GTK_BOX (hbuttonbox), pm->priv->configure_button,
+                      FALSE, FALSE, 0);
 
   gtk_widget_pop_composite_child ();
 
   /* setup a window of a sane size. */
-  gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 270, 100);
-
-  g_signal_connect (pm->priv->about_button,
-                    "clicked",
-                    G_CALLBACK (show_about_cb),
-                    pm);
+  /*gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 270, 100);*/
+  gtk_widget_set_size_request (GTK_WIDGET (pm), 560, 300);
   g_signal_connect (pm->priv->configure_button,
                     "clicked",
                     G_CALLBACK (show_configure_cb),
                     pm);
+
+  gtk_container_foreach (GTK_CONTAINER (pm),
+                         (GtkCallback) gtk_widget_show,
+                         NULL);
 }
 
 static void
@@ -468,9 +541,8 @@ peas_gtk_plugin_manager_constructed (GObject *object)
   if (pm->priv->view == NULL)
     pm->priv->view = peas_gtk_plugin_manager_view_new (pm->priv->engine);
 
-  gtk_widget_push_composite_child ();
   gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
-  gtk_widget_pop_composite_child ();
+  gtk_widget_show (pm->priv->view);
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
 

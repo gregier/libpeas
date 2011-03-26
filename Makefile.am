@@ -10,7 +10,7 @@ SUBDIRS += libpeas-gtk peas-demo
 GCOVDIRS += libpeas-gtk
 endif
 
-SUBDIRS += tests data po docs
+SUBDIRS += data po docs
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \

@@ -67,25 +67,12 @@ update_plugin (PeasGtkPluginManagerStore *store,
   gboolean loaded;
   gboolean available;
   gboolean builtin;
-  gchar *markup;
   const gchar *icon_name;
   GdkPixbuf *icon_pixbuf = NULL;
 
   loaded = peas_plugin_info_is_loaded (info);
   available = peas_plugin_info_is_available (info, NULL);
   builtin = peas_plugin_info_is_builtin (info);
-
-  if (peas_plugin_info_get_description (info) == NULL)
-    {
-      markup = g_markup_printf_escaped ("<b>%s</b>",
-                                        peas_plugin_info_get_name (info));
-    }
-  else
-    {
-      markup = g_markup_printf_escaped ("<b>%s</b>\n%s",
-                                        peas_plugin_info_get_name (info),
-                                        peas_plugin_info_get_description (info));
-    }
 
   if (!available)
     {
@@ -142,15 +129,13 @@ update_plugin (PeasGtkPluginManagerStore *store,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN,    icon_pixbuf,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN,      icon_name,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,   !available,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,           markup,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,           peas_plugin_info_get_name (info),
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN, available && (!builtin || loaded),
     PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN,         info,
     -1);
 
   if (icon_pixbuf != NULL)
     g_object_unref (icon_pixbuf);
-
-  g_free (markup);
 }
 
 static void

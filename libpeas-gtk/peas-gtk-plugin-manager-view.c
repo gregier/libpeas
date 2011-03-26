@@ -538,10 +538,9 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
 
   cell = gtk_cell_renderer_text_new ();
   gtk_tree_view_column_pack_start (column, cell, TRUE);
-  g_object_set (cell, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
   gtk_tree_view_column_set_attributes (column, cell,
                                        "sensitive", PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN,
-                                       "markup", PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,
+                                       "text", PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,
                                        NULL);
 
   gtk_tree_view_column_set_spacing (column, 6);
