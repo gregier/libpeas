@@ -462,7 +462,7 @@ show_popup_menu (GtkTreeView              *tree_view,
 
   return TRUE;
 }
-
+/*
 static void
 plugin_icon_data_func (GtkTreeViewColumn *column,
                        GtkCellRenderer   *cell,
@@ -487,7 +487,7 @@ plugin_icon_data_func (GtkTreeViewColumn *column,
 
   g_free (icon_name);
 }
-
+*/
 static void
 peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
 {
@@ -528,14 +528,14 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
   column = gtk_tree_view_column_new ();
   gtk_tree_view_column_set_title (column, _("Plugin"));
   gtk_tree_view_column_set_resizable (column, FALSE);
-
+/*
   cell = gtk_cell_renderer_pixbuf_new ();
   gtk_tree_view_column_pack_start (column, cell, FALSE);
   g_object_set (cell, "stock-size", GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
   gtk_tree_view_column_set_cell_data_func (column, cell,
                                            (GtkTreeCellDataFunc) plugin_icon_data_func,
                                            NULL, NULL);
-
+*/
   cell = gtk_cell_renderer_text_new ();
   gtk_tree_view_column_pack_start (column, cell, TRUE);
   gtk_tree_view_column_set_attributes (column, cell,

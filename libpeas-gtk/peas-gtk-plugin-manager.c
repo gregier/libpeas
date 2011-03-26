@@ -39,6 +39,7 @@
 
 #include "peas-gtk-plugin-manager.h"
 #include "peas-gtk-plugin-manager-view.h"
+#include "peas-gtk-plugin-manager-store.h"
 #include "peas-gtk-configurable.h"
 
 /**
@@ -65,6 +66,7 @@ struct _PeasGtkPluginManagerPrivate {
 
   GtkWidget *plugin_info;
   GtkWidget *plugin_title;
+  GtkWidget *plugin_icon;
   GtkWidget *desc_label;
   GtkWidget *plugin_desc;
   GtkWidget *authors_label;
@@ -280,7 +282,10 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 {
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
+  GtkTreeIter iter;
   gchar *text;
+  gchar *icon_name;
+  GdkPixbuf *icon_pixbuf;
   const gchar *desc;
   const gchar **authors;
   const gchar *copyright;
@@ -288,6 +293,7 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 
   view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
+  peas_gtk_plugin_manager_view_get_selected_iter (view, &iter);
 
   gtk_widget_set_visible (pm->priv->plugin_info, info != NULL);
 
@@ -296,14 +302,32 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 
   update_button_sensitivity (pm, info);
 
-  /* The plugin is required to have a name */
   text = g_markup_printf_escaped ("<span size='x-large'>%s</span>",
                                   peas_plugin_info_get_name (info));
   gtk_label_set_markup (GTK_LABEL (pm->priv->plugin_title), text);
   g_free (text);
 
+  
+  gtk_tree_model_get (gtk_tree_view_get_model (GTK_TREE_VIEW (view)), &iter,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN, &icon_name,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN, &icon_pixbuf,
+    -1);
 
-  /* These are all optional */
+  gtk_widget_set_visible (pm->priv->plugin_icon,
+                          icon_pixbuf != NULL || (icon_name != NULL &&
+                          g_strcmp0 (icon_name, "libpeas-plugin") != 0));
+
+  if (icon_pixbuf != NULL)
+    {
+      gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon),
+                                 icon_pixbuf);
+    }
+  else if (icon_name != NULL && g_strcmp0 (icon_name, "libpeas-plugin") != 0)
+    {
+      gtk_image_set_from_stock (GTK_IMAGE (pm->priv->plugin_icon), icon_name,
+                                GTK_ICON_SIZE_DIALOG);
+    }
+
   desc = peas_plugin_info_get_description (info);
   authors = peas_plugin_info_get_authors (info);
   copyright = peas_plugin_info_get_copyright (info);
@@ -394,6 +418,7 @@ add_section (GtkWidget     *box,
 static void
 peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 {
+  GtkWidget *header_box;
   GtkWidget *hbuttonbox;
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
@@ -422,10 +447,18 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   pm->priv->plugin_info = gtk_vbox_new (FALSE, 12);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->plugin_info, TRUE, TRUE, 0);
 
+  header_box = gtk_hbox_new (FALSE, 12);
+  gtk_box_pack_start (GTK_BOX (pm->priv->plugin_info), header_box,
+                      FALSE, FALSE, 0);
+
   pm->priv->plugin_title = gtk_label_new (NULL);
   gtk_label_set_justify (GTK_LABEL (pm->priv->plugin_title), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (pm->priv->plugin_title), 0.0, 0.5);
-  gtk_box_pack_start (GTK_BOX (pm->priv->plugin_info), pm->priv->plugin_title,
+  gtk_misc_set_alignment (GTK_MISC (pm->priv->plugin_title), 0.0, 1.0);
+  gtk_box_pack_start (GTK_BOX (header_box), pm->priv->plugin_title,
+                      FALSE, FALSE, 0);
+
+  pm->priv->plugin_icon = gtk_image_new ();
+  gtk_box_pack_end (GTK_BOX (header_box), pm->priv->plugin_icon,
                       FALSE, FALSE, 0);
 
   add_section (pm->priv->plugin_info, _("<b>Description:</b>"),

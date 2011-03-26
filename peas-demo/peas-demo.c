@@ -70,6 +70,10 @@ create_main_window (void)
   gtk_container_add (GTK_CONTAINER (window), box);
 
   manager = peas_gtk_plugin_manager_new (peas_engine_get_default ());
+  peas_gtk_plugin_manager_view_set_show_builtin (
+    PEAS_GTK_PLUGIN_MANAGER_VIEW (
+      peas_gtk_plugin_manager_get_view (PEAS_GTK_PLUGIN_MANAGER (manager))),
+    TRUE);
   gtk_box_pack_start (GTK_BOX (box), manager, TRUE, TRUE, 0);
 
   button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
@@ -129,7 +133,12 @@ main (int    argc,
   peas_engine_enable_loader (engine, "seed");
 
   if (run_from_build_dir)
-    peas_engine_add_search_path (engine, "./plugins", NULL);
+    {
+      peas_engine_add_search_path (engine, "./plugins", NULL);
+      peas_engine_add_search_path (engine, "../tests/plugins", NULL);
+      peas_engine_add_search_path (engine, "../tests/libpeas/plugins", NULL);
+      peas_engine_add_search_path (engine, "../tests/libpeas-gtk/plugins", NULL);
+    }
   else
     peas_engine_add_search_path (engine,
                                  PEAS_LIBDIR "/peas-demo/plugins/",
