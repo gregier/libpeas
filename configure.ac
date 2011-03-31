@@ -232,7 +232,7 @@ dnl ================================================================
 dnl Seed Javascript Engine
 dnl ================================================================
 
-SEED_REQUIRED=2.28.0
+SEED_REQUIRED=2.91.91
 
 AC_ARG_ENABLE(seed,
 	      AS_HELP_STRING([--enable-seed],[Enable Seed support]),
