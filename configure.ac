@@ -260,10 +260,6 @@ if test "$found_seed" = "yes"; then
 	AC_SUBST(SEED_CFLAGS)
 	AC_SUBST(SEED_LIBS)
 
-	if `$PKG_CONFIG --atleast-version=2.91.91 seed`; then
-	  AC_DEFINE(SEED_HAS_NEW_API,1, [Whether seed has the new API.])
-  fi
-
 	AC_DEFINE(ENABLE_SEED,1,[Define to compile with Seed support])
 fi
 
