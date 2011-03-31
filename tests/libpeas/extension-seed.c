@@ -30,12 +30,6 @@
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
 
-gboolean seed_gvalue_from_seed_value (SeedContext    ctx,
-                                      SeedValue      val,
-                                      GType          type,
-                                      GValue        *gval,
-                                      SeedException *exception);
-
 static void
 test_extension_seed_plugin_info (PeasEngine *engine)
 {
@@ -59,9 +53,9 @@ test_extension_seed_plugin_info (PeasEngine *engine)
   seed_value = seed_object_get_property (sexten->js_context, sexten->js_object,
                                          "plugin_info");
 
-  g_assert (seed_gvalue_from_seed_value (sexten->js_context, seed_value,
-                                         PEAS_TYPE_PLUGIN_INFO, &gvalue,
-                                         NULL));
+  g_assert (seed_value_to_gvalue (sexten->js_context, seed_value,
+                                  PEAS_TYPE_PLUGIN_INFO, &gvalue,
+                                  NULL));
 
   g_assert (g_value_get_boxed (&gvalue) == info);
 
