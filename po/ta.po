@@ -42,7 +42,7 @@ msgstr "காட்சி"
 #: ../libpeas/peas-engine.c:785
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr "சார்ந்தது 's' கண்டு பிடிக்கப் படவில்லை"
+msgstr "சார்ந்தது '%s' கண்டு பிடிக்கப் படவில்லை"
 
 #: ../libpeas/peas-engine.c:795
 #, c-format
