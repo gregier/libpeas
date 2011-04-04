@@ -24,6 +24,7 @@
 #endif
 
 #include <seed.h>
+#include <JavaScriptCore/JavaScript.h>
 
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
@@ -131,8 +132,7 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
 {
   PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
   SeedInfo *sinfo;
-  SeedValue extension_methods, extension;
-  gchar **property_names;
+  SeedValue extension_ctor, extension;
   guint i, j;
   SeedValue value;
   GValue gvalue = { 0 };
@@ -140,36 +140,29 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
   sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
 
   /* FIXME: instantiate new object and pass the parameters */
-  extension_methods = seed_object_get_property (sinfo->context,
-                                                sinfo->extensions,
-                                                g_type_name (exten_type));
-  if (!extension_methods ||
-      seed_value_is_undefined (sinfo->context, extension_methods) ||
-      seed_value_is_null (sinfo->context, extension_methods))
+  extension_ctor = seed_object_get_property (sinfo->context,
+                                             sinfo->extensions,
+                                             g_type_name (exten_type));
+  if (!extension_ctor ||
+      seed_value_is_undefined (sinfo->context, extension_ctor) ||
+      seed_value_is_null (sinfo->context, extension_ctor))
     return NULL;
 
-  if (!seed_value_is_object (sinfo->context, extension_methods))
+  if (!seed_value_is_object (sinfo->context, extension_ctor))
     {
       g_warning ("Extension '%s' in plugin '%s' is not a Seed object",
                  g_type_name (exten_type), peas_plugin_info_get_module_name (info));
       return NULL;
     }
 
-  /* Copy the original extension_methods object to a new specific object. */
-  extension = seed_make_object (sinfo->context, NULL, NULL);
-  property_names = seed_object_copy_property_names (sinfo->context,
-                                                    extension_methods);
-  for (i = 0; property_names[i] != NULL; i++)
-    {
-      SeedValue value;
+  /* Instantiate the ctor object into a new specific object. */
+  extension = JSObjectCallAsConstructor (sinfo->context, extension_ctor, 0, NULL, NULL);
 
-      value = seed_object_get_property (sinfo->context,
-                                        extension_methods,
-                                        property_names[i]);
-      seed_object_set_property (sinfo->context,
-                                extension,
-                                property_names[i],
-                                value);
+  if (extension == NULL)
+    {
+      g_warning ("Extension '%s' in plugin '%s' is not a valid constructor object",
+                 g_type_name (exten_type), peas_plugin_info_get_module_name (info));
+      return NULL;
     }
 
   /* Set the properties as well, cannot use
@@ -198,8 +191,6 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
 
       g_free (key);
     }
-
-  g_strfreev (property_names);
 
   /* Set the plugin info as an attribute of the instance */
   g_value_init (&gvalue, PEAS_TYPE_PLUGIN_INFO);
