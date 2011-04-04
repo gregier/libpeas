@@ -152,7 +152,7 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
   PeasPluginLoaderGjs *gloader = PEAS_PLUGIN_LOADER_GJS (loader);
   GjsInfo *ginfo;
   JSContext *js_context;
-  jsval extension_methods;
+  jsval extension_ctor;
   JSObject *extension;
   guint i;
   jsval js_value;
@@ -163,21 +163,28 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
   js_context = gjs_context_get_native_context (ginfo->context);
 
   if (!JS_GetProperty (js_context, ginfo->extensions,
-                       g_type_name (exten_type), &extension_methods) ||
-      JSVAL_IS_VOID (extension_methods) || JSVAL_IS_NULL (extension_methods))
+                       g_type_name (exten_type), &extension_ctor) ||
+      JSVAL_IS_VOID (extension_ctor) || JSVAL_IS_NULL (extension_ctor))
     return NULL;
 
-  if (!JSVAL_IS_OBJECT (extension_methods))
+  if (!JSVAL_IS_OBJECT (extension_ctor))
     {
-      g_warning ("Extension '%s' in plugin '%s' in not a valid object",
+      g_warning ("Extension '%s' in plugin '%s' in not a valid constructor object",
                  g_type_name (exten_type),
                  peas_plugin_info_get_module_name (info));
       return NULL;
     }
 
-  /* Copy the original extension_methods object to a new specific object. */
-  extension = JS_NewObject (js_context, NULL,
-                            JSVAL_TO_OBJECT (extension_methods), NULL);
+  /* Instantiate the extension ctor object to a new specific object. */
+  extension = JS_New (js_context, JSVAL_TO_OBJECT (extension_ctor), 0, NULL);
+
+  if (!extension)
+    {
+      g_warning ("Extension '%s' in plugin '%s' is not a valid constructor object",
+                 g_type_name (exten_type),
+                 peas_plugin_info_get_module_name (info));
+      return NULL;
+    }
 
   /* Cannot use g_object_set_property()
    * because the property may be construct-only
@@ -196,8 +203,7 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
 
       if (!gjs_value_from_g_value (js_context, &js_value, &parameters[i].value))
         {
-          g_warning ("Error: failed to convert GValue to "
-                     "jsval for property '%s'", prop_name);
+          g_warning ("Error: failed to convert GValue to jsval for property '%s'", prop_name);
         }
       else if (!JS_SetProperty (js_context, extension, prop_name, &js_value))
         {
@@ -206,6 +212,7 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
 
       g_free (prop_name);
     }
+
 
   /* Set the plugin info as an attribute of the instance */
   g_value_init (&gvalue, PEAS_TYPE_PLUGIN_INFO);

@@ -1,20 +1,20 @@
-var callable_extension = {
-  call_with_return: function() {
+function callable_extension() {
+  this.call_with_return = function() {
     return "Hello, World!"
-  },
-  call_no_args: function() {
-  },
-  call_single_arg: function() {
+  };
+  this.call_no_args = function() {
+  };
+  this.call_single_arg = function() {
     return true
-  },
-  call_multi_args: function() {
+  };
+  this.call_multi_args = function() {
     return [ true, true, true ]
   }
 };
 
-var properties_extension = {
-  read_only: "read-only",
-  readwrite: "readwrite"
+function properties_extension() {
+  this.read_only = "read-only",
+  this.readwrite = "readwrite"
 };
 
 var extensions = {
