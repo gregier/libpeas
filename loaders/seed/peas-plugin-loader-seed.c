@@ -24,10 +24,6 @@
 #endif
 
 #include <seed.h>
-/* FIXME: Seed Bug 624560 */
-SeedValue seed_value_from_gvalue (SeedContext    ctx,
-                                  GValue        *gval,
-                                  SeedException *exception);
 
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
