@@ -533,8 +533,11 @@ Configuration:
         Coverage testing              : ${enable_gcov}
         Glade Catalog                 : ${found_glade_catalog}
         Disable deprecated features   : ${enable_deprecation}
-        Seed JS support               : ${found_seed}
-        GJS JS support                : ${found_gjs}
+
+Languages support:
+
         Python support                : ${found_python}
+        Javascript support (Seed)     : ${found_seed}
+        Javascript support (GJS)      : ${found_gjs}
         Vala support                  : ${found_vala}
 "
