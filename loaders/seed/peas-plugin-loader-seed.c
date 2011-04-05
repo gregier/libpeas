@@ -160,9 +160,35 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
 
   if (extension == NULL)
     {
-      g_warning ("Extension '%s' in plugin '%s' is not a valid constructor object",
+#ifndef PEAS_DISABLE_DEPRECATED
+      gchar **property_names;
+
+      g_warning ("DEPRECATION WARNING: Extension '%s' in plugin '%s' is not a valid "
+                 "constructor function. Support for extension initialization by array "
+                 "copy will be dropped soon.",
+                 g_type_name (exten_type), peas_plugin_info_get_module_name (info));
+
+      extension = seed_make_object (sinfo->context, NULL, NULL);
+      property_names = seed_object_copy_property_names (sinfo->context,
+                                                        extension_ctor);
+      for (i = 0; property_names[i] != NULL; i++)
+        {
+          SeedValue value;
+          value = seed_object_get_property (sinfo->context,
+                                            extension_ctor,
+                                            property_names[i]);
+          seed_object_set_property (sinfo->context,
+                                    extension,
+                                    property_names[i],
+                                    value);
+        }
+
+        g_strfreev (property_names);
+#else
+      g_warning ("Extension '%s' in plugin '%s' is not a valid constructor",
                  g_type_name (exten_type), peas_plugin_info_get_module_name (info));
       return NULL;
+#endif
     }
 
   /* Set the properties as well, cannot use

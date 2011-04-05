@@ -461,6 +461,15 @@ GNOME_COMPILE_WARNINGS([maximum])
 # Use --enable-maintainer-mode to disabled deprecated symbols
 GNOME_MAINTAINER_MODE_DEFINES
 
+AC_ARG_ENABLE([deprecation],
+             AS_HELP_STRING([--disable-deprecation],[Disable deprecated libpeas features]),
+             [enable_deprecation=$enableval],
+             [enable_deprecation=$USE_MAINTAINER_MODE])
+if test "$enable_deprecation" = "yes"; then
+       AC_MSG_NOTICE([disabling deprecated libpeas features])
+       AC_DEFINE([PEAS_DISABLE_DEPRECATED],[1],[Disable deprecated features])
+fi
+
 
 AC_CONFIG_FILES([
 Makefile
@@ -523,6 +532,7 @@ Configuration:
         Build libpeas-gtk             : ${enable_gtk}
         Coverage testing              : ${enable_gcov}
         Glade Catalog                 : ${found_glade_catalog}
+        Disable deprecated features   : ${enable_deprecation}
         Seed JS support               : ${found_seed}
         GJS JS support                : ${found_gjs}
         Python support                : ${found_python}
