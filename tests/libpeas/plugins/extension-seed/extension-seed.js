@@ -1,15 +1,18 @@
 function callable_extension() {
-  this.call_with_return = function() {
+}
+
+callable_extension.prototype = {
+  call_with_return: function() {
     return "Hello, World!"
-  };
-  this.call_no_args = function() {
-  };
-  this.call_single_arg = function() {
+  },
+  call_no_args: function() {
+  },
+  call_single_arg: function() {
     return true
-  };
-  this.call_multi_args = function() {
+  },
+  call_multi_args: function() {
     return [ true, true, true ]
-  };
+  }
 };
 
 function properties_extension() {
