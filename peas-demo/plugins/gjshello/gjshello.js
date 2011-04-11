@@ -5,20 +5,23 @@ var LABEL_STRING = "GJS Also Says Hello!";
 print("LABEL_STRING=" +  LABEL_STRING);
 
 function activatable_extension() {
-  this.activate = function() {
+}
+
+activatable_extension.prototype = {
+  activate: function() {
     print("GJSHelloPlugin.activate");
     this.object._gjshello_label = new Gtk.Label({ label: LABEL_STRING });
     this.object._gjshello_label.show();
     this.object.get_child().add(this.object._gjshello_label);
-  };
-  this.deactivate = function() {
+  },
+  deactivate: function() {
     print("GJSHelloPlugin.deactivate");
     this.object.get_child().remove(this.object._gjshello_label);
     this.object._gjshello_label.destroy();
-  };
-  this.update_state = function() {
+  },
+  update_state: function() {
     print("GJSHelloPlugin.update_state");
-  };
+  }
 };
 
 function configurable_extension() {

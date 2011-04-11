@@ -26,20 +26,23 @@ var LABEL_STRING = "Seed Says Hello Too!";
 print("LABEL_STRING=" +  LABEL_STRING);
 
 function activatable_extension() {
-  this.activate = function() {
+}
+
+activatable_extension.prototype = {
+  activate: function() {
     print("SeedHelloPlugin.activate");
     this.object._seedhello_label = new Gtk.Label({ label: LABEL_STRING });
     this.object._seedhello_label.show();
     this.object.get_child().pack_start(this.object._seedhello_label);
-  };
-  this.deactivate = function() {
+  },
+  deactivate: function() {
     print("SeedHelloPlugin.deactivate");
     this.object.get_child().remove(this.object._seedhello_label);
     this.object._seedhello_label.destroy();
-  };
-  this.update_state = function() {
+  },
+  update_state: function() {
     print("SeedHelloPlugin.update_state");
-  };
+  }
 };
 
 function configurable_extension() {
