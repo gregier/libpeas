@@ -63,9 +63,7 @@ create_main_window (void)
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Demo");
 
-#if GTK_CHECK_VERSION(2,91,1)
   gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
-#endif
 
   box = gtk_vbox_new (FALSE, 6);
   gtk_container_add (GTK_CONTAINER (window), box);

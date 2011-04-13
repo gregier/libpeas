@@ -90,32 +90,22 @@ dnl ================================================================
 dnl Build libpeas-gtk
 dnl ================================================================
 
+GTK_REQUIRED=2.91.1
+
 AC_ARG_ENABLE(gtk,
 	      AS_HELP_STRING([--enable-gtk],[Build libpeas-gtk for Gtk widgetry]),
 	      [enable_gtk=$enableval],
 	      [enable_gtk=yes])
 
-dnl We currently allow building libpeas with Gtk+ 2.0 for testing purposes and
-dnl technology preview. but do *not* distribute such a version!
-AC_ARG_ENABLE(gtk2-test-build,
-	      AS_HELP_STRING([--enable-gtk2-test-build],[Link against gtk+ 2.0, for testing purpose]),
-	      [use_gtk2=$enableval],
-	      [use_gtk2=no])
-
 if test "$enable_gtk" = "yes"; then
-	if test "$use_gtk2" != "yes"; then
-		GTK_TYPELIB=Gtk-3.0
-		GTK_PKG_REQUIREMENT="gtk+-3.0 >= 2.90"
-		GDK_REQUIRED=gdk-3.0
-	else
-		GTK_TYPELIB=Gtk-2.0
-		GTK_PKG_REQUIREMENT="gtk+-2.0 >= 2.16"
-		GDK_REQUIRED=gdk-2.0
-	fi
-	PKG_CHECK_MODULES(PEAS_GTK, [$GTK_PKG_REQUIREMENT])
+	GTK_TYPELIB=Gtk-3.0
+	PKG_CHECK_MODULES(PEAS_GTK, [
+		gtk+-3.0 >= $GTK_REQUIRED
+	])
 	AC_SUBST(GTK_TYPELIB)
-	AC_SUBST(GTK_PKG_REQUIREMENT)
 fi
+
+AC_SUBST(GTK_REQUIRED)
 
 AM_CONDITIONAL([ENABLE_GTK],[test "x$enable_gtk" = "xyes"])
 
@@ -125,7 +115,7 @@ dnl ================================================================
 AC_MSG_CHECKING([for native Mac OS X])
 
 
-gdk_windowing=`$PKG_CONFIG --variable=target $GDK_REQUIRED`
+gdk_windowing=`$PKG_CONFIG --variable=target gdk-3.0`
 
 if test "$gdk_windowing" = "quartz"; then
 	os_osx=yes

@@ -151,9 +151,7 @@ testing_show_widget (gpointer widget)
 
   gtk_window_set_default_size (GTK_WINDOW (window), 200, 100);
 
-#if GTK_CHECK_VERSION(2,91,1)
   gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
-#endif
 
   gtk_widget_show_all (window);
 

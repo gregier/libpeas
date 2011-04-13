@@ -174,10 +174,6 @@ peas_gtk_disable_plugins_dialog_init (PeasGtkDisablePluginsDialog *dialog)
 
   gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
-#if !GTK_CHECK_VERSION(2,90,7)
-  g_object_set (dialog, "has-separator", FALSE, NULL);
-#endif
-
   gtk_dialog_add_button (GTK_DIALOG (dialog),
                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
   gtk_dialog_add_button (GTK_DIALOG (dialog),
