@@ -788,6 +788,9 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
                                                          "show-builtin",
                                                          "If builtin plugins should be shown",
                                                          FALSE,
+#if GLIB_CHECK_VERSION (2, 26, 0)
+                                                         G_PARAM_DEPRECATED |
+#endif
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_STRINGS));
 
@@ -840,6 +843,8 @@ peas_gtk_plugin_manager_view_new (PeasEngine *engine)
  * @show_builtin: If builtin plugins should be shown.
  *
  * Sets if builtin plugins should be shown.
+ *
+ * Deprecated: 1.2. Use hidden plugins instead.
  */
 void
 peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
@@ -900,6 +905,8 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
  * Returns if builtin plugins should be shown.
  *
  * Returns: if builtin plugins should be shown.
+ *
+ * Deprecated: 1.2. Use hidden plugins instead.
  */
 gboolean
 peas_gtk_plugin_manager_view_get_show_builtin (PeasGtkPluginManagerView *view)
