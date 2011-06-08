@@ -160,7 +160,7 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
 
   if (extension == NULL)
     {
-#ifndef PEAS_DISABLE_DEPRECATED
+#ifndef PEAS_DISABLE_DEPRECATED_FEATURES
       gchar **property_names;
 
       g_warning ("DEPRECATION WARNING: Extension '%s' in plugin '%s' is not a valid "

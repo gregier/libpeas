@@ -457,7 +457,7 @@ AC_ARG_ENABLE([deprecation],
              [enable_deprecation=$USE_MAINTAINER_MODE])
 if test "$enable_deprecation" = "yes"; then
        AC_MSG_NOTICE([disabling deprecated libpeas features])
-       AC_DEFINE([PEAS_DISABLE_DEPRECATED],[1],[Disable deprecated features])
+       AC_DEFINE([PEAS_DISABLE_DEPRECATED_FEATURES],[1],[Disable deprecated features])
 fi
 
 
