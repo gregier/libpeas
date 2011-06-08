@@ -72,6 +72,23 @@ struct _PeasExtensionSetClass {
   gpointer padding[8];
 };
 
+/**
+ * PeasExtensionSetForeachFunc:
+ * @set: A #PeasExtensionSet.
+ * @info: A #PeasPluginInfo.
+ * @exten: A #PeasExtension.
+ * @data: Optional data passed to the function.
+ *
+ * This function is passed to peas_extension_set_foreach() and
+ * will be called for each extension in @set.
+ *
+ * Since: 1.2
+ */
+typedef void (*PeasExtensionSetForeachFunc) (PeasExtensionSet *set,
+                                             PeasPluginInfo   *info,
+                                             PeasExtension    *exten,
+                                             gpointer          data);
+
 /*
  * Public methods
  */
@@ -86,6 +103,10 @@ gboolean           peas_extension_set_call_valist (PeasExtensionSet *set,
 gboolean           peas_extension_set_callv       (PeasExtensionSet *set,
                                                    const gchar      *method_name,
                                                    GIArgument       *args);
+
+void               peas_extension_set_foreach     (PeasExtensionSet *set,
+                                                   PeasExtensionSetForeachFunc func,
+                                                   gpointer          data);
 
 PeasExtension     *peas_extension_set_get_extension (PeasExtensionSet *set,
                                                      PeasPluginInfo   *info);

@@ -74,7 +74,9 @@
  *
  *   set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
  *                                 "object", window, NULL);
- *   peas_extension_set_call (set, "activate");
+ *   peas_extension_set_foreach (set,
+ *                               (PeasExtensionSetForeachFunc) on_extension_added,
+ *                               NULL);
  *   g_signal_connect (set, "extension-added",
  *                     G_CALLBACK (on_extension_added), NULL);
  *   g_signal_connect (set, "extension-removed",
@@ -561,6 +563,34 @@ peas_extension_set_callv (PeasExtensionSet *set,
 
   klass = PEAS_EXTENSION_SET_GET_CLASS (set);
   return klass->call (set, method_name, args);
+}
+
+/**
+ * peas_extension_set_foreach:
+ * @set: A #PeasExtensionSet.
+ * @func: (scope call): A function call for each extension.
+ * @data: Optional data to be passed to the function or %NULL.
+ *
+ * Calls @func for each #PeasExtension.
+ *
+ * Since: 1.2
+ */
+void
+peas_extension_set_foreach (PeasExtensionSet            *set,
+                            PeasExtensionSetForeachFunc  func,
+                            gpointer                     data)
+{
+  GList *l;
+
+  g_return_if_fail (PEAS_IS_EXTENSION_SET (set));
+  g_return_if_fail (func != NULL);
+
+  for (l = set->priv->extensions; l; l = l->next)
+    {
+      ExtensionItem *item = (ExtensionItem *) l->data;
+
+      func (set, item->info, item->exten, data);
+    }
 }
 
 /**
