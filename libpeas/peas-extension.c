@@ -192,6 +192,8 @@ peas_extension_get_extension_type (PeasExtension *exten)
  * object's class has not been loaded previously through g_irepository_require().
  *
  * Return value: %TRUE on successful call.
+ *
+ * Deprecated: 1.2. Use the dynamically implemented interface instead.
  */
 gboolean
 peas_extension_call (PeasExtension *exten,
@@ -222,6 +224,8 @@ peas_extension_call (PeasExtension *exten,
  * See peas_extension_call() for more information.
  *
  * Return value: %TRUE on successful call.
+ *
+ * Deprecated: 1.2. Use the dynamically implemented interface instead.
  */
 gboolean
 peas_extension_call_valist (PeasExtension *exten,
@@ -275,6 +279,8 @@ peas_extension_call_valist (PeasExtension *exten,
  * See peas_extension_call() for more information.
  *
  * Return value: (transfer full): %TRUE on successful call.
+ *
+ * Deprecated: 1.2. Use the dynamically implemented interface instead.
  *
  * Rename to: peas_extension_call
  */

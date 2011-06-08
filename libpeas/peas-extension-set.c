@@ -476,6 +476,8 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
  *
  * See peas_extension_call() for more information.
  *
+ * Deprecated: 1.2. Use peas_extension_set_foreach() instead.
+ *
  * Return value: %TRUE on successful call.
  */
 gboolean
@@ -505,6 +507,8 @@ peas_extension_set_call (PeasExtensionSet *set,
  * Call a method on all the #PeasExtension instances contained in @set.
  *
  * See peas_extension_call_valist() for more information.
+ *
+ * Deprecated: 1.2. Use peas_extension_set_foreach() instead.
  *
  * Return value: %TRUE on successful call.
  */
@@ -548,6 +552,8 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
  * See peas_extension_callv() for more information.
  *
  * Return value: %TRUE on successful call.
+ *
+ * Deprecated: 1.2. Use peas_extension_set_foreach() instead.
  *
  * Rename to: peas_extension_set_call
  */

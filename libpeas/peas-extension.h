@@ -58,6 +58,7 @@ GType        peas_extension_get_type        (void)  G_GNUC_CONST;
 GType        peas_extension_get_extension_type
                                             (PeasExtension *exten);
 
+#ifndef PEAS_DISABLE_DEPRECATED
 gboolean     peas_extension_call            (PeasExtension *exten,
                                              const gchar   *method_name,
                                              ...);
@@ -68,6 +69,7 @@ gboolean     peas_extension_callv           (PeasExtension *exten,
                                              const gchar   *method_name,
                                              GIArgument    *args,
                                              GIArgument    *return_value);
+#endif
 
 G_END_DECLS
 
