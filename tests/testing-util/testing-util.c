@@ -60,6 +60,7 @@ log_handler (const gchar    *log_domain,
              gpointer        user_data)
 {
   guint i;
+  gboolean first = TRUE;
 
   /* We always want to log debug, info and message logs */
   if ((log_level & G_LOG_LEVEL_DEBUG) != 0 ||
@@ -108,6 +109,22 @@ log_handler (const gchar    *log_domain,
   /* Use the default log handler directly to avoid recurse complaints */
   g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,
                          message, user_data);
+
+  for (i = 0; i < log_hooks->len; ++i)
+    {
+      LogHook *hook = g_ptr_array_index (log_hooks, i);
+
+      if (hook->hit)
+        continue;
+
+      if (first)
+        {
+          first = FALSE;
+          g_print ("Log hooks that were not hit:\n");
+        }
+
+      g_print ("\t'%s'\n", hook->pattern);
+    }
 
   /* The default handler does not actually abort */
   abort ();
