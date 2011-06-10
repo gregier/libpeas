@@ -332,7 +332,6 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
 static void
 peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 {
-  GtkWidget *label;
   GtkWidget *hbuttonbox;
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
@@ -348,17 +347,11 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 
   gtk_widget_push_composite_child ();
 
-  label = gtk_label_new_with_mnemonic (_("_Plugins:"));
-  gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_box_pack_start (GTK_BOX (pm), label, FALSE, TRUE, 0);
-
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                        GTK_SHADOW_IN);
-  gtk_label_set_mnemonic_widget (GTK_LABEL (label), pm->priv->sw);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
 
   hbuttonbox = gtk_hbutton_box_new ();
