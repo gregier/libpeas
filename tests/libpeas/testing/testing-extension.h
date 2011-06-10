@@ -58,9 +58,11 @@ void testing_extension_properties_read_only_      (PeasEngine *engine);
 void testing_extension_properties_write_only_     (PeasEngine *engine);
 void testing_extension_properties_readwrite_      (PeasEngine *engine);
 
+/* This also tests that loaders are loaded lazily */
 #define _EXTENSION_TESTS_INIT(loader) \
   testing_init (); \
   peas_engine_enable_loader (peas_engine_get_default (), #loader); \
+  g_assert (g_type_from_name ("PeasPluginLoader") == G_TYPE_INVALID); \
   g_object_unref (peas_engine_get_default ()); \
   testing_extension_set_plugin_ ("extension-" #loader)
 
