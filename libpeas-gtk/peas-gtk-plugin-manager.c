@@ -313,24 +313,18 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
 {
   PeasPluginInfo *info;
   GtkWidget *item;
-  GtkWidget *image;
 
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
 
   if (info == NULL)
     return;
 
-  item = gtk_image_menu_item_new_with_mnemonic (_("C_onfigure"));
-  image = gtk_image_new_from_stock (GTK_STOCK_PREFERENCES,
-                                    GTK_ICON_SIZE_MENU);
-  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+  item = gtk_image_menu_item_new_from_stock (GTK_STOCK_PREFERENCES, NULL);
   g_signal_connect (item, "activate", G_CALLBACK (show_configure_cb), pm);
   gtk_widget_set_sensitive (item, plugin_is_configurable (pm, info));
   gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 
-  item = gtk_image_menu_item_new_with_mnemonic (_("_About"));
-  image = gtk_image_new_from_stock (GTK_STOCK_ABOUT, GTK_ICON_SIZE_MENU);
-  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+  item = gtk_image_menu_item_new_from_stock (GTK_STOCK_ABOUT, NULL);
   g_signal_connect (item, "activate", G_CALLBACK (show_about_cb), pm);
   gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 }
