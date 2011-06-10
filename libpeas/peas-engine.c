@@ -299,8 +299,6 @@ peas_engine_init (PeasEngine *engine)
                                               PeasEnginePrivate);
 
   engine->priv->in_dispose = FALSE;
-
-  peas_engine_enable_loader (engine, "C");
 }
 
 static void
@@ -575,6 +573,9 @@ peas_engine_class_init (PeasEngineClass *klass)
                                    (GEqualFunc) equal_lowercase,
                                    (GDestroyNotify) g_free,
                                    (GDestroyNotify) loader_destroy);
+
+  /* The C plugin loader is always enabled */
+  g_hash_table_insert (loaders, g_strdup ("C"), g_new0 (LoaderInfo, 1));
 }
 
 static PeasObjectModule *
