@@ -65,13 +65,13 @@ create_main_window (void)
 
   gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
 
-  box = gtk_vbox_new (FALSE, 6);
+  box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_container_add (GTK_CONTAINER (window), box);
 
   manager = peas_gtk_plugin_manager_new (peas_engine_get_default ());
   gtk_box_pack_start (GTK_BOX (box), manager, TRUE, TRUE, 0);
 
-  button_box = gtk_hbutton_box_new ();
+  button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_box_set_spacing (GTK_BOX (button_box), 6);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (button_box), GTK_BUTTONBOX_END);
   gtk_box_pack_start (GTK_BOX (box), button_box, FALSE, FALSE, 0);

@@ -43,7 +43,7 @@ typedef struct _PeasGtkPluginManagerPrivate PeasGtkPluginManagerPrivate;
 
 struct _PeasGtkPluginManager
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   /*< private > */
   PeasGtkPluginManagerPrivate *priv;
@@ -51,7 +51,7 @@ struct _PeasGtkPluginManager
 
 struct _PeasGtkPluginManagerClass
 {
-  GtkVBoxClass parent_class;
+  GtkBoxClass parent_class;
 
   gpointer padding[8];
 };

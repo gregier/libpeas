@@ -51,7 +51,8 @@ demo_window_init (DemoWindow *dw)
   DemoWindowClass *klass = DEMO_WINDOW_GET_CLASS (dw);
   gchar *label;
 
-  dw->box = gtk_vbox_new (TRUE, 6);
+  dw->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+  gtk_box_set_homogeneous (GTK_BOX (dw->box), TRUE);
   gtk_container_add (GTK_CONTAINER (dw), dw->box);
 
   label = g_strdup_printf ("Peas Window %d", ++(klass->n_windows));
