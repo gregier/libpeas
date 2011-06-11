@@ -14,7 +14,7 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.sgml
 # The directory containing the source code. Relative to $(srcdir).
 # gtk-doc will search all .c & .h files beneath here for inline comments
 # documenting the functions and macros.
-DOC_SOURCE_DIR=$(top_srcdir)
+DOC_SOURCE_DIR=$(top_srcdir)/libpeas $(top_srcdir)/libpeas-gtk
 
 # Extra options to pass to gtkdoc-scangobj. Not normally needed.
 SCANGOBJ_OPTIONS=
@@ -45,28 +45,19 @@ CFILE_GLOB = \
 
 # Header files to ignore when scanning (These are internal to libpeas).
 IGNORE_HFILES=		\
-	config.h			\
-	peas-debug.h			\
-	peas-dirs.h			\
-	peas-i18n.h			\
-	peas-marshal.h			\
-	peas-plugin-info-priv.h		\
-	peas-plugin-loader.h		\
-	peas-plugin-loader-c.h		\
-	peas-plugin-loader-python.h	\
-	peas-plugin-loader-seed.h	\
-	peas-seed-plugin.h		\
-	peas-demo-window.h		\
-	peas-extension-c.h		\
-	peas-extension-seed.h		\
-	peas-extension-python.h		\
-	peas-introspection.h		\
+	peas-debug.h				\
+	peas-dirs.h				\
+	peas-engine-priv.h			\
+	peas-extension-priv.h			\
+	peas-extension-subclasses.h		\
 	peas-gtk-disable-plugins-dialog.h       \
-	peas-gtk-plugin-manager-store.h	\
-	peas-demo-window.h		\
-	peasdemo-hello-world-plugin.h	\
-	peasdemo-hello-world-configurable.h	\
-	second-time.h
+	peas-gtk-plugin-manager-store.h		\
+	peas-helpers.h				\
+	peas-i18n.h				\
+	peas-introspection.h			\
+	peas-marshal.h				\
+	peas-plugin-info-priv.h			\
+	peas-plugin-loader.h
 
 # Images to copy into HTML directory.
 HTML_IMAGES = \
