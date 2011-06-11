@@ -17,7 +17,7 @@ test test-gdb test-valgrind test-callgrind: all
 	     else \
 	       true ; \
 	     fi \
-	   ) || exit $? ; \
+	   ) || exit 1 ; \
 	 done
 
 # test-report: run tests and generate report
