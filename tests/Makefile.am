@@ -45,7 +45,7 @@ test-report perf-report full-report: all
 	 echo "  <date>$$TIMESTAMP</date>"        >> $@.xml ; \
 	 echo '</info>'                           >> $@.xml ; \
 	 for subdir in $(SUBDIRS) ; do \
-	   test "$$subdir" = "plugins" || { \
+	   test "$$subdir" = "plugins" -o "$$subdir" = "testing-util" || { \
 	     export GTESTER_LOG=`mktemp "$$GTESTER_LOGDIR/log-XXXXXX"` ; \
 	     export GTESTER_ARGS="--verbose $$test_options -o $$GTESTER_LOG" ; \
 	     ( cd $$subdir && \
