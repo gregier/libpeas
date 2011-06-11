@@ -40,8 +40,6 @@ PeasGtkPluginManagerViewClass
 peas_gtk_plugin_manager_view_new
 peas_gtk_plugin_manager_view_set_show_builtin
 peas_gtk_plugin_manager_view_get_show_builtin
-peas_gtk_plugin_manager_view_set_selected_iter
-peas_gtk_plugin_manager_view_get_selected_iter
 peas_gtk_plugin_manager_view_set_selected_plugin
 peas_gtk_plugin_manager_view_get_selected_plugin
 <SUBSECTION Standard>
@@ -61,8 +59,12 @@ PeasGtkPluginManagerViewPrivate
 <TITLE>PeasEngine</TITLE>
 PeasEngine
 PeasEngineClass
+peas_engine_new
 peas_engine_get_default
+peas_engine_set_interface
+peas_engine_get_interface
 peas_engine_add_search_path
+peas_engine_enable_loader
 peas_engine_rescan_plugins
 peas_engine_get_plugin_list
 peas_engine_get_loaded_plugins
@@ -75,7 +77,6 @@ peas_engine_provides_extension
 peas_engine_create_extension
 peas_engine_create_extensionv
 peas_engine_create_extension_valist
-peas_engine_disable_loader
 <SUBSECTION Standard>
 PEAS_ENGINE
 PEAS_IS_ENGINE
@@ -110,7 +111,6 @@ PEAS_ACTIVATABLE_GET_IFACE
 <TITLE>PeasExtensionSet</TITLE>
 PeasExtensionSet
 PeasExtensionSetClass
-PeasParameterArray
 peas_extension_set_call
 peas_extension_set_call_valist
 peas_extension_set_callv
@@ -171,13 +171,14 @@ peas_extension_base_get_type
 PEAS_EXTENSION_BASE_CLASS
 PEAS_IS_EXTENSION_BASE_CLASS
 PEAS_EXTENSION_BASE_GET_CLASS
+<SUBSECTION Private>
+PeasExtensionBasePrivate
 </SECTION>
 
 <SECTION>
 <FILE>peas-extension</FILE>
 <TITLE>PeasExtension</TITLE>
 PeasExtension
-PeasExtensionClass
 peas_extension_get_extension_type
 peas_extension_call
 peas_extension_call_valist
@@ -187,18 +188,19 @@ PEAS_EXTENSION
 PEAS_IS_EXTENSION
 PEAS_TYPE_EXTENSION
 peas_extension_get_type
-PEAS_EXTENSION_CLASS
-PEAS_IS_EXTENSION_CLASS
-PEAS_EXTENSION_GET_CLASS
+<SUBSECTION Private>
+PeasExtensionPrivate
 </SECTION>
 
 <SECTION>
 <FILE>peas-plugin-info</FILE>
 <TITLE>PeasPluginInfo</TITLE>
 PeasPluginInfo
+PeasPluginInfoError
 peas_plugin_info_is_loaded
 peas_plugin_info_is_available
 peas_plugin_info_is_builtin
+peas_plugin_info_is_hidden
 peas_plugin_info_get_module_name
 peas_plugin_info_get_module_dir
 peas_plugin_info_get_data_dir
@@ -212,10 +214,12 @@ peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright
 peas_plugin_info_get_version
-peas_plugin_info_get_keys
+peas_plugin_info_get_interfaces
 <SUBSECTION Standard>
 PEAS_TYPE_PLUGIN_INFO
 PEAS_PLUGIN_INFO
 peas_plugin_info_get_type
+PEAS_PLUGIN_INFO_ERROR
+peas_plugin_info_error_quark
 </SECTION>
 
