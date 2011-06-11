@@ -734,6 +734,9 @@ compare_plugin_info_and_name (PeasPluginInfo *info,
  * @engine: A #PeasEngine.
  * @plugin_name: A plugin name.
  *
+ * Gets the #PeasPluginInfo corresponding with @plugin_name,
+ * or %NULL if @plugin_name was not found.
+ *
  * Returns: the #PeasPluginInfo corresponding with
  * a given plugin module name.
  */
@@ -940,6 +943,17 @@ peas_engine_unload_plugin (PeasEngine     *engine,
   return !peas_plugin_info_is_loaded (info);
 }
 
+/**
+ * peas_engine_provides_extension:
+ * @engine: A #PeasEngine.
+ * @info: A #PeasPluginInfo.
+ * @extension_type: The extension #GType.
+ *
+ * Returns if @info provides an extension for @extension_type.
+ * If the @info is not loaded than %FALSE will always be returned.
+ *
+ * Returns: if @info provides an extension for @extension_type.
+ */
 gboolean
 peas_engine_provides_extension (PeasEngine     *engine,
                                 PeasPluginInfo *info,

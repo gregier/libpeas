@@ -41,6 +41,12 @@ typedef struct _PeasGtkPluginManager        PeasGtkPluginManager;
 typedef struct _PeasGtkPluginManagerClass   PeasGtkPluginManagerClass;
 typedef struct _PeasGtkPluginManagerPrivate PeasGtkPluginManagerPrivate;
 
+/**
+ * PeasGtkPluginManager:
+ *
+ * The #PeasGtkPluginManager structure contains only private data
+ * and should only be accessed using the provided API.
+ */
 struct _PeasGtkPluginManager
 {
   GtkBox box;

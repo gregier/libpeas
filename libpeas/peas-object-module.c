@@ -268,6 +268,16 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
   g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
 }
 
+/**
+ * peas_object_module_new: (skip)
+ * @module_name: The module name.
+ * @path: The path.
+ * @resident: If the module should be resident.
+ *
+ * Creates a new #PeasObjectModule.
+ *
+ * Return value: a new #PeasObjectModule.
+ */
 PeasObjectModule *
 peas_object_module_new (const gchar *module_name,
                         const gchar *path,
@@ -281,13 +291,18 @@ peas_object_module_new (const gchar *module_name,
 }
 
 /**
- * peas_object_module_create_object:
- * @module:
- * @interface:
- * @n_parameters:
- * @parameters:
+ * peas_object_module_create_object: (skip)
+ * @module: A #PeasObjectModule.
+ * @interface: The #GType of the extension interface.
+ * @n_parameters: The number of paramteters.
+ * @parameters: (array length=n_parameters): The parameters.
  *
- * Return value: (transfer full):
+ * Creates an object for the @interface passing @n_parameters
+ * and @parameters to the #PeasFactoryFunc. If @module does
+ * not provide a #PeasFactoryFunc for @interface then
+ * %NULL is returned.
+ *
+ * Return value: (transfer full): The created object, or %NULL.
  */
 GObject *
 peas_object_module_create_object (PeasObjectModule *module,
@@ -308,6 +323,15 @@ peas_object_module_create_object (PeasObjectModule *module,
   return NULL;
 }
 
+/**
+ * peas_object_module_provides_object: (skip)
+ * @module: A #PeasObjectModule.
+ * @interface: The #GType of the extension interface.
+ *
+ * Determines if the module provides an extension for @interface.
+ *
+ * Return value: if the module provides an extension for @interface.
+ */
 gboolean
 peas_object_module_provides_object (PeasObjectModule *module,
                                     GType             interface)
@@ -325,6 +349,14 @@ peas_object_module_provides_object (PeasObjectModule *module,
   return FALSE;
 }
 
+/**
+ * peas_object_module_get_path: (skip)
+ * @module: A #PeasObjectModule.
+ *
+ * Gets the path.
+ *
+ * Return value: the path.
+ */
 const gchar *
 peas_object_module_get_path (PeasObjectModule *module)
 {
@@ -333,6 +365,14 @@ peas_object_module_get_path (PeasObjectModule *module)
   return module->priv->path;
 }
 
+/**
+ * peas_object_module_get_module_name: (skip)
+ * @module: A #PeasObjectModule.
+ *
+ * Gets the module name.
+ *
+ * Return value: the module name.
+ */
 const gchar *
 peas_object_module_get_module_name (PeasObjectModule *module)
 {
@@ -343,9 +383,11 @@ peas_object_module_get_module_name (PeasObjectModule *module)
 
 /**
  * peas_object_module_get_library: (skip)
- * @module:
+ * @module: A #PeasObjectModule.
  *
- * Return value:
+ * Gets the library.
+ *
+ * Return value: the library.
  */
 GModule *
 peas_object_module_get_library (PeasObjectModule *module)
@@ -356,7 +398,7 @@ peas_object_module_get_library (PeasObjectModule *module)
 }
 
 /**
- * peas_object_module_register_extension_factory:
+ * peas_object_module_register_extension_factory: (skip)
  * @module: Your plugin's #PeasObjectModule.
  * @iface_type: The #GType of the extension interface you implement.
  * @factory_func: The #PeasFactoryFunc that will create the @iface_type
@@ -423,7 +465,7 @@ create_gobject_from_type (guint       n_parameters,
 }
 
 /**
- * peas_object_module_register_extension_type:
+ * peas_object_module_register_extension_type: (skip)
  * @module: Your plugin's #PeasObjectModule.
  * @iface_type: The #GType of the extension interface you implement.
  * @extension_type: The #GType of your implementation of @iface_type.

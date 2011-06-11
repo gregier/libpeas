@@ -44,6 +44,12 @@ typedef struct _PeasGtkPluginManagerView        PeasGtkPluginManagerView;
 typedef struct _PeasGtkPluginManagerViewClass   PeasGtkPluginManagerViewClass;
 typedef struct _PeasGtkPluginManagerViewPrivate PeasGtkPluginManagerViewPrivate;
 
+/**
+ * PeasGtkPluginManagerView:
+ *
+ * The #PeasGtkPluginManagerView structure contains only private data
+ * and should only be accessed using the provided API.
+ */
 struct _PeasGtkPluginManagerView {
   GtkTreeView parent;
 

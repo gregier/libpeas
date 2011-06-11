@@ -49,6 +49,9 @@ G_BEGIN_DECLS
  *      A dependancy of the plugin was not found.
  * @PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED:
  *      A dependancy of the plugin failed to load.
+ *
+ * These identify the various errors that can occur while
+ * loading a plugin.
  */
 typedef enum {
   PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,

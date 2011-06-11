@@ -43,13 +43,16 @@ typedef struct _PeasObjectModulePrivate  PeasObjectModulePrivate;
 
 /**
  * PeasFactoryFunc:
+ * @n_parameters: The number of paramteters.
+ * @parameters: (array length=n_parameters): The parameters.
+ * @user_data: Optional data to be passed to the function, or %NULL.
  *
  * A #PeasFactoryFunc is a factory function which will instanciate a new
  * extension of a given type. g_object_newv() is such a function.
  *
  * It is used with peas_object_module_register_object_factory().
  *
- * Return value: (transfer full):
+ * Return value: (transfer full): The created object.
  */
 typedef GObject *(*PeasFactoryFunc)   (guint          n_parameters,
                                        GParameter    *parameters,
