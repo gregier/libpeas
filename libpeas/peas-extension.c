@@ -173,7 +173,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
  * peas_extension_call: (skip)
  * @exten: A #PeasExtension.
  * @method_name: the name of the method that should be called.
- * @Varargs: arguments for the method.
+ * @...: arguments for the method.
  *
  * Call a method of the object behind @extension.
  *

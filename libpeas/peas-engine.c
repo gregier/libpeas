@@ -1085,7 +1085,7 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
  * @first_property: the name of the first property.
- * @Varargs: the value of the first property, followed optionally by more
+ * @...: the value of the first property, followed optionally by more
  *   name/value pairs, followed by %NULL.
  *
  * If the plugin identified by @info implements the @extension_type interface,

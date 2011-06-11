@@ -468,7 +468,7 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
  * peas_extension_set_call: (skip)
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
- * @Varargs: arguments for the method.
+ * @...: arguments for the method.
  *
  * Call a method on all the #PeasExtension instances contained in @set.
  *
@@ -654,7 +654,7 @@ peas_extension_set_new_valist (PeasEngine  *engine,
  * @engine: A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
- * @Varargs: the value of the first property, followed optionally by more
+ * @...: the value of the first property, followed optionally by more
  *   name/value pairs, followed by %NULL.
  *
  * Create a new #PeasExtensionSet for the @exten_type extension type.
