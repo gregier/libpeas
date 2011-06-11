@@ -76,5 +76,5 @@ main (int   argc,
 
   EXTENSION_TEST (gjs, "plugin-info", plugin_info);
 
-  return g_test_run ();
+  return testing_run_tests ();
 }
