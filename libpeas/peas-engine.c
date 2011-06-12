@@ -59,6 +59,8 @@
 G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT);
 
 static PeasEngine *default_engine = NULL;
+static gboolean shutdown = FALSE;
+static GHashTable *loaders = NULL;
 
 /* Signals */
 enum {
@@ -100,9 +102,6 @@ static void peas_engine_load_plugin_real   (PeasEngine     *engine,
                                             PeasPluginInfo *info);
 static void peas_engine_unload_plugin_real (PeasEngine     *engine,
                                             PeasPluginInfo *info);
-
-static gboolean shutdown = FALSE;
-static GHashTable *loaders = NULL;
 
 static void
 load_plugin_info (PeasEngine  *engine,
