@@ -166,7 +166,7 @@ set_out_arg (JSContext      *js_context,
       else
         {
           g_warning ("Error failed to convert OUT argument '%s' from "
-                     "jsval to GIArgument", g_base_info_get_name (type_info));
+                     "jsval to GIArgument", g_base_info_get_name (arg_info));
         }
 
       return FALSE;
