@@ -214,10 +214,22 @@ peas_extension_seed_call (PeasExtension *exten,
       direction = g_arg_info_get_direction (&arg_info);
       g_arg_info_load_type (&arg_info, &out_args[n_out_args].type_info);
 
-      if (direction == GI_DIRECTION_IN || direction == GI_DIRECTION_INOUT)
+      if (direction == GI_DIRECTION_IN)
         {
           js_in_args[n_in_args++] = seed_value_from_gi_argument (sexten->js_context,
                                                                  &args[i],
+                                                                 &out_args[n_out_args].type_info,
+                                                                 &exc);
+        }
+
+      if (direction == GI_DIRECTION_INOUT)
+        {
+          GIArgument arg;
+
+          peas_gi_pointer_to_argument (&out_args[n_out_args].type_info,
+                                       args[i].v_pointer, &arg);
+          js_in_args[n_in_args++] = seed_value_from_gi_argument (sexten->js_context,
+                                                                 &arg,
                                                                  &out_args[n_out_args].type_info,
                                                                  &exc);
         }
