@@ -143,21 +143,23 @@ set_out_arg (JSContext      *js_context,
   gboolean nullable;
   GITransfer transfer;
   GIArgument argument;
+  GjsArgumentType arg_type;
 
   if (is_return_value)
     {
+      arg_type = GJS_ARGUMENT_RETURN_VALUE;
       nullable = g_callable_info_may_return_null (func_info);
       transfer = g_callable_info_get_caller_owns (func_info);
     }
   else
     {
+      arg_type = GJS_ARGUMENT_ARGUMENT;
       nullable = g_arg_info_may_be_null (arg_info);
       transfer = g_arg_info_get_ownership_transfer (arg_info);
     }
 
   if (!gjs_value_to_g_argument (js_context, js_value, type_info, NULL,
-                                GJS_ARGUMENT_RETURN_VALUE, /* ? */
-                                transfer, nullable, &argument))
+                                arg_type, transfer, nullable, &argument))
     {
       if (is_return_value)
         {
