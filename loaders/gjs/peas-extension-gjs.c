@@ -250,7 +250,7 @@ peas_extension_gjs_call (PeasExtension *exten,
       g_arg_info_load_type (&arg_cache[cached_args].arg_info,
                             &arg_cache[cached_args].type_info);
 
-      if ((direction == GI_DIRECTION_IN || direction == GI_DIRECTION_INOUT) &&
+      if (direction == GI_DIRECTION_IN &&
           !gjs_value_from_g_argument (gexten->js_context, &js_args[n_in_args++],
                                       &arg_cache[cached_args].type_info,
                                       &args[i]))
@@ -258,6 +258,22 @@ peas_extension_gjs_call (PeasExtension *exten,
           g_warning ("Error failed to convert argument '%s'",
                      g_base_info_get_name (&arg_cache[cached_args].arg_info));
           goto out;
+        }
+
+      if (direction == GI_DIRECTION_INOUT)
+        {
+          GIArgument arg;
+          
+          peas_gi_pointer_to_argument (&arg_cache[cached_args].type_info,
+                                       args[i].v_pointer, &arg);
+
+          if (!gjs_value_from_g_argument (gexten->js_context, &js_args[n_in_args++],
+                                          &arg_cache[cached_args].type_info, &arg))
+            {
+              g_warning ("Error failed to convert argument '%s'",
+                         g_base_info_get_name (&arg_cache[cached_args].arg_info));
+              goto out;
+            }
         }
 
       if (direction == GI_DIRECTION_OUT || direction == GI_DIRECTION_INOUT)
@@ -317,7 +333,7 @@ peas_extension_gjs_call (PeasExtension *exten,
     }
 
   /* Set out arguments */
-  for (i = 0, nth_out_arg = 0; i < cached_args && success; ++i, ++nth_out_arg)
+  for (i = 0, nth_out_arg = 0; i < cached_args && success; ++i)
     {
       gboolean is_return_value;
 
@@ -346,7 +362,8 @@ peas_extension_gjs_call (PeasExtension *exten,
           jsval js_value;
 
           if (!JS_GetElement (gexten->js_context, JSVAL_TO_OBJECT (js_retval),
-                              nth_out_arg, &js_value))
+                              nth_out_arg++, &js_value) ||
+              js_value == JSVAL_VOID)
             {
               g_warning ("Error failed to get out argument %i", nth_out_arg);
               success = FALSE;
