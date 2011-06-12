@@ -85,15 +85,15 @@ introspection_callable_call_single_arg (IntrospectionCallable *callable,
 /**
  * introspection_callable_call_multi_args:
  * @callable:
- * @called_1: (out):
- * @called_2: (out):
- * @called_3: (out):
+ * @in: (in):
+ * @out: (out):
+ * @inout: (inout):
  */
 void
 introspection_callable_call_multi_args (IntrospectionCallable *callable,
-                                        gboolean              *called_1,
-                                        gboolean              *called_2,
-                                        gboolean              *called_3)
+                                        gint                   in,
+                                        gint                  *out,
+                                        gint                  *inout)
 {
   IntrospectionCallableInterface *iface;
 
@@ -101,5 +101,5 @@ introspection_callable_call_multi_args (IntrospectionCallable *callable,
 
   iface = INTROSPECTION_CALLABLE_GET_IFACE (callable);
   if (iface->call_multi_args != NULL)
-    iface->call_multi_args (callable, called_1, called_2, called_3);
+    iface->call_multi_args (callable, in, out, inout);
 }

@@ -16,8 +16,8 @@ class CallablePythonPlugin(gobject.GObject, Introspection.Callable):
     def do_call_single_arg(self):
         return True
 
-    def do_call_multi_args(self):
-        return (True, True, True)
+    def do_call_multi_args(self, in_, inout):
+        return (inout, in_)
 
 class PropertiesPythonPlugin(gobject.GObject, Introspection.Properties):
     __gtype_name__ = "PropertiesPythonPlugin"

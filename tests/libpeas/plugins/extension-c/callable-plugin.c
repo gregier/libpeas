@@ -62,13 +62,12 @@ testing_callable_plugin_call_single_arg (IntrospectionCallable *callable,
 
 static void
 testing_callable_plugin_call_multi_args (IntrospectionCallable *callable,
-                                         gboolean              *called_1,
-                                         gboolean              *called_2,
-                                         gboolean              *called_3)
+                                         gint                   in,
+                                         gint                  *out,
+                                         gint                  *inout)
 {
-  *called_1 = TRUE;
-  *called_2 = TRUE;
-  *called_3 = TRUE;
+  *out = *inout;
+  *inout = in;
 }
 
 static void

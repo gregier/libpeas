@@ -10,8 +10,8 @@ callable_extension.prototype = {
   call_single_arg: function() {
     return true
   },
-  call_multi_args: function() {
-    return [ true, true, true ]
+  call_multi_args: function(in_, inout) {
+    return [ inout, in_ ]
   }
 };
 

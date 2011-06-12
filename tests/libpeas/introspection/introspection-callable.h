@@ -47,9 +47,9 @@ struct _IntrospectionCallableInterface {
   void         (*call_single_arg)  (IntrospectionCallable *callable,
                                     gboolean              *called);
   void         (*call_multi_args)  (IntrospectionCallable *callable,
-                                    gboolean              *called_1,
-                                    gboolean              *called_2,
-                                    gboolean              *called_3);
+                                    gint                   in,
+                                    gint                  *out,
+                                    gint                  *inout);
 
   /* libpeas must have an invoker to implement an interface's vfunc */
   void         (*no_invoker_)      (IntrospectionCallable *callable);
@@ -66,9 +66,9 @@ void         introspection_callable_call_no_args     (IntrospectionCallable *cal
 void         introspection_callable_call_single_arg  (IntrospectionCallable *callable,
                                                       gboolean              *called);
 void         introspection_callable_call_multi_args  (IntrospectionCallable *callable,
-                                                      gboolean              *called_1,
-                                                      gboolean              *called_2,
-                                                      gboolean              *called_3);
+                                                      gint                   in,
+                                                      gint                  *out,
+                                                      gint                  *inout);
 
 G_END_DECLS
 

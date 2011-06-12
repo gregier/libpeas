@@ -289,7 +289,8 @@ testing_extension_call_multi_args_ (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
   IntrospectionCallable *callable;
-  gboolean params[3] = { FALSE, FALSE, FALSE };
+  gint in, out, inout;
+  gint inout_saved;
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
 
@@ -301,15 +302,14 @@ testing_extension_call_multi_args_ (PeasEngine *engine)
 
   callable = INTROSPECTION_CALLABLE (extension);
 
-  g_assert (peas_extension_call (extension, "call_multi_args",
-                                 &params[0], &params[1], &params[2]));
-  g_assert (params[0] && params[1] && params[2]);
+  in = g_random_int ();
+  inout = g_random_int ();
+  inout_saved = inout;
 
-  memset (params, FALSE, G_N_ELEMENTS (params));
-
-  introspection_callable_call_multi_args (callable, &params[0],
-                                          &params[1], &params[2]);
-  g_assert (params[0] && params[1] && params[2]);
+  introspection_callable_call_multi_args (callable, in, &out, &inout);
+  
+  g_assert_cmpint (inout_saved, ==, out);
+  g_assert_cmpint (in, ==, inout);
 
   g_object_unref (extension);
 }
