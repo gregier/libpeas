@@ -16,65 +16,51 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "Plugin Manager"
 msgstr "Liitännäistenhallinta"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "Plugin Manager View"
 msgstr "Liitännäisten hallintanäkymä"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
 msgid "Show Builtin"
 msgstr "Näytä sisäänrakennetut"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "View"
 msgstr "Näkymä"
 
-#: ../libpeas/peas-engine.c:788
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Riippuvuutta ”%s” ei löytynyt"
 
-#: ../libpeas/peas-engine.c:798
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Riippuvuuden ”%s” lataaminen epäonnistui"
 
-#: ../libpeas/peas-engine.c:813
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Liitännäislatainta ”%s” ei löytynyt"
 
-#: ../libpeas/peas-engine.c:825
 #, c-format
 msgid "Failed to load"
 msgstr "Lataaminen epäonnistui"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
 msgid "Additional plugins must be disabled"
 msgstr "Ylimääräiset liitännäiset täytyy kytkeä pois käytöstä"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Seuraavat liitännäiset riippuvat  liitännäisestä ”%s” ja myös ne kytketään pois käytöstä:"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
 msgid "Plugins"
 msgstr "Liitännäiset"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
 msgid "An additional plugin must be disabled"
 msgstr "Ylimääräinen liitännäinen täytyy kytkeä pois käytöstä"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
@@ -83,35 +69,27 @@ msgstr ""
 "Liitännäinen ”%s” riippuu liitännäisestä ”%s”.\n"
 "Jos kytket ”%s” pois käytöstä, niin myös ”%s” kytketään pois käytöstä."
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:180
 msgid "Disable Plugins"
 msgstr "Kytke liitännäiset pois käytöstä"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:179
 msgid "There was an error displaying the help."
 msgstr "Tapahtui virhe ohjetta näytettäessä."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:331
 msgid "_Enabled"
 msgstr "_Käytössä"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:342
 msgid "E_nable All"
 msgstr "_Ota kaikki käyttöön"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:346
 msgid "_Disable All"
 msgstr "_Kytke kaikki pois käytöstä"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:505
 msgid "Enabled"
 msgstr "Käytössä"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
 msgid "Plugin"
 msgstr "Liitännäinen"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:611
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -120,10 +98,8 @@ msgstr ""
 "<b>Liitännäistä ”%s” ei voitu ladata</b>\n"
 "Tapahtui virhe: %s"
 
-#: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
 msgstr "Suorita käännöshakemistosta"
 
-#: ../peas-demo/peas-demo.c:99
 msgid "- libpeas demo application"
 msgstr "- libpeas-demosovellus"
