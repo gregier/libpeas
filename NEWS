@@ -1,0 +1,23 @@
+Overview of Changes in libpeas 1.1.0
+====================================
+
+* Add support gjs-based Javascript extensions
+
+* Seed Javascript extension support improvements
+  - Use the new() keyword to instantiate new Javascript extensions.
+  - Previously used "copied arrays" have been deprecated.
+  - Allow using prototypes when defining new extensions.
+
+* Add peas_extension_set_foreach()
+  - Also deprecate the old peas_extension_set_call() method as a result.
+
+* Drop support for Gtk+ 2
+
+* Translation updates:
+  - Lithuanian
+  - Japanese
+  - Turkish
+  - Esperanto
+  - Persian
+  - Catalan (Valencian)
+  - Finnish
