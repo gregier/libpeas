@@ -98,11 +98,9 @@ AC_ARG_ENABLE(gtk,
 	      [enable_gtk=yes])
 
 if test "$enable_gtk" = "yes"; then
-	GTK_TYPELIB=Gtk-3.0
 	PKG_CHECK_MODULES(PEAS_GTK, [
 		gtk+-3.0 >= $GTK_REQUIRED
 	])
-	AC_SUBST(GTK_TYPELIB)
 fi
 
 AC_SUBST(GTK_REQUIRED)
