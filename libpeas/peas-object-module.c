@@ -398,7 +398,7 @@ peas_object_module_get_library (PeasObjectModule *module)
 }
 
 /**
- * peas_object_module_register_extension_factory: (skip)
+ * peas_object_module_register_extension_factory:
  * @module: Your plugin's #PeasObjectModule.
  * @iface_type: The #GType of the extension interface you implement.
  * @factory_func: The #PeasFactoryFunc that will create the @iface_type
@@ -465,7 +465,7 @@ create_gobject_from_type (guint       n_parameters,
 }
 
 /**
- * peas_object_module_register_extension_type: (skip)
+ * peas_object_module_register_extension_type:
  * @module: Your plugin's #PeasObjectModule.
  * @iface_type: The #GType of the extension interface you implement.
  * @extension_type: The #GType of your implementation of @iface_type.
