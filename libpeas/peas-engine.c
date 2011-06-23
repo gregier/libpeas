@@ -1010,7 +1010,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
   extension = peas_plugin_loader_create_extension (loader, info, extension_type,
                                                    n_parameters, parameters);
 
-  if (!PEAS_IS_EXTENSION (extension))
+  if (!G_TYPE_CHECK_INSTANCE_TYPE (extension, extension_type))
     {
       g_warning ("Plugin '%s' does not provide a '%s' extension",
                  peas_plugin_info_get_module_name (info),
