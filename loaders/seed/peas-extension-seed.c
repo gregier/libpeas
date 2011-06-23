@@ -28,7 +28,7 @@
 #include <libpeas/peas-extension-subclasses.h>
 #include <girepository.h>
 
-G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION);
+G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION_WRAPPER);
 
 typedef struct {
   GITypeInfo type_info;
@@ -144,10 +144,10 @@ peas_extension_seed_dispose (GObject *object)
 }
 
 static gboolean
-peas_extension_seed_call (PeasExtension *exten,
-                          const gchar   *method_name,
-                          GIArgument    *args,
-                          GIArgument    *retval)
+peas_extension_seed_call (PeasExtensionWrapper *exten,
+                          const gchar          *method_name,
+                          GIArgument           *args,
+                          GIArgument           *retval)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
   GType exten_type;
@@ -166,7 +166,7 @@ peas_extension_seed_call (PeasExtension *exten,
   g_return_val_if_fail (sexten->js_context != NULL, FALSE);
   g_return_val_if_fail (sexten->js_object != NULL, FALSE);
 
-  exten_type = peas_extension_get_extension_type (exten);
+  exten_type = peas_extension_wrapper_get_extension_type (exten);
 
   /* Fetch the JS method we want to call */
   js_method = seed_object_get_property (sexten->js_context,
@@ -293,7 +293,7 @@ static void
 peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
+  PeasExtensionWrapperClass *extension_class = PEAS_EXTENSION_WRAPPER_CLASS (klass);
 
   object_class->set_property = peas_extension_seed_set_property;
   object_class->get_property = peas_extension_seed_get_property;
@@ -302,7 +302,7 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
   extension_class->call = peas_extension_seed_call;
 }
 
-PeasExtension *
+GObject *
 peas_extension_seed_new (GType       exten_type,
                          SeedContext js_context,
                          SeedObject  js_object)
@@ -324,5 +324,5 @@ peas_extension_seed_new (GType       exten_type,
   seed_context_ref (sexten->js_context);
   seed_value_protect (sexten->js_context, sexten->js_object);
 
-  return PEAS_EXTENSION (sexten);
+  return G_OBJECT (sexten);
 }

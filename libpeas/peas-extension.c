@@ -24,7 +24,7 @@
 #endif
 
 #include "peas-extension.h"
-#include "peas-extension-priv.h"
+#include "peas-extension-wrapper.h"
 #include "peas-introspection.h"
 
 /**
@@ -61,96 +61,10 @@
  *
  * See peas_extension_call() for more information.
  **/
-
-G_DEFINE_ABSTRACT_TYPE (PeasExtension, peas_extension, G_TYPE_OBJECT);
-
-/* Properties */
-enum {
-  PROP_0,
-  PROP_EXTENSION_TYPE
-};
-
-static void
-peas_extension_init (PeasExtension *exten)
+GType
+peas_extension_get_type ()
 {
-  exten->priv = G_TYPE_INSTANCE_GET_PRIVATE (exten,
-                                             PEAS_TYPE_EXTENSION,
-                                             PeasExtensionPrivate);
-}
-
-static void
-peas_extension_set_property (GObject      *object,
-                             guint         prop_id,
-                             const GValue *value,
-                             GParamSpec   *pspec)
-{
-  PeasExtension *exten = PEAS_EXTENSION (object);
-
-  switch (prop_id)
-    {
-    case PROP_EXTENSION_TYPE:
-      exten->priv->exten_type = g_value_get_gtype (value);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
-
-static void
-peas_extension_get_property (GObject    *object,
-                             guint       prop_id,
-                             GValue     *value,
-                             GParamSpec *pspec)
-{
-  PeasExtension *exten = PEAS_EXTENSION (object);
-
-  switch (prop_id)
-    {
-    case PROP_EXTENSION_TYPE:
-      g_value_set_gtype (value, exten->priv->exten_type);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
-
-static void
-peas_extension_constructed (GObject *object)
-{
-  PeasExtension *exten = PEAS_EXTENSION (object);
-
-  exten->priv->constructed = TRUE;
-
-  if (G_OBJECT_CLASS (peas_extension_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_extension_parent_class)->constructed (object);
-}
-
-static void
-peas_extension_class_init (PeasExtensionClass *klass)
-{
-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-  object_class->set_property = peas_extension_set_property;
-  object_class->get_property = peas_extension_get_property;
-  object_class->constructed = peas_extension_constructed;
-
-  /**
-   * PeasExtension:extension-type:
-   *
-   * The GType of the interface being proxied.
-   */
-  g_object_class_install_property (object_class, PROP_EXTENSION_TYPE,
-                                   g_param_spec_gtype ("extension-type",
-                                                       "Extension Type",
-                                                       "The GType of the interface being proxied",
-                                                       G_TYPE_NONE,
-                                                       G_PARAM_READWRITE |
-                                                       G_PARAM_CONSTRUCT_ONLY |
-                                                       G_PARAM_STATIC_STRINGS));
-  
-  g_type_class_add_private (klass, sizeof (PeasExtensionPrivate));
+  return G_TYPE_OBJECT;
 }
 
 /**
@@ -164,9 +78,7 @@ peas_extension_class_init (PeasExtensionClass *klass)
 GType
 peas_extension_get_extension_type (PeasExtension *exten)
 {
-  g_return_val_if_fail (PEAS_IS_EXTENSION (exten), G_TYPE_INVALID);
-
-  return exten->priv->exten_type;
+  return peas_extension_wrapper_get_extension_type (PEAS_EXTENSION_WRAPPER (exten));
 }
 
 /**
@@ -243,7 +155,8 @@ peas_extension_call_valist (PeasExtension *exten,
   g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
-  callable_info = peas_gi_get_method_info (exten->priv->exten_type, method_name);
+  callable_info = peas_gi_get_method_info (peas_extension_get_extension_type (exten),
+                                           method_name);
 
   /* Already warned */
   if (callable_info == NULL)
@@ -290,11 +203,8 @@ peas_extension_callv (PeasExtension *exten,
                       GIArgument    *args,
                       GIArgument    *return_value)
 {
-  PeasExtensionClass *klass;
-
-  g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
-  g_return_val_if_fail (method_name != NULL, FALSE);
-
-  klass = PEAS_EXTENSION_GET_CLASS (exten);
-  return klass->call (exten, method_name, args, return_value);
+  return peas_extension_wrapper_callv (PEAS_EXTENSION_WRAPPER (exten),
+                                       method_name,
+                                       args,
+                                       return_value);
 }

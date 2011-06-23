@@ -22,7 +22,7 @@
 #ifndef __PEAS_EXTENSION_SEED_H__
 #define __PEAS_EXTENSION_SEED_H__
 
-#include <libpeas/peas-extension-priv.h>
+#include <libpeas/peas-extension-wrapper.h>
 #include <seed.h>
 
 G_BEGIN_DECLS
@@ -38,19 +38,19 @@ typedef struct _PeasExtensionSeed       PeasExtensionSeed;
 typedef struct _PeasExtensionSeedClass  PeasExtensionSeedClass;
 
 struct _PeasExtensionSeed {
-  PeasExtension parent;
+  PeasExtensionWrapper parent;
 
   SeedContext js_context;
   SeedObject js_object;
 };
 
 struct _PeasExtensionSeedClass {
-  PeasExtensionClass parent_class;
+  PeasExtensionWrapperClass parent_class;
 };
 
 GType            peas_extension_seed_get_type (void) G_GNUC_CONST;
 
-PeasExtension   *peas_extension_seed_new      (GType           exten_type,
+GObject         *peas_extension_seed_new      (GType           exten_type,
                                                SeedContext     js_context,
                                                SeedObject      js_object);
 

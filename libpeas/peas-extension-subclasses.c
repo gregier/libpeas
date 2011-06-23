@@ -26,8 +26,7 @@
 #include <string.h>
 #include <girepository.h>
 #include <girffi.h>
-#include "peas-extension.h"
-#include "peas-extension-priv.h"
+#include "peas-extension-wrapper.h"
 #include "peas-extension-subclasses.h"
 #include "peas-introspection.h"
 
@@ -61,12 +60,12 @@ handle_method_impl (ffi_cif  *cif,
   GITypeInfo type_info;
   GITypeInfo return_type_info;
   gint n_args, i;
-  PeasExtension *instance;
+  PeasExtensionWrapper *instance;
   GIArgument *arguments;
   GIArgument return_value;
 
-  instance = *((PeasExtension **) args[0]);
-  g_assert (PEAS_IS_EXTENSION (instance));
+  instance = *((PeasExtensionWrapper **) args[0]);
+  g_assert (PEAS_IS_EXTENSION_WRAPPER (instance));
 
   n_args = g_callable_info_get_n_args (impl->info);
   g_return_if_fail (n_args >= 1);
@@ -83,7 +82,7 @@ handle_method_impl (ffi_cif  *cif,
         arguments[i-1].v_pointer = *((gpointer **) args[i]);
     }
 
-  peas_extension_callv (instance, impl->method_name, arguments, &return_value);
+  peas_extension_wrapper_callv (instance, impl->method_name, arguments, &return_value);
 
   g_callable_info_load_return_type (impl->info, &return_type_info);
   if (g_type_info_get_tag (&return_type_info) != GI_TYPE_TAG_VOID)
@@ -227,14 +226,14 @@ extension_subclass_set_property (GObject      *object,
                                  const GValue *value,
                                  GParamSpec   *pspec)
 {
-  PeasExtension *exten = PEAS_EXTENSION (object);
+  PeasExtensionWrapper *exten = PEAS_EXTENSION_WRAPPER (object);
 
   /* This will have already been set on the real instance */
   if ((pspec->flags & G_PARAM_CONSTRUCT_ONLY) != 0)
     return;
 
   /* Setting will fail if we are not constructed yet */
-  if ((pspec->flags & G_PARAM_CONSTRUCT) != 0 && !exten->priv->constructed)
+  if ((pspec->flags & G_PARAM_CONSTRUCT) != 0 && !exten->constructed)
     return;
 
   g_debug ("Setting '%s:%s'",

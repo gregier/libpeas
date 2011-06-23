@@ -28,7 +28,7 @@
 #include <libpeas/peas-extension-subclasses.h>
 #include "peas-extension-c.h"
 
-G_DEFINE_TYPE (PeasExtensionC, peas_extension_c, PEAS_TYPE_EXTENSION);
+G_DEFINE_TYPE (PeasExtensionC, peas_extension_c, PEAS_TYPE_EXTENSION_WRAPPER);
 
 static void
 peas_extension_c_init (PeasExtensionC *cexten)
@@ -36,15 +36,15 @@ peas_extension_c_init (PeasExtensionC *cexten)
 }
 
 static gboolean
-peas_extension_c_call (PeasExtension *exten,
-                       const gchar   *method_name,
-                       GIArgument    *args,
-                       GIArgument    *retval)
+peas_extension_c_call (PeasExtensionWrapper *exten,
+                       const gchar          *method_name,
+                       GIArgument           *args,
+                       GIArgument           *retval)
 {
   PeasExtensionC *cexten = PEAS_EXTENSION_C (exten);
   GType gtype;
 
-  gtype = peas_extension_get_extension_type (exten);
+  gtype = peas_extension_wrapper_get_extension_type (exten);
 
   return peas_method_apply (cexten->instance, gtype, method_name, args, retval);
 }
@@ -93,7 +93,7 @@ static void
 peas_extension_c_class_init (PeasExtensionCClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
+  PeasExtensionWrapperClass *extension_class = PEAS_EXTENSION_WRAPPER_CLASS (klass);
 
   object_class->dispose = peas_extension_c_dispose;
   object_class->get_property = peas_extension_c_get_property;
@@ -102,7 +102,7 @@ peas_extension_c_class_init (PeasExtensionCClass *klass)
   extension_class->call = peas_extension_c_call;
 }
 
-PeasExtension *
+GObject *
 peas_extension_c_new (GType    gtype,
                       GObject *instance)
 {
@@ -116,5 +116,5 @@ peas_extension_c_new (GType    gtype,
 
   cexten->instance = instance;
 
-  return PEAS_EXTENSION (cexten);
+  return G_OBJECT (cexten);
 }

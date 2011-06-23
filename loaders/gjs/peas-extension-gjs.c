@@ -34,7 +34,7 @@
 
 #include "peas-extension-gjs.h"
 
-G_DEFINE_TYPE (PeasExtensionGjs, peas_extension_gjs, PEAS_TYPE_EXTENSION);
+G_DEFINE_TYPE (PeasExtensionGjs, peas_extension_gjs, PEAS_TYPE_EXTENSION_WRAPPER);
 
 typedef struct {
   GIArgInfo arg_info;
@@ -180,10 +180,10 @@ set_out_arg (JSContext      *js_context,
 }
 
 static gboolean
-peas_extension_gjs_call (PeasExtension *exten,
-                         const gchar   *method_name,
-                         GIArgument    *args,
-                         GIArgument    *retval)
+peas_extension_gjs_call (PeasExtensionWrapper *exten,
+                         const gchar          *method_name,
+                         GIArgument           *args,
+                         GIArgument           *retval)
 {
   PeasExtensionGjs *gexten = PEAS_EXTENSION_GJS (exten);
   GType exten_type;
@@ -197,7 +197,7 @@ peas_extension_gjs_call (PeasExtension *exten,
   gint n_out_args = 0;
   gint cached_args = 0;
 
-  exten_type = peas_extension_get_extension_type (exten);
+  exten_type = peas_extension_wrapper_get_extension_type (exten);
 
   /* Fetch the JS method we want to call */
   if (!JS_GetProperty (gexten->js_context, gexten->js_object,
@@ -389,7 +389,7 @@ static void
 peas_extension_gjs_class_init (PeasExtensionGjsClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
+  PeasExtensionWrapperClass *extension_class = PEAS_EXTENSION_WRAPPER_CLASS (klass);
 
   object_class->set_property = peas_extension_gjs_set_property;
   object_class->get_property = peas_extension_gjs_get_property;
@@ -398,7 +398,7 @@ peas_extension_gjs_class_init (PeasExtensionGjsClass *klass)
   extension_class->call = peas_extension_gjs_call;
 }
 
-PeasExtension *
+GObject *
 peas_extension_gjs_new (GType      exten_type,
                         JSContext *js_context,
                         JSObject  *js_object)
@@ -418,5 +418,5 @@ peas_extension_gjs_new (GType      exten_type,
   gexten->js_object = js_object;
   JS_AddObjectRoot (gexten->js_context, &gexten->js_object);
 
-  return PEAS_EXTENSION (gexten);
+  return G_OBJECT (gexten);
 }

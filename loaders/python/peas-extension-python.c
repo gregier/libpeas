@@ -33,7 +33,7 @@
 #include <libpeas/peas-extension-subclasses.h>
 #include "peas-extension-python.h"
 
-G_DEFINE_TYPE (PeasExtensionPython, peas_extension_python, PEAS_TYPE_EXTENSION);
+G_DEFINE_TYPE (PeasExtensionPython, peas_extension_python, PEAS_TYPE_EXTENSION_WRAPPER);
 
 static void
 peas_extension_python_init (PeasExtensionPython *pyexten)
@@ -41,10 +41,10 @@ peas_extension_python_init (PeasExtensionPython *pyexten)
 }
 
 static gboolean
-peas_extension_python_call (PeasExtension *exten,
-                            const gchar   *method_name,
-                            GIArgument    *args,
-                            GIArgument    *retval)
+peas_extension_python_call (PeasExtensionWrapper *exten,
+                            const gchar          *method_name,
+                            GIArgument           *args,
+                            GIArgument           *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
   GType gtype;
@@ -52,7 +52,7 @@ peas_extension_python_call (PeasExtension *exten,
   GObject *instance;
   gboolean success;
 
-  gtype = peas_extension_get_extension_type (exten);
+  gtype = peas_extension_wrapper_get_extension_type (exten);
 
   state = pyg_gil_state_ensure ();
 
@@ -125,7 +125,7 @@ static void
 peas_extension_python_class_init (PeasExtensionPythonClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  PeasExtensionClass *extension_class = PEAS_EXTENSION_CLASS (klass);
+  PeasExtensionWrapperClass *extension_class = PEAS_EXTENSION_WRAPPER_CLASS (klass);
 
   object_class->dispose = peas_extension_python_dispose;
   object_class->get_property = peas_extension_python_get_property;
@@ -134,7 +134,7 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
   extension_class->call = peas_extension_python_call;
 }
 
-PeasExtension *
+GObject *
 peas_extension_python_new (GType     gtype,
                            PyObject *instance)
 {
@@ -149,5 +149,5 @@ peas_extension_python_new (GType     gtype,
   pyexten->instance = instance;
   Py_INCREF (instance);
 
-  return PEAS_EXTENSION (pyexten);
+  return G_OBJECT (pyexten);
 }

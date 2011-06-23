@@ -22,7 +22,7 @@
 #ifndef __PEAS_EXTENSION_C_H__
 #define __PEAS_EXTENSION_C_H__
 
-#include <libpeas/peas-extension-priv.h>
+#include <libpeas/peas-extension-wrapper.h>
 
 G_BEGIN_DECLS
 
@@ -37,18 +37,18 @@ typedef struct _PeasExtensionC       PeasExtensionC;
 typedef struct _PeasExtensionCClass  PeasExtensionCClass;
 
 struct _PeasExtensionC {
-  PeasExtension parent;
+  PeasExtensionWrapper parent;
 
   GObject *instance;
 };
 
 struct _PeasExtensionCClass {
-  PeasExtensionClass parent_class;
+  PeasExtensionWrapperClass parent_class;
 };
 
 GType            peas_extension_c_get_type  (void) G_GNUC_CONST;
 
-PeasExtension   *peas_extension_c_new       (GType        gtype,
+GObject         *peas_extension_c_new       (GType        gtype,
                                              GObject     *instance);
 
 G_END_DECLS

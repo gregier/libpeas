@@ -30,25 +30,11 @@ G_BEGIN_DECLS
 /*
  * Type checking and casting macros
  */
-#define PEAS_TYPE_EXTENSION            (peas_extension_get_type())
-#define PEAS_EXTENSION(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), PEAS_TYPE_EXTENSION, PeasExtension))
-#define PEAS_IS_EXTENSION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), PEAS_TYPE_EXTENSION))
+#define PEAS_TYPE_EXTENSION            (G_TYPE_OBJECT)
+#define PEAS_EXTENSION(obj)            (G_OBJECT(obj))
+#define PEAS_IS_EXTENSION(obj)         (G_IS_OBJECT(obj))
 
-typedef struct _PeasExtension         PeasExtension;
-typedef struct _PeasExtensionPrivate  PeasExtensionPrivate;
-
-/**
- * PeasExtension:
- *
- * The #PeasExtension structure contains only private data and should only be
- * accessed using the provided API.
- */
-struct _PeasExtension {
-  GObject parent;
-
-  /*< private >*/
-  PeasExtensionPrivate *priv;
-};
+typedef GObject PeasExtension;
 
 /*
  * Public methods

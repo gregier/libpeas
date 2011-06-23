@@ -22,7 +22,7 @@
 #ifndef __PEAS_EXTENSION_GJS_H__
 #define __PEAS_EXTENSION_GJS_H__
 
-#include <libpeas/peas-extension-priv.h>
+#include <libpeas/peas-extension-wrapper.h>
 #include <gjs/gjs-module.h>
 
 G_BEGIN_DECLS
@@ -38,19 +38,19 @@ typedef struct _PeasExtensionGjs       PeasExtensionGjs;
 typedef struct _PeasExtensionGjsClass  PeasExtensionGjsClass;
 
 struct _PeasExtensionGjs {
-  PeasExtension parent;
+  PeasExtensionWrapper parent;
 
   JSContext *js_context;
   JSObject *js_object;
 };
 
 struct _PeasExtensionGjsClass {
-  PeasExtensionClass parent_class;
+  PeasExtensionWrapperClass parent_class;
 };
 
 GType            peas_extension_gjs_get_type (void) G_GNUC_CONST;
 
-PeasExtension   *peas_extension_gjs_new      (GType      exten_type,
+GObject         *peas_extension_gjs_new      (GType      exten_type,
                                               JSContext *js_context,
                                               JSObject  *js_object);
 

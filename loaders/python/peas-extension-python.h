@@ -22,7 +22,7 @@
 #ifndef __PEAS_EXTENSION_PYTHON_H__
 #define __PEAS_EXTENSION_PYTHON_H__
 
-#include <libpeas/peas-extension-priv.h>
+#include <libpeas/peas-extension-wrapper.h>
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
  * <libpeas/peas-extension.h>, so we unset it here to avoid a warning.
  * Yep, that's bad. */
@@ -42,18 +42,18 @@ typedef struct _PeasExtensionPython       PeasExtensionPython;
 typedef struct _PeasExtensionPythonClass  PeasExtensionPythonClass;
 
 struct _PeasExtensionPython {
-  PeasExtension parent;
+  PeasExtensionWrapper parent;
 
   PyObject *instance;
 };
 
 struct _PeasExtensionPythonClass {
-  PeasExtensionClass parent_class;
+  PeasExtensionWrapperClass parent_class;
 };
 
 GType            peas_extension_python_get_type (void) G_GNUC_CONST;
 
-PeasExtension   *peas_extension_python_new      (GType        gtype,
+GObject         *peas_extension_python_new      (GType        gtype,
                                                  PyObject    *instance);
 
 G_END_DECLS
