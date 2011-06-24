@@ -24,7 +24,6 @@
 #endif
 
 #include "libpeas/peas-extension-base.h"
-#include "loaders/c/peas-extension-c.h"
 
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
@@ -35,7 +34,6 @@ test_extension_c_instance_refcount (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
-  GObject *instance;
 
   info = peas_engine_get_plugin_info (engine, "extension-c");
 
@@ -47,12 +45,10 @@ test_extension_c_instance_refcount (PeasEngine *engine)
 
   g_assert (PEAS_IS_EXTENSION (extension));
 
-  instance = ((PeasExtensionC *) extension)->instance;
-
   /* The refcount of the returned object should be 1:
    *  - one ref for the PeasExtension
    */
-  g_assert_cmpint (instance->ref_count, ==, 1);
+  g_assert_cmpint (extension->ref_count, ==, 1);
 
   g_object_unref (extension);
 }
@@ -62,7 +58,6 @@ test_extension_c_plugin_info (PeasEngine *engine)
 {
   PeasPluginInfo *info;
   PeasExtension *extension;
-  PeasExtensionBase *instance;
 
   info = peas_engine_get_plugin_info (engine, "extension-c");
 
@@ -72,12 +67,8 @@ test_extension_c_plugin_info (PeasEngine *engine)
                                             INTROSPECTION_TYPE_PROPERTIES,
                                             NULL);
 
-  g_assert (PEAS_IS_EXTENSION (extension));
-
-  instance = (PeasExtensionBase *) ((PeasExtensionC *) extension)->instance;
-
-  g_assert (PEAS_IS_EXTENSION_BASE (instance));
-  g_assert (peas_extension_base_get_plugin_info (instance) == info);
+  g_assert (PEAS_IS_EXTENSION_BASE (extension));
+  g_assert (peas_extension_base_get_plugin_info (PEAS_EXTENSION_BASE (extension)) == info);
 
   g_object_unref (extension);
 }

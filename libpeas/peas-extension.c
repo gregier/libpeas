@@ -78,7 +78,14 @@ peas_extension_get_type ()
 GType
 peas_extension_get_extension_type (PeasExtension *exten)
 {
-  return peas_extension_wrapper_get_extension_type (PEAS_EXTENSION_WRAPPER (exten));
+  if (PEAS_IS_EXTENSION_WRAPPER (exten))
+    {
+      return peas_extension_wrapper_get_extension_type (PEAS_EXTENSION_WRAPPER (exten));
+    }
+  else
+    {
+      return GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (exten), "peas-extension-type"));
+    }
 }
 
 /**
@@ -203,8 +210,21 @@ peas_extension_callv (PeasExtension *exten,
                       GIArgument    *args,
                       GIArgument    *return_value)
 {
-  return peas_extension_wrapper_callv (PEAS_EXTENSION_WRAPPER (exten),
-                                       method_name,
-                                       args,
-                                       return_value);
+  if (PEAS_IS_EXTENSION_WRAPPER (exten))
+    {
+      return peas_extension_wrapper_callv (PEAS_EXTENSION_WRAPPER (exten),
+                                           method_name,
+                                           args,
+                                           return_value);
+    }
+  else
+    {
+      GType gtype = peas_extension_get_extension_type (exten);
+
+      return peas_method_apply (G_OBJECT (exten),
+                                gtype,
+                                method_name,
+                                args,
+                                return_value);
+    }
 }

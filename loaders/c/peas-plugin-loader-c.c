@@ -27,7 +27,6 @@
 #include <gmodule.h>
 
 #include "peas-plugin-loader-c.h"
-#include "peas-extension-c.h"
 #include <libpeas/peas-object-module.h>
 #include <libpeas/peas-extension-base.h>
 
@@ -145,7 +144,13 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, exten_type), NULL);
 
-  return peas_extension_c_new (exten_type, G_OBJECT (instance));
+  /* As we do not instantiate a PeasExtensionWrapper, we have to remember
+   * somehow which interface we are instantiating, to make it possible to use
+   * the deprecated peas_extension_call() method.
+   */
+  g_object_set_data (instance, "peas-extension-type", GUINT_TO_POINTER (exten_type));
+
+  return instance;
 }
 
 static void

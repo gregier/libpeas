@@ -12,8 +12,6 @@ INCLUDES = \
 loader_LTLIBRARIES = libcloader.la
 
 libcloader_la_SOURCES = \
-	peas-extension-c.c	\
-	peas-extension-c.h	\
 	peas-plugin-loader-c.c 	\
 	peas-plugin-loader-c.h
 
