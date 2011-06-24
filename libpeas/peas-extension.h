@@ -39,12 +39,12 @@ typedef GObject PeasExtension;
 /*
  * Public methods
  */
+#ifndef PEAS_DISABLE_DEPRECATED
 GType        peas_extension_get_type        (void)  G_GNUC_CONST;
 
 GType        peas_extension_get_extension_type
                                             (PeasExtension *exten);
 
-#ifndef PEAS_DISABLE_DEPRECATED
 gboolean     peas_extension_call            (PeasExtension *exten,
                                              const gchar   *method_name,
                                              ...);
