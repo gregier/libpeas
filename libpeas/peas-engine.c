@@ -126,11 +126,14 @@ load_plugin_info (PeasEngine  *engine,
    * drop this one (user plugins override system plugins) */
   module_name = peas_plugin_info_get_module_name (info);
   if (peas_engine_get_plugin_info (engine, module_name) != NULL)
-    _peas_plugin_info_unref (info);
+    peas_plugin_info_unref (info);
   else
     {
       engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list,
                                                   info);
+
+      /*g_message ("Module Dir: %s", peas_plugin_info_get_module_dir (info));*/
+      /*g_message ("Data Dir:   %s", peas_plugin_info_get_data_dir (info));*/
 
       g_object_notify (G_OBJECT (engine), "plugin-list");
     }
@@ -236,7 +239,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
  * @module_dir.
  */
 void
-peas_engine_add_search_path (PeasEngine *engine,
+peas_engine_add_search_path (PeasEngine  *engine,
                              const gchar *module_dir,
                              const gchar *data_dir)
 {
@@ -293,11 +296,17 @@ loader_destroy (LoaderInfo *info)
 static void
 peas_engine_init (PeasEngine *engine)
 {
+  char *plugin_store_dir;
+
   engine->priv = G_TYPE_INSTANCE_GET_PRIVATE (engine,
                                               PEAS_TYPE_ENGINE,
                                               PeasEnginePrivate);
 
   engine->priv->in_dispose = FALSE;
+
+  plugin_store_dir = peas_dirs_get_plugin_store_dir ();
+  peas_engine_add_search_path (engine, plugin_store_dir, NULL);
+  g_free (plugin_store_dir);
 }
 
 static void
@@ -432,7 +441,7 @@ peas_engine_finalize (GObject *object)
 
   /* free the infos */
   for (item = engine->priv->plugin_list; item; item = item->next)
-    _peas_plugin_info_unref (PEAS_PLUGIN_INFO (item->data));
+    peas_plugin_info_unref (PEAS_PLUGIN_INFO (item->data));
 
   /* free the search path list */
   for (item = engine->priv->search_paths; item; item = item->next)

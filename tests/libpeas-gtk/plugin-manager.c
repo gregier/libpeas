@@ -64,6 +64,7 @@ static void
 test_setup (TestFixture   *fixture,
             gconstpointer  data)
 {
+  GtkWidget *sw;
   GList *buttons;
   GList *button;
   GtkContainer *button_box = NULL;
@@ -93,8 +94,10 @@ test_setup (TestFixture   *fixture,
   /* Set the model */
   g_object_notify (G_OBJECT (fixture->view), "model");
 
+  sw = gtk_widget_get_parent (GTK_WIDGET (fixture->view));
+
   /* Must use forall as the buttons are "internal" children */
-  gtk_container_forall (GTK_CONTAINER (fixture->manager),
+  gtk_container_forall (GTK_CONTAINER (gtk_widget_get_parent (sw)),
                         (GtkCallback) plugin_manager_forall_cb,
                         &button_box);
 
@@ -127,6 +130,16 @@ test_teardown (TestFixture   *fixture,
 {
   gtk_widget_destroy (GTK_WIDGET (fixture->window));
   g_object_unref (fixture->window_group);
+
+  do
+    {
+      while (g_main_context_iteration (g_main_context_default (), FALSE))
+        ;
+
+      if (G_OBJECT (fixture->engine)->ref_count > 1)
+        g_usleep (50);
+    }
+  while (G_OBJECT (fixture->engine)->ref_count > 1);
 
   testing_engine_free (fixture->engine);
 }

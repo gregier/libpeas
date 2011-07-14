@@ -143,3 +143,11 @@ peas_dirs_get_locale_dir (void)
   return locale_dir;
 }
 
+gchar *
+peas_dirs_get_plugin_store_dir (void)
+{
+  /* $HOME/.local/share/libpeas-1.0/plugin-store/plugins/$PRG_NAME/ */
+  return g_build_filename (g_get_user_data_dir (), "libpeas-1.0",
+                           "plugin-store", "plugins", "gedit", /*g_get_prgname (),*/
+                           NULL);
+}

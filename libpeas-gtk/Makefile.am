@@ -15,9 +15,10 @@ libpeas_gtk_1_0_la_LDFLAGS = \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
 libpeas_gtk_1_0_la_LIBADD = \
-	$(PEAS_LIBS)							\
-	$(PEAS_GTK_LIBS)						\
-	$(top_builddir)/libpeas/libpeas-1.0.la
+	$(PEAS_LIBS)                                            \
+	$(PEAS_GTK_LIBS)                                        \
+	$(top_builddir)/libpeas/libpeas-1.0.la                  \
+	$(top_builddir)/libs/minizip-glib/libminizip-glib.la
 
 INST_H_FILES = \
 	peas-gtk-configurable.h		\
@@ -27,14 +28,24 @@ INST_H_FILES = \
 
 NOINST_H_FILES = \
 	peas-gtk-disable-plugins-dialog.h	\
-	peas-gtk-plugin-manager-store.h
+	peas-gtk-installable-plugin-info.h	\
+	peas-gtk-plugin-manager-store.h		\
+	peas-gtk-plugin-store.h			\
+	peas-gtk-plugin-store-model.h		\
+	peas-gtk-plugin-store-backend.h		\
+	peas-gtk-plugin-store-backend-xml.h
 
 C_FILES = \
 	peas-gtk-configurable.c			\
 	peas-gtk-disable-plugins-dialog.c	\
+	peas-gtk-installable-plugin-info.c	\
 	peas-gtk-plugin-manager.c		\
 	peas-gtk-plugin-manager-store.c		\
-	peas-gtk-plugin-manager-view.c
+	peas-gtk-plugin-manager-view.c		\
+	peas-gtk-plugin-store.c			\
+	peas-gtk-plugin-store-model.c		\
+	peas-gtk-plugin-store-backend.c		\
+	peas-gtk-plugin-store-backend-xml.c
 
 libpeas_gtk_1_0_la_SOURCES = \
 	$(INST_H_FILES)			\

@@ -39,6 +39,7 @@
 
 #include "peas-gtk-plugin-manager.h"
 #include "peas-gtk-plugin-manager-view.h"
+#include "peas-gtk-plugin-store.h"
 #include "peas-gtk-configurable.h"
 
 /**
@@ -60,13 +61,18 @@
 struct _PeasGtkPluginManagerPrivate {
   PeasEngine *engine;
 
+  GtkWidget *about;
+  GtkWidget *notebook;
+
   GtkWidget *sw;
   GtkWidget *view;
-
-  GtkWidget *about;
-
   GtkWidget *about_button;
   GtkWidget *configure_button;
+
+  GtkWidget *store_holder;
+  GtkWidget *store;
+  GtkWidget *install_button;
+  GtkWidget *uninstall_button;
 };
 
 /* Properties */
@@ -333,6 +339,8 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
 static void
 peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 {
+  GtkWidget *plugins_box;
+  GtkWidget *store_box;
   GtkWidget *hbuttonbox;
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
@@ -350,17 +358,25 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 
   gtk_widget_push_composite_child ();
 
+  pm->priv->notebook = gtk_notebook_new ();
+  gtk_box_pack_start (GTK_BOX (pm), pm->priv->notebook, TRUE, TRUE, 0);
+
+  plugins_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+  gtk_container_set_border_width (GTK_CONTAINER (plugins_box), 6);
+  gtk_notebook_append_page (GTK_NOTEBOOK (pm->priv->notebook), plugins_box,
+                            gtk_label_new_with_mnemonic (_("_Plugins")));
+
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                        GTK_SHADOW_IN);
-  gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (plugins_box), pm->priv->sw, TRUE, TRUE, 0);
 
   hbuttonbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_box_set_spacing (GTK_BOX (hbuttonbox), 6);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
-  gtk_box_pack_start (GTK_BOX (pm), hbuttonbox, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (plugins_box), hbuttonbox, FALSE, FALSE, 0);
 
   pm->priv->about_button = gtk_button_new_from_stock (GTK_STOCK_ABOUT);
   gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->about_button);
@@ -368,10 +384,36 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   pm->priv->configure_button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);
   gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->configure_button);
 
+
+  store_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+  gtk_container_set_border_width (GTK_CONTAINER (store_box), 6);
+  gtk_notebook_append_page (GTK_NOTEBOOK (pm->priv->notebook), store_box,
+                            gtk_label_new_with_mnemonic (_("Plugin _Store")));
+
+  pm->priv->store_holder = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->store_holder),
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (pm->priv->store_holder),
+                                       GTK_SHADOW_IN);
+  gtk_box_pack_start (GTK_BOX (store_box), pm->priv->store_holder,
+                      TRUE, TRUE, 0);
+
+  hbuttonbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
+  gtk_box_set_spacing (GTK_BOX (hbuttonbox), 6);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
+  gtk_box_pack_start (GTK_BOX (store_box), hbuttonbox, FALSE, FALSE, 0);
+
+  pm->priv->install_button = gtk_button_new_with_mnemonic (_("_Install"));
+  gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->install_button);
+
+  pm->priv->uninstall_button = gtk_button_new_with_mnemonic (_("_Uninstall"));
+  gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->uninstall_button);
+
   gtk_widget_pop_composite_child ();
 
   /* setup a window of a sane size. */
-  gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 270, 100);
+  gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 370, 200);
+  gtk_widget_set_size_request (GTK_WIDGET (pm->priv->store_holder), 370, 200);
 
   g_signal_connect (pm->priv->about_button,
                     "clicked",
@@ -468,8 +510,14 @@ peas_gtk_plugin_manager_constructed (GObject *object)
   if (pm->priv->view == NULL)
     pm->priv->view = peas_gtk_plugin_manager_view_new (pm->priv->engine);
 
+  pm->priv->store = peas_gtk_plugin_store_new (pm->priv->engine);
+
   gtk_widget_push_composite_child ();
-  gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
+    {
+      gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
+      gtk_container_add (GTK_CONTAINER (pm->priv->store_holder),
+                         pm->priv->store);
+    }
   gtk_widget_pop_composite_child ();
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
@@ -494,6 +542,14 @@ peas_gtk_plugin_manager_constructed (GObject *object)
                           "unload-plugin",
                           G_CALLBACK (plugin_loaded_toggled_cb),
                           pm);
+  g_signal_connect_swapped (pm->priv->install_button,
+                            "clicked",
+                            G_CALLBACK (peas_gtk_plugin_store_install_plugin),
+                            pm->priv->store);
+  g_signal_connect_swapped (pm->priv->uninstall_button,
+                            "clicked",
+                            G_CALLBACK (peas_gtk_plugin_store_uninstall_plugin),
+                            pm->priv->store);
 
   /* Update the button sensitivity */
   selection_changed_cb (pm);

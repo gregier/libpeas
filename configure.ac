@@ -101,6 +101,27 @@ AC_SUBST(GLIB_REQUIRED)
 AC_SUBST(GOBJECT_REQUIRED)
 AC_SUBST(INTROSPECTION_REQUIRED)
 
+PKG_CHECK_MODULES(MINIZIP, [
+  zlib >= 1.2
+])
+
+PKG_CHECK_MODULES(MINIZIP_GLIB, [
+  gio-2.0 >= $GLIB_REQUIRED
+])
+
+MINIZIP_GLIB_CFLAGS="$MINIZIP_CFLAGS $MINIZIP_GLIB_CFLAGS"
+MINIZIP_GLIB_LDFLAGS="$MINIZIP_LDFLAGS $MINIZIP_GLIB_LDFLAGS"
+
+dnl ================================================================
+dnl tools
+dnl ================================================================
+
+PKG_CHECK_MODULES(XML, [
+	glib-2.0 >= $GLIB_REQUIRED
+	gio-2.0 >= $GLIB_REQUIRED
+	libxml-2.0 >= 2.7
+])
+
 dnl ================================================================
 dnl Build libpeas-gtk
 dnl ================================================================
@@ -115,6 +136,10 @@ AC_ARG_ENABLE(gtk,
 if test "$enable_gtk" = "yes"; then
 	PKG_CHECK_MODULES(PEAS_GTK, [
 		gtk+-3.0 >= $GTK_REQUIRED
+		libxml-2.0 >= 2.7
+		libsoup-2.4
+		gio-2.0
+		gio-unix-2.0
 	])
 fi
 
@@ -477,6 +502,9 @@ Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
+libs/Makefile
+libs/minizip/Makefile
+libs/minizip-glib/Makefile
 libpeas/Makefile
 libpeas-gtk/Makefile
 loaders/Makefile
@@ -518,6 +546,7 @@ tests/plugins/has-dep/Makefile
 tests/plugins/loadable/Makefile
 tests/plugins/self-dep/Makefile
 tests/testing-util/Makefile
+tools/Makefile
 ])
 
 AC_OUTPUT

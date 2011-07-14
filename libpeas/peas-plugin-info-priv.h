@@ -60,8 +60,8 @@ struct _PeasPluginInfo {
 PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,
                                          const gchar    *module_dir,
                                          const gchar    *data_dir);
-PeasPluginInfo *_peas_plugin_info_ref   (PeasPluginInfo *info);
-void            _peas_plugin_info_unref (PeasPluginInfo *info);
+PeasPluginInfo *peas_plugin_info_ref    (PeasPluginInfo *info);
+void            peas_plugin_info_unref  (PeasPluginInfo *info);
 
 
 #endif /* __PEAS_PLUGIN_INFO_PRIV_H__ */

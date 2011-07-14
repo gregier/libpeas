@@ -2,7 +2,7 @@
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS= --enable-gtk-doc --enable-glade-catalog
 
-SUBDIRS = libpeas loaders
+SUBDIRS = libpeas loaders libs
 GCOVDIRS = libpeas loaders
 
 if ENABLE_GTK
@@ -10,7 +10,7 @@ SUBDIRS += libpeas-gtk peas-demo
 GCOVDIRS += libpeas-gtk
 endif
 
-SUBDIRS += tests data po docs
+SUBDIRS += tools tests data po docs
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \

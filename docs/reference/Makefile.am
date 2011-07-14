@@ -45,18 +45,22 @@ CFILE_GLOB = \
 
 # Header files to ignore when scanning (These are internal to libpeas).
 IGNORE_HFILES=		\
-	peas-debug.h				\
-	peas-dirs.h				\
-	peas-engine-priv.h			\
-	peas-extension-wrapper.h		\
-	peas-extension-subclasses.h		\
-	peas-gtk-disable-plugins-dialog.h       \
-	peas-gtk-plugin-manager-store.h		\
-	peas-helpers.h				\
-	peas-i18n.h				\
-	peas-introspection.h			\
-	peas-marshal.h				\
-	peas-plugin-info-priv.h			\
+	peas-debug.h					\
+	peas-dirs.h					\
+	peas-engine-priv.h				\
+	peas-extension-wrapper.h			\
+	peas-extension-priv.h				\
+	peas-extension-subclasses.h			\
+	peas-gtk-disable-plugins-dialog.h       	\
+	peas-gtk-plugin-manager-store.h			\
+	peas-gtk-plugin-manager-store-backend.h		\
+	peas-gtk-plugin-manager-store-backend-pk.h	\
+	peas-gtk-plugin-manager-store-backend-xml.h	\
+	peas-helpers.h					\
+	peas-i18n.h					\
+	peas-introspection.h				\
+	peas-marshal.h					\
+	peas-plugin-info-priv.h				\
 	peas-plugin-loader.h
 
 # Images to copy into HTML directory.

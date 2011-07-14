@@ -1,8 +1,8 @@
 /*
- * peas-dirs.h
- * This file is part of libpeas
+ * minizip.h
+ * This file is part of libminizip-glib
  *
- * Copyright (C) 2008 Ignacio Casal Quinteiro
+ * Copyright (C) 2011 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -16,24 +16,21 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef __MINIZIP_H__
+#define __MINIZIP_H__
 
-#ifndef __PEAS_DIRS_H__
-#define __PEAS_DIRS_H__
+#include <gio/gio.h>
 
-#include <glib.h>
+gboolean minizip_zip    (GFile        *src,
+                         GInputStream *dest);
 
-G_BEGIN_DECLS
+gboolean minizip_unzip  (GInputStream *src,
+                         GFile        *dest);
 
-gchar  *peas_dirs_get_data_dir           (void);
-gchar  *peas_dirs_get_lib_dir            (void);
-gchar  *peas_dirs_get_plugin_loaders_dir (void);
-gchar  *peas_dirs_get_locale_dir         (void);
-
-gchar  *peas_dirs_get_plugin_store_dir   (void);
 
 G_END_DECLS
 
-#endif /* __PEAS_DIRS_H__ */
+#endif /* __MINIZIP_H__ */

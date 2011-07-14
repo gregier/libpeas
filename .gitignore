@@ -86,4 +86,5 @@ Makefile.in
 /tests/libpeas-gtk/plugin-manager
 /tests/libpeas-gtk/plugin-manager-store
 /tests/libpeas-gtk/plugin-manager-view
+/tools/plugin-infos-to-xml
 /xmldocs.make
