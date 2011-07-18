@@ -410,12 +410,11 @@ peas_extension_gjs_new (GType      exten_type,
   g_return_val_if_fail (js_object != NULL, NULL);
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_GJS, exten_type);
-  gexten = PEAS_EXTENSION_GJS (g_object_new (real_type,
-                                             "extension-type", exten_type,
-                                             NULL));
+  gexten = PEAS_EXTENSION_GJS (g_object_new (real_type, NULL));
 
   gexten->js_context = js_context;
   gexten->js_object = js_object;
+  PEAS_EXTENSION_WRAPPER (gexten)->exten_type = exten_type;
   JS_AddObjectRoot (gexten->js_context, &gexten->js_object);
 
   return G_OBJECT (gexten);

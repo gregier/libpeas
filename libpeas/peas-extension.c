@@ -62,7 +62,7 @@
  * See peas_extension_call() for more information.
  **/
 GType
-peas_extension_get_type ()
+peas_extension_get_type (void)
 {
   return G_TYPE_OBJECT;
 }

@@ -142,11 +142,10 @@ peas_extension_python_new (GType     gtype,
   GType real_type;
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_PYTHON, gtype);
-  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (real_type,
-                                                 "extension-type", gtype,
-                                                 NULL));
+  pyexten = PEAS_EXTENSION_PYTHON (g_object_new (real_type, NULL));
 
   pyexten->instance = instance;
+  PEAS_EXTENSION_WRAPPER (pyexten)->exten_type = gtype;
   Py_INCREF (instance);
 
   return G_OBJECT (pyexten);
