@@ -135,7 +135,8 @@ get_dependant_plugins (PeasGtkPluginManagerView *view,
     {
       PeasPluginInfo *plugin = (PeasPluginInfo *) plugins->data;
 
-      if (!peas_plugin_info_is_loaded (plugin))
+      if (peas_plugin_info_is_hidden (plugin) ||
+          !peas_plugin_info_is_loaded (plugin))
         continue;
 
       /* Don't add builtin plugins if they are not shown */
