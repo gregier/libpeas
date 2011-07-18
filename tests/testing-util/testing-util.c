@@ -60,7 +60,6 @@ log_handler (const gchar    *log_domain,
              gpointer        user_data)
 {
   guint i;
-  gboolean first = TRUE;
 
   /* We always want to log debug, info and message logs */
   if ((log_level & G_LOG_LEVEL_DEBUG) != 0 ||
@@ -110,21 +109,7 @@ log_handler (const gchar    *log_domain,
   g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,
                          message, user_data);
 
-  for (i = 0; i < log_hooks->len; ++i)
-    {
-      LogHook *hook = g_ptr_array_index (log_hooks, i);
-
-      if (hook->hit)
-        continue;
-
-      if (first)
-        {
-          first = FALSE;
-          g_print ("Log hooks that were not hit:\n");
-        }
-
-      g_print ("\t'%s'\n", hook->pattern);
-    }
+  testing_util_pop_log_hooks ();
 
   /* The default handler does not actually abort */
   abort ();
@@ -190,8 +175,7 @@ testing_util_engine_free (PeasEngine *engine_)
     }
 
   /* Pop the log hooks so the test cases don't have to */
-  while (log_hooks->len > 0)
-    testing_util_pop_log_hook ();
+  testing_util_pop_log_hooks ();
 }
 
 int
@@ -242,7 +226,54 @@ testing_util_pop_log_hook (void)
   hook = g_ptr_array_index (log_hooks, log_hooks->len - 1);
 
   if (!hook->hit)
-    g_error ("Log hook was not triggered: '%s'", hook->pattern);
+    testing_util_pop_log_hooks ();
 
   g_ptr_array_remove_index (log_hooks, log_hooks->len - 1);
+}
+
+void
+testing_util_pop_log_hooks (void)
+{
+  guint i;
+  LogHook *hook;
+  GPtrArray *unhit_hooks;
+
+  g_return_if_fail (log_hooks != NULL);
+
+  if (log_hooks->len == 0)
+    return;
+
+  unhit_hooks = g_ptr_array_new ();
+
+  for (i = 0; i < log_hooks->len; ++i)
+    {
+      hook = g_ptr_array_index (log_hooks, i);
+
+      if (!hook->hit)
+        g_ptr_array_add (unhit_hooks, hook);
+    }
+
+  if (unhit_hooks->len == 1)
+    {
+      g_error ("Log hook was not triggered: '%s'", hook->pattern);
+    }
+  else if (unhit_hooks->len > 1)
+    {
+      /* Avoid our log handler */
+      g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,
+                             "Log hooks were not triggered:\n", NULL);
+
+      for (i = 0; i < unhit_hooks->len; ++i)
+        {
+          hook = g_ptr_array_index (unhit_hooks, i);
+
+          g_print ("\t'%s'\n", hook->pattern);
+        }
+
+      abort ();
+    }
+
+  g_ptr_array_unref (unhit_hooks);
+
+  g_ptr_array_set_size (log_hooks, 0);
 }

@@ -35,6 +35,7 @@ int         testing_util_run_tests     (void);
 
 void        testing_util_push_log_hook (const gchar *pattern);
 void        testing_util_pop_log_hook  (void);
+void        testing_util_pop_log_hooks (void);
 
 G_END_DECLS
 
