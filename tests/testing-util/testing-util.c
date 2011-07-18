@@ -201,7 +201,11 @@ testing_util_run_tests (void)
 
   retval = g_test_run ();
 
-  g_ptr_array_unref (log_hooks);
+  if (log_hooks != NULL)
+    {
+      g_assert_cmpuint (log_hooks->len, ==, 0);
+      g_ptr_array_unref (log_hooks);
+    }
 
   /* Cannot call this with atexit() because
    * gcov does not register that it was called.
