@@ -90,7 +90,7 @@ peasdemo_second_time_get_property (GObject    *object,
 static void
 peasdemo_second_time_init (PeasDemoSecondTime *plugin)
 {
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 }
 
 static void
@@ -98,7 +98,7 @@ peasdemo_second_time_finalize (GObject *object)
 {
   PeasDemoSecondTime *plugin = PEASDEMO_SECOND_TIME (object);
 
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   g_object_unref (plugin->label);
   g_object_unref (plugin->window);
@@ -117,7 +117,7 @@ peasdemo_second_time_activate (PeasActivatable *activatable)
 {
   PeasDemoSecondTime *plugin = PEASDEMO_SECOND_TIME (activatable);
 
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   plugin->label = gtk_label_new ("A second time!");
   gtk_box_pack_start (get_box (plugin->window), plugin->label, 1, 1, 0);
@@ -130,7 +130,7 @@ peasdemo_second_time_deactivate (PeasActivatable *activatable)
 {
   PeasDemoSecondTime *plugin = PEASDEMO_SECOND_TIME (activatable);
 
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   gtk_container_remove (GTK_CONTAINER (get_box (plugin->window)), plugin->label);
 }

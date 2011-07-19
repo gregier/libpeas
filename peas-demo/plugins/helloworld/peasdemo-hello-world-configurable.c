@@ -45,13 +45,13 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoHelloWorldConfigurable,
 static void
 peasdemo_hello_world_configurable_init (PeasDemoHelloWorldConfigurable *plugin)
 {
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 }
 
 static GtkWidget *
 peasdemo_hello_world_configurable_create_configure_widget (PeasGtkConfigurable *configurable)
 {
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   return gtk_label_new ("This is a configuration dialog for the HelloWorld plugin.");
 }

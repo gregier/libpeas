@@ -92,7 +92,7 @@ peasdemo_hello_world_plugin_get_property (GObject    *object,
 static void
 peasdemo_hello_world_plugin_init (PeasDemoHelloWorldPlugin *plugin)
 {
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 }
 
 static void
@@ -100,7 +100,7 @@ peasdemo_hello_world_plugin_finalize (GObject *object)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (object);
 
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   g_object_unref (plugin->label);
   g_object_unref (plugin->window);
@@ -119,7 +119,7 @@ peasdemo_hello_world_plugin_activate (PeasActivatable *activatable)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (activatable);
 
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   plugin->label = gtk_label_new ("Hello World!");
   gtk_box_pack_start (get_box (plugin->window), plugin->label, 1, 1, 0);
@@ -132,7 +132,7 @@ peasdemo_hello_world_plugin_deactivate (PeasActivatable *activatable)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (activatable);
 
-  g_debug (G_STRFUNC);
+  g_debug ("%s", G_STRFUNC);
 
   gtk_container_remove (GTK_CONTAINER (get_box (plugin->window)), plugin->label);
 }
