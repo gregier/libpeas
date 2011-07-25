@@ -1,3 +1,13 @@
+Overview of Changes in libpeas 1.1.1
+====================================
+
+* PeasExtension has been deprecated
+
+* You should be able to use C plugins without GObject-Introspection.
+
+* The plugin manager's disable plugins dialog will no longer show
+  hidden plugins.
+
 Overview of Changes in libpeas 1.1.0
 ====================================
 
