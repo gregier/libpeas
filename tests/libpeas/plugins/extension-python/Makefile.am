@@ -4,7 +4,6 @@ noinst_PYTHON = extension-python.py
 
 noinst_PLUGIN = \
 	extension-python.plugin	\
-	extension-python.py	\
-	extension-python.pyc
+	extension-python.py
 
 EXTRA_DIST = $(noinst_PLUGIN)
