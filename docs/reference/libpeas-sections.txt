@@ -61,8 +61,6 @@ PeasEngine
 PeasEngineClass
 peas_engine_new
 peas_engine_get_default
-peas_engine_set_interface
-peas_engine_get_interface
 peas_engine_add_search_path
 peas_engine_enable_loader
 peas_engine_rescan_plugins
@@ -214,7 +212,6 @@ peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright
 peas_plugin_info_get_version
-peas_plugin_info_get_interfaces
 <SUBSECTION Standard>
 PEAS_TYPE_PLUGIN_INFO
 PEAS_PLUGIN_INFO
