@@ -20,4 +20,12 @@
       <gnome:userid>sfre</gnome:userid>
     </foaf:Person>
   </maintainer>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Garrett Regier</foaf:name>
+      <foaf:mbox rdf:resource="mailto:garrettregier@gmail.com" />
+      <gnome:userid>gregier</gnome:userid>
+    </foaf:Person>
+  </maintainer>
 </Project>
