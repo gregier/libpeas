@@ -24,9 +24,9 @@
 #endif
 
 #include <gjs/gjs-module.h>
-#include <gjs/gi/object.h>
-#include <gjs/gi/repo.h>
-#include <gjs/gi/value.h>
+#include <gi/object.h>
+#include <gi/repo.h>
+#include <gi/value.h>
 
 #include "peas-plugin-loader-gjs.h"
 #include "peas-extension-gjs.h"

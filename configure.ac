@@ -257,7 +257,7 @@ dnl ================================================================
 dnl GJS Javascript Engine
 dnl ================================================================
 
-GJS_REQUIRED=0.7.8
+GJS_REQUIRED=1.29.16
 
 AC_ARG_ENABLE(gjs,
 	      AS_HELP_STRING([--enable-gjs],[Enable GJS support]),
@@ -269,7 +269,7 @@ AC_MSG_CHECKING([for GJS JS availability.])
 if test "x$enable_gjs" = "xno"; then
 	found_gjs="no (disabled, use --enable-gjs to enable)"
 else
-	PKG_CHECK_EXISTS([gjs-internals-1.0 >= $GJS_REQUIRED gjs-gi-1.0],
+	PKG_CHECK_EXISTS([gjs-internals-1.0 >= $GJS_REQUIRED],
 			 [found_gjs=yes],
 			 [found_gjs=no])
 fi
@@ -280,8 +280,8 @@ fi
 AC_MSG_RESULT([$found_gjs])
 
 if test "$found_gjs" = "yes"; then
-	GJS_CFLAGS=`$PKG_CONFIG --cflags gjs-internals-1.0 gjs-gi-1.0`
-	GJS_LIBS=`$PKG_CONFIG --libs gjs-internals-1.0 gjs-gi-1.0`
+	GJS_CFLAGS=`$PKG_CONFIG --cflags gjs-internals-1.0`
+	GJS_LIBS=`$PKG_CONFIG --libs gjs-internals-1.0`
 	AC_SUBST(GJS_CFLAGS)
 	AC_SUBST(GJS_LIBS)
 

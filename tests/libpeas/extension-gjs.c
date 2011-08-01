@@ -23,7 +23,7 @@
 #include <config.h>
 #endif
 
-#include <gjs/gi/value.h>
+#include <gi/value.h>
 
 #include "loaders/gjs/peas-extension-gjs.h"
 

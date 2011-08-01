@@ -26,8 +26,8 @@
 #include <string.h>
 
 #include <girepository.h>
-#include <gjs/gi/arg.h>
-#include <gjs/gi/value.h>
+#include <gi/arg.h>
+#include <gi/value.h>
 
 #include <libpeas/peas-introspection.h>
 #include <libpeas/peas-extension-subclasses.h>
