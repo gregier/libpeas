@@ -84,7 +84,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
     }
   else
     {
-      return GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (exten), "peas-extension-type"));
+      return (GType) g_object_get_data (G_OBJECT (exten), "peas-extension-type");
     }
 }
 
