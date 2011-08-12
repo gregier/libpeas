@@ -73,7 +73,7 @@ peas_extension_get_type (void)
  *
  * Get the type of the extension interface of the object proxied by @exten.
  *
- * Return value: The #Gtype proxied by @exten.
+ * Return value: The #GType proxied by @exten.
  */
 GType
 peas_extension_get_extension_type (PeasExtension *exten)
