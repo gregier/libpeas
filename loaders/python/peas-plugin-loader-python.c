@@ -30,8 +30,8 @@
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
  * glib-object.h, so we unset it here to avoid a warning. Yep, that's bad. */
 #undef _POSIX_C_SOURCE
-#include <Python.h>
 #include <pygobject.h>
+#include <Python.h>
 #include <signal.h>
 
 #if PY_VERSION_HEX < 0x02050000
@@ -457,30 +457,20 @@ peas_python_init (PeasPluginLoaderPython *loader)
   /* Initialize support for threads */
   pyg_enable_threads ();
 
-  gobject = PyImport_ImportModule ("gobject");
-  if (gobject == NULL)
-    {
-      g_warning ("Error initializing Python interpreter: could not "
-                 "import gobject");
-
-      goto python_init_error;
-    }
-
-  mdict = PyModule_GetDict (gobject);
-  PyGObject_Type = PyDict_GetItemString (mdict, "GObject");
-  if (PyGObject_Type == NULL)
-    {
-      g_warning ("Error initializing Python interpreter: could not "
-                 "get gobject.GObject");
-
-      goto python_init_error;
-    }
-
   gi = PyImport_ImportModule ("gi");
   if (gi == NULL)
     {
       g_warning ("Error initializing Python interpreter: could not "
                  "import gi");
+
+      goto python_init_error;
+    }
+
+  gobject = PyImport_ImportModule ("gi.repository.GObject");
+  if (gobject == NULL)
+    {
+      g_warning ("Error initializing Python interpreter: could not "
+                 "import gobject");
 
       goto python_init_error;
     }

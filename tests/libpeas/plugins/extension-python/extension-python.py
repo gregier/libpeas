@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 # ex:set ts=4 et sw=4 ai:
 
-import gobject
-from gi.repository import Introspection, Peas
+from gi.repository import GObject, Introspection, Peas
 
-class CallablePythonPlugin(gobject.GObject, Introspection.Callable):
-    __gtype_name__ = "CallablePythonPlugin"
-
+class CallablePythonPlugin(GObject.Object, Introspection.Callable):
     def do_call_with_return(self):
         return "Hello, World!";
 
@@ -19,21 +16,17 @@ class CallablePythonPlugin(gobject.GObject, Introspection.Callable):
     def do_call_multi_args(self, in_, inout):
         return (inout, in_)
 
-class PropertiesPythonPlugin(gobject.GObject, Introspection.Properties):
-    __gtype_name__ = "PropertiesPythonPlugin"
+class PropertiesPythonPlugin(GObject.Object, Introspection.Properties):
+    construct_only = GObject.property(type=str)
 
-    construct_only = gobject.property(type=str)
-
-    read_only = gobject.property(type=str, default="read-only")
+    read_only = GObject.property(type=str, default="read-only")
                                       
-    write_only = gobject.property(type=str)
+    write_only = GObject.property(type=str)
 
-    readwrite = gobject.property(type=str, default="readwrite")
+    readwrite = GObject.property(type=str, default="readwrite")
 
-class ActivatablePythonExtension(gobject.GObject, Peas.Activatable):
-    __gtype_name__ = "ActivatablePythonExtension"
-
-    object = gobject.property(type=gobject.GObject)
+class ActivatablePythonExtension(GObject.Object, Peas.Activatable):
+    object = GObject.property(type=GObject.Object)
 
     def do_activate(self):
         pass

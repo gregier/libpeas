@@ -22,17 +22,17 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ##
 
-import gobject
+from gi.repository import GObject
 from gi.repository import Peas
 from gi.repository import PeasGtk
 from gi.repository import Gtk
 
 LABEL_STRING="Python Says Hello!"
 
-class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
+class PythonHelloPlugin(GObject.Object, Peas.Activatable):
     __gtype_name__ = 'PythonHelloPlugin'
 
-    object = gobject.property(type=gobject.GObject)
+    object = GObject.property(type=GObject.Object)
 
     def do_activate(self):
         window = self.object
@@ -51,7 +51,7 @@ class PythonHelloPlugin(gobject.GObject, Peas.Activatable):
     def do_update_state(self):
         print("PythonHelloPlugin.do_update_state", repr(self.object))
 
-class PythonHelloConfigurable(gobject.GObject, PeasGtk.Configurable):
+class PythonHelloConfigurable(GObject.Object, PeasGtk.Configurable):
     __gtype_name__ = 'PythonHelloConfigurable'
 
     def do_create_configure_widget(self):

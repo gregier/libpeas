@@ -298,8 +298,8 @@ PYTHON_REQUIRED=2.5.2
 
 dnl Used by the Python loader to check the PyGObject version at runtime
 PYGOBJECT_MAJOR_VERSION=2
-PYGOBJECT_MINOR_VERSION=28
-PYGOBJECT_MICRO_VERSION=0
+PYGOBJECT_MINOR_VERSION=90
+PYGOBJECT_MICRO_VERSION=2
 PYGOBJECT_REQUIRED=$PYGOBJECT_MAJOR_VERSION.$PYGOBJECT_MINOR_VERSION.$PYGOBJECT_MICRO_VERSION
 
 AC_ARG_ENABLE(python,
@@ -333,7 +333,7 @@ else
 
 	AC_MSG_CHECKING([for PyGObject availability.])
 	if test "$found_python" = "yes"; then
-		PKG_CHECK_EXISTS([pygobject-2.0 >= $PYGOBJECT_REQUIRED],,
+		PKG_CHECK_EXISTS([pygobject-3.0 >= $PYGOBJECT_REQUIRED],,
 				 [found_python="no (pygobject >= $PYGOBJECT_REQUIRED) not found)"])
 	fi
 	AC_MSG_RESULT([$found_python])
@@ -347,8 +347,8 @@ if test "$enable_python" = "yes" -a "$found_python" != "yes"; then
 fi
 
 if test "$found_python" = "yes"; then
-	PYTHON_CFLAGS="`$PKG_CONFIG --cflags pygobject-2.0` `$PYTHON_CONFIG --includes`"
-	PYTHON_LIBS="`$PKG_CONFIG --libs pygobject-2.0` `$PYTHON_CONFIG --libs`"
+	PYTHON_CFLAGS="`$PKG_CONFIG --cflags pygobject-3.0` `$PYTHON_CONFIG --includes`"
+	PYTHON_LIBS="`$PKG_CONFIG --libs pygobject-3.0` `$PYTHON_CONFIG --libs`"
 	AC_SUBST(PYTHON_CFLAGS)
 	AC_SUBST(PYTHON_LIBS)
 
