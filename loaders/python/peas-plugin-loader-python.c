@@ -52,8 +52,6 @@ typedef struct {
   PyObject *module;
 } PythonInfo;
 
-static PyObject *PyGObject_Type;
-
 static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
                                                              const gchar            *module_path);
 
