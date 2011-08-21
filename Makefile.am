@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
-DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc --enable-introspection
+DISTCHECK_CONFIGURE_FLAGS= --enable-gtk-doc --enable-glade-catalog
 
 SUBDIRS = libpeas loaders
 GCOVDIRS = libpeas loaders
