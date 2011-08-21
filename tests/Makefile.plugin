@@ -11,3 +11,15 @@ all-local:
 	     fi ; \
 	   fi ; \
 	 done
+
+clean-local:
+	@test -z "$(noinst_PLUGIN)" || \
+	 for plugin in $(noinst_PLUGIN) ; do \
+	   if test -e $(builddir)/$$plugin ; then \
+	     rm -f $(builddir)/$$plugin ; \
+	     # hack to cleanup .pyc files \
+	     if test -e $(builddir)/$${plugin}c ; then \
+	       rm -f $(builddir)/$${plugin}c ; \
+	     fi ; \
+	   fi ; \
+	 done
