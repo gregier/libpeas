@@ -41,8 +41,8 @@
  * or unloaded.
  *
  * You can also use the code of this interface as a base for your own
- * extension types, as illustrated by gedit's #GeditWindowActivatable and
- * #GeditDocumentActivatable interfaces.
+ * extension types, as illustrated by gedit's %GeditWindowActivatable and
+ * %GeditDocumentActivatable interfaces.
  **/
 
 G_DEFINE_INTERFACE(PeasActivatable, peas_activatable, G_TYPE_OBJECT)
