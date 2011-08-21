@@ -255,6 +255,7 @@ testing_util_pop_log_hooks (void)
 
   if (unhit_hooks->len == 1)
     {
+      hook = g_ptr_array_index (unhit_hooks, 0);
       g_error ("Log hook was not triggered: '%s'", hook->pattern);
     }
   else if (unhit_hooks->len > 1)
