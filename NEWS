@@ -1,3 +1,15 @@
+Overview of Changes in libpeas 1.1.2
+====================================
+
+* Doc updates.
+
+* Link against pygobject 3.
+
+* Do not cast pointers to unsigned integers.
+
+* Translation updates:
+  - Indonesian
+
 Overview of Changes in libpeas 1.1.1
 ====================================
 
