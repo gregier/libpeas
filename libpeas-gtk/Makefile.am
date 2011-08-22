@@ -15,8 +15,8 @@ libpeas_gtk_1_0_la_LDFLAGS = \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
 libpeas_gtk_1_0_la_LIBADD = \
-	$(PEAS_LIBS)							\
-	$(PEAS_GTK_LIBS)						\
+	$(PEAS_LIBS)                                            \
+	$(PEAS_GTK_LIBS)                                        \
 	$(top_builddir)/libpeas/libpeas-1.0.la
 
 INST_H_FILES = \
@@ -35,6 +35,25 @@ C_FILES = \
 	peas-gtk-plugin-manager.c		\
 	peas-gtk-plugin-manager-store.c		\
 	peas-gtk-plugin-manager-view.c
+
+if ENABLE_PACKAGEKIT
+  INCLUDES += $(PEAS_PK_CFLAGS)
+  libpeas_gtk_1_0_la_LIBADD += $(PEAS_PK_LIBS)
+
+  NOINST_H_FILES += \
+	peas-gtk-installable-plugin-info.h	\
+  	peas-gtk-plugin-store.h			\
+	peas-gtk-plugin-store-backend.h		\
+  	peas-gtk-plugin-store-backend-pk.h	\
+	peas-gtk-plugin-store-model.h
+
+  C_FILES += \
+	peas-gtk-installable-plugin-info.c	\
+  	peas-gtk-plugin-store.c			\
+  	peas-gtk-plugin-store-backend.c		\
+  	peas-gtk-plugin-store-backend-pk.c	\
+	peas-gtk-plugin-store-model.c
+endif
 
 libpeas_gtk_1_0_la_SOURCES = \
 	$(INST_H_FILES)			\

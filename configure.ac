@@ -124,6 +124,29 @@ AC_SUBST(GTK_REQUIRED)
 AM_CONDITIONAL([ENABLE_GTK],[test "x$enable_gtk" = "xyes"])
 
 dnl ================================================================
+dnl Build PackageKit Plugin Store
+dnl ================================================================
+
+PACKAGEKIT_REQUIRED=0.6.0
+
+AC_ARG_ENABLE(packagekit,
+	      AS_HELP_STRING([--enable-packagekit],[Build PackageKit plugin store]),
+	      [enable_packagekit=$enableval],
+	      [enable_packagekit=yes])
+
+if test "$enable_packagekit" = "yes"; then
+	PKG_CHECK_MODULES(PEAS_PK, [
+		packagekit-glib2 >= $PACKAGEKIT_REQUIRED
+	])
+
+  AC_DEFINE(ENABLE_PACKAGEKIT,1,[Define to compile with PackageKit support])
+fi
+
+AC_SUBST(PACKAGEKIT_REQUIRED)
+
+AM_CONDITIONAL([ENABLE_PACKAGEKIT],[test "x$enable_packagekit" = "xyes"])
+
+dnl ================================================================
 dnl Check for native OSX
 dnl ================================================================
 AC_MSG_CHECKING([for native Mac OS X])
@@ -526,6 +549,7 @@ Configuration:
         Compiler                      : ${CC}
         Installation prefix           : ${prefix}
         Build libpeas-gtk             : ${enable_gtk}
+        PackageKit plugin store       : ${enable_packagekit}
         Coverage testing              : ${enable_gcov}
         Glade Catalog                 : ${found_glade_catalog}
         Disable deprecated features   : ${enable_deprecation}

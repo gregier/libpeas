@@ -64,6 +64,7 @@ static void
 test_setup (TestFixture   *fixture,
             gconstpointer  data)
 {
+  GtkWidget *sw;
   GList *children;
   GtkContainer *toolbar = NULL;
   GtkContainer *tool_item;
@@ -96,8 +97,10 @@ test_setup (TestFixture   *fixture,
   /* Set the model */
   g_object_notify (G_OBJECT (fixture->view), "model");
 
+  sw = gtk_widget_get_parent (GTK_WIDGET (fixture->view));
+
   /* Must use forall as the buttons are "internal" children */
-  gtk_container_forall (GTK_CONTAINER (fixture->manager),
+  gtk_container_forall (GTK_CONTAINER (gtk_widget_get_parent (sw)),
                         (GtkCallback) plugin_manager_forall_cb,
                         &toolbar);
 
@@ -106,6 +109,7 @@ test_setup (TestFixture   *fixture,
   /* The structure for the toolbar is:
      toolbar
        toolitem
+         button
          box
            box
              button
@@ -114,9 +118,9 @@ test_setup (TestFixture   *fixture,
   */
 
   children = gtk_container_get_children (toolbar);
-  g_assert (g_list_length (children) == 1);
+  g_assert (g_list_length (children) == 2);
 
-  tool_item = children->data;
+  tool_item = children->next->data;
   g_assert (GTK_IS_TOOL_ITEM (tool_item));
   g_list_free (children);
 
@@ -424,10 +428,42 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
 }
 
 static void
+test_gtk_plugin_manager_view_different_engine (void)
+{
+  PeasEngine *view_engine, *manager_engine;
+  GtkWidget *view;
+  GtkWidget *manager;
+
+  testing_util_push_log_hook ("PeasGtkPluginManager's view has a different "
+                              "PeasEngine, this is not allowed.");
+
+  view_engine = peas_engine_new ();
+  manager_engine = peas_engine_new ();
+
+  view = g_object_ref_sink (peas_gtk_plugin_manager_view_new (view_engine));
+  manager = g_object_new (PEAS_GTK_TYPE_PLUGIN_MANAGER,
+                          "view", g_object_ref (view),
+                          "engine", manager_engine,
+                          NULL);
+
+  g_assert (view != peas_gtk_plugin_manager_get_view (PEAS_GTK_PLUGIN_MANAGER (manager)));
+
+  g_object_unref (view);
+  g_object_unref (g_object_ref_sink (manager));
+
+  g_object_unref (view_engine);
+  g_object_unref (manager_engine);
+
+  testing_util_pop_log_hooks ();
+}
+
+static void
 test_gtk_plugin_manager_gtkbuilder (void)
 {
   GtkBuilder *builder;
   GError *error = NULL;
+  PeasEngine *engine;
+  PeasEngine *manager_engine;
   PeasGtkPluginManager *manager;
   PeasGtkPluginManagerView *view;
   static const gchar *gtkbuilder_string =
@@ -443,11 +479,19 @@ test_gtk_plugin_manager_gtkbuilder (void)
 
   builder = gtk_builder_new ();
 
+  engine = peas_engine_get_default ();
+
   gtk_builder_add_from_string (builder, gtkbuilder_string, -1, &error);
   g_assert_no_error (error);
 
   manager = PEAS_GTK_PLUGIN_MANAGER (gtk_builder_get_object (builder, "manager"));
   g_assert (PEAS_GTK_IS_PLUGIN_MANAGER (manager));
+
+  g_object_get (manager,
+                "engine", &manager_engine,
+                NULL);
+  g_assert (engine == manager_engine);
+  g_object_unref (manager_engine);
 
   view = PEAS_GTK_PLUGIN_MANAGER_VIEW (peas_gtk_plugin_manager_get_view (manager));
 
@@ -457,6 +501,8 @@ test_gtk_plugin_manager_gtkbuilder (void)
 
   /* Freeing the builder will free the objects */
   g_object_unref (builder);
+
+  g_object_unref (engine);
 }
 
 int
@@ -485,6 +531,7 @@ main (int    argc,
   TEST ("about-dialog", about_dialog);
   TEST ("configure-dialog", configure_dialog);
 
+  TEST_FUNC ("view-different-engine", view_different_engine);
   TEST_FUNC ("gtkbuilder", gtkbuilder);
 
 #undef TEST

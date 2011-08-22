@@ -5,7 +5,7 @@
  * Copyright (C) 2002 Paolo Maggi and James Willcox
  * Copyright (C) 2003-2006 Paolo Maggi, Paolo Borelli
  * Copyright (C) 2007-2009 Paolo Maggi, Paolo Borelli, Steve Frécinaux
- * Copyright (C) 2010 Garrett Regier
+ * Copyright (C) 2010-2011 Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -41,6 +41,10 @@
 #include "peas-gtk-plugin-manager-view.h"
 #include "peas-gtk-configurable.h"
 
+#ifdef ENABLE_PACKAGEKIT
+#include "peas-gtk-plugin-store.h"
+#endif
+
 /**
  * SECTION:peas-gtk-plugin-manager
  * @short_description: Management GUI for plugins.
@@ -60,13 +64,18 @@
 struct _PeasGtkPluginManagerPrivate {
   PeasEngine *engine;
 
-  GtkWidget *sw;
-  GtkWidget *view;
-
   GtkWidget *about;
 
+  GtkWidget *plugins_holder;
+  GtkWidget *sw;
+  GtkWidget *view;
   GtkWidget *about_button;
   GtkWidget *configure_button;
+
+#ifdef ENABLE_PACKAGEKIT
+  GtkWidget *store_holder;
+  GtkWidget *store;
+#endif
 };
 
 /* Properties */
@@ -333,6 +342,38 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
   gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 }
 
+#ifdef ENABLE_PACKAGEKIT
+static void
+plugin_store_back_cb (PeasGtkPluginStore   *store,
+                      PeasGtkPluginManager *pm)
+{
+  gtk_widget_show (pm->priv->plugins_holder);
+  gtk_widget_hide (pm->priv->store_holder);
+}
+
+static void
+get_plugins_cb (GtkWidget            *widget,
+                PeasGtkPluginManager *pm)
+{
+  if (pm->priv->store == NULL)
+    {
+      pm->priv->store = peas_gtk_plugin_store_new (pm->priv->engine);
+      gtk_box_pack_start (GTK_BOX (pm->priv->store_holder), pm->priv->store,
+                          TRUE, TRUE, 0);
+
+      g_signal_connect (pm->priv->store,
+                        "back",
+                        G_CALLBACK (plugin_store_back_cb),
+                        pm);
+
+      gtk_widget_show (pm->priv->store);
+    }
+
+  gtk_widget_hide (pm->priv->plugins_holder);
+  gtk_widget_show (pm->priv->store_holder);
+}
+#endif
+
 static void
 peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 {
@@ -341,6 +382,9 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   GtkToolItem *toolitem;
   GtkWidget *toolbar_box;
   GtkWidget *item_box;
+#ifdef ENABLE_PACKAGEKIT
+  GtkWidget *get_plugins_button;
+#endif
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
                                           PEAS_GTK_TYPE_PLUGIN_MANAGER,
@@ -351,10 +395,20 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   g_irepository_require (g_irepository_get_default (),
                          "PeasGtk", "1.0", 0, NULL);
 
+  gtk_container_set_border_width (GTK_CONTAINER (pm), 6);
   gtk_orientable_set_orientation (GTK_ORIENTABLE (pm),
                                   GTK_ORIENTATION_VERTICAL);
 
   gtk_widget_push_composite_child ();
+
+  /* Note that we use boxes that hold the content here instead
+   * of a notebook because the notebook had theming issues when
+   * placed inside another notebook.
+   */
+
+  pm->priv->plugins_holder = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_box_pack_start (GTK_BOX (pm), pm->priv->plugins_holder,
+                      TRUE, TRUE, 0);
 
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->sw),
@@ -363,22 +417,35 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                                        GTK_SHADOW_IN);
   context = gtk_widget_get_style_context (pm->priv->sw);
   gtk_style_context_set_junction_sides (context, GTK_JUNCTION_BOTTOM);
-  gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (pm->priv->plugins_holder), pm->priv->sw,
+                      TRUE, TRUE, 0);
 
-  toolbar = gtk_toolbar_new();
+  toolbar = gtk_toolbar_new ();
   gtk_toolbar_set_icon_size (GTK_TOOLBAR (toolbar), GTK_ICON_SIZE_MENU);
   context = gtk_widget_get_style_context (toolbar);
   gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
   gtk_style_context_add_class (context, GTK_STYLE_CLASS_INLINE_TOOLBAR);
-  gtk_box_pack_start (GTK_BOX (pm), toolbar, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (pm->priv->plugins_holder), toolbar,
+                      FALSE, FALSE, 0);
+
+#ifdef ENABLE_PACKAGEKIT
+  toolitem = gtk_tool_item_new ();
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
+
+  get_plugins_button = gtk_button_new_with_mnemonic (_("_Get Plugins"));
+  gtk_button_set_image (GTK_BUTTON (get_plugins_button),
+                        gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD,
+                                                  GTK_ICON_SIZE_BUTTON));
+  gtk_container_add (GTK_CONTAINER (toolitem), get_plugins_button);
+#endif
 
   toolitem = gtk_tool_item_new ();
   gtk_tool_item_set_expand (toolitem, TRUE);
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
   /* this box is needed to get the items at the end of the toolbar */
   toolbar_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_container_add (GTK_CONTAINER (toolitem), toolbar_box);
-  gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
   /* we need another box to disable css grouping */
   item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -396,11 +463,24 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_box_pack_start (GTK_BOX (item_box), pm->priv->configure_button,
                       FALSE, FALSE, 0);
 
+#ifdef ENABLE_PACKAGEKIT
+  pm->priv->store_holder = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+  gtk_widget_set_no_show_all (pm->priv->store_holder, TRUE);
+  gtk_box_pack_start (GTK_BOX (pm), pm->priv->store_holder,
+                      TRUE, TRUE, FALSE);
+#endif
+
   gtk_widget_pop_composite_child ();
 
   /* setup a window of a sane size. */
-  gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 270, 100);
+  gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 370, 200);
 
+#ifdef ENABLE_PACKAGEKIT
+  g_signal_connect (get_plugins_button,
+                    "clicked",
+                    G_CALLBACK (get_plugins_cb),
+                    pm);
+#endif
   g_signal_connect (pm->priv->about_button,
                     "clicked",
                     G_CALLBACK (show_about_cb),
@@ -482,10 +562,16 @@ peas_gtk_plugin_manager_constructed (GObject *object)
                     "engine", &engine,
                     NULL);
 
-      g_warn_if_fail (engine == pm->priv->engine);
-
       if (engine != pm->priv->engine)
-        g_clear_object (&pm->priv->view);
+        {
+          g_warning ("PeasGtkPluginManager's view has a different "
+                     "PeasEngine, this is not allowed.");
+
+          if (g_object_is_floating (pm->priv->view))
+            g_object_ref_sink (pm->priv->view);
+
+          g_clear_object (&pm->priv->view);
+        }
 
       g_object_unref (engine);
     }
@@ -493,9 +579,7 @@ peas_gtk_plugin_manager_constructed (GObject *object)
   if (pm->priv->view == NULL)
     pm->priv->view = peas_gtk_plugin_manager_view_new (pm->priv->engine);
 
-  gtk_widget_push_composite_child ();
   gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
-  gtk_widget_pop_composite_child ();
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
 
@@ -520,7 +604,7 @@ peas_gtk_plugin_manager_constructed (GObject *object)
                           G_CALLBACK (plugin_loaded_toggled_cb),
                           pm);
 
-  /* Update the button sensitivity */
+  /* Update the buttons */
   selection_changed_cb (pm);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->constructed (object);

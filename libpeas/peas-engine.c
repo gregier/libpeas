@@ -264,7 +264,7 @@ peas_engine_insert_search_path (PeasEngine  *engine,
  * @module_dir.
  */
 void
-peas_engine_add_search_path (PeasEngine *engine,
+peas_engine_add_search_path (PeasEngine  *engine,
                              const gchar *module_dir,
                              const gchar *data_dir)
 {
