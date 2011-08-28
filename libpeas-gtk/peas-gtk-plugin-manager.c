@@ -90,19 +90,6 @@ static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkPluginManager, peas_gtk_plugin_manager, GTK_TYPE_BOX);
 
-#if !GTK_CHECK_VERSION(2,18,0)
-#define gtk_widget_set_visible (widget, visible) \
-  G_STMT_BEGIN \
-    { \
-      if (visible) \
-        gtk_widget_show (widget); \
-      else \
-        gtk_widget_hide (widget); \
-    } \
-  G_STMT_END
-#endif
-
-
 static gboolean
 plugin_is_configurable (PeasGtkPluginManager *pm,
                         PeasPluginInfo       *info)
@@ -282,6 +269,7 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 {
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
+  GtkTreeSelection *selection;
   GtkTreeIter iter;
   gchar *text;
   gchar *icon_name;
@@ -293,12 +281,14 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 
   view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
-  peas_gtk_plugin_manager_view_get_selected_iter (view, &iter);
 
   gtk_widget_set_visible (pm->priv->plugin_info, info != NULL);
 
   if (info == NULL)
-      return;
+    return;
+
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
+  gtk_tree_selection_get_selected (selection, NULL, &iter);
 
   update_button_sensitivity (pm, info);
 
@@ -319,8 +309,40 @@ selection_changed_cb (PeasGtkPluginManager *pm)
 
   if (icon_pixbuf != NULL)
     {
-      gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon),
-                                 icon_pixbuf);
+      gchar *icon_filename;
+      gint width, height;
+      GError *error = NULL;
+
+      icon_filename = g_build_filename (peas_plugin_info_get_data_dir (info),
+                                        icon_name,
+                                        NULL);
+
+      /* Attempt to load the icon scaled to the correct size */
+      if (!gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &width, &height))
+        {
+          icon_pixbuf = gdk_pixbuf_new_from_file (icon_filename, &error);
+        }
+      else
+        {
+          icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename,
+                                                          width, height,
+                                                          &error);
+        }
+
+      if (error != NULL)
+        {
+          g_warning ("Error while loading icon: %s", error->message);
+          g_error_free (error);
+          icon_pixbuf = NULL;
+        }
+      else
+        {
+          gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon),
+                                     icon_pixbuf);
+          g_object_unref (icon_pixbuf);
+        }
+
+      g_free (icon_filename);
     }
   else if (icon_name != NULL && g_strcmp0 (icon_name, "libpeas-plugin") != 0)
     {
@@ -393,13 +415,13 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
 
 static void
 add_section (GtkWidget     *box,
-             const gchar  *title,
+             const gchar   *title,
              GtkWidget    **title_label,
              GtkWidget    **plugin_label)
 {
   GtkWidget *section_box;
 
-  section_box = gtk_vbox_new (0, FALSE);
+  section_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_box_pack_start (GTK_BOX (box), section_box, FALSE, FALSE, 0);
 
   *title_label =  gtk_label_new (title);
@@ -438,22 +460,22 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->sw),
-                                  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                        GTK_SHADOW_IN);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, FALSE, FALSE, 0);
 
-
-  pm->priv->plugin_info = gtk_vbox_new (FALSE, 12);
+  pm->priv->plugin_info = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->plugin_info, TRUE, TRUE, 0);
 
-  header_box = gtk_hbox_new (FALSE, 12);
+  header_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   gtk_box_pack_start (GTK_BOX (pm->priv->plugin_info), header_box,
                       FALSE, FALSE, 0);
 
   pm->priv->plugin_title = gtk_label_new (NULL);
   gtk_label_set_justify (GTK_LABEL (pm->priv->plugin_title), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (pm->priv->plugin_title), 0.0, 1.0);
+  gtk_misc_set_alignment (GTK_MISC (pm->priv->plugin_title), 0.0, 0.5);
+  gtk_label_set_line_wrap (GTK_LABEL (pm->priv->plugin_title), TRUE);
   gtk_box_pack_start (GTK_BOX (header_box), pm->priv->plugin_title,
                       FALSE, FALSE, 0);
 
@@ -472,7 +494,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   add_section (pm->priv->plugin_info, _("<b>Website:</b>"),
                &pm->priv->website_label, &pm->priv->plugin_website);
 
-  hbuttonbox = gtk_hbutton_box_new ();
+  hbuttonbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
   gtk_box_pack_end (GTK_BOX (pm->priv->plugin_info), hbuttonbox,
                     FALSE, FALSE, 0);
@@ -484,16 +506,18 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_widget_pop_composite_child ();
 
   /* setup a window of a sane size. */
-  /*gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 270, 100);*/
-  gtk_widget_set_size_request (GTK_WIDGET (pm), 560, 300);
+  gtk_widget_set_size_request (pm->priv->sw, 250, 0);
+  gtk_widget_set_size_request (GTK_WIDGET (pm), 550, 300);
+
   g_signal_connect (pm->priv->configure_button,
                     "clicked",
                     G_CALLBACK (show_configure_cb),
                     pm);
 
   gtk_container_foreach (GTK_CONTAINER (pm),
-                         (GtkCallback) gtk_widget_show,
+                         (GtkCallback) gtk_widget_show_all,
                          NULL);
+  gtk_widget_set_no_show_all (pm->priv->plugin_info, TRUE);
 }
 
 static void
