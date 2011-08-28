@@ -88,7 +88,7 @@ peas_extension_base_set_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_PLUGIN_INFO:
-      extbase->priv->info = g_value_dup_boxed (value);
+      extbase->priv->info = g_value_get_boxed (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -105,24 +105,12 @@ peas_extension_base_init (PeasExtensionBase *extbase)
 }
 
 static void
-peas_extension_base_finalize (GObject *object)
-{
-  PeasExtensionBase *extbase = PEAS_EXTENSION_BASE (object);
-
-  if (extbase->priv->info != NULL)
-    _peas_plugin_info_unref (extbase->priv->info);
-
-  G_OBJECT_CLASS (peas_extension_base_parent_class)->finalize (object);
-}
-
-static void
 peas_extension_base_class_init (PeasExtensionBaseClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->get_property = peas_extension_base_get_property;
   object_class->set_property = peas_extension_base_set_property;
-  object_class->finalize = peas_extension_base_finalize;
 
   g_object_class_install_property (object_class,
                                    PROP_PLUGIN_INFO,

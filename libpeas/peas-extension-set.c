@@ -209,8 +209,6 @@ add_extension (PeasExtensionSet *set,
                                          set->priv->n_parameters,
                                          set->priv->parameters);
 
-/*  peas_plugin_info_ref (info); */
-
   item = (ExtensionItem *) g_slice_new (ExtensionItem);
   item->info = info;
   item->exten = exten;
@@ -225,7 +223,6 @@ remove_extension_item (PeasExtensionSet *set,
 {
   g_signal_emit (set, signals[EXTENSION_REMOVED], 0, item->info, item->exten);
 
-/*  peas_plugin_info_unref (item->info); */
   g_object_unref (item->exten);
 
   g_slice_free (ExtensionItem, item);
