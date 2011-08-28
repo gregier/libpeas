@@ -87,9 +87,6 @@ update_plugin (PeasGtkPluginManagerStore *store,
                                         icon_name,
                                         NULL);
 
-      if (!gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
-        icon_name = "libpeas-plugin";
-
       /* Prevent warning for the common case that icon_filename
        * does not exist but warn when it is a directory
        */
@@ -111,14 +108,16 @@ update_plugin (PeasGtkPluginManagerStore *store,
                                                               &error);
             }
 
-          if (error == NULL)
-            icon_name = NULL;
-          else
+          if (error != NULL)
             {
               g_warning ("Error while loading icon: %s", error->message);
               g_error_free (error);
             }
         }
+
+      if (icon_pixbuf == NULL &&
+          !gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
+        icon_name = "libpeas-plugin";
 
       g_free (icon_filename);
     }
