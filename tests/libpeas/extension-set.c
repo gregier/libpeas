@@ -264,6 +264,28 @@ test_extension_set_call_invalid (PeasEngine *engine)
   g_object_unref (extension_set);
 }
 
+static void
+test_extension_set_foreach (PeasEngine *engine)
+{
+  PeasExtensionSet *extension_set;
+  gint active;
+
+  test_extension_set_activate (engine);
+
+  extension_set = peas_extension_set_new (engine,
+                                          PEAS_TYPE_ACTIVATABLE,
+                                          "object", NULL,
+                                          NULL);
+
+  peas_extension_set_foreach (extension_set,
+                              (PeasExtensionSetForeachFunc) extension_added_cb,
+                              &active);
+
+  g_assert_cmpint (active, ==, G_N_ELEMENTS (loadable_plugins));
+
+  g_object_unref (extension_set);
+}
+
 int
 main (int    argc,
       char **argv)
@@ -287,6 +309,8 @@ main (int    argc,
 
   TEST ("call-valid", call_valid);
   TEST ("call-invalid", call_invalid);
+
+  TEST ("foreach", foreach);
 
 #undef TEST
 
