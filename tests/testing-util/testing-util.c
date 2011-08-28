@@ -255,12 +255,19 @@ testing_util_pop_log_hooks (void)
 
   if (unhit_hooks->len == 1)
     {
+      gchar *msg;
+
       hook = g_ptr_array_index (unhit_hooks, 0);
-      g_error ("Log hook was not triggered: '%s'", hook->pattern);
+      msg = g_strdup_printf ("Log hook was not triggered: '%s'",
+                             hook->pattern);
+
+      /* Use the default log handler directly to avoid recurse complaints */
+      g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, msg, NULL);
+      abort ();
     }
   else if (unhit_hooks->len > 1)
     {
-      /* Avoid our log handler */
+      /* Use the default log handler directly to avoid recurse complaints */
       g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,
                              "Log hooks were not triggered:\n", NULL);
 
