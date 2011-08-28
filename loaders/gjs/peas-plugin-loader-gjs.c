@@ -84,7 +84,7 @@ peas_plugin_loader_gjs_load (PeasPluginLoader *loader,
 
   gjs_context_eval_file (context, filename, NULL, &error);
 
-  g_free (search_paths);
+  g_strfreev (search_paths);
   g_free (filename);
 
   if (error != NULL)
