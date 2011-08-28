@@ -477,7 +477,6 @@ docs/reference/version.xml
 libpeas/Makefile
 libpeas-gtk/Makefile
 loaders/Makefile
-loaders/c/Makefile
 loaders/gjs/Makefile
 loaders/python/Makefile
 loaders/seed/Makefile

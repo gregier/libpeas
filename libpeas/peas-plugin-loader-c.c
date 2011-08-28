@@ -24,25 +24,17 @@
 #endif
 
 #include <string.h>
-#include <gmodule.h>
 
 #include "peas-plugin-loader-c.h"
-#include <libpeas/peas-object-module.h>
-#include <libpeas/peas-extension-base.h>
+
+#include "peas-extension-base.h"
+#include "peas-object-module.h"
 
 struct _PeasPluginLoaderCPrivate {
   GHashTable *loaded_plugins;
 };
 
 G_DEFINE_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
-
-G_MODULE_EXPORT void
-peas_register_types (PeasObjectModule *module)
-{
-  peas_object_module_register_extension_type (module,
-                                              PEAS_TYPE_PLUGIN_LOADER,
-                                              PEAS_TYPE_PLUGIN_LOADER_C);
-}
 
 static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader *loader,
@@ -71,7 +63,6 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
     {
-      g_warning ("Could not load plugin module: '%s'", module_name);
       g_object_unref (module);
       g_hash_table_remove (cloader->priv->loaded_plugins, module_name);
       return FALSE;
@@ -206,4 +197,17 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
   loader_class->create_extension = peas_plugin_loader_c_create_extension;
 
   g_type_class_add_private (object_class, sizeof (PeasPluginLoaderCPrivate));
+}
+
+/**
+ * peas_plugin_loader_c_new:
+ *
+ * Return a new instance of #PeasPluginLoaderC.
+ *
+ * Returns: a new instance of #PeasPluginLoaderC.
+ */
+PeasPluginLoader *
+peas_plugin_loader_c_new (void)
+{
+  return PEAS_PLUGIN_LOADER (g_object_new (PEAS_TYPE_PLUGIN_LOADER_C, NULL));
 }

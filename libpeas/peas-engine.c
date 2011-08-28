@@ -31,6 +31,7 @@
 #include "peas-engine-priv.h"
 #include "peas-plugin-info-priv.h"
 #include "peas-plugin-loader.h"
+#include "peas-plugin-loader-c.h"
 #include "peas-object-module.h"
 #include "peas-extension.h"
 #include "peas-dirs.h"
@@ -634,6 +635,13 @@ get_plugin_loader (PeasEngine     *engine,
   if (loader_info->loader != NULL)
     return loader_info->loader;
 
+  /* Create the default C plugin loader. */
+  if (g_ascii_strcasecmp (info->loader, "C") == 0)
+    {
+      loader_info->loader = peas_plugin_loader_c_new ();
+      return loader_info->loader;
+    }
+
   /* We need to ensure we use the lowercase loader_id */
   loader_id = g_ascii_strdown (info->loader, -1);
 
@@ -697,7 +705,9 @@ peas_engine_enable_loader (PeasEngine  *engine,
   if (g_hash_table_lookup_extended (loaders, loader_id, NULL, NULL))
     return;
 
-  /* The loader is loaded in get_plugin_loader() */
+  /* We do not load the plugin loader immediately and instead
+   * load it in get_plugin_loader() so that it is loaded lazily.
+   */
   g_hash_table_insert (loaders, g_strdup (loader_id), g_new0 (LoaderInfo, 1));
 }
 

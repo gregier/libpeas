@@ -54,7 +54,6 @@ test_extension_c_nonexistent (PeasEngine *engine)
   PeasPluginInfo *info;
 
   testing_util_push_log_hook ("*extension-c-nonexistent*No such file*");
-  testing_util_push_log_hook ("Could not load*'extension-c-nonexistent'");
   testing_util_push_log_hook ("Error loading plugin 'extension-c-nonexistent'");
 
   info = peas_engine_get_plugin_info (engine, "extension-c-nonexistent");

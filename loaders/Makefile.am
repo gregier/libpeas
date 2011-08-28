@@ -1,4 +1,4 @@
-SUBDIRS = c
+SUBDIRS =
 
 if ENABLE_GJS
 SUBDIRS += gjs
