@@ -57,12 +57,21 @@ struct _PeasGtkPluginManagerView {
   PeasGtkPluginManagerViewPrivate *priv;
 };
 
+/**
+ * PeasGtkPluginManagerViewClass:
+ * @parent_class: The parent class.
+ * @populate_popup: Signal class handler for the
+ *                  #PeasGtkPluginManagerView::populate-popup signal.
+ *
+ * The class structure for #PeasGtkPluginManagerView.
+ */
 struct _PeasGtkPluginManagerViewClass {
   GtkTreeViewClass parent_class;
 
   void  (*populate_popup)   (PeasGtkPluginManagerView *view,
                              GtkMenu                  *menu);
 
+  /*< private >*/
   gpointer padding[8];
 };
 

@@ -35,9 +35,24 @@ G_BEGIN_DECLS
 #define PEAS_IS_ACTIVATABLE(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_ACTIVATABLE))
 #define PEAS_ACTIVATABLE_GET_IFACE(obj)   (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PEAS_TYPE_ACTIVATABLE, PeasActivatableInterface))
 
+/**
+ * PeasActivatable:
+ *
+ * Interface for activatable plugins.
+ */
 typedef struct _PeasActivatable           PeasActivatable; /* dummy typedef */
 typedef struct _PeasActivatableInterface  PeasActivatableInterface;
 
+/**
+ * PeasActivatableInterface:
+ * @g_iface: The parent interface.
+ * @activate: Activates the plugin.
+ * @deactivate: Deactivates the plugin.
+ * @update_state: Updates the plugin's internal state to take account of
+ *  a change in the target object's state.
+ *
+ * Provides an interface for activatable plugins.
+ */
 struct _PeasActivatableInterface {
   GTypeInterface g_iface;
 

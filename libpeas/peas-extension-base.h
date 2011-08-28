@@ -53,9 +53,16 @@ struct _PeasExtensionBase {
   PeasExtensionBasePrivate *priv;
 };
 
+/**
+ * PeasExtensionBaseClass:
+ * @parent_class: The parent class.
+ *
+ * The class structure of #PeasExtensionBase.
+ */
 struct _PeasExtensionBaseClass {
   GObjectClass parent_class;
 
+  /*< private >*/
   gpointer padding[8];
 };
 

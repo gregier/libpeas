@@ -35,9 +35,21 @@ G_BEGIN_DECLS
 #define PEAS_GTK_IS_CONFIGURABLE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_GTK_TYPE_CONFIGURABLE))
 #define PEAS_GTK_CONFIGURABLE_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PEAS_GTK_TYPE_CONFIGURABLE, PeasGtkConfigurableInterface))
 
+/**
+ * PeasGtkConfigurable:
+ *
+ * Interface for configurable plugins.
+ */
 typedef struct _PeasGtkConfigurable           PeasGtkConfigurable; /* dummy typedef */
 typedef struct _PeasGtkConfigurableInterface  PeasGtkConfigurableInterface;
 
+/**
+ * PeasGtkConfigurableInterface:
+ * @g_iface: The parent interface.
+ * @create_configure_widget: Creates the configure widget for the plugin.
+ *
+ * Provides an interface for configurable plugins.
+ */
 struct _PeasGtkConfigurableInterface
 {
   GTypeInterface g_iface;

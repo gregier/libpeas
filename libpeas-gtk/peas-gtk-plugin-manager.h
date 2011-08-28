@@ -55,10 +55,17 @@ struct _PeasGtkPluginManager
   PeasGtkPluginManagerPrivate *priv;
 };
 
+/**
+ * PeasGtkPluginManagerClass:
+ * @parent_class: The parent class.
+ *
+ * The class structure for #PeasGtkPluginManager.
+ */
 struct _PeasGtkPluginManagerClass
 {
   GtkBoxClass parent_class;
 
+  /*< private >*/
   gpointer padding[8];
 };
 

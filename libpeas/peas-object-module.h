@@ -70,9 +70,16 @@ struct _PeasObjectModule {
   PeasObjectModulePrivate *priv;
 };
 
+/**
+ * PeasObjectModuleClass:
+ * @parent_class: The parent class.
+ *
+ * The class structure for #PeasObjectModule.
+ */
 struct _PeasObjectModuleClass {
   GTypeModuleClass parent_class;
 
+  /*< private >*/
   gpointer padding[8];
 };
 

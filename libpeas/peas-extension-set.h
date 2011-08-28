@@ -53,6 +53,17 @@ struct _PeasExtensionSet {
   PeasExtensionSetPrivate *priv;
 };
 
+/**
+ * PeasExtensionSetClass:
+ * @parent_class: The parent class.
+ * @call: The VFunc for peas_extension_set_call().
+ * @extension_added: Signal class handler for the
+ *                   #PeasExtensionSet::extension-added signal.
+ * @extension_removed: Signal class handler for the
+ *                   #PeasExtensionSet::extension-removed signal.
+ *
+ * The class structure for #PeasExtensionSet.
+ */
 struct _PeasExtensionSetClass {
   GObjectClass parent_class;
 
@@ -62,9 +73,11 @@ struct _PeasExtensionSetClass {
                                            const gchar      *method_name,
                                            GIArgument       *args);
 #else
+  /*< private >*/
   gpointer __DEPRECATED_call;
 #endif
 
+  /*< public >*/
   /* Signals */
   void       (*extension_added)           (PeasExtensionSet *set,
                                            PeasPluginInfo   *info,
@@ -73,6 +86,7 @@ struct _PeasExtensionSetClass {
                                            PeasPluginInfo   *info,
                                            PeasExtension    *exten);
 
+  /*< private >*/
   gpointer padding[8];
 };
 

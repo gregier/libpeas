@@ -57,6 +57,14 @@ struct _PeasEngine {
   PeasEnginePrivate *priv;
 };
 
+/**
+ * PeasEngineClass:
+ * @parent_class: The parent class.
+ * @load_plugin: Signal class handler for the #PeasEngine::load-plugin signal.
+ * @unload_plugin: Signal class handler for the #PeasEngine::unload-plugin signal.
+ *
+ * Class structure for #PeasEngine.
+ */
 struct _PeasEngineClass {
   GObjectClass parent_class;
 
@@ -66,6 +74,7 @@ struct _PeasEngineClass {
   void     (*unload_plugin)               (PeasEngine     *engine,
                                            PeasPluginInfo *info);
 
+  /*< private >*/
   gpointer padding[8];
 };
 

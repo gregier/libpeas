@@ -34,6 +34,11 @@ G_BEGIN_DECLS
 #define PEAS_EXTENSION(obj)            (G_OBJECT(obj))
 #define PEAS_IS_EXTENSION(obj)         (G_IS_OBJECT(obj))
 
+/**
+ * PeasExtension:
+ *
+ * A proxy class to access the actual plugin.
+ */
 typedef GObject PeasExtension;
 
 /*
