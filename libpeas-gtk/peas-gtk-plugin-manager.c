@@ -427,13 +427,15 @@ add_section (GtkWidget     *box,
   *title_label =  gtk_label_new (title);
   gtk_label_set_use_markup (GTK_LABEL (*title_label), TRUE);
   gtk_label_set_justify (GTK_LABEL (*title_label), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (*title_label), 0.0, 0.5);
+  gtk_widget_set_halign (*title_label, GTK_ALIGN_START);
+  gtk_widget_set_valign (*title_label, GTK_ALIGN_CENTER);
   gtk_box_pack_start (GTK_BOX (section_box), *title_label, FALSE, FALSE, 0);
 
   *plugin_label = gtk_label_new (NULL);
   gtk_label_set_line_wrap (GTK_LABEL (*plugin_label), TRUE);
   gtk_label_set_justify (GTK_LABEL (*plugin_label), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (*plugin_label), 0.0, 0.5);
+  gtk_widget_set_halign (*plugin_label, GTK_ALIGN_START);
+  gtk_widget_set_valign (*plugin_label, GTK_ALIGN_CENTER);
   gtk_box_pack_start (GTK_BOX (section_box), *plugin_label, FALSE, FALSE, 0);
 }
 
@@ -474,7 +476,8 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 
   pm->priv->plugin_title = gtk_label_new (NULL);
   gtk_label_set_justify (GTK_LABEL (pm->priv->plugin_title), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (pm->priv->plugin_title), 0.0, 0.5);
+  gtk_widget_set_halign (pm->priv->plugin_title, GTK_ALIGN_START);
+  gtk_widget_set_valign (pm->priv->plugin_title, GTK_ALIGN_CENTER);
   gtk_label_set_line_wrap (GTK_LABEL (pm->priv->plugin_title), TRUE);
   gtk_box_pack_start (GTK_BOX (header_box), pm->priv->plugin_title,
                       FALSE, FALSE, 0);
