@@ -36,7 +36,9 @@ introspection_sources = $(libintrospection_1_0_la_SOURCES)
 Introspection-1.0.gir: libintrospection-1.0.la
 Introspection_1_0_gir_INCLUDES = GObject-2.0
 Introspection_1_0_gir_CFLAGS = $(INTROSPECTION_INCLUDES)
-Introspection_1_0_gir_LIBS = libintrospection-1.0.la
+Introspection_1_0_gir_LIBS = \
+	libintrospection-1.0.la			\
+	$(top_builddir)/libpeas/libpeas-1.0.la
 Introspection_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
 
 CLEANFILES = $(INTROSPECTION_GIRS) $(INTROSPECTION_TYPELIBS)
