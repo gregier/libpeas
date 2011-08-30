@@ -334,7 +334,7 @@ else
 	AC_MSG_CHECKING([for PyGObject availability.])
 	if test "$found_python" = "yes"; then
 		PKG_CHECK_EXISTS([pygobject-3.0 >= $PYGOBJECT_REQUIRED],,
-				 [found_python="no (pygobject >= $PYGOBJECT_REQUIRED) not found)"])
+				 [found_python="no (pygobject >= $PYGOBJECT_REQUIRED not found)"])
 	fi
 	AC_MSG_RESULT([$found_python])
 
