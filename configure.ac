@@ -209,7 +209,8 @@ AC_MSG_RESULT([$found_glade_catalog])
 
 if test "x$found_glade_catalog" = "xyes"; then
   AC_MSG_CHECKING([for Glade catalog dir])
-  GLADE_CATALOG_DIR=`$PKG_CONFIG --variable=catalogdir gladeui-2.0 2>&AS_MESSAGE_LOG_FD`
+  GLADE_DATA_DIR=`$PKG_CONFIG --variable=datadir gladeui-2.0 2>&AS_MESSAGE_LOG_FD`
+  GLADE_CATALOG_DIR=`$PKG_CONFIG --variable=catalogdir gladeui-2.0 2>&AS_MESSAGE_LOG_FD | sed -e "s#^$GLADE_DATA_DIR#$datadir#"`
   AC_MSG_RESULT([$GLADE_CATALOG_DIR])
   AC_SUBST(GLADE_CATALOG_DIR)
 fi
