@@ -42,9 +42,11 @@ G_BEGIN_DECLS
 typedef GObject PeasExtension;
 
 /*
- * Public methods
+ * All the public methods of PeasExtension are deprecated and should not be
+ * used. Due to gi-scanner's touchiness, we also hide these legacy API from 
+ * GI to avoid hairy issues.
  */
-#ifndef PEAS_DISABLE_DEPRECATED
+#if !defined(PEAS_DISABLE_DEPRECATED) && !defined(__GI_SCANNER__)
 GType        peas_extension_get_type        (void)  G_GNUC_CONST;
 
 GType        peas_extension_get_extension_type
