@@ -268,7 +268,7 @@ static void
 test_extension_set_foreach (PeasEngine *engine)
 {
   PeasExtensionSet *extension_set;
-  gint active;
+  gint active = 0;
 
   test_extension_set_activate (engine);
 
