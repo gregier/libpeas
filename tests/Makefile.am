@@ -24,9 +24,9 @@ test test-gdb test-valgrind test-callgrind: all
 # perf-report: run tests with -m perf and generate report
 # full-report: run tests with -m perf -m slow and generate report
 test-report perf-report full-report: all
-	@export GTESTER_LOGDIR=`mktemp -d "$(abs_srcdir)/.testlogs-XXXXXX"` ; \
+	@export GTESTER_LOGDIR=`mktemp -d "$(abs_builddir)/.testlogs-XXXXXX"` ; \
 	 if test -d "$(top_srcdir)/.git" ; then \
-	   export REVISION="`git describe`" ;  \
+	   export REVISION="`git --git-dir='$(top_srcdir)/.git' describe`" ;  \
 	 else \
 	   export REVISION="$(VERSION)" ; \
 	 fi ; \
