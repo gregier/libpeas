@@ -20,8 +20,8 @@ DOC_SOURCE_DIR=$(top_srcdir)/libpeas $(top_srcdir)/libpeas-gtk
 SCANGOBJ_OPTIONS=
 
 # Extra options to supply to gtkdoc-scan.
-# e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED" 
-SCAN_OPTIONS=
+# e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
+SCAN_OPTIONS=--deprecated-guards="PEAS_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb.
 MKDB_OPTIONS=--sgml-mode --output-format=xml
