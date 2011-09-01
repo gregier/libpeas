@@ -1,4 +1,4 @@
-# C plugin loader
+# Python plugin loader
 
 loaderdir = $(libdir)/libpeas-1.0/loaders
 

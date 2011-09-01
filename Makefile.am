@@ -37,7 +37,7 @@ test-gdb: all
 else
 
 test-gdb:
-	@echo "You need to GDB"
+	@echo "You need GDB"
 
 endif # GDB_ENABLED
 
@@ -49,7 +49,7 @@ test-valgrind test-callgrind: all
 else
 
 test-valgrind test-callgrind:
-	@echo "You need to Valgrind"
+	@echo "You need Valgrind"
 
 endif # VALGRIND_ENABLED
 

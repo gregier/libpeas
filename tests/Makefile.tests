@@ -54,7 +54,7 @@ test-callgrind: all
 else
 
 test-valgrind test-callgrind:
-	@echo "You need to Valgrind"
+	@echo "You need Valgrind"
 
 endif # VALGRIND_ENABLED
 
