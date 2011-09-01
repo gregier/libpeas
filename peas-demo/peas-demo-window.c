@@ -64,7 +64,9 @@ demo_window_init (DemoWindow *dw)
                                           "object", dw,
                                           NULL);
 
-  peas_extension_set_call (dw->exten_set, "activate");
+  peas_extension_set_foreach (dw->exten_set,
+                              (PeasExtensionSetForeachFunc) on_extension_added,
+                              dw);
 
   g_signal_connect (dw->exten_set, "extension-added", G_CALLBACK (on_extension_added), dw);
   g_signal_connect (dw->exten_set, "extension-removed", G_CALLBACK (on_extension_removed), dw);
