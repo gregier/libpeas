@@ -62,7 +62,9 @@ test-report perf-report full-report: all
 	 echo >> $@.xml ; \
 	 echo '</report-collection>' >> $@.xml ; \
 	 $(GTESTER_REPORT) --version 2>/dev/null 1>&2 ; test "$$?" != 0 || \
-	 $(GTESTER_REPORT) $@.xml >$@.html ; \
+	 ( $(GTESTER_REPORT) $@.xml >$@.html && \
+	   echo "  file://$(abs_top_builddir)/tests/$@.html" \
+	 ) ; \
 	 rm -rf "$$GTESTER_LOGDIR" ;
 
 .PHONY: test test-gdb test-valgrind test-callgrind \
