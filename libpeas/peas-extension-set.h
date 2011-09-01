@@ -112,7 +112,7 @@ typedef void (*PeasExtensionSetForeachFunc) (PeasExtensionSet *set,
  */
 GType              peas_extension_set_get_type    (void)  G_GNUC_CONST;
 
-#ifndef PEAS_DISABLE_DEPRECATED
+#if !defined(PEAS_DISABLE_DEPRECATED) && !defined(__GI_SCANNER__)
 gboolean           peas_extension_set_call        (PeasExtensionSet *set,
                                                    const gchar      *method_name,
                                                    ...);
