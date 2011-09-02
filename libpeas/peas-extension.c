@@ -74,6 +74,8 @@ peas_extension_get_type (void)
  * Get the type of the extension interface of the object proxied by @exten.
  *
  * Return value: The #GType proxied by @exten.
+ *
+ * Deprecated: 1.2.
  */
 GType
 peas_extension_get_extension_type (PeasExtension *exten)
@@ -89,7 +91,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
 }
 
 /**
- * peas_extension_call: (skip)
+ * peas_extension_call:
  * @exten: A #PeasExtension.
  * @method_name: the name of the method that should be called.
  * @...: arguments for the method.
@@ -112,7 +114,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2. Use the dynamically implemented interface instead.
+ * Deprecated: 1.2: Use the dynamically implemented interface instead.
  */
 gboolean
 peas_extension_call (PeasExtension *exten,
@@ -133,7 +135,7 @@ peas_extension_call (PeasExtension *exten,
 }
 
 /**
- * peas_extension_call_valist: (skip)
+ * peas_extension_call_valist:
  * @exten: A #PeasExtension.
  * @method_name: the name of the method that should be called.
  * @args: the arguments for the method.
@@ -144,7 +146,7 @@ peas_extension_call (PeasExtension *exten,
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2. Use the dynamically implemented interface instead.
+ * Deprecated: 1.2: Use the dynamically implemented interface instead.
  */
 gboolean
 peas_extension_call_valist (PeasExtension *exten,
@@ -198,11 +200,9 @@ peas_extension_call_valist (PeasExtension *exten,
  *
  * See peas_extension_call() for more information.
  *
- * Return value: (transfer full): %TRUE on successful call.
+ * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2. Use the dynamically implemented interface instead.
- *
- * Rename to: peas_extension_call
+ * Deprecated: 1.2: Use the dynamically implemented interface instead.
  */
 gboolean
 peas_extension_callv (PeasExtension *exten,

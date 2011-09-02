@@ -35,11 +35,6 @@ G_BEGIN_DECLS
 #define PEAS_IS_ENGINE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_ENGINE))
 #define PEAS_ENGINE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_TYPE_ENGINE, PeasEngineClass))
 
-/**
- * PeasEngine:
- *
- * Engine at the heart of the Peas plugin system.
- */
 typedef struct _PeasEngine         PeasEngine;
 typedef struct _PeasEngineClass    PeasEngineClass;
 typedef struct _PeasEnginePrivate  PeasEnginePrivate;

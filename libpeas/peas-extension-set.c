@@ -128,7 +128,7 @@ enum {
 };
 
 static void
-set_construct_properties (PeasExtensionSet *set,
+set_construct_properties (PeasExtensionSet   *set,
                           PeasParameterArray *array)
 {
   unsigned i;
@@ -464,7 +464,7 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
 }
 
 /**
- * peas_extension_set_call: (skip)
+ * peas_extension_set_call:
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
  * @...: arguments for the method.
@@ -473,7 +473,7 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
  *
  * See peas_extension_call() for more information.
  *
- * Deprecated: 1.2. Use peas_extension_set_foreach() instead.
+ * Deprecated: 1.2: Use peas_extension_set_foreach() instead.
  *
  * Return value: %TRUE on successful call.
  */
@@ -496,7 +496,7 @@ peas_extension_set_call (PeasExtensionSet *set,
 }
 
 /**
- * peas_extension_set_call_valist: (skip)
+ * peas_extension_set_call_valist:
  * @set: A #PeasExtensionSet.
  * @method_name: the name of the method that should be called.
  * @va_args: the arguments for the method.
@@ -505,7 +505,7 @@ peas_extension_set_call (PeasExtensionSet *set,
  *
  * See peas_extension_call_valist() for more information.
  *
- * Deprecated: 1.2. Use peas_extension_set_foreach() instead.
+ * Deprecated: 1.2: Use peas_extension_set_foreach() instead.
  *
  * Return value: %TRUE on successful call.
  */
@@ -550,9 +550,7 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2. Use peas_extension_set_foreach() instead.
- *
- * Rename to: peas_extension_set_call
+ * Deprecated: 1.2: Use peas_extension_set_foreach() instead.
  */
 gboolean
 peas_extension_set_callv (PeasExtensionSet *set,

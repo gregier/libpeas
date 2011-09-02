@@ -34,7 +34,7 @@ G_BEGIN_DECLS
  * PEAS_PLUGIN_INFO_ERROR:
  *
  * Error domain for PeasPluginInfo. Errors in this domain will
- * be from the PeasPluginInfoError enumeration. See GError for
+ * be from the PeasPluginInfoError enumeration. See #GError for
  * more information on error domains.
  */
 #define PEAS_PLUGIN_INFO_ERROR peas_plugin_info_error_quark ()
@@ -46,9 +46,9 @@ G_BEGIN_DECLS
  * @PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND:
  *      The plugin's loader was not found.
  * @PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND:
- *      A dependancy of the plugin was not found.
+ *      A dependency of the plugin was not found.
  * @PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED:
- *      A dependancy of the plugin failed to load.
+ *      A dependency of the plugin failed to load.
  *
  * These identify the various errors that can occur while
  * loading a plugin.

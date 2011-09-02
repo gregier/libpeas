@@ -782,6 +782,8 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
    * PeasGtkPluginManagerView:show-builtin:
    *
    * If builtin plugins should be shown.
+   *
+   * Deprecated: 1.2: Use hidden plugins instead.
    */
   g_object_class_install_property (object_class,
                                    PROP_SHOW_BUILTIN,
@@ -800,7 +802,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
    * @view: A #PeasGtkPluginManagerView.
    * @menu: A #GtkMenu.
    *
-   * The populate-popup signal is emitted before showing the context
+   * The ::populate-popup signal is emitted before showing the context
    * menu of the view. If you need to add items to the context menu,
    * connect to this signal and add your menuitems to the @menu.
    */
@@ -845,7 +847,7 @@ peas_gtk_plugin_manager_view_new (PeasEngine *engine)
  *
  * Sets if builtin plugins should be shown.
  *
- * Deprecated: 1.2. Use hidden plugins instead.
+ * Deprecated: 1.2: Use hidden plugins instead.
  */
 void
 peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
@@ -907,7 +909,7 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
  *
  * Returns: if builtin plugins should be shown.
  *
- * Deprecated: 1.2. Use hidden plugins instead.
+ * Deprecated: 1.2: Use hidden plugins instead.
  */
 gboolean
 peas_gtk_plugin_manager_view_get_show_builtin (PeasGtkPluginManagerView *view)
