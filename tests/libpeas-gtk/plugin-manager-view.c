@@ -340,6 +340,9 @@ main (int    argc,
   TEST ("enable-plugin", enable_plugin);
   TEST ("enable-builtin-plugin", enable_builtin_plugin);
 
+  /* Grabs can affect things that your system is currently doing
+   * and if a crash occures will freeze your window manager.
+   */
   if (g_test_thorough ())
     {
       TEST ("popup-menu/enabled", popup_menu_enabled);

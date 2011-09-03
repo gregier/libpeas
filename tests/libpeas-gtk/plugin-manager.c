@@ -518,6 +518,9 @@ main (int    argc,
   TEST ("about-dialog", about_dialog);
   TEST ("configure-dialog", configure_dialog);
 
+  /* Grabs can affect things that your system is currently doing
+   * and if a crash occures will freeze your window manager.
+   */
   if (g_test_thorough ())
     {
       TEST ("popup-menu/about-dialog", popup_menu_about_dialog);
