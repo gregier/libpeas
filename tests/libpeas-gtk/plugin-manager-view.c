@@ -264,12 +264,9 @@ test_gtk_plugin_manager_view_popup_menu_enable_all (TestFixture *fixture)
   PeasPluginInfo *info;
   GtkMenuItem *enable_all_item;
 
-  testing_util_push_log_hook ("*-icon: * cannot open shared object file*");
-  testing_util_push_log_hook ("Could not load plugin module: '* Icon'");
-  testing_util_push_log_hook ("Error loading plugin '* Icon'");
-  testing_util_push_log_hook ("*-info: * cannot open shared object file*");
-  testing_util_push_log_hook ("Could not load plugin module: '* Info'");
-  testing_util_push_log_hook ("Error loading plugin '* Info'");
+  testing_util_push_log_hook ("* cannot open shared object file*");
+  testing_util_push_log_hook ("Could not load plugin module: '*'");
+  testing_util_push_log_hook ("Error loading plugin '*'");
   testing_util_push_log_hook ("Could not find plugin 'does-not-exist' *");
 
   enable_all_item = testing_get_popup_menu_item (fixture->view, "E_nable All");
@@ -302,27 +299,10 @@ test_gtk_plugin_manager_view_popup_menu_disable_all (TestFixture *fixture)
   PeasPluginInfo *info;
   GtkMenuItem *disable_all_item;
 
-  testing_util_push_log_hook ("*-icon: * cannot open shared object file*");
-  testing_util_push_log_hook ("Could not load plugin module: '* Icon'");
-  testing_util_push_log_hook ("Error loading plugin '* Icon'");
-  testing_util_push_log_hook ("*-info: * cannot open shared object file*");
-  testing_util_push_log_hook ("Could not load plugin module: '* Info'");
-  testing_util_push_log_hook ("Error loading plugin '* Info'");
-  testing_util_push_log_hook ("Could not find plugin 'does-not-exist' *");
+  test_gtk_plugin_manager_view_popup_menu_enable_all (fixture);
 
-  disable_all_item = testing_get_popup_menu_item (fixture->view, "_Disable All");
-
-  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
-
-  do
-    {
-      gtk_tree_selection_select_iter (fixture->selection, &iter);
-      info = peas_gtk_plugin_manager_view_get_selected_plugin (fixture->view);
-
-      peas_engine_load_plugin (fixture->engine, info);
-    }
-  while (gtk_tree_model_iter_next (fixture->model, &iter));
-
+  disable_all_item = testing_get_popup_menu_item (fixture->view,
+                                                  "_Disable All");
   gtk_menu_item_activate (disable_all_item);
 
   g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
@@ -360,9 +340,12 @@ main (int    argc,
   TEST ("enable-plugin", enable_plugin);
   TEST ("enable-builtin-plugin", enable_builtin_plugin);
 
-  TEST ("popup-menu/enabled", popup_menu_enabled);
-  TEST ("popup-menu/enable_all", popup_menu_enable_all);
-  TEST ("popup-menu/disable_all", popup_menu_disable_all);
+  if (g_test_thorough ())
+    {
+      TEST ("popup-menu/enabled", popup_menu_enabled);
+      TEST ("popup-menu/enable_all", popup_menu_enable_all);
+      TEST ("popup-menu/disable_all", popup_menu_disable_all);
+    }
 
 #undef TEST
 

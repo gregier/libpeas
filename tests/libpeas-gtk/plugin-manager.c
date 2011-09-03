@@ -35,7 +35,6 @@ typedef struct _TestFixture TestFixture;
 struct _TestFixture {
   PeasEngine *engine;
   GtkWidget *window;
-  GtkWindowGroup *window_group;
   PeasGtkPluginManager *manager;
   PeasGtkPluginManagerView *view;
   GtkTreeSelection *selection;
@@ -73,17 +72,9 @@ test_setup (TestFixture   *fixture,
 
   fixture->engine = testing_engine_new ();
   fixture->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  fixture->window_group = gtk_window_group_new ();
   fixture->manager = PEAS_GTK_PLUGIN_MANAGER (peas_gtk_plugin_manager_new (NULL));
   fixture->view = PEAS_GTK_PLUGIN_MANAGER_VIEW (peas_gtk_plugin_manager_get_view (fixture->manager));
   fixture->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (fixture->view));
-
-  /* gtk_window_set_transient_for() will not add to the
-   * window group unless one has already been created and
-   * find_window_by_title() will need need it to be in the group
-   */
-  gtk_window_group_add_window (fixture->window_group,
-                               GTK_WINDOW (fixture->window));
 
   gtk_container_add (GTK_CONTAINER (fixture->window),
                      GTK_WIDGET (fixture->manager));
@@ -156,7 +147,6 @@ test_teardown (TestFixture   *fixture,
                gconstpointer  data)
 {
   gtk_widget_destroy (GTK_WIDGET (fixture->window));
-  g_object_unref (fixture->window_group);
 
   testing_engine_free (fixture->engine);
 }
@@ -172,24 +162,19 @@ static GtkWidget *
 find_window_by_title (GtkWindow   *window,
                       const gchar *title)
 {
-  GtkWindowGroup *group;
   GList *windows;
-  GList *l;
   GtkWidget *found_window = NULL;
+  
+  windows = gtk_window_list_toplevels ();
 
-  group = gtk_window_get_group (window);
-  windows = gtk_window_group_list_windows (group);
-
-  for (l = windows; l != NULL; l = l->next)
+  for (; windows != NULL; windows = windows->next)
     {
-      if (g_strcmp0 (gtk_window_get_title (l->data), title) == 0)
+      if (g_strcmp0 (gtk_window_get_title (windows->data), title) == 0)
         {
-          found_window = l->data;
+          found_window = windows->data;
           break;
         }
     }
-
-  g_list_free (windows);
 
   g_assert (GTK_IS_WINDOW (found_window));
 
@@ -436,7 +421,7 @@ test_gtk_plugin_manager_popup_menu_about_dialog (TestFixture *fixture)
   testing_get_iter_for_plugin_info (fixture->view, info, &iter);
   gtk_tree_selection_select_iter (fixture->selection, &iter);
 
-  about_item = testing_get_popup_menu_item (fixture->view, "_About");
+  about_item = testing_get_popup_menu_item (fixture->view, GTK_STOCK_ABOUT);
   gtk_menu_item_activate (about_item);
 
   window = find_window_by_title (GTK_WINDOW (fixture->window),
@@ -461,7 +446,8 @@ test_gtk_plugin_manager_popup_menu_configure_dialog (TestFixture *fixture)
   testing_get_iter_for_plugin_info (fixture->view, info, &iter);
   gtk_tree_selection_select_iter (fixture->selection, &iter);
 
-  configure_item = testing_get_popup_menu_item (fixture->view, "C_onfigure");
+  configure_item = testing_get_popup_menu_item (fixture->view,
+                                                GTK_STOCK_PREFERENCES);
   gtk_menu_item_activate (configure_item);
 
   window = find_window_by_title (GTK_WINDOW (fixture->window), "Configurable");
@@ -532,8 +518,11 @@ main (int    argc,
   TEST ("about-dialog", about_dialog);
   TEST ("configure-dialog", configure_dialog);
 
-  TEST ("popup-menu/about-dialog", popup_menu_about_dialog);
-  TEST ("popup-menu/configure-dialog", popup_menu_configure_dialog);
+  if (g_test_thorough ())
+    {
+      TEST ("popup-menu/about-dialog", popup_menu_about_dialog);
+      TEST ("popup-menu/configure-dialog", popup_menu_configure_dialog);
+    }
 
   TEST_FUNC ("gtkbuilder", gtkbuilder);
 
