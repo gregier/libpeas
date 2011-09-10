@@ -135,6 +135,7 @@ _peas_plugin_info_new (const gchar *filename,
   PeasPluginInfo *info;
   GKeyFile *plugin_file = NULL;
   gchar *str;
+  gchar **strv;
   gboolean b;
   GError *error = NULL;
 
@@ -213,9 +214,14 @@ _peas_plugin_info_new (const gchar *filename,
     info->authors = g_new0 (gchar *, 1);
 
   /* Get Copyright */
-  str = g_key_file_get_string (plugin_file, "Plugin", "Copyright", NULL);
-  if (str)
-    info->copyright = str;
+  strv = g_key_file_get_string_list (plugin_file, "Plugin",
+                                     "Copyright", NULL, NULL);
+  if (strv)
+    {
+      info->copyright = g_strjoinv ("\n", strv);
+
+      g_strfreev (strv);
+    }
 
   /* Get Website */
   str = g_key_file_get_string (plugin_file, "Plugin", "Website", NULL);
