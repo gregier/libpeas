@@ -78,12 +78,6 @@ struct _PeasGtkPluginManagerViewClass {
 GType           peas_gtk_plugin_manager_view_get_type             (void) G_GNUC_CONST;
 GtkWidget      *peas_gtk_plugin_manager_view_new                  (PeasEngine               *engine);
 
-#ifndef PEAS_DISABLE_DEPRECATED
-void            peas_gtk_plugin_manager_view_set_show_builtin     (PeasGtkPluginManagerView *view,
-                                                                   gboolean                  show_builtin);
-gboolean        peas_gtk_plugin_manager_view_get_show_builtin     (PeasGtkPluginManagerView *view);
-#endif
-
 void            peas_gtk_plugin_manager_view_set_selected_plugin  (PeasGtkPluginManagerView *view,
                                                                    PeasPluginInfo           *info);
 PeasPluginInfo *peas_gtk_plugin_manager_view_get_selected_plugin  (PeasGtkPluginManagerView *view);
