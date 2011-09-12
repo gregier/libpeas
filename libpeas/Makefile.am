@@ -27,7 +27,6 @@ INST_H_FILES =			\
 	peas-plugin-info.h	\
 	peas-object-module.h	\
 	peas-extension-base.h	\
-	peas-extension.h	\
 	peas-extension-set.h	\
 	peas-activatable.h	\
 	peas-engine.h		\
@@ -49,7 +48,6 @@ C_FILES =				\
 	peas-debug.c			\
 	peas-dirs.c			\
 	peas-engine.c			\
-	peas-extension.c		\
 	peas-extension-base.c		\
 	peas-extension-set.c		\
 	peas-i18n.c			\

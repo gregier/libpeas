@@ -116,7 +116,7 @@ peas_plugin_loader_provides_extension (PeasPluginLoader *loader,
   return klass->provides_extension (loader, info, ext_type);
 }
 
-PeasExtension *
+GObject *
 peas_plugin_loader_create_extension (PeasPluginLoader *loader,
                                      PeasPluginInfo   *info,
                                      GType             ext_type,

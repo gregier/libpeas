@@ -49,7 +49,7 @@ static void
 test_extension_py_instance_refcount (PeasEngine     *engine,
                                      PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_BASE,
@@ -68,7 +68,7 @@ static void
 test_extension_py_activatable_subject_refcount (PeasEngine     *engine,
                                                 PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   GObject *object;
   PyObject *wrapper;
 
@@ -225,11 +225,6 @@ main (int   argc,
 
   /* Only test the basics */
   testing_extension_basic (PY_LOADER_STR);
-
-  /* We still need to add the callable tests
-   * because of peas_extension_call()
-   */
-  testing_extension_callable (PY_LOADER_STR);
 
 #undef EXTENSION_TEST
 #undef EXTENSION_TEST_FUNC

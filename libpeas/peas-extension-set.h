@@ -23,6 +23,7 @@
 #define __PEAS_EXTENSION_SET_H__
 
 #include <glib-object.h>
+
 #include "peas-engine.h"
 
 G_BEGIN_DECLS
@@ -69,10 +70,10 @@ struct _PeasExtensionSetClass {
   /* Signals */
   void       (*extension_added)           (PeasExtensionSet *set,
                                            PeasPluginInfo   *info,
-                                           PeasExtension    *exten);
+                                           GObject          *exten);
   void       (*extension_removed)         (PeasExtensionSet *set,
                                            PeasPluginInfo   *info,
-                                           PeasExtension    *exten);
+                                           GObject          *exten);
 
   /*< private >*/
   gpointer padding[8];
@@ -82,7 +83,7 @@ struct _PeasExtensionSetClass {
  * PeasExtensionSetForeachFunc:
  * @set: A #PeasExtensionSet.
  * @info: A #PeasPluginInfo.
- * @exten: A #PeasExtension.
+ * @exten: A #GObject.
  * @data: Optional data passed to the function.
  *
  * This function is passed to peas_extension_set_foreach() and
@@ -92,7 +93,7 @@ struct _PeasExtensionSetClass {
  */
 typedef void (*PeasExtensionSetForeachFunc) (PeasExtensionSet *set,
                                              PeasPluginInfo   *info,
-                                             PeasExtension    *exten,
+                                             GObject          *exten,
                                              gpointer          data);
 
 /*
@@ -104,7 +105,7 @@ void               peas_extension_set_foreach     (PeasExtensionSet *set,
                                                    PeasExtensionSetForeachFunc func,
                                                    gpointer          data);
 
-PeasExtension     *peas_extension_set_get_extension (PeasExtensionSet *set,
+GObject           *peas_extension_set_get_extension (PeasExtensionSet *set,
                                                      PeasPluginInfo   *info);
 
 PeasExtensionSet  *peas_extension_set_newv        (PeasEngine       *engine,

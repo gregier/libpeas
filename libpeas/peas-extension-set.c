@@ -34,7 +34,6 @@
 /**
  * SECTION:peas-extension-set
  * @short_description: Proxy for a set of extensions of the same type.
- * @see_also: #PeasExtension
  *
  * A #PeasExtensionSet is an object which proxies method calls to a set
  * of actual extensions.  The application writer will use these objects
@@ -97,7 +96,7 @@ struct _PeasExtensionSetPrivate {
 
 typedef struct {
   PeasPluginInfo *info;
-  PeasExtension *exten;
+  GObject *exten;
 } ExtensionItem;
 
 typedef struct {
@@ -201,7 +200,7 @@ add_extension (PeasExtensionSet *set,
                PeasPluginInfo   *info)
 {
   PeasExtensionSetPrivate *priv = GET_PRIV (set);
-  PeasExtension *exten;
+  GObject *exten;
   ExtensionItem *item;
 
   /* Let's just ignore unloaded plugins... */
@@ -330,7 +329,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
    * PeasExtensionSet::extension-added:
    * @set: A #PeasExtensionSet.
    * @info: A #PeasPluginInfo.
-   * @exten: A #PeasExtension.
+   * @exten: A #GObject.
    *
    * The extension-added signal is emitted when a new extension has been
    * added to the #PeasExtensionSet. It happens when a new plugin implementing
@@ -351,13 +350,13 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
                   G_TYPE_NONE,
                   2,
                   PEAS_TYPE_PLUGIN_INFO | G_SIGNAL_TYPE_STATIC_SCOPE,
-                  PEAS_TYPE_EXTENSION);
+                  G_TYPE_OBJECT);
 
   /**
    * PeasExtensionSet::extension-removed:
    * @set: A #PeasExtensionSet.
    * @info: A #PeasPluginInfo.
-   * @exten: A #PeasExtension.
+   * @exten: A #GObject.
    *
    * The extension-removed signal is emitted when a new extension is about to be
    * removed from the #PeasExtensionSet. It happens when a plugin implementing
@@ -366,7 +365,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
    *
    * You should connect to this signal in order to clean up the extensions
    * when their plugin is unload. Note that this signal is not fired for the
-   * #PeasExtension instances still available when the #PeasExtensionSet
+   * #GObject instances still available when the #PeasExtensionSet
    * instance is destroyed. You should clean those up by yourself.
    */
   signals[EXTENSION_REMOVED] =
@@ -379,7 +378,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
                   G_TYPE_NONE,
                   2,
                   PEAS_TYPE_PLUGIN_INFO | G_SIGNAL_TYPE_STATIC_SCOPE,
-                  PEAS_TYPE_EXTENSION);
+                  G_TYPE_OBJECT);
 
   properties[PROP_ENGINE] =
     g_param_spec_object ("engine",
@@ -415,12 +414,12 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
  * @set: A #PeasExtensionSet
  * @info: a #PeasPluginInfo
  *
- * Returns the #PeasExtension object corresponding to @info, or %NULL
+ * Returns the #GObject object corresponding to @info, or %NULL
  * if the plugin doesn't provide such an extension.
  *
- * Returns: (transfer none): a reference to a #PeasExtension or %NULL
+ * Returns: (transfer none): a reference to a #GObject or %NULL
  */
-PeasExtension *
+GObject *
 peas_extension_set_get_extension (PeasExtensionSet *set,
                                   PeasPluginInfo   *info)
 {
@@ -447,7 +446,7 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
  * @func: (scope call): A function call for each extension.
  * @data: Optional data to be passed to the function or %NULL.
  *
- * Calls @func for each #PeasExtension.
+ * Calls @func for each #GObject.
  *
  * Since: 1.2
  */

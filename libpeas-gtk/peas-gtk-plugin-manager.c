@@ -227,7 +227,7 @@ show_configure_cb (GtkWidget            *widget,
   PeasGtkPluginManagerPrivate *priv = peas_gtk_plugin_manager_get_instance_private (pm);
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
-  PeasExtension *exten;
+  GObject *exten;
   GtkWidget *conf_widget = NULL;
   GtkWidget *conf_dlg;
   GtkWidget *vbox;
@@ -237,7 +237,7 @@ show_configure_cb (GtkWidget            *widget,
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
   g_return_if_fail (info != NULL);
 
-  exten = peas_engine_create_extension (pm->priv->engine, info,
+  exten = peas_engine_create_extension (priv->engine, info,
                                         PEAS_GTK_TYPE_CONFIGURABLE, NULL);
   g_return_if_fail (PEAS_GTK_IS_CONFIGURABLE (exten));
 

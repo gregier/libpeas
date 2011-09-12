@@ -42,7 +42,7 @@ set_garbage_collector_state (PeasEngine     *engine,
                              PeasPluginInfo *info,
                              gboolean        running)
 {
-  PeasExtension *extension;
+  GObject *extension;
 
   extension = peas_engine_create_extension (engine, info,
                                             PEAS_TYPE_ACTIVATABLE,
@@ -66,7 +66,7 @@ static void
 test_extension_lua_instance_refcount (PeasEngine     *engine,
                                       PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
 
   set_garbage_collector_state (engine, info, FALSE);
 
@@ -104,7 +104,7 @@ static void
 test_extension_lua_activatable_subject_refcount (PeasEngine     *engine,
                                                  PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   GObject *object;
 
   set_garbage_collector_state (engine, info, FALSE);
@@ -179,11 +179,6 @@ main (int   argc,
 
   /* Only test the basics */
   testing_extension_basic ("lua5.1");
-
-  /* We still need to add the callable tests
-   * because of peas_extension_call()
-   */
-  testing_extension_callable ("lua5.1");
 
 #undef EXTENSION_TEST
 #undef EXTENSION_TEST_FUNC

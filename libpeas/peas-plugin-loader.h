@@ -24,8 +24,8 @@
 
 #include <glib-object.h>
 #include <gmodule.h>
+
 #include "peas-plugin-info.h"
-#include "peas-extension.h"
 
 G_BEGIN_DECLS
 
@@ -56,7 +56,7 @@ struct _PeasPluginLoaderClass {
   gboolean       (*provides_extension)    (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info,
                                            GType             ext_type);
-  PeasExtension *(*create_extension)      (PeasPluginLoader *loader,
+  GObject       *(*create_extension)      (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info,
                                            GType             ext_type,
                                            guint             n_parameters,
@@ -78,7 +78,7 @@ void          peas_plugin_loader_unload               (PeasPluginLoader *loader,
 gboolean      peas_plugin_loader_provides_extension   (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info,
                                                        GType             ext_type);
-PeasExtension *peas_plugin_loader_create_extension    (PeasPluginLoader *loader,
+GObject       *peas_plugin_loader_create_extension    (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info,
                                                        GType             ext_type,
                                                        guint             n_parameters,

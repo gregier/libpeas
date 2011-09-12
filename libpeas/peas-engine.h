@@ -23,8 +23,8 @@
 #define __PEAS_ENGINE_H__
 
 #include <glib.h>
+
 #include "peas-plugin-info.h"
-#include "peas-extension.h"
 
 G_BEGIN_DECLS
 
@@ -109,18 +109,18 @@ gboolean          peas_engine_provides_extension  (PeasEngine      *engine,
                                                    GType            extension_type);
 
 
-PeasExtension    *peas_engine_create_extensionv   (PeasEngine      *engine,
+GObject          *peas_engine_create_extensionv   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            extension_type,
                                                    guint            n_parameters,
                                                    GParameter      *parameters);
-PeasExtension    *peas_engine_create_extension_valist
+GObject          *peas_engine_create_extension_valist
                                                   (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            extension_type,
                                                    const gchar     *first_property,
                                                    va_list          var_args);
-PeasExtension    *peas_engine_create_extension    (PeasEngine      *engine,
+GObject          *peas_engine_create_extension    (PeasEngine      *engine,
                                                    PeasPluginInfo  *info,
                                                    GType            extension_type,
                                                    const gchar     *first_property,

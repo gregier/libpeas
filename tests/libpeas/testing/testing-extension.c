@@ -125,7 +125,7 @@ static void
 test_extension_create_valid (PeasEngine     *engine,
                              PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
@@ -140,7 +140,7 @@ static void
 test_extension_create_invalid (PeasEngine     *engine,
                                PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
 
   testing_util_push_log_hook ("*assertion*G_TYPE_IS_INTERFACE*failed");
   testing_util_push_log_hook ("*does not provide a 'IntrospectionUnimplemented' extension");
@@ -200,7 +200,7 @@ static void
 test_extension_create_with_prerequisite (PeasEngine     *engine,
                                          PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_HAS_PREREQUISITE,
@@ -229,7 +229,7 @@ static void
 test_extension_plugin_info (PeasEngine     *engine,
                             PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   IntrospectionBase *base;
 
   g_assert (peas_engine_load_plugin (engine, info));
@@ -249,7 +249,7 @@ static void
 test_extension_get_settings (PeasEngine     *engine,
                              PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   IntrospectionBase *base;
   GSettings *settings;
 
@@ -359,7 +359,7 @@ static void
 test_extension_multiple_threads_callbacks (PeasEngine     *engine,
                                            PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   gint n_threads, update_count;
 
   extension = peas_engine_create_extension (engine, info,
@@ -379,7 +379,7 @@ static void
 test_extension_call_no_args (PeasEngine     *engine,
                              PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   IntrospectionCallable *callable;
 
   extension = peas_engine_create_extension (engine, info,
@@ -388,7 +388,6 @@ test_extension_call_no_args (PeasEngine     *engine,
 
   callable = INTROSPECTION_CALLABLE (extension);
 
-  g_assert (peas_extension_call (extension, "call_no_args"));
   introspection_callable_call_no_args (callable);
 
   g_object_unref (extension);
@@ -398,21 +397,15 @@ static void
 test_extension_call_with_return (PeasEngine     *engine,
                                  PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   IntrospectionCallable *callable;
-  gchar *return_val = NULL;
+  gchar *return_val;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
-
-  g_assert (peas_extension_call (extension, "call_with_return", &return_val));
-  g_assert_cmpstr (return_val, ==, "Hello, World!");
-
-  g_free (return_val);
-  return_val = NULL;
 
   return_val = introspection_callable_call_with_return (callable);
   g_assert_cmpstr (return_val, ==, "Hello, World!");
@@ -425,7 +418,7 @@ static void
 test_extension_call_single_arg (PeasEngine     *engine,
                                 PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   IntrospectionCallable *callable;
   gboolean called = FALSE;
 
@@ -434,11 +427,6 @@ test_extension_call_single_arg (PeasEngine     *engine,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
-
-  g_assert (peas_extension_call (extension, "call_single_arg", &called));
-  g_assert (called);
-
-  called = FALSE;
 
   introspection_callable_call_single_arg (callable, &called);
   g_assert (called);
@@ -450,7 +438,7 @@ static void
 test_extension_call_multi_args (PeasEngine     *engine,
                                 PeasPluginInfo *info)
 {
-  PeasExtension *extension;
+  GObject *extension;
   IntrospectionCallable *callable;
   gint in, out, inout;
   gint inout_saved;
@@ -460,16 +448,6 @@ test_extension_call_multi_args (PeasEngine     *engine,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
-
-  in = g_random_int ();
-  inout = g_random_int ();
-  inout_saved = inout;
-
-  g_assert (peas_extension_call (extension, "call_multi_args",
-                                 in, &out, &inout));
-
-  g_assert_cmpint (inout_saved, ==, out);
-  g_assert_cmpint (in, ==, inout);
 
   in = g_random_int ();
   inout = g_random_int ();

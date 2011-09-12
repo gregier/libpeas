@@ -102,7 +102,7 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
   return peas_object_module_provides_object (info->loader_data, exten_type);
 }
 
-static PeasExtension *
+static GObject *
 peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
                                        PeasPluginInfo   *info,
                                        GType             exten_type,

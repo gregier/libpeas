@@ -44,7 +44,7 @@ static const gchar *loadable_plugins[] = {
 static void
 extension_added_cb (PeasExtensionSet *extension_set,
                     PeasPluginInfo   *info,
-                    PeasExtension    *extension,
+                    GObject          *extension,
                     gint             *active)
 {
   ++(*active);
@@ -53,7 +53,7 @@ extension_added_cb (PeasExtensionSet *extension_set,
 static void
 extension_removed_cb (PeasExtensionSet *extension_set,
                       PeasPluginInfo   *info,
-                      PeasExtension    *extension,
+                      GObject          *extension,
                       gint             *active)
 {
   --(*active);
@@ -208,7 +208,7 @@ static void
 test_extension_set_get_extension (PeasEngine *engine)
 {
   PeasPluginInfo *info;
-  PeasExtension *extension;
+  GObject *extension;
   PeasExtensionSet *extension_set;
 
   info = peas_engine_get_plugin_info (engine, loadable_plugins[0]);

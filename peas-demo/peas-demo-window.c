@@ -30,7 +30,7 @@ G_DEFINE_TYPE (DemoWindow, demo_window, GTK_TYPE_WINDOW)
 static void
 on_extension_added (PeasExtensionSet *set,
                     PeasPluginInfo   *info,
-                    PeasExtension    *exten,
+                    GObject          *exten,
                     DemoWindow       *dw)
 {
   peas_activatable_activate (PEAS_ACTIVATABLE (exten));
@@ -39,7 +39,7 @@ on_extension_added (PeasExtensionSet *set,
 static void
 on_extension_removed (PeasExtensionSet *set,
                       PeasPluginInfo   *info,
-                      PeasExtension    *exten,
+                      GObject          *exten,
                       DemoWindow       *dw)
 {
   peas_activatable_deactivate (PEAS_ACTIVATABLE (exten));

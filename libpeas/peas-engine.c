@@ -34,7 +34,6 @@
 #include "peas-plugin-loader.h"
 #include "peas-plugin-loader-c.h"
 #include "peas-object-module.h"
-#include "peas-extension.h"
 #include "peas-dirs.h"
 #include "peas-debug.h"
 #include "peas-utils.h"
@@ -1186,14 +1185,14 @@ peas_engine_provides_extension (PeasEngine     *engine,
  *
  * If the plugin identified by @info implements the @extension_type interface,
  * then this function will return a new instance of this implementation,
- * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ * wrapped in a new #GObject instance. Otherwise, it will return %NULL.
  *
  * See peas_engine_create_extension() for more information.
  *
- * Returns: (transfer full): a new instance of #PeasExtension wrapping
+ * Returns: (transfer full): a new instance of #GObject wrapping
  * the @extension_type instance, or %NULL.
  */
-PeasExtension *
+GObject *
 peas_engine_create_extensionv (PeasEngine     *engine,
                                PeasPluginInfo *info,
                                GType           extension_type,
@@ -1201,7 +1200,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
                                GParameter     *parameters)
 {
   PeasPluginLoader *loader;
-  PeasExtension *extension;
+  GObject *extension;
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
@@ -1234,14 +1233,14 @@ peas_engine_create_extensionv (PeasEngine     *engine,
  *
  * If the plugin identified by @info implements the @extension_type interface,
  * then this function will return a new instance of this implementation,
- * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ * wrapped in a new #GObject instance. Otherwise, it will return %NULL.
  *
  * See peas_engine_create_extension() for more information.
  *
- * Returns: a new instance of #PeasExtension wrapping
+ * Returns: a new instance of #GObject wrapping
  * the @extension_type instance, or %NULL.
  */
-PeasExtension *
+GObject *
 peas_engine_create_extension_valist (PeasEngine     *engine,
                                      PeasPluginInfo *info,
                                      GType           extension_type,
@@ -1250,7 +1249,7 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
 {
   guint n_parameters;
   GParameter *parameters;
-  PeasExtension *exten;
+  GObject *exten;
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
@@ -1286,21 +1285,21 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
  *
  * If the plugin identified by @info implements the @extension_type interface,
  * then this function will return a new instance of this implementation,
- * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ * wrapped in a new #GObject instance. Otherwise, it will return %NULL.
  *
  * When creating the new instance of the @extension_type subtype, the
  * provided construct properties will be passed to the extension construction
  * handler (exactly like if you had called g_object_new() yourself).
  *
  * The new extension instance produced by this function will always be
- * returned wrapped in a #PeasExtension proxy, following the current libpeas
+ * returned wrapped in a #GObject proxy, following the current libpeas
  * principle of never giving you the actual object (also because it might as
  * well *not* be an actual object).
  *
- * Returns: a new instance of #PeasExtension wrapping
+ * Returns: a new instance of #GObject wrapping
  * the @extension_type instance, or %NULL.
  */
-PeasExtension *
+GObject *
 peas_engine_create_extension (PeasEngine     *engine,
                               PeasPluginInfo *info,
                               GType           extension_type,
@@ -1308,7 +1307,7 @@ peas_engine_create_extension (PeasEngine     *engine,
                               ...)
 {
   va_list var_args;
-  PeasExtension *exten;
+  GObject *exten;
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);

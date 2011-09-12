@@ -19,7 +19,6 @@
       <title>Core Classes</title>
       <xi:include href="xml/peas-engine.xml"/>
       <xi:include href="xml/peas-plugin-info.xml"/>
-      <xi:include href="xml/peas-extension.xml"/>
       <xi:include href="xml/peas-extension-set.xml"/>
       <xi:include href="xml/peas-extension-base.xml"/>
       <xi:include href="xml/peas-object-module.xml"/>
