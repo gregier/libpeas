@@ -54,8 +54,7 @@ test_extension_py_instance_refcount (PeasEngine     *engine,
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_BASE,
                                             NULL);
-
-  g_assert (PEAS_IS_EXTENSION (extension));
+  g_assert (G_IS_OBJECT (extension));
 
   g_object_add_weak_pointer (extension, (gpointer *) &extension);
 
@@ -84,8 +83,7 @@ test_extension_py_activatable_subject_refcount (PeasEngine     *engine,
                                             PEAS_TYPE_ACTIVATABLE,
                                             "object", object,
                                             NULL);
-
-  g_assert (PEAS_IS_EXTENSION (extension));
+  g_assert (G_IS_OBJECT (extension));
 
   /* The python wrapper created around our dummy object should have increased
    * its refcount by 1.

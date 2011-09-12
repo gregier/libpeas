@@ -73,9 +73,8 @@ test_extension_lua_instance_refcount (PeasEngine     *engine,
   extension = peas_engine_create_extension (engine, info,
                                             PEAS_TYPE_ACTIVATABLE,
                                             NULL);
+  g_assert (G_IS_OBJECT (extension));
   g_object_add_weak_pointer (extension, (gpointer *) &extension);
-
-  g_assert (PEAS_IS_EXTENSION (extension));
 
   /* The Lua wrapper created around the extension
    * object should have increased its refcount by 1.
@@ -123,9 +122,8 @@ test_extension_lua_activatable_subject_refcount (PeasEngine     *engine,
                                             PEAS_TYPE_ACTIVATABLE,
                                             "object", object,
                                             NULL);
+  g_assert (G_IS_OBJECT (extension));
   g_object_add_weak_pointer (extension, (gpointer *) &extension);
-
-  g_assert (PEAS_IS_EXTENSION (extension));
 
   /* The Lua wrapper created around our dummy
    * object should have increased its refcount by 1.

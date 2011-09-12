@@ -38,7 +38,7 @@ test_extension_c_instance_refcount (PeasEngine     *engine,
                                             INTROSPECTION_TYPE_BASE,
                                             NULL);
 
-  g_assert (PEAS_IS_EXTENSION (extension));
+  g_assert (INTROSPECTION_IS_BASE (extension));
 
   /* The refcount of the returned object should be 1:
    *  - one ref for the PeasExtension
@@ -79,8 +79,8 @@ test_extension_c_local_linkage (PeasEngine     *engine,
                                                      PEAS_TYPE_ACTIVATABLE,
                                                      NULL);
 
-  g_assert (PEAS_IS_EXTENSION (c_extension));
-  g_assert (PEAS_IS_EXTENSION (loadable_extension));
+  g_assert (G_IS_OBJECT (c_extension));
+  g_assert (G_IS_OBJECT (loadable_extension));
   g_assert (c_extension != loadable_extension);
 
   g_object_get (c_extension,

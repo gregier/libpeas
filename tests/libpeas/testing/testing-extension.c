@@ -131,7 +131,6 @@ test_extension_create_valid (PeasEngine     *engine,
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
-  g_assert (PEAS_IS_EXTENSION (extension));
   g_assert (INTROSPECTION_IS_CALLABLE (extension));
 
   g_object_unref (extension);
@@ -150,26 +149,26 @@ test_extension_create_invalid (PeasEngine     *engine,
 
   /* Invalid GType */
   extension = peas_engine_create_extension (engine, info, G_TYPE_INVALID, NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  g_assert (extension == NULL);
 
 
   /* GObject but not a GInterface */
   extension = peas_engine_create_extension (engine, info, PEAS_TYPE_ENGINE, NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  g_assert (extension == NULL);
 
 
   /* Does not implement this GType */
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_UNIMPLEMENTED,
                                             NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  g_assert (extension == NULL);
 
   /* Interface does not have an 'invalid-property' property */
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
                                             "invalid-property", "does-not-exist",
                                             NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  g_assert (extension == NULL);
 
   /* This cannot be tested in PyGI and Seed's log handler messes this up */
   if (g_strcmp0 (extension_plugin, "extension-c") != 0 &&
@@ -186,7 +185,7 @@ test_extension_create_invalid (PeasEngine     *engine,
       extension = peas_engine_create_extension (engine, info,
                                                 INTROSPECTION_TYPE_HAS_MISSING_PREREQUISITE,
                                                 NULL);
-      g_assert (!PEAS_IS_EXTENSION (extension));
+      g_assert (extension == NULL);
     }
 
   /* Not loaded */
@@ -194,7 +193,7 @@ test_extension_create_invalid (PeasEngine     *engine,
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
-  g_assert (!PEAS_IS_EXTENSION (extension));
+  g_assert (extension == NULL);
 }
 
 static void
