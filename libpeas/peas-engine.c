@@ -580,39 +580,17 @@ peas_engine_class_init (PeasEngineClass *klass)
 }
 
 static PeasObjectModule *
-try_to_open_loader_module (const gchar *loader_id,
-                           gboolean     in_subdir)
+load_module (const gchar *module_name,
+             const gchar *module_dir)
 {
-  gchar *tmp_dirname;
-  gchar *loader_dirname;
-  gchar *loader_basename;
   PeasObjectModule *module;
 
-  if (in_subdir)
-    {
-      tmp_dirname = peas_dirs_get_plugin_loaders_dir ();
-      loader_dirname = g_build_filename (tmp_dirname, loader_id, NULL);
-      g_free (tmp_dirname);
-    }
-  else
-    {
-      loader_dirname = peas_dirs_get_plugin_loaders_dir ();
-    }
-
-  /* Let's build the expected filename of the requested plugin loader */
-  loader_basename = g_strdup_printf ("lib%sloader.%s", loader_id, G_MODULE_SUFFIX);
-
-  g_debug ("Loading loader '%s': '%s/%s'", loader_id, loader_dirname, loader_basename);
-
-  module = peas_object_module_new (loader_basename, loader_dirname, TRUE);
-
-  g_free (loader_basename);
-  g_free (loader_dirname);
+  module = peas_object_module_new (module_name, module_dir, TRUE);
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
     {
       g_object_unref (module);
-      module = NULL;
+      return NULL;
     }
 
   return module;
@@ -623,7 +601,7 @@ get_plugin_loader (PeasEngine     *engine,
                    PeasPluginInfo *info)
 {
   LoaderInfo *loader_info;
-  gchar *loader_id;
+  gchar *loader_id, *module_name, *module_dir;
 
   loader_info = (LoaderInfo *) g_hash_table_lookup (loaders, info->loader);
 
@@ -642,19 +620,31 @@ get_plugin_loader (PeasEngine     *engine,
       return loader_info->loader;
     }
 
-  /* We need to ensure we use the lowercase loader_id */
   loader_id = g_ascii_strdown (info->loader, -1);
+  module_name = g_strconcat (loader_id, "loader", NULL);
+  module_dir = peas_dirs_get_plugin_loaders_dir ();
 
-  loader_info->module = try_to_open_loader_module (loader_id, FALSE);
-  if (loader_info->module == NULL)
-    loader_info->module = try_to_open_loader_module (loader_id, TRUE);
-
-  g_free (loader_id);
+  loader_info->module = load_module (module_name, module_dir);
 
   if (loader_info->module == NULL)
     {
-      g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
-      return NULL;
+      gchar *tmp = module_dir;
+
+      module_dir = g_build_filename (module_dir, loader_id, NULL);
+      loader_info->module = load_module (module_name, module_dir);
+
+      g_free (tmp);
+
+      if (loader_info->module == NULL)
+        {
+          g_warning ("Could not load plugin loader '%s'", info->loader);
+
+          g_free (module_dir);
+          g_free (module_name);
+          g_free (loader_id);
+          g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
+          return NULL;
+        }
     }
 
   loader_info->loader = PEAS_PLUGIN_LOADER (
@@ -663,6 +653,9 @@ get_plugin_loader (PeasEngine     *engine,
                                           0, NULL));
 
   g_type_module_unuse (G_TYPE_MODULE (loader_info->module));
+  g_free (module_dir);
+  g_free (module_name);
+  g_free (loader_id);
 
   if (loader_info->loader == NULL ||
       !peas_plugin_loader_initialize (loader_info->loader))

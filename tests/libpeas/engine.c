@@ -361,6 +361,7 @@ test_engine_nonexistent_loader (PeasEngine *engine)
   GError *error = NULL;
   PeasPluginInfo *info;
 
+  testing_util_push_log_hook ("Could not load plugin loader 'does-not-exist'*");
   testing_util_push_log_hook ("Could not find loader 'does-not-exist' for*");
 
   info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
