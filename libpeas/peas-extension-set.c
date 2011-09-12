@@ -315,25 +315,6 @@ peas_extension_set_dispose (GObject *object)
   g_clear_object (&priv->engine);
 }
 
-static gboolean
-peas_extension_set_call_real (PeasExtensionSet *set,
-                              const gchar      *method_name,
-                              GIArgument       *args)
-{
-  PeasExtensionSetPrivate *priv = GET_PRIV (set);
-  gboolean ret = TRUE;
-  GList *l;
-  GIArgument dummy;
-
-  for (l = priv->extensions; l; l = l->next)
-    {
-      ExtensionItem *item = (ExtensionItem *) l->data;
-      ret = peas_extension_callv (item->exten, method_name, args, &dummy) && ret;
-    }
-
-  return ret;
-}
-
 static void
 peas_extension_set_class_init (PeasExtensionSetClass *klass)
 {
@@ -344,8 +325,6 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
   object_class->get_property = peas_extension_set_get_property;
   object_class->constructed = peas_extension_set_constructed;
   object_class->dispose = peas_extension_set_dispose;
-
-  klass->call = peas_extension_set_call_real;
 
   /**
    * PeasExtensionSet::extension-added:
@@ -460,113 +439,6 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
     }
 
   return NULL;
-}
-
-/**
- * peas_extension_set_call:
- * @set: A #PeasExtensionSet.
- * @method_name: the name of the method that should be called.
- * @...: arguments for the method.
- *
- * Call a method on all the #PeasExtension instances contained in @set.
- *
- * See peas_extension_call() for more information.
- *
- * Deprecated: 1.2: Use peas_extension_set_foreach() instead.
- *
- * Return value: %TRUE on successful call.
- */
-gboolean
-peas_extension_set_call (PeasExtensionSet *set,
-                         const gchar      *method_name,
-                         ...)
-{
-  va_list args;
-  gboolean result;
-
-  g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), FALSE);
-  g_return_val_if_fail (method_name != NULL, FALSE);
-
-  va_start (args, method_name);
-  result = peas_extension_set_call_valist (set, method_name, args);
-  va_end (args);
-
-  return result;
-}
-
-/**
- * peas_extension_set_call_valist:
- * @set: A #PeasExtensionSet.
- * @method_name: the name of the method that should be called.
- * @va_args: the arguments for the method.
- *
- * Call a method on all the #PeasExtension instances contained in @set.
- *
- * See peas_extension_call_valist() for more information.
- *
- * Deprecated: 1.2: Use peas_extension_set_foreach() instead.
- *
- * Return value: %TRUE on successful call.
- */
-gboolean
-peas_extension_set_call_valist (PeasExtensionSet *set,
-                                const gchar      *method_name,
-                                va_list           va_args)
-{
-  PeasExtensionSetPrivate *priv = GET_PRIV (set);
-  GICallableInfo *callable_info;
-  GIArgument *args;
-  gint n_args;
-
-  g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), FALSE);
-  g_return_val_if_fail (method_name != NULL, FALSE);
-
-  callable_info = peas_gi_get_method_info (priv->exten_type, method_name);
-
-  if (callable_info == NULL)
-    {
-      g_warning ("Method '%s.%s' was not found",
-                 g_type_name (priv->exten_type), method_name);
-      return FALSE;
-    }
-
-  n_args = g_callable_info_get_n_args (callable_info);
-  g_return_val_if_fail (n_args >= 0, FALSE);
-
-  args = g_newa (GIArgument, n_args);
-  peas_gi_valist_to_arguments (callable_info, va_args, args, NULL);
-
-  g_base_info_unref ((GIBaseInfo *) callable_info);
-
-  return peas_extension_set_callv (set, method_name, args);
-}
-
-/**
- * peas_extension_set_callv:
- * @set: A #PeasExtensionSet.
- * @method_name: the name of the method that should be called.
- * @args: the arguments for the method.
- *
- * Call a method on all the #PeasExtension instances contained in @set.
- *
- * See peas_extension_callv() for more information.
- *
- * Return value: %TRUE on successful call.
- *
- * Deprecated: 1.2: Use peas_extension_set_foreach() instead.
- */
-gboolean
-peas_extension_set_callv (PeasExtensionSet *set,
-                          const gchar      *method_name,
-                          GIArgument       *args)
-{
-  PeasExtensionSetClass *klass;
-
-  g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), FALSE);
-  g_return_val_if_fail (method_name != NULL, FALSE);
-
-  klass = PEAS_EXTENSION_SET_GET_CLASS (set);
-  return klass->call (set, method_name, args);
 }
 
 /**

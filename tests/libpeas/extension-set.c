@@ -229,42 +229,6 @@ test_extension_set_get_extension (PeasEngine *engine)
 }
 
 static void
-test_extension_set_call_valid (PeasEngine *engine)
-{
-  PeasExtensionSet *extension_set;
-
-  test_extension_set_activate (engine);
-
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
-
-  g_assert (peas_extension_set_call (extension_set, "activate", NULL));
-
-  g_object_unref (extension_set);
-}
-
-static void
-test_extension_set_call_invalid (PeasEngine *engine)
-{
-  PeasExtensionSet *extension_set;
-
-  test_extension_set_activate (engine);
-
-  testing_util_push_log_hook ("Method 'PeasActivatable.invalid' was not found");
-
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
-
-  g_assert (!peas_extension_set_call (extension_set, "invalid", NULL));
-
-  g_object_unref (extension_set);
-}
-
-static void
 test_extension_set_foreach (PeasEngine *engine)
 {
   PeasExtensionSet *extension_set;
@@ -304,9 +268,6 @@ main (int    argc,
   TEST ("deactivate", deactivate);
 
   TEST ("get-extension", get_extension);
-
-  TEST ("call-valid", call_valid);
-  TEST ("call-invalid", call_invalid);
 
   TEST ("foreach", foreach);
 
