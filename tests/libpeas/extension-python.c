@@ -128,6 +128,18 @@ test_extension_python_plugin_info (PeasEngine *engine)
   g_object_unref (extension);
 }
 
+static void
+test_extension_python_nonexistent (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("Error loading plugin 'extension-python-nonexistent'");
+
+  info = peas_engine_get_plugin_info (engine, "extension-python-nonexistent");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -140,6 +152,7 @@ main (int   argc,
   EXTENSION_TEST (python, "instance-refcount", instance_refcount);
   EXTENSION_TEST (python, "activatable-subject-refcount", activatable_subject_refcount);
   EXTENSION_TEST (python, "plugin-info", plugin_info);
+  EXTENSION_TEST (python, "nonexistent", nonexistent);
 
   return testing_run_tests ();
 }

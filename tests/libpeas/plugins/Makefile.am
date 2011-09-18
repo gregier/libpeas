@@ -15,14 +15,18 @@ SUBDIRS += extension-seed
 endif
 
 noinst_PLUGIN = \
-	disabled-loader.plugin		\
-	info-missing-module.plugin	\
-	info-missing-name.plugin	\
-	invalid.plugin			\
-	invalid-loader.plugin		\
-	nonexistent-dep.plugin		\
-	nonexistent-loader.plugin	\
-	not-loadable.plugin		\
+	disabled-loader.plugin			\
+	extension-c-nonexistent.plugin		\
+	extension-gjs-nonexistent.plugin	\
+	extension-python-nonexistent.plugin	\
+	extension-seed-nonexistent.plugin	\
+	info-missing-module.plugin		\
+	info-missing-name.plugin		\
+	invalid.plugin				\
+	invalid-loader.plugin			\
+	nonexistent-dep.plugin			\
+	nonexistent-loader.plugin		\
+	not-loadable.plugin			\
 	os-dependant-help.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)

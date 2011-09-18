@@ -64,6 +64,19 @@ test_extension_seed_plugin_info (PeasEngine *engine)
   g_object_unref (extension);
 }
 
+static void
+test_extension_seed_nonexistent (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*Failed to open *extension-seed-nonexistent.js*");
+  testing_util_push_log_hook ("Error loading plugin 'extension-seed-nonexistent'");
+
+  info = peas_engine_get_plugin_info (engine, "extension-seed-nonexistent");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -75,6 +88,7 @@ main (int   argc,
   EXTENSION_TESTS (seed);
 
   EXTENSION_TEST (seed, "plugin-info", plugin_info);
+  EXTENSION_TEST (seed, "nonexistent", nonexistent);
 
   return testing_run_tests ();
 }

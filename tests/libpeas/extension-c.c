@@ -73,6 +73,20 @@ test_extension_c_plugin_info (PeasEngine *engine)
   g_object_unref (extension);
 }
 
+static void
+test_extension_c_nonexistent (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*extension-c-nonexistent*No such file*");
+  testing_util_push_log_hook ("Could not load*'extension-c-nonexistent'");
+  testing_util_push_log_hook ("Error loading plugin 'extension-c-nonexistent'");
+
+  info = peas_engine_get_plugin_info (engine, "extension-c-nonexistent");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -84,6 +98,7 @@ main (int   argc,
 
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
   EXTENSION_TEST (c, "plugin-info", plugin_info);
+  EXTENSION_TEST (c, "nonexistent", nonexistent);
 
   return testing_run_tests ();
 }

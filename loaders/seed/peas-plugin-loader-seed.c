@@ -39,22 +39,28 @@ typedef struct {
 static SeedEngine *seed = NULL;
 
 static gchar *
-get_script_for_plugin_info (PeasPluginInfo   *info,
-                            SeedContext       context)
+get_script_for_plugin_info (PeasPluginInfo *info)
 {
   gchar *basename;
   gchar *filename;
   gchar *script = NULL;
+  GError *error = NULL;
 
   basename = g_strconcat (peas_plugin_info_get_module_name (info), ".js", NULL);
   filename = g_build_filename (peas_plugin_info_get_module_dir (info), basename, NULL);
 
   g_debug ("Seed script filename is '%s'", filename);
 
-  g_file_get_contents (filename, &script, NULL, NULL);
+  g_file_get_contents (filename, &script, NULL, &error);
 
   g_free (basename);
   g_free (filename);
+
+  if (error != NULL)
+    {
+      g_warning ("Error: %s", error->message);
+      g_error_free (error);
+    }
 
   return script;
 }
@@ -70,12 +76,16 @@ peas_plugin_loader_seed_load (PeasPluginLoader *loader,
   SeedObject global, extensions;
   SeedInfo *sinfo;
 
+  script = get_script_for_plugin_info (info);
+
+  if (script == NULL)
+    return FALSE;
+
   context = seed_context_create (seed->group, NULL);
 
   seed_prepare_global_context (context);
-  script = get_script_for_plugin_info (info, context);
-
   seed_simple_evaluate (context, script, &exc);
+
   g_free (script);
 
   if (exc)
