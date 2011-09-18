@@ -661,10 +661,7 @@ get_plugin_loader (PeasEngine     *engine,
       g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
                  info->loader);
 
-      if (G_IS_OBJECT (loader_info->loader))
-        g_object_unref (loader_info->loader);
-
-      g_object_unref (loader_info->module);
+      /* This will cause the loader to be unreffed if it exists */
       g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
       return NULL;
     }
