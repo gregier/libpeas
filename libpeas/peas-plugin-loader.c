@@ -38,6 +38,21 @@ peas_plugin_loader_class_init (PeasPluginLoaderClass *klass)
 }
 
 gboolean
+peas_plugin_loader_initialize (PeasPluginLoader *loader)
+{
+  PeasPluginLoaderClass *klass;
+
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
+
+  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
+
+  if (klass->initialize != NULL)
+    return klass->initialize (loader);
+
+  return TRUE;
+}
+
+gboolean
 peas_plugin_loader_load (PeasPluginLoader *loader,
                          PeasPluginInfo   *info)
 {

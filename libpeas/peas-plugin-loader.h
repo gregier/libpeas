@@ -46,6 +46,8 @@ struct _PeasPluginLoader {
 struct _PeasPluginLoaderClass {
   GObjectClass parent;
 
+  gboolean       (*initialize)            (PeasPluginLoader *loader);
+
   gboolean       (*load)                  (PeasPluginLoader *loader,
                                            PeasPluginInfo   *info);
   void           (*unload)                (PeasPluginLoader *loader,
@@ -63,6 +65,8 @@ struct _PeasPluginLoaderClass {
 };
 
 GType         peas_plugin_loader_get_type             (void)  G_GNUC_CONST;
+
+gboolean      peas_plugin_loader_initialize           (PeasPluginLoader *loader);
 
 gboolean      peas_plugin_loader_load                 (PeasPluginLoader *loader,
                                                        PeasPluginInfo   *info);

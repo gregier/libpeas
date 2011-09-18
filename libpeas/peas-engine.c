@@ -656,7 +656,7 @@ get_plugin_loader (PeasEngine     *engine,
   g_type_module_unuse (G_TYPE_MODULE (loader_info->module));
 
   if (loader_info->loader == NULL ||
-      !PEAS_IS_PLUGIN_LOADER (loader_info->loader))
+      !peas_plugin_loader_initialize (loader_info->loader))
     {
       g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
                  info->loader);

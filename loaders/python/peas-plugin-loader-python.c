@@ -211,15 +211,6 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   const gchar *module_name;
   PyGILState_STATE state;
 
-  if (pyloader->priv->init_failed)
-    {
-      g_warning ("Cannot load Python plugin '%s' since libpeas was "
-                 "not able to initialize the Python interpreter",
-                 peas_plugin_info_get_module_name (info));
-
-      return FALSE;
-    }
-
   /* see if py definition for the plugin is already loaded */
   if (g_hash_table_lookup (pyloader->priv->loaded_plugins, info))
     return TRUE;
@@ -290,9 +281,6 @@ peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
 
-  if (pyloader->priv->init_failed)
-    return;
-
   /*
    * We both run the GC right now and we schedule
    * a further collection in the main loop.
@@ -301,36 +289,6 @@ peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 
   if (pyloader->priv->idle_gc == 0)
     pyloader->priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
-}
-
-static void
-peas_python_shutdown (PeasPluginLoaderPython *loader)
-{
-  if (!Py_IsInitialized ())
-    return;
-
-  if (loader->priv->py_thread_state)
-    {
-      PyEval_RestoreThread (loader->priv->py_thread_state);
-      loader->priv->py_thread_state = NULL;
-    }
-
-  if (loader->priv->idle_gc != 0)
-    {
-      g_source_remove (loader->priv->idle_gc);
-      loader->priv->idle_gc = 0;
-    }
-
-  if (!loader->priv->init_failed)
-    run_gc_protected ();
-
-  if (loader->priv->must_finalize_python)
-    {
-      if (!loader->priv->init_failed)
-        pyg_gil_state_ensure ();
-
-      Py_Finalize ();
-    }
 }
 
 /* C equivalent of
@@ -346,9 +304,6 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
 
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (pyloader), FALSE);
   g_return_val_if_fail (module_path != NULL, FALSE);
-
-  if (pyloader->priv->init_failed)
-    return FALSE;
 
   pathlist = PySys_GetObject ((char *) "path");
 
@@ -392,8 +347,9 @@ peas_wchar_from_str (const gchar *str)
 #endif
 
 static gboolean
-peas_python_init (PeasPluginLoaderPython *loader)
+peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
+  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *mdict, *gobject, *gi, *gettext, *install, *gettext_args;
   gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
@@ -405,13 +361,13 @@ peas_python_init (PeasPluginLoaderPython *loader)
   /* We are trying to initialize Python for the first time,
      set init_failed to FALSE only if the entire initialization process
      ends with success */
-  loader->priv->init_failed = TRUE;
+  pyloader->priv->init_failed = TRUE;
 
   /* Python initialization */
   if (!Py_IsInitialized ())
     {
       Py_InitializeEx (FALSE);
-      loader->priv->must_finalize_python = TRUE;
+      pyloader->priv->must_finalize_python = TRUE;
     }
 
   prgname = g_get_prgname ();
@@ -440,7 +396,7 @@ peas_python_init (PeasPluginLoaderPython *loader)
 #endif
 
   /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
-  peas_plugin_loader_python_add_module_path (loader, PEAS_PYEXECDIR);
+  peas_plugin_loader_python_add_module_path (pyloader, PEAS_PYEXECDIR);
 
   /* import gobject */
   pygobject_init (PYGOBJECT_MAJOR_VERSION, PYGOBJECT_MINOR_VERSION, PYGOBJECT_MICRO_VERSION);
@@ -490,9 +446,9 @@ peas_python_init (PeasPluginLoaderPython *loader)
   Py_DECREF (gettext_args);
 
   /* Python has been successfully initialized */
-  loader->priv->init_failed = FALSE;
+  pyloader->priv->init_failed = FALSE;
 
-  loader->priv->py_thread_state = PyEval_SaveThread ();
+  pyloader->priv->py_thread_state = PyEval_SaveThread ();
 
   return TRUE;
 
@@ -502,8 +458,6 @@ python_init_error:
              "required by libpeas and try again");
 
   PyErr_Clear ();
-
-  peas_python_shutdown (loader);
 
   return FALSE;
 }
@@ -527,9 +481,6 @@ peas_plugin_loader_python_init (PeasPluginLoaderPython *pyloader)
                                                 PEAS_TYPE_PLUGIN_LOADER_PYTHON,
                                                 PeasPluginLoaderPythonPrivate);
 
-  /* initialize python interpreter */
-  peas_python_init (pyloader);
-
   /* loaded_plugins maps PeasPluginInfo to a PythonInfo */
   pyloader->priv->loaded_plugins = g_hash_table_new_full (g_direct_hash,
                                                           g_direct_equal,
@@ -543,7 +494,32 @@ peas_plugin_loader_python_finalize (GObject *object)
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (object);
 
   g_hash_table_destroy (pyloader->priv->loaded_plugins);
-  peas_python_shutdown (pyloader);
+
+  if (Py_IsInitialized ())
+    {
+      if (pyloader->priv->py_thread_state)
+        {
+          PyEval_RestoreThread (pyloader->priv->py_thread_state);
+          pyloader->priv->py_thread_state = NULL;
+        }
+
+      if (pyloader->priv->idle_gc != 0)
+        {
+          g_source_remove (pyloader->priv->idle_gc);
+          pyloader->priv->idle_gc = 0;
+        }
+
+      if (!pyloader->priv->init_failed)
+        run_gc_protected ();
+
+      if (pyloader->priv->must_finalize_python)
+        {
+          if (!pyloader->priv->init_failed)
+            pyg_gil_state_ensure ();
+
+          Py_Finalize ();
+        }
+    }
 
   G_OBJECT_CLASS (peas_plugin_loader_python_parent_class)->finalize (object);
 }
@@ -556,6 +532,7 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
 
   object_class->finalize = peas_plugin_loader_python_finalize;
 
+  loader_class->initialize = peas_plugin_loader_python_initialize;
   loader_class->load = peas_plugin_loader_python_load;
   loader_class->unload = peas_plugin_loader_python_unload;
   loader_class->create_extension = peas_plugin_loader_python_create_extension;
