@@ -105,15 +105,18 @@ peas_plugin_loader_seed_load (PeasPluginLoader *loader,
       sinfo = (SeedInfo *) g_slice_new (SeedInfo);
       sinfo->context = context;
       sinfo->extensions = extensions;
-      seed_context_ref (context);
       seed_value_protect (context, extensions);
 
       g_hash_table_insert (sloader->loaded_plugins, info, sinfo);
+      return TRUE;
     }
-
-  seed_context_unref (context);
-
-  return TRUE;
+  else
+    {
+      g_warning ("extensions is not an object in plugin '%s'",
+                 peas_plugin_info_get_module_name (info));
+      seed_context_unref (context);
+      return FALSE;
+    }
 }
 
 static gboolean
