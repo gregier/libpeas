@@ -274,7 +274,16 @@ peas_plugin_loader_seed_init (PeasPluginLoaderSeed *sloader)
    * and is shared among instances (esp wrt module paths), but apparently there
    * is no way to avoid having it shared... */
   if (!seed)
-    seed = seed_init (NULL, NULL);
+    {
+      seed = seed_init (NULL, NULL);
+
+      /* Reverse the log handle Seed uses.
+       * The one place that Seed uses this shouldn't make a
+       * difference.
+       */
+      g_log_set_handler ("GLib-GObject", G_LOG_LEVEL_WARNING,
+                         g_log_default_handler, 0);
+    }
 
   sloader->loaded_plugins = g_hash_table_new_full (g_direct_hash, g_direct_equal,
                                                    NULL,

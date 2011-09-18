@@ -411,6 +411,8 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   /* Initialize support for threads */
   pyg_enable_threads ();
 
+  pyg_disable_warning_redirections ();
+
   gi = PyImport_ImportModule ("gi");
   if (gi == NULL)
     {
