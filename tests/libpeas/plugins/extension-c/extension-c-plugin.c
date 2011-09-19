@@ -26,21 +26,15 @@
 #include "extension-c-plugin.h"
 
 #include "introspection-callable.h"
-#include "introspection-properties.h"
 
 #include "callable-plugin.h"
-#include "properties-plugin.h"
 
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
   testing_callable_plugin_register (G_TYPE_MODULE (module));
-  testing_properties_plugin_register (G_TYPE_MODULE (module));
 
   peas_object_module_register_extension_type (module,
                                               INTROSPECTION_TYPE_CALLABLE,
                                               TESTING_TYPE_CALLABLE_PLUGIN);
-  peas_object_module_register_extension_type (module,
-                                              INTROSPECTION_TYPE_PROPERTIES,
-                                              TESTING_TYPE_PROPERTIES_PLUGIN);
 }

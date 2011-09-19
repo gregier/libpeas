@@ -23,11 +23,10 @@
 #include <config.h>
 #endif
 
-#include "libpeas/peas-extension-base.h"
+#include "libpeas/peas.h"
 
 #include "testing/testing-extension.h"
 #include "introspection/introspection-callable.h"
-#include "introspection/introspection-properties.h"
 
 static void
 test_extension_c_instance_refcount (PeasEngine *engine)
@@ -59,12 +58,12 @@ test_extension_c_plugin_info (PeasEngine *engine)
   PeasPluginInfo *info;
   PeasExtension *extension;
 
-  info = peas_engine_get_plugin_info (engine, "extension-c");
+  info = peas_engine_get_plugin_info (engine, "loadable");
 
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            PEAS_TYPE_ACTIVATABLE,
                                             NULL);
 
   g_assert (PEAS_IS_EXTENSION_BASE (extension));
@@ -94,7 +93,13 @@ main (int   argc,
   g_test_init (&argc, &argv, NULL);
   g_type_init ();
 
-  EXTENSION_TESTS (c);
+  /* Only test the basics */
+  EXTENSION_TESTS_INIT (c);
+
+  /* We still need to add the callable tests
+   * because of peas_extension_call()
+   */
+  EXTENSION_TESTS_CALLABLE (c);
 
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
   EXTENSION_TEST (c, "plugin-info", plugin_info);

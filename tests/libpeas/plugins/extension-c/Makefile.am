@@ -13,9 +13,7 @@ libextension_c_la_SOURCES = \
 	callable-plugin.c	\
 	callable-plugin.h	\
 	extension-c-plugin.c	\
-	extension-c-plugin.h	\
-	properties-plugin.c	\
-	properties-plugin.h
+	extension-c-plugin.h
 
 libextension_c_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 libextension_c_la_LIBADD = \
