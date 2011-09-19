@@ -39,6 +39,11 @@ struct _TestFixture {
 /* Have dependencies before the plugin that requires them */
 static const gchar *loadable_plugins[] = {
   "loadable", "has-dep", "self-dep"
+
+/* Load a plugin that does not just provide a PeasActivatable */
+#ifdef HAVE_PYTHON
+  , "extension-python"
+#endif
 };
 
 static void
@@ -114,8 +119,9 @@ test_extension_set_create_invalid (PeasEngine *engine)
 {
   PeasExtensionSet *extension_set;
 
-  testing_util_push_log_hook ("*assertion*G_TYPE_IS_INTERFACE*failed");
-  testing_util_push_log_hook ("*type 'PeasActivatable' has no property named 'invalid-property'");
+  testing_util_push_log_hook ("*assertion `G_TYPE_IS_INTERFACE (*)' failed");
+  testing_util_push_log_hook ("*type 'PeasActivatable' has no property named "
+                              "'does-not-exist'");
 
   /* Invalid GType */
   extension_set = peas_extension_set_new (engine, G_TYPE_INVALID, NULL);
@@ -127,10 +133,10 @@ test_extension_set_create_invalid (PeasEngine *engine)
   g_assert (!PEAS_IS_EXTENSION_SET (extension_set));
 
 
-  /* Interface does not have an 'invalid-property' property */
+  /* Interface does not have an 'does-not-exist' property */
   extension_set = peas_extension_set_new (engine,
                                           PEAS_TYPE_ACTIVATABLE,
-                                          "invalid-property", "does-not-exist",
+                                          "does-not-exist", NULL,
                                           NULL);
   g_assert (!PEAS_IS_EXTENSION_SET (extension_set));
 }

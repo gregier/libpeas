@@ -123,11 +123,6 @@ main (int   argc,
   /* Only test the basics */
   testing_extension_basic ("c");
 
-  /* We still need to add the callable tests
-   * because of peas_extension_call()
-   */
-  testing_extension_callable ("c");
-
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
   EXTENSION_TEST (c, "nonexistent", nonexistent);
   EXTENSION_TEST (c, "local-linkage", local_linkage);
