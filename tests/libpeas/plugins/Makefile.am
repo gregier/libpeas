@@ -3,15 +3,15 @@ include $(top_srcdir)/tests/Makefile.plugin
 SUBDIRS = extension-c
 
 if ENABLE_GJS
-SUBDIRS += extension-gjs
+SUBDIRS += extension-js
+else
+if ENABLE_SEED
+SUBDIRS += extension-js
+endif
 endif
 
 if ENABLE_PYTHON
 SUBDIRS += extension-python
-endif
-
-if ENABLE_SEED
-SUBDIRS += extension-seed
 endif
 
 noinst_PLUGIN = \

@@ -16,7 +16,7 @@ callable_extension.prototype = {
 };
 
 function properties_extension() {
-  this.read_only = "read-only",
+  this.read_only = "read-only"
   this.readwrite = "readwrite"
 };
 

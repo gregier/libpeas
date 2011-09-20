@@ -79,6 +79,10 @@ Makefile.in
 /tests/libpeas/extension-seed
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
+/tests/libpeas/plugins/extension-js/extension-gjs.js
+/tests/libpeas/plugins/extension-js/extension-gjs.plugin
+/tests/libpeas/plugins/extension-js/extension-seed.js
+/tests/libpeas/plugins/extension-js/extension-seed.plugin
 /tests/libpeas-gtk/plugin-manager
 /tests/libpeas-gtk/plugin-manager-store
 /tests/libpeas-gtk/plugin-manager-view

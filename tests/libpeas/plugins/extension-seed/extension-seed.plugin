@@ -1,9 +1,0 @@
-[Plugin]
-Module=extension-seed
-Loader=seed
-IAge=2
-Name=Extension Seed
-Description=This plugin is for the Seed PeasExtension tests.
-Authors=Garrett Regier
-Copyright=Copyright © 2011 Garrett Regier
-Website=http://live.gnome.org/Libpeas

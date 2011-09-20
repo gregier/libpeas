@@ -42,6 +42,7 @@ dnl ================================================================
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_PROG_LN_S
 
 # Initialize libtool
 LT_PREREQ([2.2.6])
@@ -490,9 +491,8 @@ tests/Makefile
 tests/libpeas/Makefile
 tests/libpeas/plugins/Makefile
 tests/libpeas/plugins/extension-c/Makefile
-tests/libpeas/plugins/extension-gjs/Makefile
+tests/libpeas/plugins/extension-js/Makefile
 tests/libpeas/plugins/extension-python/Makefile
-tests/libpeas/plugins/extension-seed/Makefile
 tests/libpeas/introspection/Makefile
 tests/libpeas/testing/Makefile
 tests/libpeas-gtk/Makefile
