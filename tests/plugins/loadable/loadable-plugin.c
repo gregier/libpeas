@@ -60,7 +60,7 @@ testing_loadable_plugin_set_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_OBJECT:
-      plugin->priv->object = g_value_dup_object (value);
+      plugin->priv->object = g_value_get_object (value);
       break;
 
     default:
