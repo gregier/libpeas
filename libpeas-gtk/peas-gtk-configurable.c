@@ -36,8 +36,8 @@
  * the #PeasGtkConfigurable interface.
  *
  * To allow plugin configuration from the #PeasGtkPluginManager, the
- * plugin writer will just need to implement the create_configure_widget()
- * method.
+ * plugin writer will just need to implement the
+ * PeasGtkConfigurableInterface.create_configure_widget() method.
  **/
 
 G_DEFINE_INTERFACE(PeasGtkConfigurable, peas_gtk_configurable, G_TYPE_OBJECT)

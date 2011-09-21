@@ -50,7 +50,7 @@ typedef struct _PeasObjectModulePrivate  PeasObjectModulePrivate;
  * A #PeasFactoryFunc is a factory function which will instanciate a new
  * extension of a given type. g_object_newv() is such a function.
  *
- * It is used with peas_object_module_register_object_factory().
+ * It is used with peas_object_module_register_extension_factory().
  *
  * Return value: (transfer full): The created object.
  */
