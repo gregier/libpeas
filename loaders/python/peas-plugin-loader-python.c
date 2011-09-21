@@ -350,7 +350,7 @@ static gboolean
 peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PyObject *mdict, *gobject, *gi, *gettext, *install, *gettext_args;
+  PyObject *mdict, *gettext, *install, *gettext_args;
   gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
   const char *argv[] = { "", NULL };
