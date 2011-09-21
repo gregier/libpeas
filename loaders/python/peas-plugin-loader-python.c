@@ -402,8 +402,9 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   pygobject_init (PYGOBJECT_MAJOR_VERSION, PYGOBJECT_MINOR_VERSION, PYGOBJECT_MICRO_VERSION);
   if (PyErr_Occurred ())
     {
-      g_warning ("Error initializing Python interpreter: could not "
-                 "import pygobject");
+      g_warning ("Error initializing Python Plugin Loader:"
+                 "PyGObject initialization failed");
+      PyErr_Print ();
 
       goto python_init_error;
     }
@@ -417,8 +418,8 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   gettext = PyImport_ImportModule ("gettext");
   if (gettext == NULL)
     {
-      g_warning ("Error initializing Python interpreter: could not "
-                 "import gettext");
+      g_warning ("Error initializing Python Plugin Loader: "
+                 "failed to import gettext");
 
       goto python_init_error;
     }
@@ -441,7 +442,8 @@ python_init_error:
   g_warning ("Please check the installation of all the Python related packages "
              "required by libpeas and try again");
 
-  PyErr_Clear ();
+  if (PyErr_Occurred ())
+    PyErr_Clear ();
 
   return FALSE;
 }
