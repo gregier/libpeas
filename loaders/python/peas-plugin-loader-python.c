@@ -398,7 +398,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
   peas_plugin_loader_python_add_module_path (pyloader, PEAS_PYEXECDIR);
 
-  /* import gobject */
+  /* Initialize PyGObject */
   pygobject_init (PYGOBJECT_MAJOR_VERSION, PYGOBJECT_MINOR_VERSION, PYGOBJECT_MICRO_VERSION);
   if (PyErr_Occurred ())
     {
@@ -412,24 +412,6 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   pyg_enable_threads ();
 
   pyg_disable_warning_redirections ();
-
-  gi = PyImport_ImportModule ("gi");
-  if (gi == NULL)
-    {
-      g_warning ("Error initializing Python interpreter: could not "
-                 "import gi");
-
-      goto python_init_error;
-    }
-
-  gobject = PyImport_ImportModule ("gi.repository.GObject");
-  if (gobject == NULL)
-    {
-      g_warning ("Error initializing Python interpreter: could not "
-                 "import gobject");
-
-      goto python_init_error;
-    }
 
   /* i18n support */
   gettext = PyImport_ImportModule ("gettext");

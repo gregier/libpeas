@@ -339,9 +339,6 @@ else
 				 [found_python="no (pygobject >= $PYGOBJECT_REQUIRED not found)"])
 	fi
 	AC_MSG_RESULT([$found_python])
-
-	dnl FIXME: shall we check explicitely for PyGI here? Strictly speaking,
-	dnl it's not required for building libpeas, merely to use it properly.
 fi
 
 if test "$enable_python" = "yes" -a "$found_python" != "yes"; then
