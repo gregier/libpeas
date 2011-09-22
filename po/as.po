@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
-"cgi?product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-03-31 19:16+0000\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2011-09-21 09:31+0000\n"
 "PO-Revision-Date: 2011-04-01 17:23+0000\n"
 "Last-Translator: Nilamdyuti Goswami <ngoswami@redhat.com>\n"
 "Language-Team: Assamese <kde-i18n-doc@kde.org>\n"
@@ -42,12 +42,12 @@ msgstr "দৰ্শন"
 #: ../libpeas/peas-engine.c:785
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr "আসক্তি '%s' পোৱা নগল"
+msgstr "নিৰ্ভৰশীলতা '%s' পোৱা নগল"
 
 #: ../libpeas/peas-engine.c:795
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr "আসক্তি '%s' লোড হবলৈ ব্যৰ্থ"
+msgstr "নিৰ্ভৰশীলতা '%s' লোড হবলৈ ব্যৰ্থ"
 
 #: ../libpeas/peas-engine.c:810
 #, c-format
@@ -66,9 +66,7 @@ msgstr "অতিৰিক্ত প্লাগিনসমূহ অসাম�
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr ""
-"নিম্নলিখিত প্লাগিনসমূহ '%s' -ৰ উপৰত আসক্ত আৰু ইহতকো অসামৰ্থবান কৰা "
-"হব:"
+msgstr "নিম্নলিখিত প্লাগিনসমূহ '%s' -ৰ উপৰত নিৰ্ভৰশীল আৰু ইহতকো অসামৰ্থবান কৰা হব:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
 msgid "Plugins"
@@ -76,7 +74,7 @@ msgstr "প্লাগিনসমূহ"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
 msgid "An additional plugin must be disabled"
-msgstr "এটা অতিৰিক্ত প্লগিন অসামৰ্থবান কৰিব লাগিব"
+msgstr "এটা অতিৰিক্ত প্লাগিন অসামৰ্থবান কৰিব লাগিব"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
 #, c-format
@@ -84,50 +82,38 @@ msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
-"'%s' প্লাগিনটো '%s' প্লাগিনৰ উপৰত আসক্ত।\n"
+"'%s' প্লাগিনটো '%s' প্লাগিনৰ উপৰত নিৰ্ভৰশীল।\n"
 "আপুনি যদি '%s' অসামৰ্থবান কৰে, '%s' -ও অসামৰ্থবান হব।"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:180
 msgid "Disable Plugins"
 msgstr "প্লাগিনসমূহ অসামৰ্থবান কৰক"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:198
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:179
 msgid "There was an error displaying the help."
 msgstr "সহায় প্ৰদৰ্শন কৰোতে এটা ত্ৰুটি হৈছিল।"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:346
-msgid "C_onfigure"
-msgstr "সংৰূপীত কৰক (_o)"
-
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:354
-msgid "_About"
-msgstr "বিষয়ে (_A)"
-
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:380
-msgid "_Plugins:"
-msgstr "প্লাগিনসমূহ (_P):"
-
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:331
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:332
 msgid "_Enabled"
 msgstr "সামৰ্থবান কৰা আছে (_E)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:342
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:343
 msgid "E_nable All"
-msgstr "সকলোক সামৰ্থবান কৰক (_n)"
+msgstr "সকলো সামৰ্থবান কৰক (_n)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:346
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:347
 msgid "_Disable All"
-msgstr "সকলোক অসামৰ্থবান কৰক (_D)"
+msgstr "সকলো অসামৰ্থবান কৰক (_D)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:513
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:506
 msgid "Enabled"
 msgstr "সামৰ্থবান কৰা আছে"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:534
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:527
 msgid "Plugin"
 msgstr "প্লাগিন"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:612
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -140,7 +126,15 @@ msgstr ""
 msgid "Run from build directory"
 msgstr "নিৰ্মান ডাইৰেকটৰিৰ পৰা চলাওক"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
 msgstr "- libpeas ডেমো অনুপ্ৰয়োগ"
 
+#~ msgid "C_onfigure"
+#~ msgstr "সংৰূপীত কৰক (_o)"
+
+#~ msgid "_About"
+#~ msgstr "বিষয়ে (_A)"
+
+#~ msgid "_Plugins:"
+#~ msgstr "প্লাগিনসমূহ (_P):"
