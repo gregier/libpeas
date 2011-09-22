@@ -89,7 +89,10 @@ peas_object_module_load (GTypeModule *gmodule)
   if (G_MODULE_SUFFIX[0] != '\0' && g_str_has_suffix (path, "." G_MODULE_SUFFIX))
     path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
 
-  module->priv->library = g_module_open (path, G_MODULE_BIND_LOCAL);
+  /* Bind symbols globally and immediately,
+   * binding locally broke the Python plugin loader.
+   */
+  module->priv->library = g_module_open (path, 0);
   g_free (path);
 
   if (module->priv->library == NULL)
