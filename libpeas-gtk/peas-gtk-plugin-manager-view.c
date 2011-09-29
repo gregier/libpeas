@@ -952,7 +952,7 @@ peas_gtk_plugin_manager_view_set_selected_plugin (PeasGtkPluginManagerView *view
  *
  * Returns the currently selected plugin, or %NULL if a plugin is not selected.
  *
- * Returns: the selected plugin.
+ * Returns: (transfer none): the selected plugin.
  */
 PeasPluginInfo *
 peas_gtk_plugin_manager_view_get_selected_plugin (PeasGtkPluginManagerView *view)

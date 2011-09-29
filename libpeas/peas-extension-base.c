@@ -141,7 +141,8 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
  *
  * Get information relative to @extbase.
  *
- * Return value: the #PeasPluginInfo relative to the #PeasExtensionBase.
+ * Return value: (transfer none): the #PeasPluginInfo relative
+ * to the #PeasExtensionBase.
  */
 PeasPluginInfo *
 peas_extension_base_get_plugin_info (PeasExtensionBase *extbase)

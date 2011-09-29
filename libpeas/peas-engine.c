@@ -733,7 +733,7 @@ compare_plugin_info_and_name (PeasPluginInfo *info,
  * Gets the #PeasPluginInfo corresponding with @plugin_name,
  * or %NULL if @plugin_name was not found.
  *
- * Returns: the #PeasPluginInfo corresponding with
+ * Returns: (transfer none): the #PeasPluginInfo corresponding with
  * a given plugin module name.
  */
 PeasPluginInfo *
