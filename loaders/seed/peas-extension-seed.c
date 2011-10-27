@@ -141,18 +141,20 @@ peas_extension_seed_dispose (GObject *object)
       sexten->js_object = NULL;
       sexten->js_context = NULL;
     }
+
+  G_OBJECT_CLASS (peas_extension_seed_parent_class)->dispose (object);
 }
 
 static gboolean
 peas_extension_seed_call (PeasExtensionWrapper *exten,
+                          GType                 exten_type,
+                          GICallableInfo       *func_info,
                           const gchar          *method_name,
                           GIArgument           *args,
                           GIArgument           *retval)
 {
   PeasExtensionSeed *sexten = PEAS_EXTENSION_SEED (exten);
-  GType exten_type;
   SeedValue js_method;
-  GICallableInfo *func_info;
   gint n_args, i;
   SeedValue *js_in_args;
   OutArg *out_args;
@@ -165,8 +167,6 @@ peas_extension_seed_call (PeasExtensionWrapper *exten,
 
   g_return_val_if_fail (sexten->js_context != NULL, FALSE);
   g_return_val_if_fail (sexten->js_object != NULL, FALSE);
-
-  exten_type = peas_extension_wrapper_get_extension_type (exten);
 
   /* Fetch the JS method we want to call */
   js_method = seed_object_get_property (sexten->js_context,
@@ -186,11 +186,6 @@ peas_extension_seed_call (PeasExtensionWrapper *exten,
                  g_type_name (exten_type), method_name);
       return FALSE;
     }
-
-  /* Prepare the arguments */
-  func_info = peas_gi_get_method_info (exten_type, method_name);
-  if (func_info == NULL)
-    return FALSE;
 
   n_args = g_callable_info_get_n_args (func_info);
   g_return_val_if_fail (n_args >= 0, FALSE);
@@ -278,8 +273,6 @@ peas_extension_seed_call (PeasExtensionWrapper *exten,
 
 cleanup:
 
-  g_base_info_unref ((GIBaseInfo *) func_info);
-
   if (exc == NULL)
     return TRUE;
 
@@ -303,9 +296,10 @@ peas_extension_seed_class_init (PeasExtensionSeedClass *klass)
 }
 
 GObject *
-peas_extension_seed_new (GType       exten_type,
-                         SeedContext js_context,
-                         SeedObject  js_object)
+peas_extension_seed_new (GType        exten_type,
+                         GType       *interfaces,
+                         SeedContext  js_context,
+                         SeedObject   js_object)
 {
   PeasExtensionSeed *sexten;
   GType real_type;
@@ -313,12 +307,14 @@ peas_extension_seed_new (GType       exten_type,
   g_return_val_if_fail (js_context != NULL, NULL);
   g_return_val_if_fail (js_object != NULL, NULL);
 
-  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_SEED, exten_type);
+  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_SEED,
+                                                interfaces);
   sexten = PEAS_EXTENSION_SEED (g_object_new (real_type, NULL));
 
   sexten->js_context = js_context;
   sexten->js_object = js_object;
   PEAS_EXTENSION_WRAPPER (sexten)->exten_type = exten_type;
+  PEAS_EXTENSION_WRAPPER (sexten)->interfaces = interfaces;
 
   seed_context_ref (sexten->js_context);
   seed_value_protect (sexten->js_context, sexten->js_object);

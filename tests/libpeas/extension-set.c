@@ -158,9 +158,9 @@ test_extension_set_activate (PeasEngine *engine)
       g_assert (peas_engine_load_plugin (engine, info));
     }
 
-  /* Load a plugin that does not provide a PeasActivatable */
+  /* Load a plugin that does not provide a PeasActivatable
   info = peas_engine_get_plugin_info (engine, "extension-c");
-  g_assert (peas_engine_load_plugin (engine, info));
+  g_assert (peas_engine_load_plugin (engine, info)); */
 
   g_assert_cmpint (active, ==, G_N_ELEMENTS (loadable_plugins));
 
@@ -185,9 +185,9 @@ test_extension_set_deactivate (PeasEngine *engine)
 
   test_extension_set_activate (engine);
 
-  /* Unload the plugin that does not provide a PeasActivatable */
+  /* Unload the plugin that does not provide a PeasActivatable
   info = peas_engine_get_plugin_info (engine, "extension-c");
-  g_assert (peas_engine_unload_plugin (engine, info));
+  g_assert (peas_engine_unload_plugin (engine, info)); */
 
   /* To keep deps in order */
   for (i = G_N_ELEMENTS (loadable_plugins); i > 0; --i)
@@ -252,7 +252,7 @@ test_extension_set_call_invalid (PeasEngine *engine)
 
   test_extension_set_activate (engine);
 
-  testing_util_push_log_hook ("*Method 'PeasActivatable.invalid' not found*");
+  //testing_util_push_log_hook ("*Method 'PeasActivatable.invalid' not found*");
 
   extension_set = peas_extension_set_new (engine,
                                           PEAS_TYPE_ACTIVATABLE,

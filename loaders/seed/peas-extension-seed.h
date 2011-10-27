@@ -50,9 +50,10 @@ struct _PeasExtensionSeedClass {
 
 GType            peas_extension_seed_get_type (void) G_GNUC_CONST;
 
-GObject         *peas_extension_seed_new      (GType           exten_type,
-                                               SeedContext     js_context,
-                                               SeedObject      js_object);
+GObject         *peas_extension_seed_new      (GType        exten_type,
+                                               GType       *interfaces,
+                                               SeedContext  js_context,
+                                               SeedObject   js_object);
 
 G_END_DECLS
 

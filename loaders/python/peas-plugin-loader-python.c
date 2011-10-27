@@ -177,7 +177,9 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo);
   Py_DECREF (pyplinfo);
 
-  exten = peas_extension_python_new (exten_type, pyobject);
+  exten = peas_extension_python_new (exten_type,
+                                     g_type_interfaces (the_type, NULL),
+                                     pyobject);
   Py_DECREF (pyobject);
 
 out:

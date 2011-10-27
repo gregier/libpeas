@@ -35,12 +35,15 @@ G_BEGIN_DECLS
 
 typedef struct _TestingCallablePlugin         TestingCallablePlugin;
 typedef struct _TestingCallablePluginClass    TestingCallablePluginClass;
+typedef struct _TestingCallablePluginPrivate  TestingCallablePluginPrivate;
 
 struct _TestingCallablePlugin {
   /* Inherit from GObject and not PeasExtensionBase
    * to check that it is possible
    */
   GObject parent_instance;
+
+  TestingCallablePluginPrivate *priv;
 };
 
 struct _TestingCallablePluginClass {

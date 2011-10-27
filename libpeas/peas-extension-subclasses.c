@@ -31,8 +31,9 @@
 #include "peas-introspection.h"
 
 typedef struct _MethodImpl {
-  GICallableInfo *info;
-  gchar *method_name;
+  GType interface_type;
+  GIFunctionInfo *invoker_info;
+  const gchar *method_name;
   ffi_cif cif;
   ffi_closure *closure;
   guint struct_offset;
@@ -67,30 +68,33 @@ handle_method_impl (ffi_cif  *cif,
   instance = *((PeasExtensionWrapper **) args[0]);
   g_assert (PEAS_IS_EXTENSION_WRAPPER (instance));
 
-  n_args = g_callable_info_get_n_args (impl->info);
-  g_return_if_fail (n_args >= 1);
-  arguments = g_newa (GIArgument, n_args-1);
+  n_args = g_callable_info_get_n_args (impl->invoker_info);
+  g_return_if_fail (n_args >= 0);
+  arguments = g_newa (GIArgument, n_args);
 
-  for (i = 1; i < n_args; i++)
+  for (i = 0; i < n_args; i++)
     {
-      g_callable_info_load_arg (impl->info, i, &arg_info);
+      g_callable_info_load_arg (impl->invoker_info, i, &arg_info);
       g_arg_info_load_type (&arg_info, &type_info);
 
       if (g_arg_info_get_direction (&arg_info) == GI_DIRECTION_IN)
-        peas_gi_pointer_to_argument (&type_info, args[i], &arguments[i-1]);
+        peas_gi_pointer_to_argument (&type_info, args[i + 1], &arguments[i]);
       else
-        arguments[i-1].v_pointer = *((gpointer **) args[i]);
+        arguments[i].v_pointer = *((gpointer **) args[i + 1]);
     }
 
-  peas_extension_wrapper_callv (instance, impl->method_name, arguments, &return_value);
+  peas_extension_wrapper_callv (instance, impl->interface_type,
+                                impl->invoker_info, impl->method_name,
+                                arguments, &return_value);
 
-  g_callable_info_load_return_type (impl->info, &return_type_info);
+  g_callable_info_load_return_type (impl->invoker_info, &return_type_info);
   if (g_type_info_get_tag (&return_type_info) != GI_TYPE_TAG_VOID)
     peas_gi_argument_to_pointer (&return_type_info, &return_value, result);
 }
 
 static void
-create_native_closure (GIInterfaceInfo *iface_info,
+create_native_closure (GType            interface_type,
+                       GIInterfaceInfo *iface_info,
                        GIVFuncInfo     *vfunc_info,
                        MethodImpl      *impl)
 {
@@ -145,8 +149,9 @@ create_native_closure (GIInterfaceInfo *iface_info,
   callback_info = g_type_info_get_interface (type_info);
   g_assert (g_base_info_get_type (callback_info) == GI_INFO_TYPE_CALLBACK);
 
-  impl->info = g_base_info_ref (callback_info);
-  impl->method_name = g_strdup (g_base_info_get_name (invoker_info));
+  impl->interface_type = interface_type;
+  impl->invoker_info = invoker_info;
+  impl->method_name = g_base_info_get_name (invoker_info);
   impl->closure = g_callable_info_prepare_closure (callback_info, &impl->cif,
                                                    handle_method_impl, impl);
   impl->struct_offset = g_field_info_get_offset (field_info);
@@ -155,7 +160,6 @@ create_native_closure (GIInterfaceInfo *iface_info,
   g_base_info_unref (type_info);
   g_base_info_unref (field_info);
   g_base_info_unref (struct_info);
-  g_base_info_unref (invoker_info);
 }
 
 static void
@@ -185,8 +189,11 @@ implement_interface_methods (gpointer iface,
       for (i = 0; i < n_vfuncs; i++)
         {
           GIVFuncInfo *vfunc_info;
+
           vfunc_info = g_interface_info_get_vfunc (iface_info, i);
-          create_native_closure (iface_info, vfunc_info, &impls[i]);
+          create_native_closure (exten_type, iface_info,
+                                 vfunc_info, &impls[i]);
+
           g_base_info_unref ((GIBaseInfo *) vfunc_info);
         }
 
@@ -260,35 +267,42 @@ extension_subclass_get_property (GObject    *object,
 
 static void
 extension_subclass_init (GObjectClass *klass,
-                         GType         exten_type)
+                         GType        *exten_types)
 {
-  guint n_props, i;
-  gpointer iface_vtable;
-  GParamSpec **properties;
+  guint i;
 
   g_debug ("Initializing class '%s'", G_OBJECT_CLASS_NAME (klass));
 
-  iface_vtable = g_type_default_interface_peek (exten_type);
-  properties = g_object_interface_list_properties (iface_vtable, &n_props);
+  klass->set_property = extension_subclass_set_property;
+  klass->get_property = extension_subclass_get_property;
 
-  if (n_props > 0)
+  for (i = 0; exten_types[i] != 0; ++i)
     {
-      klass->set_property = extension_subclass_set_property;
-      klass->get_property = extension_subclass_get_property;
+      guint n_props, j;
+      gpointer iface_vtable;
+      GParamSpec **properties;
 
-      for (i = 0; i < n_props; ++i)
+      iface_vtable = g_type_default_interface_peek (exten_types[i]);
+      properties = g_object_interface_list_properties (iface_vtable, &n_props);
+
+      if (n_props > 0)
         {
-          const gchar *property_name = g_param_spec_get_name (properties[i]);
+          for (j = 0; j < n_props; ++j)
+            {
+              const gchar *property_name;
 
-          g_object_class_override_property (klass, i + 1, property_name);
+              property_name = g_param_spec_get_name (properties[j]);
 
-          g_debug ("Overrided '%s:%s' for '%s' proxy",
-                   g_type_name (exten_type), property_name,
-                   G_OBJECT_CLASS_NAME (klass));
+              g_object_class_override_property (klass, j + 1, property_name);
+
+              g_debug ("Overrided '%s:%s' for '%s' proxy",
+                       g_type_name (exten_types[i]), property_name,
+                       G_OBJECT_CLASS_NAME (klass));
+            }
         }
-    }
 
-  g_free (properties);
+      g_free (properties);
+    }
 
   g_debug ("Initialized class '%s'", G_OBJECT_CLASS_NAME (klass));
 }
@@ -300,17 +314,24 @@ extension_subclass_instance_init (GObject *instance)
 }
 
 GType
-peas_extension_register_subclass (GType parent_type,
-                                  GType extension_type)
+peas_extension_register_subclass (GType  parent_type,
+                                  GType *extension_types)
 {
-  gchar *type_name;
+  guint i;
+  GString *type_name;
   GType the_type;
 
-  type_name = g_strdup_printf ("%s+%s",
-                               g_type_name (parent_type),
-                               g_type_name (extension_type));
+  type_name = g_string_new (g_type_name (parent_type));
 
-  the_type = g_type_from_name (type_name);
+  for (i = 0; extension_types[i] != 0; ++i)
+    {
+      /* Use something that is not allowed in symbol names */
+      g_string_append_c (type_name, '+');
+
+      g_string_append (type_name, g_type_name (extension_types[i]));
+    }
+
+  the_type = g_type_from_name (type_name->str);
 
   if (the_type == G_TYPE_INVALID)
     {
@@ -321,7 +342,7 @@ peas_extension_register_subclass (GType parent_type,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) extension_subclass_init,
         (GClassFinalizeFunc) NULL,
-        GSIZE_TO_POINTER (extension_type),
+        g_memdup (extension_types, sizeof (GType) * (i + 1)),
         0,
         0,
         (GInstanceInitFunc) extension_subclass_instance_init,
@@ -333,20 +354,22 @@ peas_extension_register_subclass (GType parent_type,
         NULL
       };
 
-      g_debug ("Registering new type '%s'", type_name);
+      g_debug ("Registering new type '%s'", type_name->str);
 
       g_type_query (parent_type, &query);
       type_info.class_size = query.class_size;
       type_info.instance_size = query.instance_size;
 
-      the_type = g_type_register_static (parent_type, type_name, &type_info, 0);
+      the_type = g_type_register_static (parent_type, type_name->str,
+                                         &type_info, 0);
 
       iface_info.interface_data = GSIZE_TO_POINTER (the_type);
 
-      g_type_add_interface_static (the_type, extension_type, &iface_info);
+      for (i = 0; extension_types[i] != 0; ++i)
+        g_type_add_interface_static (the_type, extension_types[i], &iface_info);
     }
 
-  g_free (type_name);
+  g_string_free (type_name, TRUE);
 
   return the_type;
 }

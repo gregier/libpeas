@@ -129,6 +129,8 @@ peas_extension_gjs_dispose (GObject *object)
       gexten->js_context = NULL;
       gexten->js_object = NULL;
     }
+
+  G_OBJECT_CLASS (peas_extension_gjs_parent_class)->dispose (object);
 }
 
 static gboolean
@@ -181,23 +183,21 @@ set_out_arg (JSContext      *js_context,
 
 static gboolean
 peas_extension_gjs_call (PeasExtensionWrapper *exten,
+                         GType                 exten_type,
+                         GICallableInfo       *func_info,
                          const gchar          *method_name,
                          GIArgument           *args,
                          GIArgument           *retval)
 {
   PeasExtensionGjs *gexten = PEAS_EXTENSION_GJS (exten);
-  GType exten_type;
   gboolean success = FALSE;
   jsval js_method, js_retval;
-  GICallableInfo *func_info;
   jsval *js_args;
   CachedArg *arg_cache;
   gint i, n_args, nth_out_arg;
   gint n_in_args = 0;
   gint n_out_args = 0;
   gint cached_args = 0;
-
-  exten_type = peas_extension_wrapper_get_extension_type (exten);
 
   /* Fetch the JS method we want to call */
   if (!JS_GetProperty (gexten->js_context, gexten->js_object,
@@ -217,16 +217,11 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
       return FALSE;
     }
 
-  /* Prepare the arguments */
-  func_info = peas_gi_get_method_info (exten_type, method_name);
-  if (func_info == NULL)
-    return FALSE;
-
   n_args = g_callable_info_get_n_args (func_info);
   if (n_args < 0)
     {
       g_warn_if_fail (n_args >= 0);
-      goto out;
+      return FALSE;
     }
 
   js_args = g_newa (jsval, n_args);
@@ -257,7 +252,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
         {
           g_warning ("Error failed to convert argument '%s'",
                      g_base_info_get_name (&arg_cache[cached_args].arg_info));
-          goto out;
+          return FALSE;
         }
 
       if (direction == GI_DIRECTION_INOUT)
@@ -272,7 +267,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
             {
               g_warning ("Error failed to convert argument '%s'",
                          g_base_info_get_name (&arg_cache[cached_args].arg_info));
-              goto out;
+              return FALSE;
             }
         }
 
@@ -290,7 +285,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
     {
       g_warning ("Error while calling '%s.%s'",
                  g_type_name (exten_type), method_name);
-      goto out;
+      return FALSE;
     }
 
   /* First we need to release in argument */
@@ -327,8 +322,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
           !JS_IsArrayObject (gexten->js_context, JSVAL_TO_OBJECT (js_retval)))
         {
           g_warning ("Error return value is not an array");
-          success = FALSE;
-          goto out;
+          return FALSE;
         }
     }
 
@@ -366,7 +360,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
               js_value == JSVAL_VOID)
             {
               g_warning ("Error failed to get out argument %i", nth_out_arg);
-              success = FALSE;
+              return FALSE;
             }
           else
             {
@@ -377,10 +371,6 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
             }
         }
     }
-
-out:
-
-  g_base_info_unref (func_info);
 
   return success;
 }
@@ -400,6 +390,7 @@ peas_extension_gjs_class_init (PeasExtensionGjsClass *klass)
 
 GObject *
 peas_extension_gjs_new (GType      exten_type,
+                        GType     *interfaces,
                         JSContext *js_context,
                         JSObject  *js_object)
 {
@@ -409,12 +400,14 @@ peas_extension_gjs_new (GType      exten_type,
   g_return_val_if_fail (js_context != NULL, NULL);
   g_return_val_if_fail (js_object != NULL, NULL);
 
-  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_GJS, exten_type);
+  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_GJS,
+                                                interfaces);
   gexten = PEAS_EXTENSION_GJS (g_object_new (real_type, NULL));
 
   gexten->js_context = js_context;
   gexten->js_object = js_object;
   PEAS_EXTENSION_WRAPPER (gexten)->exten_type = exten_type;
+  PEAS_EXTENSION_WRAPPER (gexten)->interfaces = interfaces;
   JS_AddObjectRoot (gexten->js_context, &gexten->js_object);
 
   return G_OBJECT (gexten);

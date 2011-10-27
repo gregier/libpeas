@@ -3,7 +3,19 @@
 
 from gi.repository import GObject, Introspection, Peas
 
-class CallablePythonPlugin(GObject.Object, Introspection.Callable):
+class ActivatablePythonPlugin(GObject.Object, Peas.Activatable):
+    object = GObject.property(type=GObject.Object)
+
+    def do_activate(self):
+        pass
+
+    def do_deactivate(self):
+        pass
+
+    def update_state(self):
+        pass
+
+class CallablePythonPlugin(ActivatablePythonPlugin, Introspection.Callable):
     def do_call_with_return(self):
         return "Hello, World!";
 
@@ -25,14 +37,5 @@ class PropertiesPythonPlugin(GObject.Object, Introspection.Properties):
 
     readwrite = GObject.property(type=str, default="readwrite")
 
-class ActivatablePythonExtension(GObject.Object, Peas.Activatable):
-    object = GObject.property(type=GObject.Object)
-
-    def do_activate(self):
-        pass
-
-    def do_deactivate(self):
-        pass
-
-    def update_state(self):
-        pass
+class HasPrerequisitePythonPlugin(CallablePythonPlugin, Introspection.HasPrerequisite):
+    pass

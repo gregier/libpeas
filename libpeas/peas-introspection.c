@@ -23,6 +23,8 @@
 #include <config.h>
 #endif
 
+#include <string.h>
+
 #include "peas-introspection.h"
 
 void
@@ -334,34 +336,130 @@ peas_gi_get_method_info (GType        iface_type,
       func_info = NULL;
     }
 
-  if (func_info == NULL)
-    {
-      g_warning ("Method '%s.%s' not found",
-                 g_type_name (iface_type),
-                 method_name);
-    }
-
   g_base_info_unref (iface_info);
   return (GICallableInfo *) func_info;
 }
 
-gboolean
-peas_method_apply (GObject     *instance,
-                   GType        iface_type,
-                   const gchar *method_name,
-                   GIArgument  *args,
-                   GIArgument  *return_value)
+/* Only for interfaces! */
+GType
+peas_gi_get_type_from_name (const gchar *type_name)
 {
-  GICallableInfo *func_info;
+  guint i;
+  gchar **ns;
+  GType the_type = G_TYPE_INVALID;
+
+  /* Hope for the best */
+  the_type = g_type_from_name (type_name);
+
+  if (the_type != G_TYPE_INVALID)
+    return the_type;
+
+
+  ns = g_irepository_get_loaded_namespaces (NULL);
+
+  /* Attempt to find it via naming conventions */
+  for (i = 0; ns[i] != NULL; ++i)
+    {
+      gsize len;
+
+      /* Allow GObject and Gio Interfaces to use the fast path */
+      if (g_strcmp0 (ns[i], "GObject") == 0 || g_strcmp0 (ns[i], "Gio") == 0)
+        len = 1;
+      else
+        len = strlen (ns[i]);
+
+      /* Only compare the prefix of the type name */
+      if (strncmp (type_name, ns[i], len) == 0)
+        {
+          GIBaseInfo *info;
+
+          info = g_irepository_find_by_name (NULL, ns[i], type_name + len);
+
+          if (info != NULL)
+            {
+              if (!GI_IS_INTERFACE_INFO (info))
+                {
+                  g_base_info_unref (info);
+                }
+              else
+                {
+                  g_registered_type_info_get_g_type (info);
+                  g_base_info_unref (info);
+
+                  /* It might not be the correct interface */
+                  the_type = g_type_from_name (type_name);
+
+                  if (the_type != G_TYPE_INVALID)
+                    break;
+                }
+            }
+
+          /* Cannot break here otherwise PeasGtk symbols would not be found */
+        }
+    }
+
+  /* The all or nothing approach, on the upside this
+   * will cause g_type_name() on many other types to work.
+   */
+  if (the_type == G_TYPE_INVALID)
+    {
+      for (i = 0; ns[i] != NULL; ++i)
+        {
+          gint j;
+          gint n_infos;
+
+          n_infos = g_irepository_get_n_infos (NULL, ns[i]);
+
+          for (j = 0; j < n_infos; ++j)
+            {
+              GIBaseInfo *info;
+
+              info = g_irepository_get_info (NULL, ns[i], j);
+
+              if (!GI_IS_INTERFACE_INFO (info))
+                {
+                  g_base_info_unref (info);
+                }
+              else
+                {
+                  g_registered_type_info_get_g_type (info);
+                  g_base_info_unref (info);
+
+                  the_type = g_type_from_name (type_name);
+
+                  if (the_type != G_TYPE_INVALID)
+                    break;
+                }
+            }
+        }
+    }
+
+  /* Seems they did not import it */
+
+  g_free (ns);
+  return the_type;
+}
+
+gboolean
+peas_gi_method_call (GObject        *instance,
+                     GICallableInfo *func_info,
+                     GType           iface_type,
+                     const gchar    *method_name,
+                     GIArgument     *args,
+                     GIArgument     *return_value)
+{
   gint n_args;
   guint n_in_args, n_out_args;
   GIArgument *in_args, *out_args;
   gboolean ret = TRUE;
   GError *error = NULL;
 
-  func_info = peas_gi_get_method_info (iface_type, method_name);
-  if (func_info == NULL)
-    return FALSE;
+  g_return_val_if_fail (G_IS_OBJECT (instance), FALSE);
+  g_return_val_if_fail (func_info != NULL, FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (iface_type), FALSE);
+  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, iface_type),
+                        FALSE);
+  g_return_val_if_fail (method_name != NULL, FALSE);
 
   n_args = g_callable_info_get_n_args (func_info);
   g_return_val_if_fail (n_args >= 0, FALSE);
@@ -389,11 +487,7 @@ peas_method_apply (GObject     *instance,
       g_warning ("Error while calling '%s.%s': %s",
                  g_type_name (iface_type), method_name, error->message);
       g_error_free (error);
-      goto out;
     }
-
-out:
-  g_base_info_unref ((GIBaseInfo *) func_info);
 
   return ret;
 }

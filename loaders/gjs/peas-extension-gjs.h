@@ -51,6 +51,7 @@ struct _PeasExtensionGjsClass {
 GType            peas_extension_gjs_get_type (void) G_GNUC_CONST;
 
 GObject         *peas_extension_gjs_new      (GType      exten_type,
+                                              GType     *interfaces,
                                               JSContext *js_context,
                                               JSObject  *js_object);
 

@@ -34,6 +34,7 @@
 #include "testing-extension.h"
 
 #include "introspection-callable.h"
+#include "introspection-has-prerequisite.h"
 #include "introspection-properties.h"
 #include "introspection-unimplemented.h"
 
@@ -188,6 +189,26 @@ testing_extension_create_invalid_ (PeasEngine *engine)
 }
 
 void
+testing_extension_create_with_prerequisite_ (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+  PeasExtension *extension;
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_HAS_PREREQUISITE,
+                                            NULL);
+
+  g_assert (INTROSPECTION_IS_HAS_PREREQUISITE (extension));
+  g_assert (INTROSPECTION_IS_CALLABLE (extension));
+
+  g_object_unref (extension);
+}
+
+void
 testing_extension_reload_ (PeasEngine *engine)
 {
   gint i;
@@ -214,7 +235,8 @@ testing_extension_call_no_args_ (PeasEngine *engine)
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
+                                            PEAS_TYPE_ACTIVATABLE,
+                                            "object", NULL,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -238,7 +260,8 @@ testing_extension_call_with_return_ (PeasEngine *engine)
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
+                                            PEAS_TYPE_ACTIVATABLE,
+                                            "object", NULL,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -267,7 +290,8 @@ testing_extension_call_single_arg_ (PeasEngine *engine)
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
+                                            PEAS_TYPE_ACTIVATABLE,
+                                            "object", NULL,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -297,7 +321,8 @@ testing_extension_call_multi_args_ (PeasEngine *engine)
   g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
+                                            PEAS_TYPE_ACTIVATABLE,
+                                            "object", NULL,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);

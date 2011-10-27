@@ -42,22 +42,22 @@ peas_extension_python_init (PeasExtensionPython *pyexten)
 
 static gboolean
 peas_extension_python_call (PeasExtensionWrapper *exten,
+                            GType                 interface_type,
+                            GICallableInfo       *method_info,
                             const gchar          *method_name,
                             GIArgument           *args,
                             GIArgument           *retval)
 {
   PeasExtensionPython *pyexten = PEAS_EXTENSION_PYTHON (exten);
-  GType gtype;
   PyGILState_STATE state;
   GObject *instance;
   gboolean success;
 
-  gtype = peas_extension_wrapper_get_extension_type (exten);
-
   state = pyg_gil_state_ensure ();
 
   instance = pygobject_get (pyexten->instance);
-  success = peas_method_apply (instance, gtype, method_name, args, retval);
+  success = peas_gi_method_call (instance, method_info, interface_type,
+                                 method_name, args, retval);
 
   pyg_gil_state_release (state);
   return success;
@@ -135,17 +135,20 @@ peas_extension_python_class_init (PeasExtensionPythonClass *klass)
 }
 
 GObject *
-peas_extension_python_new (GType     gtype,
+peas_extension_python_new (GType     exten_type,
+                           GType    *interfaces,
                            PyObject *instance)
 {
   PeasExtensionPython *pyexten;
   GType real_type;
-
-  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_PYTHON, gtype);
+  
+  real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_PYTHON,
+                                                interfaces);
   pyexten = PEAS_EXTENSION_PYTHON (g_object_new (real_type, NULL));
 
   pyexten->instance = instance;
-  PEAS_EXTENSION_WRAPPER (pyexten)->exten_type = gtype;
+  PEAS_EXTENSION_WRAPPER (pyexten)->exten_type = exten_type;
+  PEAS_EXTENSION_WRAPPER (pyexten)->interfaces = interfaces;
   Py_INCREF (instance);
 
   return G_OBJECT (pyexten);

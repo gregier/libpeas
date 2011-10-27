@@ -28,6 +28,8 @@
 #include <gi/repo.h>
 #include <gi/value.h>
 
+#include <libpeas/peas-introspection.h>
+
 #include "peas-plugin-loader-gjs.h"
 #include "peas-extension-gjs.h"
 
@@ -142,6 +144,19 @@ peas_plugin_loader_gjs_provides_extension  (PeasPluginLoader *loader,
          JSVAL_IS_OBJECT (extension) && !JSVAL_IS_NULL (extension);
 }
 
+static gint
+prerequisites_sort (GType *a,
+                    GType *b)
+{
+  if (g_type_is_a (*a, *b))
+    return 1;
+
+  if (g_type_is_a (*b, *a))
+    return -1;
+
+  return 0;
+}
+
 static PeasExtension *
 peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
                                          PeasPluginInfo   *info,
@@ -157,6 +172,9 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
   guint i;
   jsval js_value;
   GValue gvalue = { 0 };
+  GArray *interfaces;
+  JSObject *prop_iter;
+  jsid prop_name_id;
 
   ginfo = g_hash_table_lookup (gloader->loaded_plugins, info);
 
@@ -229,7 +247,59 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
 
   g_value_unset (&gvalue);
 
-  return peas_extension_gjs_new (exten_type, js_context, extension);
+
+  /* Do not add exten_type as it will be added below */
+  interfaces = g_array_new (TRUE, FALSE, sizeof (GType));
+
+  prop_iter = JS_NewPropertyIterator (js_context, ginfo->extensions);
+
+  /* If this returns FALSE then an error has occurred */
+  while (JS_NextProperty (js_context, prop_iter, &prop_name_id))
+    {
+      jsval prop_extension_ctor;
+      jsval prop_name_val;
+      gchar *prop_name;
+      GType the_type;
+
+      /* No more properties to iterate over */
+      if (prop_name_id == JSID_VOID)
+        break;
+
+      if (!JS_GetPropertyById (js_context, ginfo->extensions,
+                               prop_name_id, &prop_extension_ctor) ||
+          prop_extension_ctor != extension_ctor)
+        continue;
+
+      if (!JS_IdToValue (js_context, prop_name_id, &prop_name_val) ||
+          !JSVAL_IS_STRING (prop_name_val) ||
+          !gjs_string_to_utf8 (js_context, prop_name_val, &prop_name))
+        {
+          g_warning ("Extension '%s' in plugin '%s' in not a valid "
+                     "constructor object", prop_name,
+                     peas_plugin_info_get_module_name (info));
+          continue;
+        }
+
+      the_type = peas_gi_get_type_from_name (prop_name);
+
+      if (the_type == G_TYPE_INVALID)
+        {
+          g_warning ("Could not find GType for '%s', "
+                     "did you forget to import it?", prop_name);
+        }
+      else
+        {
+          g_array_append_val (interfaces, the_type);
+        }
+
+      g_free (prop_name);
+    }
+
+  g_array_sort (interfaces, (GCompareFunc) prerequisites_sort);
+
+  return peas_extension_gjs_new (exten_type,
+                                 (GType *) g_array_free (interfaces, FALSE),
+                                 js_context, extension);
 }
 
 static void

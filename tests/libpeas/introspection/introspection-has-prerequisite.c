@@ -1,8 +1,8 @@
 /*
- * peas-extension-subclasses.h
+ * introspection-has-prerequisite.h
  * This file is part of libpeas
  *
- * Copyright (C) 2010 - Steve Frécinaux
+ * Copyright (C) 2011 Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -19,16 +19,19 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef __PEAS_EXTENSION_SUBCLASSES_H__
-#define __PEAS_EXTENSION_SUBCLASSES_H__
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include <glib-object.h>
+#include "introspection-has-prerequisite.h"
 
-G_BEGIN_DECLS
+#include "introspection-callable.h"
 
-GType         peas_extension_register_subclass      (GType  parent_type,
-                                                     GType *extension_types);
+G_DEFINE_INTERFACE(IntrospectionHasPrerequisite,
+                   introspection_has_prerequisite,
+                   INTROSPECTION_TYPE_CALLABLE)
 
-G_END_DECLS
-
-#endif /* __PEAS_EXTENSION_SUBCLASSES_H__ */
+void
+introspection_has_prerequisite_default_init (IntrospectionHasPrerequisiteInterface *iface)
+{
+}

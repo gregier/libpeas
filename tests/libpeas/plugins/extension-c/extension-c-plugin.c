@@ -26,6 +26,7 @@
 #include "extension-c-plugin.h"
 
 #include "introspection-callable.h"
+#include "introspection-has-prerequisite.h"
 
 #include "callable-plugin.h"
 
@@ -35,6 +36,12 @@ peas_register_types (PeasObjectModule *module)
   testing_callable_plugin_register (G_TYPE_MODULE (module));
 
   peas_object_module_register_extension_type (module,
+                                              PEAS_TYPE_ACTIVATABLE,
+                                              TESTING_TYPE_CALLABLE_PLUGIN);
+  peas_object_module_register_extension_type (module,
                                               INTROSPECTION_TYPE_CALLABLE,
+                                              TESTING_TYPE_CALLABLE_PLUGIN);
+  peas_object_module_register_extension_type (module,
+                                              INTROSPECTION_TYPE_HAS_PREREQUISITE,
                                               TESTING_TYPE_CALLABLE_PLUGIN);
 }

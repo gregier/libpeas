@@ -45,11 +45,27 @@ peas_extension_wrapper_constructed (GObject *object)
 }
 
 static void
+peas_extension_wrapper_dispose (GObject *object)
+{
+  PeasExtensionWrapper *exten = PEAS_EXTENSION_WRAPPER (object);
+
+  if (exten->interfaces != NULL)
+    {
+      g_free (exten->interfaces);
+      exten->interfaces = NULL;
+    }
+
+  if (G_OBJECT_CLASS (peas_extension_wrapper_parent_class)->dispose != NULL)
+    G_OBJECT_CLASS (peas_extension_wrapper_parent_class)->dispose (object);
+}
+
+static void
 peas_extension_wrapper_class_init (PeasExtensionWrapperClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->constructed = peas_extension_wrapper_constructed;
+  object_class->dispose = peas_extension_wrapper_dispose;
 
   /* Don't add properties as they could shadow the instance's
    * and C plugins would not have the property.
@@ -66,6 +82,8 @@ peas_extension_wrapper_get_extension_type (PeasExtensionWrapper *exten)
 
 gboolean
 peas_extension_wrapper_callv (PeasExtensionWrapper *exten,
+                              GType                 interface_type,
+                              GICallableInfo       *method_info,
                               const gchar          *method_name,
                               GIArgument           *args,
                               GIArgument           *return_value)
@@ -73,8 +91,11 @@ peas_extension_wrapper_callv (PeasExtensionWrapper *exten,
   PeasExtensionWrapperClass *klass;
 
   g_return_val_if_fail (PEAS_IS_EXTENSION_WRAPPER (exten), FALSE);
+  g_return_val_if_fail (interface_type != G_TYPE_INVALID, FALSE);
+  g_return_val_if_fail (method_info != NULL, FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
   klass = PEAS_EXTENSION_WRAPPER_GET_CLASS (exten);
-  return klass->call (exten, method_name, args, return_value);
+  return klass->call (exten, interface_type, method_info,
+                      method_name, args, return_value);
 }

@@ -48,6 +48,7 @@ void testing_extension_provides_valid_            (PeasEngine *engine);
 void testing_extension_provides_invalid_          (PeasEngine *engine);
 void testing_extension_create_valid_              (PeasEngine *engine);
 void testing_extension_create_invalid_            (PeasEngine *engine);
+void testing_extension_create_with_prerequisite_  (PeasEngine *engine);
 void testing_extension_reload_                    (PeasEngine *engine);
 void testing_extension_call_no_args_              (PeasEngine *engine);
 void testing_extension_call_with_return_          (PeasEngine *engine);
@@ -80,6 +81,7 @@ void testing_extension_properties_readwrite_      (PeasEngine *engine);
 \
   _EXTENSION_TEST (loader, "create-valid", create_valid); \
   _EXTENSION_TEST (loader, "create-invalid", create_invalid); \
+  _EXTENSION_TEST (loader, "create-with-prerequisite", create_with_prerequisite); \
 \
   _EXTENSION_TEST (loader, "reload", reload)
 

@@ -67,6 +67,48 @@ peas_extension_get_type (void)
   return G_TYPE_OBJECT;
 }
 
+static GICallableInfo *
+get_method_info (PeasExtension *exten,
+                 const gchar   *method_name,
+                 GType         *interface)
+{
+  guint i;
+  GType *interfaces;
+  GICallableInfo *method_info;
+  gboolean must_free_interfaces = FALSE;
+
+  if (PEAS_IS_EXTENSION_WRAPPER (exten))
+    {
+      interfaces = PEAS_EXTENSION_WRAPPER (exten)->interfaces;
+    }
+  else
+    {
+      must_free_interfaces = TRUE;
+      interfaces = g_type_interfaces (G_TYPE_FROM_INSTANCE (exten), NULL);
+    }
+
+  for (i = 0; interfaces[i] != G_TYPE_INVALID; ++i)
+    {
+      method_info = peas_gi_get_method_info (interfaces[i], method_name);
+
+      if (method_info != NULL)
+        {
+          if (interface != NULL)
+            *interface = interfaces[i];
+
+          break;
+        }
+    }
+
+  if (must_free_interfaces)
+    g_free (interfaces);
+
+  if (method_info == NULL)
+    g_warning ("Could not find the interface for method '%s'", method_name);
+
+  return method_info;
+}
+
 /**
  * peas_extension_get_extension_type:
  * @exten: A #PeasExtension.
@@ -164,8 +206,7 @@ peas_extension_call_valist (PeasExtension *exten,
   g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
-  callable_info = peas_gi_get_method_info (peas_extension_get_extension_type (exten),
-                                           method_name);
+  callable_info = get_method_info (exten, method_name, NULL);
 
   /* Already warned */
   if (callable_info == NULL)
@@ -210,21 +251,28 @@ peas_extension_callv (PeasExtension *exten,
                       GIArgument    *args,
                       GIArgument    *return_value)
 {
+  GICallableInfo *method_info;
+  GType interface;
+  gboolean success;
+
+  method_info = get_method_info (exten, method_name, &interface);
+
+  /* Already warned */
+  if (method_info == NULL)
+    return FALSE;
+
   if (PEAS_IS_EXTENSION_WRAPPER (exten))
     {
-      return peas_extension_wrapper_callv (PEAS_EXTENSION_WRAPPER (exten),
-                                           method_name,
-                                           args,
-                                           return_value);
+      success = peas_extension_wrapper_callv (PEAS_EXTENSION_WRAPPER (exten),
+                                              interface, method_info,
+                                              method_name, args, return_value);
     }
   else
     {
-      GType gtype = peas_extension_get_extension_type (exten);
-
-      return peas_method_apply (G_OBJECT (exten),
-                                gtype,
-                                method_name,
-                                args,
-                                return_value);
+      success = peas_gi_method_call (G_OBJECT (exten), method_info, interface,
+                                     method_name, args, return_value);
     }
+
+  g_base_info_unref (method_info);
+  return success;
 }

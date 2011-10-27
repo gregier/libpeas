@@ -45,6 +45,7 @@ struct _PeasExtensionWrapper {
 
   /*< private >*/
   GType exten_type;
+  GType *interfaces;
   gboolean constructed;
 };
 
@@ -53,6 +54,8 @@ struct _PeasExtensionWrapperClass {
 
   /*< private >*/
   gboolean   (*call)                      (PeasExtensionWrapper *exten,
+                                           GType                 interface_type,
+                                           GICallableInfo       *method_info,
                                            const gchar          *method,
                                            GIArgument           *args,
                                            GIArgument           *return_value);
@@ -67,6 +70,8 @@ GType        peas_extension_wrapper_get_extension_type
                                                 (PeasExtensionWrapper *exten);
 
 gboolean     peas_extension_wrapper_callv       (PeasExtensionWrapper *exten,
+                                                 GType                 interface_type,
+                                                 GICallableInfo       *method_info,
                                                  const gchar          *method_name,
                                                  GIArgument           *args,
                                                  GIArgument           *return_value);

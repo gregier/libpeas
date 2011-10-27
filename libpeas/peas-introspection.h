@@ -27,8 +27,10 @@
 
 G_BEGIN_DECLS
 
-GICallableInfo  *peas_gi_get_method_info          (GType        iface_type,
-                                                   const gchar *method_name);
+GICallableInfo  *peas_gi_get_method_info          (GType           iface_type,
+                                                   const gchar    *method_name);
+
+GType            peas_gi_get_type_from_name       (const gchar    *type_name);
 
 void             peas_gi_valist_to_arguments      (GICallableInfo *callable_info,
                                                    va_list         va_args,
@@ -40,11 +42,12 @@ void             peas_gi_argument_to_pointer      (GITypeInfo     *type_info,
 void             peas_gi_pointer_to_argument      (GITypeInfo     *type_info,
                                                    gpointer        ptr,
                                                    GIArgument     *arg);
-gboolean         peas_method_apply                (GObject     *instance,
-                                                   GType        iface_type,
-                                                   const gchar *method_name,
-                                                   GIArgument  *args,
-                                                   GIArgument  *return_value);
+gboolean         peas_gi_method_call              (GObject        *instance,
+                                                   GICallableInfo *method_info,
+                                                   GType           iface_type,
+                                                   const gchar    *method_name,
+                                                   GIArgument     *args,
+                                                   GIArgument     *return_value);
 
 G_END_DECLS
 

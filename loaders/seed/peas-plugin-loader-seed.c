@@ -26,6 +26,8 @@
 #include <seed.h>
 #include <JavaScriptCore/JavaScript.h>
 
+#include <libpeas/peas-introspection.h>
+
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
 
@@ -136,6 +138,19 @@ peas_plugin_loader_seed_provides_extension  (PeasPluginLoader *loader,
   return extension && seed_value_is_object (sinfo->context, extension);
 }
 
+static gint
+prerequisites_sort (GType *a,
+                    GType *b)
+{
+  if (g_type_is_a (*a, *b))
+    return 1;
+
+  if (g_type_is_a (*b, *a))
+    return -1;
+
+  return 0;
+}
+
 static PeasExtension *
 peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
                                           PeasPluginInfo   *info,
@@ -149,6 +164,8 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
   guint i, j;
   SeedValue value;
   GValue gvalue = { 0 };
+  GArray *interfaces;
+  gchar **property_names;
 
   sinfo = (SeedInfo *) g_hash_table_lookup (sloader->loaded_plugins, info);
 
@@ -240,7 +257,55 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
 
   g_value_unset (&gvalue);
 
-  return peas_extension_seed_new (exten_type, sinfo->context, extension);
+
+  /* Do not add exten_type as it will be added below */
+  interfaces = g_array_new (TRUE, FALSE, sizeof (GType));
+
+  property_names = seed_object_copy_property_names (sinfo->context,
+                                                    sinfo->extensions);
+
+  for (i = 0; property_names[i] != NULL; ++i)
+    {
+      gchar *property_name = property_names[i];
+      SeedValue *prop_extension_ctor;
+      GType the_type;
+
+      prop_extension_ctor = seed_object_get_property (sinfo->context,
+                                                      sinfo->extensions,
+                                                      property_name);
+
+      if (prop_extension_ctor != extension_ctor)
+        continue;
+
+      if (!seed_value_is_object (sinfo->context, extension_ctor))
+        {
+          g_warning ("Extension '%s' in plugin '%s' is not a Seed object",
+                     property_name, peas_plugin_info_get_module_name (info));
+          continue;
+        }
+
+      the_type = peas_gi_get_type_from_name (property_name);
+
+      if (the_type == G_TYPE_INVALID)
+        {
+          g_warning ("Could not find GType for '%s', "
+                     "did you forget to import it?", property_name);
+        }
+      else
+        {
+          g_array_append_val (interfaces, the_type);
+        }
+
+      g_free (property_name);
+    }
+
+  g_array_sort (interfaces, (GCompareFunc) prerequisites_sort);
+
+  g_free (property_names);
+
+  return peas_extension_seed_new (exten_type,
+                                  (GType *) g_array_free (interfaces, FALSE),
+                                  sinfo->context, extension);
 }
 
 static void

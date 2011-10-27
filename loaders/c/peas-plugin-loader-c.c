@@ -146,7 +146,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
 
   /* As we do not instantiate a PeasExtensionWrapper, we have to remember
    * somehow which interface we are instantiating, to make it possible to use
-   * the deprecated peas_extension_call() method.
+   * the deprecated peas_extension_get_extension_type() method.
    */
   g_object_set_data (instance, "peas-extension-type", GUINT_TO_POINTER (exten_type));
 
