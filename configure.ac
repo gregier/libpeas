@@ -398,7 +398,7 @@ AC_DEFUN([CHECK_VALAC],
          [AC_MSG_RESULT([no])])])])
 ])
 
-VALA_REQUIRED=0.11.1
+VALA_REQUIRED=0.14.0.22
 
 AC_ARG_ENABLE([vala],
 	      AS_HELP_STRING([--enable-vala],[Enable Vala support]),

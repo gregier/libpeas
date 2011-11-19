@@ -1,11 +1,31 @@
+/*
+ * Copyright (c) 2010 Abderrahim Kitouni
+ * Copyright (c) 2011 Steve Frécinaux
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor Boston, MA 02110-1301,  USA
+ */
+
+using GLib;
+using Gtk;
+using Peas;
+using PeasGtk;
+
 namespace PeasDemo {
   public class ValaHelloPlugin : Peas.ExtensionBase, Peas.Activatable {
     private Gtk.Widget label;
-    public Object object { get; construct; }
-
-    public ValaHelloPlugin () {
-      Object ();
-    }
+    public GLib.Object object { owned get; construct; }
 
     public void activate () {
       var window = object as Gtk.Window;
@@ -28,10 +48,6 @@ namespace PeasDemo {
   }
 
   public class ValaPluginConfig : Peas.ExtensionBase, PeasGtk.Configurable {
-    public ValaPluginConfig () {
-      Object ();
-    }
-
     public Gtk.Widget create_configure_widget () {
       string text = "This is a configuration dialog for the ValaHello plugin.";
       return new Gtk.Label (text);
