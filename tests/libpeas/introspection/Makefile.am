@@ -15,13 +15,15 @@ libintrospection_1_0_la_LDFLAGS = \
 libintrospection_1_0_la_LIBADD = $(PEAS_LIBS)
 
 libintrospection_1_0_la_SOURCES = \
-	introspection-callable.c		\
-	introspection-callable.h		\
-	introspection-has-prerequisite.c	\
-	introspection-has-prerequisite.h	\
-	introspection-properties.c		\
-	introspection-properties.h		\
-	introspection-unimplemented.c		\
+	introspection-callable.c			\
+	introspection-callable.h			\
+	introspection-has-missing-prerequisite.c	\
+	introspection-has-missing-prerequisite.h	\
+	introspection-has-prerequisite.c		\
+	introspection-has-prerequisite.h		\
+	introspection-properties.c			\
+	introspection-properties.h			\
+	introspection-unimplemented.c			\
 	introspection-unimplemented.h
 
 INCLUDES += $(INTROSPECTION_INCLUDES)

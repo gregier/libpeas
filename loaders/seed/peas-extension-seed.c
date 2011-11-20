@@ -309,6 +309,11 @@ peas_extension_seed_new (GType        exten_type,
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_SEED,
                                                 interfaces);
+
+  /* Already Warned */
+  if (real_type == G_TYPE_INVALID)
+    return NULL;
+
   sexten = PEAS_EXTENSION_SEED (g_object_new (real_type, NULL));
 
   sexten->js_context = js_context;

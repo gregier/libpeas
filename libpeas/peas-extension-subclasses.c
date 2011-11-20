@@ -369,6 +369,19 @@ peas_extension_register_subclass (GType  parent_type,
         g_type_add_interface_static (the_type, extension_types[i], &iface_info);
     }
 
+  /* Must be done outside of type registration
+   * in the event that the same type is requested again.
+   */
+  for (i = 0; extension_types[i] != 0; ++i)
+    {
+      if (!g_type_is_a (the_type, extension_types[i]))
+        {
+          g_warning ("Type '%s' is invalid", type_name->str);
+          the_type = G_TYPE_INVALID;
+          break;
+        }
+    }
+
   g_string_free (type_name, TRUE);
 
   return the_type;

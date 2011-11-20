@@ -402,6 +402,11 @@ peas_extension_gjs_new (GType      exten_type,
 
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_GJS,
                                                 interfaces);
+
+  /* Already Warned */
+  if (real_type == G_TYPE_INVALID)
+    return NULL;
+
   gexten = PEAS_EXTENSION_GJS (g_object_new (real_type, NULL));
 
   gexten->js_context = js_context;

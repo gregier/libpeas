@@ -24,9 +24,12 @@ function properties_extension() {
   this.readwrite = "readwrite";
 }
 
+function missing_prerequisite_extension() {}
+
 var extensions = {
   "PeasActivatable": callable_extension,
   "IntrospectionCallable": callable_extension,
   "IntrospectionProperties": properties_extension,
-  "IntrospectionHasPrerequisite": callable_extension
-}
+  "IntrospectionHasPrerequisite": callable_extension,
+  "IntrospectionHasMissingPrerequisite": missing_prerequisite_extension
+};
