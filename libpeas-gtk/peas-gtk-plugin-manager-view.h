@@ -25,6 +25,8 @@
 #ifndef __PEAS_GTK_PLUGIN_MANAGER_VIEW_H__
 #define __PEAS_GTK_PLUGIN_MANAGER_VIEW_H__
 
+/* Rename to PeasGtkPluginList */
+
 #include <gtk/gtk.h>
 #include <libpeas/peas-engine.h>
 

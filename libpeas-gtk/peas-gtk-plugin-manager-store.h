@@ -25,6 +25,8 @@
 #ifndef __PEAS_GTK_PLUGIN_MANAGER_STORE_H__
 #define __PEAS_GTK_PLUGIN_MANAGER_STORE_H__
 
+/* Rename to PeasGtkPluginListModel */
+
 #include <gtk/gtk.h>
 #include <libpeas/peas-engine.h>
 #include <libpeas/peas-plugin-info.h>
