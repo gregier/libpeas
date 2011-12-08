@@ -350,7 +350,7 @@ testing_extension_call_multi_args_ (PeasEngine *engine)
   inout_saved = inout;
 
   introspection_callable_call_multi_args (callable, in, &out, &inout);
-  
+
   g_assert_cmpint (inout_saved, ==, out);
   g_assert_cmpint (in, ==, inout);
 

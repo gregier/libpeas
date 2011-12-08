@@ -176,7 +176,7 @@ find_window_by_title (GtkWindow   *window,
   GList *windows;
   GList *l;
   GtkWidget *found_window = NULL;
-  
+
   group = gtk_window_get_group (window);
   windows = gtk_window_group_list_windows (group);
 

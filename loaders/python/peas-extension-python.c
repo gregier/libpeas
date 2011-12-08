@@ -141,7 +141,7 @@ peas_extension_python_new (GType     exten_type,
 {
   PeasExtensionPython *pyexten;
   GType real_type;
-  
+
   real_type = peas_extension_register_subclass (PEAS_TYPE_EXTENSION_PYTHON,
                                                 interfaces);
 

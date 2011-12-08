@@ -25,7 +25,7 @@ gcov: all
 	 printf "\nSource statements:  %4i" $$total_actual; \
 	 printf "\nCovered statements: %4i" $$total_covered; \
 	 printf "\nTotal coverage:     %3i%%\n" \
-	        $$((($$total_covered * 100) / $$total_actual)) 
+	        $$((($$total_covered * 100) / $$total_actual))
 
 else
 

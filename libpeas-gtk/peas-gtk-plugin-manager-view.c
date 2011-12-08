@@ -603,7 +603,7 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
 
   if (!is_row)
     return FALSE;
-    
+
   convert_iter_to_child_iter (view, &iter);
 
   info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
@@ -629,7 +629,7 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
 
   return TRUE;
 }
-  
+
 
 static void
 peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,

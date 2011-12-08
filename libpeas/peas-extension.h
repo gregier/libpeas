@@ -43,7 +43,7 @@ typedef GObject PeasExtension;
 
 /*
  * All the public methods of PeasExtension are deprecated and should not be
- * used. Due to gi-scanner's touchiness, we also hide these legacy API from 
+ * used. Due to gi-scanner's touchiness, we also hide these legacy API from
  * GI to avoid hairy issues.
  */
 #if !defined(PEAS_DISABLE_DEPRECATED) && !defined(__GI_SCANNER__)

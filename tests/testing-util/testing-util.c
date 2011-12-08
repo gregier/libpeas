@@ -222,7 +222,7 @@ testing_util_pop_log_hook (void)
 
   g_return_if_fail (log_hooks != NULL);
   g_return_if_fail (log_hooks->len > 0);
-  
+
   hook = g_ptr_array_index (log_hooks, log_hooks->len - 1);
 
   if (!hook->hit)

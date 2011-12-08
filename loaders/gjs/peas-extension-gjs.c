@@ -258,7 +258,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
       if (direction == GI_DIRECTION_INOUT)
         {
           GIArgument arg;
-          
+
           peas_gi_pointer_to_argument (&arg_cache[cached_args].type_info,
                                        args[i].v_pointer, &arg);
 

@@ -32,7 +32,7 @@ class PropertiesPythonPlugin(GObject.Object, Introspection.Properties):
     construct_only = GObject.property(type=str)
 
     read_only = GObject.property(type=str, default="read-only")
-                                      
+
     write_only = GObject.property(type=str)
 
     readwrite = GObject.property(type=str, default="readwrite")
