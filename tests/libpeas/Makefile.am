@@ -53,6 +53,14 @@ TEST_PROGS            += extension-set
 extension_set_SOURCES  = extension-set.c
 extension_set_LDADD    = $(progs_ldadd)
 
+TEST_PROGS                += plugin-dependency
+plugin_dependency_SOURCES  = plugin-dependency.c
+plugin_dependency_LDADD    = $(progs_ldadd)
+
 TEST_PROGS          += plugin-info
 plugin_info_SOURCES  = plugin-info.c
 plugin_info_LDADD    = $(progs_ldadd)
+
+TEST_PROGS             += plugin-version
+plugin_version_SOURCES  = plugin-version.c
+plugin_version_LDADD    = $(progs_ldadd)

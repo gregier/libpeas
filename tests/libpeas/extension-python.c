@@ -100,7 +100,7 @@ test_extension_python_nonexistent (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("Error loading plugin 'extension-python-nonexistent'");
+  testing_util_push_log_hook ("*'extension-python-nonexistent'*Failed to load*");
 
   info = peas_engine_get_plugin_info (engine, "extension-python-nonexistent");
 

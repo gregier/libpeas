@@ -1,0 +1,7 @@
+[Plugin]
+Module=incorrect-version-dep
+Name=Incorrect Version Dependency
+Depends=loadable == 2
+Description=This plugin has an incorrect version dependency.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier

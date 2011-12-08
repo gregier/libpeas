@@ -165,7 +165,7 @@ test_gtk_plugin_manager_store_verify_unavailable (TestFixture *fixture)
 {
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("Could not find plugin 'does-not-exist'*");
+  testing_util_push_log_hook ("*'does-not-exist' was not found");
 
   info = peas_engine_get_plugin_info (fixture->engine, "unavailable");
 

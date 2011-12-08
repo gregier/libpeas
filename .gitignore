@@ -79,7 +79,9 @@ Makefile.in
 /tests/libpeas/extension-python
 /tests/libpeas/extension-seed
 /tests/libpeas/extension-set
+/tests/libpeas/plugin-dependency
 /tests/libpeas/plugin-info
+/tests/libpeas/plugin-version
 /tests/libpeas/plugins/extension-js/extension-gjs.gschema.xml
 /tests/libpeas/plugins/extension-js/extension-gjs.js
 /tests/libpeas/plugins/extension-js/extension-gjs.plugin

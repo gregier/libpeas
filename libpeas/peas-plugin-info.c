@@ -28,6 +28,7 @@
 #include <glib.h>
 
 #include "peas-i18n.h"
+#include "peas-plugin-dependency.h"
 #include "peas-plugin-info-priv.h"
 
 #ifdef G_OS_WIN32
@@ -56,7 +57,7 @@
  * Copyright=Copyright © 2009-10 Steve Frécinaux
  * Website=http://live.gnome.org/Libpeas
  * Help=http://library.gnome.org/devel/libpeas/unstable/
- * IAge=2
+ * Depends=libpeas == 1
  * ]|
  **/
 
@@ -92,6 +93,11 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info->version);
   g_free (info->help_uri);
   g_strfreev (info->authors);
+  g_ptr_array_unref (info->dependencies_array);
+
+  if (info->peas_version != NULL)
+    peas_plugin_version_unref (info->peas_version);
+
   if (info->error != NULL)
     g_error_free (info->error);
 
@@ -153,43 +159,99 @@ _peas_plugin_info_new (const gchar *filename,
   /* Get module name */
   str = g_key_file_get_string (plugin_file, "Plugin", "Module", NULL);
 
-  if ((str != NULL) && (*str != '\0'))
+  if (str != NULL && *str != '\0')
     {
       info->module_name = str;
+
+      /* These are valid PeasPluginDependency names */
+      for (i = 0; g_ascii_isalnum (str[i]) || str[i] == '-' || str[i] == '_'; ++i)
+        ;
+
+      if (str[i] != '\0')
+        {
+          g_warning ("Module Name '%s' is invalid in '%s'",
+                     info->module_name, filename);
+          goto error;
+        }
     }
   else
     {
       g_warning ("Could not find 'Module' in '%s'", filename);
+      g_free (str);
       goto error;
     }
 
   /* Get Name */
   str = g_key_file_get_locale_string (plugin_file, "Plugin",
                                       "Name", NULL, NULL);
-  if (str)
-    info->name = str;
+
+  if (str != NULL && *str != '\0')
+    {
+      info->name = str;
+    }
   else
     {
       g_warning ("Could not find 'Name' in '%s'", filename);
+      g_free (str);
       goto error;
     }
 
   /* Get the dependency list */
-  info->dependencies = g_key_file_get_string_list (plugin_file,
-                                                   "Plugin",
+  info->dependencies = g_key_file_get_string_list (plugin_file, "Plugin",
                                                    "Depends", NULL, NULL);
+  info->dependencies_array = g_ptr_array_new ();
+  g_ptr_array_set_free_func (info->dependencies_array,
+                             (GDestroyNotify) peas_plugin_dependency_unref);
+
   if (info->dependencies == NULL)
-    info->dependencies = g_new0 (gchar *, 1);
+    {
+      info->dependencies = g_new0 (gchar *, 1);
+    }
+  else
+    {
+      for (i = 0; info->dependencies[i]; ++i)
+        {
+          PeasPluginDependency *dependency;
+
+          dependency = peas_plugin_dependency_new (info->dependencies[i]);
+
+          if (dependency == NULL)
+            {
+              g_warning ("Dependency '%s' is invalid in '%s'",
+                         info->dependencies[i], filename);
+              goto error;
+            }
+
+          g_ptr_array_add (info->dependencies_array, dependency);
+        }
+    }
+
+  /* Get Version */
+  str = g_key_file_get_string (plugin_file, "Plugin", "Version", NULL);
+
+  if (str != NULL)
+    {
+      info->version = str;
+      info->peas_version = peas_plugin_version_new (info->version);
+
+      if (info->peas_version == NULL)
+        {
+          g_warning ("Version '%s' is invalid in '%s'",
+                     info->version, filename);
+          goto error;
+        }
+    }
 
   /* Get the loader for this plugin */
   str = g_key_file_get_string (plugin_file, "Plugin", "Loader", NULL);
 
-  if ((str != NULL) && (*str != '\0'))
+  if (str != NULL && *str != '\0')
     {
       info->loader = str;
     }
   else
     {
+      g_free (str);
       /* default to the C loader */
       info->loader = g_strdup ("C");
     }
@@ -227,11 +289,6 @@ _peas_plugin_info_new (const gchar *filename,
   if (str)
     info->website = str;
 
-  /* Get Version */
-  str = g_key_file_get_string (plugin_file, "Plugin", "Version", NULL);
-  if (str)
-    info->version = str;
-
   /* Get Help URI */
   str = g_key_file_get_string (plugin_file, "Plugin", OS_HELP_KEY, NULL);
   if (str)
@@ -256,6 +313,13 @@ _peas_plugin_info_new (const gchar *filename,
     g_clear_error (&error);
   else
     info->hidden = b;
+
+  /* Check for IAge */
+  g_key_file_get_integer (plugin_file, "Plugin", "IAge", &error);
+  if (error != NULL)
+    g_clear_error (&error);
+  else
+    g_warning ("IAge has been obsoleted but is used in '%s'", filename);
 
   keys = g_key_file_get_keys (plugin_file, "Plugin", NULL, NULL);
 
@@ -289,12 +353,50 @@ _peas_plugin_info_new (const gchar *filename,
   return info;
 
 error:
+
+  if (info->dependencies_array != NULL)
+    g_ptr_array_unref (info->dependencies_array);
+
   g_free (info->module_name);
   g_free (info->name);
+  g_strfreev (info->dependencies);
+  g_free (info->version);
   g_free (info);
   g_key_file_free (plugin_file);
 
   return NULL;
+}
+
+/*
+ * _peas_plugin_info_get_dependencies_array:
+ * @info: A #PeasPlguinInfo.
+ *
+ * Gets the dependencies #GPtrArray of @info.
+ *
+ * Returns: (element-type Peas.PluginDependency): The plugin's dependencies.
+ */
+GPtrArray *
+_peas_plugin_info_get_dependencies_array (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+
+  return info->dependencies_array;
+}
+
+/*
+ * _peas_plugin_info_get_peas_version:
+ * @info: A #PeasPlguinInfo.
+ *
+ * Gets the #PeasPluginVersion of @info.
+ *
+ * Returns: The plugin's version as a #PeasPluginVersion, or %NULL.
+ */
+PeasPluginVersion *
+_peas_plugin_info_get_peas_version (const PeasPluginInfo *info)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+
+  return info->peas_version;
 }
 
 /**
@@ -567,9 +669,17 @@ peas_plugin_info_has_dependency (const PeasPluginInfo *info,
   g_return_val_if_fail (info != NULL, FALSE);
   g_return_val_if_fail (module_name != NULL, FALSE);
 
-  for (i = 0; info->dependencies[i] != NULL; i++)
-    if (g_ascii_strcasecmp (module_name, info->dependencies[i]) == 0)
-      return TRUE;
+  for (i = 0; i < info->dependencies_array->len; i++)
+    {
+      PeasPluginDependency *dep;
+      const gchar *dep_module_name;
+
+      dep = g_ptr_array_index (info->dependencies_array, i);
+      dep_module_name = peas_plugin_dependency_get_name (dep);
+
+      if (g_ascii_strcasecmp (module_name, dep_module_name) == 0)
+        return TRUE;
+    }
 
   return FALSE;
 }

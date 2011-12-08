@@ -57,13 +57,27 @@ testing_engine_new (void)
 
   testing_init ();
 
+  /* Can happen multiple times */
+  testing_util_push_log_hook ("*Invalid version: '0'*");
+
+  /* Sorted according to occurence in peas-plugin-info.c */
   testing_util_push_log_hook ("*Bad plugin file: *invalid.plugin*");
   testing_util_push_log_hook ("*Error loading *invalid.plugin*");
 
   testing_util_push_log_hook ("*Could not find 'Module' in *info-missing-module.plugin*");
-  testing_util_push_log_hook ("*Could not find 'Name' in *info-missing-name.plugin*");
   testing_util_push_log_hook ("*Error loading *info-missing-module.plugin*");
+
+  testing_util_push_log_hook ("*Module Name '<> =!' is invalid*");
+  testing_util_push_log_hook ("*Error loading *invalid-module-name.plugin*");
+
+  testing_util_push_log_hook ("*Could not find 'Name' in *info-missing-name.plugin*");
   testing_util_push_log_hook ("*Error loading *info-missing-name.plugin*");
+
+  testing_util_push_log_hook ("*Dependency 'invalid-dep == 0' is invalid*");
+  testing_util_push_log_hook ("*Error loading *invalid-dep.plugin*");
+
+  testing_util_push_log_hook ("*Version '0' is invalid*");
+  testing_util_push_log_hook ("*Error loading *invalid-version.plugin*");
 
   /* Must be after requiring typelibs */
   engine = testing_util_engine_new ();

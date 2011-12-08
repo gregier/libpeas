@@ -1,0 +1,6 @@
+[Plugin]
+Module=<> =!
+Name=Invalid Module Name
+Description=This plugin has an invalid module name.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier

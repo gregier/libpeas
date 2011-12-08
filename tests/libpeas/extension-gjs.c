@@ -35,7 +35,7 @@ test_extension_gjs_nonexistent (PeasEngine *engine)
   PeasPluginInfo *info;
 
   testing_util_push_log_hook ("*Failed to open *extension-gjs-nonexistent.js*");
-  testing_util_push_log_hook ("Error loading plugin 'extension-gjs-nonexistent'");
+  testing_util_push_log_hook ("*'extension-gjs-nonexistent'*Failed to load*");
 
   info = peas_engine_get_plugin_info (engine, "extension-gjs-nonexistent");
 

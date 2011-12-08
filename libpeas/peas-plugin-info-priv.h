@@ -25,6 +25,8 @@
 
 #include "peas-plugin-info.h"
 
+#include "peas-plugin-version.h"
+
 struct _PeasPluginInfo {
   /*< private >*/
   gint refcount;
@@ -47,6 +49,9 @@ struct _PeasPluginInfo {
   gchar *version;
   gchar *help_uri;
 
+  GPtrArray *dependencies_array;
+  PeasPluginVersion *peas_version;
+
   GHashTable *external_data;
 
   GError *error;
@@ -61,11 +66,14 @@ struct _PeasPluginInfo {
   guint hidden : 1;
 };
 
-PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,
-                                         const gchar    *module_dir,
-                                         const gchar    *data_dir);
-PeasPluginInfo *_peas_plugin_info_ref   (PeasPluginInfo *info);
-void            _peas_plugin_info_unref (PeasPluginInfo *info);
+PeasPluginInfo *_peas_plugin_info_new                    (const gchar          *filename,
+                                                          const gchar          *module_dir,
+                                                          const gchar          *data_dir);
+PeasPluginInfo *_peas_plugin_info_ref                    (PeasPluginInfo       *info);
+void            _peas_plugin_info_unref                  (PeasPluginInfo       *info);
 
+GPtrArray      *_peas_plugin_info_get_dependencies_array (const PeasPluginInfo *info);
+PeasPluginVersion *
+                _peas_plugin_info_get_peas_version       (const PeasPluginInfo *info);
 
 #endif /* __PEAS_PLUGIN_INFO_PRIV_H__ */

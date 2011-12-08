@@ -75,7 +75,7 @@ test_plugin_info_verify_full_info (PeasEngine *engine)
   g_assert (g_str_has_suffix (peas_plugin_info_get_module_dir (info), "/tests/plugins"));
   g_assert (g_str_has_suffix (peas_plugin_info_get_data_dir (info), "/tests/plugins/full-info"));
 
-  g_assert_cmpstr (peas_plugin_info_get_dependencies (info)[0], ==, "something");
+  g_assert_cmpstr (peas_plugin_info_get_dependencies (info)[0], ==, "something == 1");
   g_assert_cmpstr (peas_plugin_info_get_dependencies (info)[1], ==, "something-else");
   g_assert_cmpstr (peas_plugin_info_get_dependencies (info)[2], ==, NULL);
 

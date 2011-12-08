@@ -37,6 +37,7 @@
 #include "peas-dirs.h"
 #include "peas-debug.h"
 #include "peas-helpers.h"
+#include "peas-plugin-dependency.h"
 
 /**
  * SECTION:peas-engine
@@ -94,6 +95,8 @@ typedef struct _SearchPath {
 } SearchPath;
 
 struct _PeasEnginePrivate {
+  GHashTable *prerequisites;
+
   GList *search_paths;
 
   GList *plugin_list;
@@ -323,6 +326,14 @@ loader_destroy (LoaderInfo *info)
 }
 
 static void
+prerequisite_destroy (PeasPluginVersion *version)
+{
+  /* If an invalid version string was given */
+  if (version != NULL)
+    peas_plugin_version_unref (version);
+}
+
+static void
 peas_engine_init (PeasEngine *engine)
 {
   /* Set the default engine here and not in constructor() to make sure
@@ -341,6 +352,12 @@ peas_engine_init (PeasEngine *engine)
                                               PeasEnginePrivate);
 
   engine->priv->in_dispose = FALSE;
+
+  engine->priv->prerequisites =
+      g_hash_table_new_full (g_str_hash, g_str_equal,
+                             g_free, (GDestroyNotify) prerequisite_destroy);
+
+  peas_engine_add_prerequisite (engine, "libpeas", PACKAGE_VERSION);
 }
 
 static void
@@ -452,6 +469,12 @@ peas_engine_dispose (GObject *object)
 
       if (peas_plugin_info_is_loaded (info))
         peas_engine_unload_plugin (engine, info);
+    }
+
+  if (engine->priv->prerequisites != NULL)
+    {
+      g_hash_table_unref (engine->priv->prerequisites);
+      engine->priv->prerequisites = NULL;
     }
 
   G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
@@ -785,49 +808,115 @@ peas_engine_get_plugin_info (PeasEngine  *engine,
   return l == NULL ? NULL : (PeasPluginInfo *) l->data;
 }
 
-static gboolean
-load_plugin (PeasEngine     *engine,
-             PeasPluginInfo *info)
+static void
+peas_engine_load_plugin_real (PeasEngine     *engine,
+                              PeasPluginInfo *info)
 {
-  const gchar **dependencies;
-  PeasPluginInfo *dep_info;
   guint i;
+  GPtrArray *dependencies;
   PeasPluginLoader *loader;
 
-  if (peas_plugin_info_is_loaded (info))
-    return TRUE;
-
-  if (!peas_plugin_info_is_available (info, NULL))
-    return FALSE;
+  if (peas_plugin_info_is_loaded (info) ||
+      !peas_plugin_info_is_available (info, NULL))
+    return;
 
   /* We set the plugin info as loaded before trying to load the dependencies,
    * to make sure we won't have an infinite loop. */
   info->loaded = TRUE;
 
-  dependencies = peas_plugin_info_get_dependencies (info);
-  for (i = 0; dependencies[i] != NULL; i++)
+  dependencies = _peas_plugin_info_get_dependencies_array (info);
+  for (i = 0; i < dependencies->len; i++)
     {
-      dep_info = peas_engine_get_plugin_info (engine, dependencies[i]);
-      if (!dep_info)
+      PeasPluginDependency *dep;
+      const gchar *dep_module_name;
+      PeasPluginVersion *dep_version;
+
+      dep = g_ptr_array_index (dependencies, i);
+      dep_module_name = peas_plugin_dependency_get_name (dep);
+
+      /* The prerequisite version could be NULL */
+      if (g_hash_table_lookup_extended (engine->priv->prerequisites,
+                                        dep_module_name, NULL,
+                                        (gpointer *) &dep_version))
         {
-          g_warning ("Could not find plugin '%s' for plugin '%s'",
-                     dependencies[i], peas_plugin_info_get_module_name (info));
+          gchar *dep_str;
+          gchar *version_str = NULL;
+
+          if (dep_version != NULL &&
+              peas_plugin_dependency_check_version (dep, dep_version))
+            continue;
+
+          dep_str = peas_plugin_dependency_to_string (dep);
+
+          if (dep_version != NULL)
+            version_str = peas_plugin_version_to_string (dep_version);
+
+          g_warning ("Plugin '%s': Prerequisite '%s' has incorrect version '%s'",
+                     peas_plugin_info_get_module_name (info),
+                     dep_str, version_str);
           g_set_error (&info->error,
                        PEAS_PLUGIN_INFO_ERROR,
-                       PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
-                       _("Dependency '%s' was not found"),
-                       dependencies[i]);
+                       PEAS_PLUGIN_INFO_ERROR_DEP_INCORRECT_VERSION,
+                       _("Prerequisite '%s' is not the correct version"),
+                       dep_module_name);
+          g_free (version_str);
+          g_free (dep_str);
           goto error;
         }
-
-      if (!peas_engine_load_plugin (engine, dep_info))
+      else
         {
-          g_set_error (&info->error,
-                       PEAS_PLUGIN_INFO_ERROR,
-                       PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
-                       _("Dependency '%s' failed to load"),
-                       peas_plugin_info_get_name (dep_info));
-          goto error;
+          PeasPluginInfo *dep_info;
+
+          dep_info = peas_engine_get_plugin_info (engine, dep_module_name);
+
+          if (dep_info == NULL)
+            {
+              gchar *dep_str = peas_plugin_dependency_to_string (dep);
+
+              g_warning ("Plugin '%s': Dependency '%s' was not found",
+                         peas_plugin_info_get_module_name (info), dep_str);
+              g_set_error (&info->error,
+                           PEAS_PLUGIN_INFO_ERROR,
+                           PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
+                           _("Dependency '%s' was not found"),
+                           dep_module_name);
+              g_free (dep_str);
+              goto error;
+            }
+
+          dep_version = _peas_plugin_info_get_peas_version (dep_info);
+
+          /* It is OK to pass a NULL version */
+          if (!peas_plugin_dependency_check_version (dep, dep_version))
+            {
+              const gchar *version_str;
+              gchar *dep_str;
+
+              version_str = peas_plugin_info_get_version (dep_info);
+              dep_str = peas_plugin_dependency_to_string (dep);
+
+              g_warning ("Plugin '%s': Dependency '%s' has incorrect version '%s'",
+                         peas_plugin_info_get_module_name (info),
+                         dep_str, version_str);
+              g_set_error (&info->error,
+                           PEAS_PLUGIN_INFO_ERROR,
+                           PEAS_PLUGIN_INFO_ERROR_DEP_INCORRECT_VERSION,
+                           _("Dependency '%s' is not the correct version"),
+                           peas_plugin_info_get_name (dep_info));
+              g_free (dep_str);
+              goto error;
+            }
+
+          if (!peas_engine_load_plugin (engine, dep_info))
+            {
+              /* Warning already emitted */
+              g_set_error (&info->error,
+                           PEAS_PLUGIN_INFO_ERROR,
+                           PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
+                           _("Dependency '%s' failed to load"),
+                           peas_plugin_info_get_name (dep_info));
+              goto error;
+            }
         }
     }
 
@@ -835,8 +924,8 @@ load_plugin (PeasEngine     *engine,
 
   if (loader == NULL)
     {
-      g_warning ("Could not find loader '%s' for plugin '%s'",
-                 info->loader, peas_plugin_info_get_module_name (info));
+      g_warning ("Plugin '%s': Plugin loader '%s' was not found",
+                 peas_plugin_info_get_module_name (info), info->loader);
       g_set_error (&info->error,
                    PEAS_PLUGIN_INFO_ERROR,
                    PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
@@ -847,7 +936,7 @@ load_plugin (PeasEngine     *engine,
 
   if (!peas_plugin_loader_load (loader, info))
     {
-      g_warning ("Error loading plugin '%s'",
+      g_warning ("Plugin '%s': Failed to load",
                  peas_plugin_info_get_module_name (info));
       g_set_error (&info->error,
                    PEAS_PLUGIN_INFO_ERROR,
@@ -858,23 +947,15 @@ load_plugin (PeasEngine     *engine,
 
   g_debug ("Loaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
-  return TRUE;
+  g_object_notify_by_pspec (G_OBJECT (engine),
+                            properties[PROP_LOADED_PLUGINS]);
+
+  return;
 
 error:
 
   info->loaded = FALSE;
   info->available = FALSE;
-
-  return FALSE;
-}
-
-static void
-peas_engine_load_plugin_real (PeasEngine     *engine,
-                              PeasPluginInfo *info)
-{
-  if (load_plugin (engine, info))
-    g_object_notify_by_pspec (G_OBJECT (engine),
-                              properties[PROP_LOADED_PLUGINS]);
 }
 
 /**
@@ -920,10 +1001,10 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
     return;
 
   /* We set the plugin info as unloaded before trying to unload the
-   * dependants, to make sure we won't have an infinite loop. */
+   * dependents, to make sure we won't have an infinite loop. */
   info->loaded = FALSE;
 
-  /* First unload all the dependant plugins */
+  /* First unload all the dependent plugins */
   module_name = peas_plugin_info_get_module_name (info);
   for (item = engine->priv->plugin_list; item; item = item->next)
     {
@@ -1247,6 +1328,84 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
       else if (is_loaded && !to_load)
         g_signal_emit (engine, signals[UNLOAD_PLUGIN], 0, info);
     }
+}
+
+/**
+ * peas_engine_add_prerequisite:
+ * @engine: A #PeasEngine.
+ * @name: The prerequisite's name.
+ * @version: A valid version string.
+ *
+ * Adds the prerequisite @name of version @version.
+ * The engine will then check that all plugins loaded are
+ * compatible with that version of the prerequisite.
+ *
+ * Note: a prerequisite can only be added once.
+ */
+void
+peas_engine_add_prerequisite (PeasEngine  *engine,
+                              const gchar *name,
+                              const gchar *version)
+{
+  GList *pl;
+
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
+  g_return_if_fail (name != NULL && *name != '\0');
+  g_return_if_fail (version != NULL);
+
+  /* Could have a NULL version */
+  if (g_hash_table_lookup_extended (engine->priv->prerequisites,
+                                    name, NULL, NULL))
+    {
+      g_warning ("Cannot add the '%s' prerequisite twice", name);
+      return;
+    }
+
+  /* We still add the prerequisite even if peas_plugin_version_new() fails */
+  g_hash_table_insert (engine->priv->prerequisites, g_strdup (name),
+                       peas_plugin_version_new (version));
+
+  for (pl = engine->priv->plugin_list; pl != NULL; pl = pl->next)
+    {
+      PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
+
+      /* Clear the error an old prerequisite check caused */
+      if (!peas_plugin_info_is_available (info, NULL))
+        {
+          if (info->error->code != PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND ||
+              !peas_plugin_info_has_dependency (info, name))
+            continue;
+
+          g_clear_error (&info->error);
+          info->available = TRUE;
+        }
+    }
+}
+
+/**
+ * peas_engine_get_prerequisite:
+ * @engine: A #PeasEngine.
+ * @name: The prerequisite's name.
+ *
+ * Gets the version of the prerequisite @name.
+ *
+ * Returns: the version of prerequisite @name, or %NULL.
+ */
+gchar *
+peas_engine_get_prerequisite (PeasEngine  *engine,
+                              const gchar *name)
+{
+  PeasPluginVersion *version;
+
+  g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
+  g_return_val_if_fail (name != NULL && *name != '\0', NULL);
+
+  version = g_hash_table_lookup (engine->priv->prerequisites, name);
+
+  if (version != NULL)
+    return peas_plugin_version_to_string (version);
+
+  return NULL;
 }
 
 /**

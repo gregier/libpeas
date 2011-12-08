@@ -37,9 +37,11 @@ NOINST_H_FILES =			\
 	peas-helpers.h			\
 	peas-i18n.h			\
 	peas-introspection.h		\
+	peas-plugin-dependency.h	\
 	peas-plugin-info-priv.h		\
 	peas-plugin-loader.h		\
-	peas-plugin-loader-c.h
+	peas-plugin-loader-c.h		\
+	peas-plugin-version.h
 
 C_FILES =				\
 	peas-activatable.c		\
@@ -55,9 +57,11 @@ C_FILES =				\
 	peas-i18n.c			\
 	peas-introspection.c		\
 	peas-object-module.c		\
+	peas-plugin-dependency.c	\
 	peas-plugin-info.c		\
 	peas-plugin-loader.c		\
-	peas-plugin-loader-c.c
+	peas-plugin-loader-c.c		\
+	peas-plugin-version.c
 
 BUILT_SOURCES = \
 	peas-marshal.c			\

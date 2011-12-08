@@ -35,7 +35,7 @@ test_extension_seed_nonexistent (PeasEngine *engine)
   PeasPluginInfo *info;
 
   testing_util_push_log_hook ("*Failed to open *extension-seed-nonexistent.js*");
-  testing_util_push_log_hook ("Error loading plugin 'extension-seed-nonexistent'");
+  testing_util_push_log_hook ("*'extension-seed-nonexistent'*Failed to load*");
 
   info = peas_engine_get_plugin_info (engine, "extension-seed-nonexistent");
 

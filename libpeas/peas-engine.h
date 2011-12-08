@@ -23,6 +23,7 @@
 #define __PEAS_ENGINE_H__
 
 #include <glib.h>
+
 #include "peas-plugin-info.h"
 #include "peas-extension.h"
 
@@ -76,6 +77,12 @@ struct _PeasEngineClass {
 GType             peas_engine_get_type            (void) G_GNUC_CONST;
 PeasEngine       *peas_engine_new                 (void);
 PeasEngine       *peas_engine_get_default         (void);
+
+void              peas_engine_add_prerequisite    (PeasEngine      *engine,
+                                                   const gchar     *name,
+                                                   const gchar     *version);
+gchar            *peas_engine_get_prerequisite    (PeasEngine      *engine,
+                                                   const gchar     *name);
 
 void              peas_engine_add_search_path     (PeasEngine      *engine,
                                                    const gchar     *module_dir,

@@ -29,11 +29,17 @@ G_BEGIN_DECLS
 void        testing_util_init          (void);
 
 PeasEngine *testing_util_engine_new    (void);
-void        testing_util_engine_free   (PeasEngine *engine);
+void        testing_util_engine_free   (PeasEngine    *engine);
+
+void        testing_util_add_func      (const gchar   *path,
+                                        GTestFunc      ftest);
+void        testing_util_add_data_func (const gchar   *path,
+                                        gpointer       data,
+                                        GTestDataFunc  ftest);
 
 int         testing_util_run_tests     (void);
 
-void        testing_util_push_log_hook (const gchar *pattern);
+void        testing_util_push_log_hook (const gchar   *pattern);
 void        testing_util_pop_log_hook  (void);
 void        testing_util_pop_log_hooks (void);
 

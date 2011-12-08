@@ -1,6 +1,6 @@
 [Plugin]
 Module=full-info
-Depends=something;something-else
+Depends=something == 1;something-else
 Builtin=true
 Name=Full Info
 Description=Has full info.

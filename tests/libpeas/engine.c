@@ -28,6 +28,7 @@
 #include <libpeas/peas.h>
 
 #include "libpeas/peas-engine-priv.h"
+#include "libpeas/peas-plugin-version.h"
 
 #include "testing/testing.h"
 
@@ -118,6 +119,74 @@ test_engine_get_default (void)
 }
 
 static void
+test_engine_prerequisite_libpeas (PeasEngine *engine)
+{
+  gchar *version;
+  PeasPluginVersion *pkg_version;
+  gchar *pkg_version_str;
+
+  /* We have to create a version for the PACKAGE_VERSION
+   * because if it has a trailing .0 it will not be included
+   * in the string reperesentation.
+   */
+
+  version = peas_engine_get_prerequisite (engine, "libpeas");
+  pkg_version = peas_plugin_version_new (PACKAGE_VERSION);
+  pkg_version_str = peas_plugin_version_to_string (pkg_version);
+
+  g_assert_cmpstr (pkg_version_str, ==, version);
+
+  g_free (pkg_version_str);
+  peas_plugin_version_unref (pkg_version);
+  g_free (version);
+}
+
+static void
+test_engine_prerequisite_add (PeasEngine *engine)
+{
+  gchar *version;
+
+  testing_util_push_log_hook ("Cannot add the 'my-prerequisite' prerequisite twice");
+  testing_util_push_log_hook ("Cannot add the 'invalid' prerequisite twice");
+
+  peas_engine_add_prerequisite (engine, "my-prerequisite", "1.2.3");
+  version = peas_engine_get_prerequisite (engine, "my-prerequisite");
+  g_assert_cmpstr ("1.2.3", ==, version);
+  g_free (version);
+
+
+  peas_engine_add_prerequisite (engine, "invalid", "0");
+  g_assert (peas_engine_get_prerequisite (engine, "invalid") == NULL);
+
+
+  /* Cannot add a prerequisite twice even if it is invalid */
+  peas_engine_add_prerequisite (engine, "my-prerequisite", "1.2.3");
+  peas_engine_add_prerequisite (engine, "invalid", "0");
+}
+
+static void
+test_engine_prerequisite_clear_old (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*'prerequisite == 1' was not found*");
+
+  info = peas_engine_get_plugin_info (engine, "has-prerequisite");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_available (info, NULL));
+
+
+  /* Should only clear the error if the plugin has that prerequisite */
+  peas_engine_add_prerequisite (engine, "different-prerequisite", "1");
+  g_assert (!peas_plugin_info_is_available (info, NULL));
+
+
+  peas_engine_add_prerequisite (engine, "prerequisite", "1");
+  g_assert (peas_plugin_info_is_available (info, NULL));
+}
+
+static void
 test_engine_load_plugin (PeasEngine *engine)
 {
   PeasPluginInfo *info;
@@ -129,6 +198,19 @@ test_engine_load_plugin (PeasEngine *engine)
 
   /* Check that we can load a plugin that is already loaded */
   g_assert (peas_engine_load_plugin (engine, info));
+}
+
+static void
+test_engine_load_plugin_with_prerequisite (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  peas_engine_add_prerequisite (engine, "prerequisite", "1");
+
+  info = peas_engine_get_plugin_info (engine, "has-prerequisite");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+  g_assert (peas_plugin_info_is_loaded (info));
 }
 
 static void
@@ -158,12 +240,65 @@ test_engine_load_plugin_with_self_dep (PeasEngine *engine)
 }
 
 static void
+test_engine_load_plugin_with_version_dep (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  info = peas_engine_get_plugin_info (engine, "version-dep");
+
+  g_assert (peas_engine_load_plugin (engine, info));
+  g_assert (peas_plugin_info_is_loaded (info));
+
+  info = peas_engine_get_plugin_info (engine, "loadable");
+
+  g_assert (peas_plugin_info_is_loaded (info));
+}
+
+static void
+test_engine_load_plugin_with_nonexistent_prerequisite (PeasEngine *engine)
+{
+  GError *error = NULL;
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*'prerequisite == 1' was not found*");
+
+  info = peas_engine_get_plugin_info (engine, "has-prerequisite");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND);
+
+  g_clear_error (&error);
+}
+
+static void
+test_engine_load_plugin_with_incorrect_prerequisite (PeasEngine *engine)
+{
+  GError *error = NULL;
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*'prerequisite == 1' has incorrect version*");
+
+  info = peas_engine_get_plugin_info (engine, "has-prerequisite");
+
+  peas_engine_add_prerequisite (engine, "prerequisite", "2");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_DEP_INCORRECT_VERSION);
+
+  g_clear_error (&error);
+}
+
+static void
 test_engine_load_plugin_with_nonexistent_dep (PeasEngine *engine)
 {
   GError *error = NULL;
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("Could not find plugin 'does-not-exist'*");
+  testing_util_push_log_hook ("*'does-not-exist' was not found");
 
   info = peas_engine_get_plugin_info (engine, "nonexistent-dep");
 
@@ -172,6 +307,45 @@ test_engine_load_plugin_with_nonexistent_dep (PeasEngine *engine)
   g_assert (!peas_plugin_info_is_available (info, &error));
   g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
                   PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND);
+
+  g_error_free (error);
+}
+
+static void
+test_engine_load_plugin_with_incorrect_version_dep (PeasEngine *engine)
+{
+  GError *error = NULL;
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*'loadable == 2' has incorrect version '1'");
+
+  info = peas_engine_get_plugin_info (engine, "incorrect-version-dep");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_DEP_INCORRECT_VERSION);
+
+  g_error_free (error);
+}
+
+static void
+test_engine_load_plugin_not_loadable (PeasEngine *engine)
+{
+  GError *error = NULL;
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("*libnot-loadable.so:*No such file or directory");
+  testing_util_push_log_hook ("*'not-loadable'*Failed to load");
+
+  info = peas_engine_get_plugin_info (engine, "not-loadable");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED);
 
   g_error_free (error);
 }
@@ -223,41 +397,6 @@ test_engine_unload_plugin_with_self_dep (PeasEngine *engine)
 }
 
 static void
-test_engine_unavailable_plugin (PeasEngine *engine)
-{
-  PeasPluginInfo *info;
-
-  testing_util_push_log_hook ("Could not find plugin 'does-not-exist'*");
-
-  info = peas_engine_get_plugin_info (engine, "unavailable");
-
-  g_assert (!peas_engine_load_plugin (engine, info));
-  g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info, NULL));
-}
-
-static void
-test_engine_not_loadable_plugin (PeasEngine *engine)
-{
-  GError *error = NULL;
-  PeasPluginInfo *info;
-
-  testing_util_push_log_hook ("*libnot-loadable.so: cannot open shared "
-                              "object file: No such file or directory");
-  testing_util_push_log_hook ("Error loading plugin 'not-loadable'");
-
-  info = peas_engine_get_plugin_info (engine, "not-loadable");
-
-  g_assert (!peas_engine_load_plugin (engine, info));
-  g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info, &error));
-  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
-                  PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED);
-
-  g_error_free (error);
-}
-
-static void
 load_plugin_cb (PeasEngine     *engine,
                 PeasPluginInfo *info,
                 gint           *loaded)
@@ -294,7 +433,7 @@ test_engine_loaded_plugins (PeasEngine *engine)
   gchar **load_plugins;
   gchar **loaded_plugins = NULL;
 
-  testing_util_push_log_hook ("Could not find plugin 'does-not-exist'*");
+  testing_util_push_log_hook ("*'does-not-exist' was not found");
 
   g_signal_connect_after (engine,
                           "load-plugin",
@@ -357,6 +496,9 @@ test_engine_loaded_plugins (PeasEngine *engine)
   g_assert (loaded_plugins[0] == NULL);
 
 
+  /* Check that freeing the engine does not notify loaded-plugins
+   * This is required for GSettings to save the loaded plugins
+   */
   g_assert (peas_engine_load_plugin (engine, info));
 
   g_assert_cmpint (loaded, ==, 1);
@@ -381,7 +523,7 @@ test_engine_nonexistent_loader (PeasEngine *engine)
   PeasPluginInfo *info;
 
   testing_util_push_log_hook ("Could not load plugin loader 'does-not-exist'*");
-  testing_util_push_log_hook ("Could not find loader 'does-not-exist' for*");
+  testing_util_push_log_hook ("*Plugin loader 'does-not-exist' was not found");
 
   info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
   peas_engine_enable_loader (engine, "does-not-exist");
@@ -401,7 +543,7 @@ test_engine_disabled_loader (PeasEngine *engine)
   PeasPluginInfo *info;
   GError *error = NULL;
 
-  testing_util_push_log_hook ("Could not find loader 'disabled'*");
+  testing_util_push_log_hook ("*loader 'disabled' was not found");
 
   info = peas_engine_get_plugin_info (engine, "disabled-loader");
 
@@ -466,17 +608,27 @@ main (int    argc,
   TEST ("dispose", dispose);
   TEST_FUNC ("get-default", get_default);
 
+  TEST ("prerequisite/libpeas", prerequisite_libpeas);
+  TEST ("prerequisite/add", prerequisite_add);
+  TEST ("prerequisite/clear-old", prerequisite_clear_old);
+
+  /* Successfully Load */
   TEST ("load-plugin", load_plugin);
+  TEST ("load-plugin-with-prerequisite", load_plugin_with_prerequisite);
   TEST ("load-plugin-with-dep", load_plugin_with_dep);
   TEST ("load-plugin-with-self-dep", load_plugin_with_self_dep);
+  TEST ("load-plugin-with-version-dep", load_plugin_with_version_dep);
+
+  /* Fail to Load */
+  TEST ("load-plugin-with-nonexistent-prerequisite", load_plugin_with_nonexistent_prerequisite);
+  TEST ("load-plugin-with-incorrect-prerequisite", load_plugin_with_incorrect_prerequisite);
   TEST ("load-plugin-with-nonexistent-dep", load_plugin_with_nonexistent_dep);
+  TEST ("load-plugin-with-incorrect-version-dep", load_plugin_with_incorrect_version_dep);
+  TEST ("load-plugin-not-loadable", load_plugin_not_loadable);
 
   TEST ("unload-plugin", unload_plugin);
   TEST ("unload-plugin-with-dep", unload_plugin_with_dep);
   TEST ("unload-plugin-with-self-dep", unload_plugin_with_self_dep);
-
-  TEST ("unavailable-plugin", unavailable_plugin);
-  TEST ("not-loadable-plugin", not_loadable_plugin);
 
   TEST ("loaded-plugins", loaded_plugins);
 

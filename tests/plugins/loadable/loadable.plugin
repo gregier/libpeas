@@ -1,5 +1,6 @@
 [Plugin]
 Module=loadable
+Version=1
 Name=Loadable
 Description=A plugin that can be loaded.
 Authors=Garrett Regier

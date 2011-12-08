@@ -500,6 +500,8 @@ tests/libpeas/plugins/Makefile
 tests/libpeas/plugins/extension-c/Makefile
 tests/libpeas/plugins/extension-js/Makefile
 tests/libpeas/plugins/extension-python/Makefile
+tests/libpeas/plugins/has-prerequisite/Makefile
+tests/libpeas/plugins/version-dep/Makefile
 tests/libpeas/introspection/Makefile
 tests/libpeas/testing/Makefile
 tests/libpeas-gtk/Makefile

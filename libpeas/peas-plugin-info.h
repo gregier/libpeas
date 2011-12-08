@@ -1,5 +1,5 @@
 /*
- * peas-plugins-info.h
+ * peas-plugin-info.h
  * This file is part of libpeas
  *
  * Copyright (C) 2002-2005 - Paolo Maggi
@@ -49,6 +49,8 @@ G_BEGIN_DECLS
  *      A dependency of the plugin was not found.
  * @PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED:
  *      A dependency of the plugin failed to load.
+ * @PEAS_PLUGIN_INFO_ERROR_DEP_INCORRECT_VERSION:
+ *      A dependency of the plugin is an incorrect version.
  *
  * These identify the various errors that can occur while
  * loading a plugin.
@@ -57,7 +59,8 @@ typedef enum {
   PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
   PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
   PEAS_PLUGIN_INFO_ERROR_DEP_NOT_FOUND,
-  PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED
+  PEAS_PLUGIN_INFO_ERROR_DEP_LOADING_FAILED,
+  PEAS_PLUGIN_INFO_ERROR_DEP_INCORRECT_VERSION
 } PeasPluginInfoError;
 
 /**

@@ -28,6 +28,7 @@
 #include <glib.h>
 #include <girepository.h>
 
+#include "libpeas/peas-debug.h"
 #include "libpeas/peas-engine-priv.h"
 
 #include "testing-util.h"
@@ -36,6 +37,11 @@ typedef struct {
   const gchar *pattern;
   gboolean hit;
 } LogHook;
+
+typedef struct {
+  GTestDataFunc func;
+  gpointer data;
+} TestData;
 
 static PeasEngine *engine = NULL;
 static GPtrArray *log_hooks = NULL;
@@ -131,6 +137,9 @@ testing_util_init (void)
 
   g_setenv ("GSETTINGS_BACKEND", "memory", TRUE);
 
+  /* Make sure that debug messages are filtered */
+  peas_debug_init ();
+
   g_irepository_prepend_search_path (BUILDDIR "/libpeas");
 
   g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
@@ -178,6 +187,42 @@ testing_util_engine_free (PeasEngine *engine_)
 
   /* Pop the log hooks so the test cases don't have to */
   testing_util_pop_log_hooks ();
+}
+
+static void
+run_test (TestData *test_data)
+{
+  test_data->func (test_data->data);
+
+  g_free (test_data);
+
+  /* Pop the log hooks so the test cases don't have to */
+  if (log_hooks != NULL)
+    testing_util_pop_log_hooks ();
+}
+
+/* These are here for tests that do not call testing_engine_(new|free)
+ * This way the log hooks are popped
+ */
+void
+testing_util_add_func (const gchar *path,
+                       GTestFunc    ftest)
+{
+  testing_util_add_data_func (path, NULL, (GTestDataFunc) ftest);
+}
+
+void
+testing_util_add_data_func (const gchar   *path,
+                            gpointer       data,
+                            GTestDataFunc  ftest)
+{
+  TestData *test_data;
+
+  test_data = g_new (TestData, 1);
+  test_data->func = ftest;
+  test_data->data = data;
+
+  g_test_add_data_func (path, (gpointer) test_data, (GTestDataFunc) run_test);
 }
 
 int

@@ -1,0 +1,8 @@
+[Plugin]
+Module=has-prerequisite
+Depends=prerequisite == 1
+Name=Has Prerequisite
+Description=This plugin has a prerequisite.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier
+Website=http://live.gnome.org/Libpeas

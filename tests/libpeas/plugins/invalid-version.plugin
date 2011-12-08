@@ -1,0 +1,7 @@
+[Plugin]
+Module=invalid-version
+Version=0
+Name=Invalid Version
+Description=This plugin has an invalid version.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier

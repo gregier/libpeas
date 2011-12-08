@@ -1,0 +1,9 @@
+[Plugin]
+Module=invalid-dep
+Name=Invalid Dependency
+# The invalid dependency is the second one to
+# check that memory is properly freed
+Depends=libpeas;invalid-dep == 0
+Description=This plugin has an invalid dependency.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier
