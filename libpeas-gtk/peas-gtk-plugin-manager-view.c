@@ -66,7 +66,8 @@ struct _PeasGtkPluginManagerViewPrivate {
 enum {
   PROP_0,
   PROP_ENGINE,
-  PROP_SHOW_BUILTIN
+  PROP_SHOW_BUILTIN,
+  N_PROPERTIES
 };
 
 /* Signals */
@@ -76,6 +77,7 @@ enum {
 };
 
 static guint signals[LAST_SIGNAL];
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkPluginManagerView, peas_gtk_plugin_manager_view, GTK_TYPE_TREE_VIEW);
 
@@ -764,15 +766,14 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
    *
    * The #PeasEngine this view is attached to.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_ENGINE,
-                                   g_param_spec_object ("engine",
-                                                        "engine",
-                                                        "The PeasEngine this view is attached to",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_ENGINE] =
+    g_param_spec_object ("engine",
+                         "engine",
+                         "The PeasEngine this view is attached to",
+                         PEAS_TYPE_ENGINE,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
   /**
    * PeasGtkPluginManagerView:show-builtin:
@@ -781,15 +782,14 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
    *
    * Deprecated: 1.2: Use hidden plugins instead.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_SHOW_BUILTIN,
-                                   g_param_spec_boolean ("show-builtin",
-                                                         "show-builtin",
-                                                         "If builtin plugins should be shown",
-                                                         FALSE,
-                                                         G_PARAM_DEPRECATED |
-                                                         G_PARAM_READWRITE |
-                                                         G_PARAM_STATIC_STRINGS));
+  properties[PROP_SHOW_BUILTIN] =
+    g_param_spec_boolean ("show-builtin",
+                          "show-builtin",
+                          "If builtin plugins should be shown",
+                          FALSE,
+                          G_PARAM_DEPRECATED |
+                          G_PARAM_READWRITE |
+                          G_PARAM_STATIC_STRINGS);
 
   /**
    * PeasGtkPluginManagerView::populate-popup:
@@ -811,6 +811,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
                   1,
                   GTK_TYPE_MENU);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (object_class, sizeof (PeasGtkPluginManagerViewPrivate));
 }
 
@@ -892,7 +893,8 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
   if (iter_set && convert_child_iter_to_iter (view, &iter))
     gtk_tree_selection_select_iter (selection, &iter);
 
-  g_object_notify (G_OBJECT (view), "show-builtin");
+  g_object_notify_by_pspec (G_OBJECT (view),
+                            properties[PROP_SHOW_BUILTIN]);
 }
 
 /**

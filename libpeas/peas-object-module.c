@@ -50,8 +50,11 @@ enum {
   PROP_0,
   PROP_MODULE_NAME,
   PROP_PATH,
-  PROP_RESIDENT
+  PROP_RESIDENT,
+  N_PROPERTIES
 };
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 typedef struct {
   GType iface_type;
@@ -238,36 +241,34 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
   module_class->load = peas_object_module_load;
   module_class->unload = peas_object_module_unload;
 
-  g_object_class_install_property (object_class,
-                                   PROP_MODULE_NAME,
-                                   g_param_spec_string ("module-name",
-                                                        "Module Name",
-                                                        "The module to load for this object",
-                                                        NULL,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_MODULE_NAME] =
+    g_param_spec_string ("module-name",
+                         "Module Name",
+                         "The module to load for this object",
+                         NULL,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_property (object_class,
-                                   PROP_PATH,
-                                   g_param_spec_string ("path",
-                                                        "Path",
-                                                        "The path to use when loading this module",
-                                                        NULL,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_PATH] =
+    g_param_spec_string ("path",
+                         "Path",
+                         "The path to use when loading this module",
+                         NULL,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_property (object_class,
-                                   PROP_RESIDENT,
-                                   g_param_spec_boolean ("resident",
-                                                         "Resident",
-                                                         "Whether the module is resident",
-                                                         FALSE,
-                                                         G_PARAM_READWRITE |
-                                                         G_PARAM_CONSTRUCT_ONLY |
-                                                         G_PARAM_STATIC_STRINGS));
+  properties[PROP_RESIDENT] =
+    g_param_spec_boolean ("resident",
+                          "Resident",
+                          "Whether the module is resident",
+                          FALSE,
+                          G_PARAM_READWRITE |
+                          G_PARAM_CONSTRUCT_ONLY |
+                          G_PARAM_STATIC_STRINGS);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
 }
 

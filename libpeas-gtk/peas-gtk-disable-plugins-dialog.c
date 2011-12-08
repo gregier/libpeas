@@ -41,8 +41,11 @@ struct _PeasGtkDisablePluginsDialogPrivate {
 enum {
   PROP_0,
   PROP_PLUGIN_INFO,
-  PROP_DEPENDANT_PLUGINS
+  PROP_DEPENDANT_PLUGINS,
+  N_PROPERTIES
 };
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkDisablePluginsDialog,
                peas_gtk_disable_plugins_dialog,
@@ -257,24 +260,23 @@ peas_gtk_disable_plugins_dialog_class_init (PeasGtkDisablePluginsDialogClass *kl
   object_class->constructed = peas_gtk_disable_plugins_dialog_constructed;
   object_class->finalize = peas_gtk_disable_plugins_dialog_finalize;
 
-  g_object_class_install_property (object_class,
-                                   PROP_PLUGIN_INFO,
-                                   g_param_spec_pointer ("plugin-info",
-                                                         "Plugin Information",
-                                                         "Plugin that is being disabled",
-                                                         G_PARAM_READWRITE |
-                                                         G_PARAM_CONSTRUCT_ONLY |
-                                                         G_PARAM_STATIC_STRINGS));
+  properties[PROP_PLUGIN_INFO] =
+  g_param_spec_pointer ("plugin-info",
+                        "Plugin Information",
+                        "Plugin that is being disabled",
+                        G_PARAM_READWRITE |
+                        G_PARAM_CONSTRUCT_ONLY |
+                        G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_property (object_class,
-                                   PROP_DEPENDANT_PLUGINS,
-                                   g_param_spec_pointer ("dependant-plugins",
-                                                         "Dependant plugins",
-                                                         "Dependant plugins",
-                                                         G_PARAM_READWRITE |
-                                                         G_PARAM_CONSTRUCT_ONLY |
-                                                         G_PARAM_STATIC_STRINGS));
+  properties[PROP_DEPENDANT_PLUGINS] =
+    g_param_spec_pointer ("dependant-plugins",
+                          "Dependant plugins",
+                          "Dependant plugins",
+                          G_PARAM_READWRITE |
+                          G_PARAM_CONSTRUCT_ONLY |
+                          G_PARAM_STATIC_STRINGS);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (object_class, sizeof (PeasGtkDisablePluginsDialogPrivate));
 }
 

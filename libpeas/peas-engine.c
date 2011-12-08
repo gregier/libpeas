@@ -69,14 +69,16 @@ enum {
   LAST_SIGNAL
 };
 
-static guint signals[LAST_SIGNAL];
-
 /* Properties */
 enum {
   PROP_0,
   PROP_PLUGIN_LIST,
-  PROP_LOADED_PLUGINS
+  PROP_LOADED_PLUGINS,
+  N_PROPERTIES
 };
+
+static guint signals[LAST_SIGNAL];
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 typedef struct _LoaderInfo LoaderInfo;
 
@@ -132,7 +134,8 @@ load_plugin_info (PeasEngine  *engine,
       engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list,
                                                   info);
 
-      g_object_notify (G_OBJECT (engine), "plugin-list");
+      g_object_notify_by_pspec (G_OBJECT (engine),
+                                properties[PROP_PLUGIN_LIST]);
     }
 }
 
@@ -474,13 +477,12 @@ peas_engine_class_init (PeasEngineClass *klass)
    * Note that the list belongs to the engine and should not be modified
    * or freed.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_PLUGIN_LIST,
-                                   g_param_spec_pointer ("plugin-list",
-                                                         "Plugin list",
-                                                         "The list of found plugins",
-                                                         G_PARAM_READABLE |
-                                                         G_PARAM_STATIC_STRINGS));
+  properties[PROP_PLUGIN_LIST] =
+    g_param_spec_pointer ("plugin-list",
+                          "Plugin list",
+                          "The list of found plugins",
+                          G_PARAM_READABLE |
+                          G_PARAM_STATIC_STRINGS);
 
   /**
    * PeasEngine:loaded-plugins:
@@ -502,14 +504,13 @@ peas_engine_class_init (PeasEngineClass *klass)
    *
    * Note: notify will not be called when the engine is being destroyed.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_LOADED_PLUGINS,
-                                   g_param_spec_boxed ("loaded-plugins",
-                                                       "Loaded plugins",
-                                                       "The list of loaded plugins",
-                                                       G_TYPE_STRV,
-                                                       G_PARAM_READWRITE |
-                                                       G_PARAM_STATIC_STRINGS));
+  properties[PROP_LOADED_PLUGINS] =
+    g_param_spec_boxed ("loaded-plugins",
+                        "Loaded plugins",
+                        "The list of loaded plugins",
+                        G_TYPE_STRV,
+                        G_PARAM_READWRITE |
+                        G_PARAM_STATIC_STRINGS);
 
   /**
    * PeasEngine::load-plugin:
@@ -560,6 +561,7 @@ peas_engine_class_init (PeasEngineClass *klass)
                   1, PEAS_TYPE_PLUGIN_INFO |
                   G_SIGNAL_TYPE_STATIC_SCOPE);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (klass, sizeof (PeasEnginePrivate));
 
   /* We are doing some global initialization here as there is currently no
@@ -839,7 +841,8 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
                               PeasPluginInfo *info)
 {
   if (load_plugin (engine, info))
-    g_object_notify (G_OBJECT (engine), "loaded-plugins");
+    g_object_notify_by_pspec (G_OBJECT (engine),
+                              properties[PROP_LOADED_PLUGINS]);
 }
 
 /**
@@ -909,7 +912,8 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   g_debug ("Unloaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
   if (!engine->priv->in_dispose)
-    g_object_notify (G_OBJECT (engine), "loaded-plugins");
+    g_object_notify_by_pspec (G_OBJECT (engine),
+                              properties[PROP_LOADED_PLUGINS]);
 }
 
 /**

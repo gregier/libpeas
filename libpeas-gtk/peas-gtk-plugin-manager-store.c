@@ -51,8 +51,11 @@ struct _PeasGtkPluginManagerStorePrivate {
 /* Properties */
 enum {
   PROP_0,
-  PROP_ENGINE
+  PROP_ENGINE,
+  N_PROPERTIES
 };
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkPluginManagerStore, peas_gtk_plugin_manager_store, GTK_TYPE_LIST_STORE);
 
@@ -290,16 +293,16 @@ peas_gtk_plugin_manager_store_class_init (PeasGtkPluginManagerStoreClass *klass)
    *
    * The #PeasEngine this store is attached to.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_ENGINE,
-                                   g_param_spec_object ("engine",
-                                                        "engine",
-                                                        "The PeasEngine this store is attached to",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_ENGINE] =
+    g_param_spec_object ("engine",
+                         "engine",
+                         "The PeasEngine this store is attached to",
+                         PEAS_TYPE_ENGINE,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (object_class, sizeof (PeasGtkPluginManagerStorePrivate));
 }
 

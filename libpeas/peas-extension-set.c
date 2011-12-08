@@ -117,15 +117,17 @@ enum {
   LAST_SIGNAL
 };
 
-static guint signals[LAST_SIGNAL];
-
 /* Properties */
 enum {
   PROP_0,
   PROP_ENGINE,
   PROP_EXTENSION_TYPE,
-  PROP_CONSTRUCT_PROPERTIES
+  PROP_CONSTRUCT_PROPERTIES,
+  N_PROPERTIES
 };
+
+static guint signals[LAST_SIGNAL];
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 static void
 set_construct_properties (PeasExtensionSet   *set,
@@ -405,32 +407,33 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
                   PEAS_TYPE_PLUGIN_INFO | G_SIGNAL_TYPE_STATIC_SCOPE,
                   PEAS_TYPE_EXTENSION);
 
-  g_object_class_install_property (object_class, PROP_ENGINE,
-                                   g_param_spec_object ("engine",
-                                                        "Engine",
-                                                        "The PeasEngine this set is attached to",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_ENGINE] =
+    g_param_spec_object ("engine",
+                         "Engine",
+                         "The PeasEngine this set is attached to",
+                         PEAS_TYPE_ENGINE,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_property (object_class, PROP_EXTENSION_TYPE,
-                                   g_param_spec_gtype ("extension-type",
-                                                       "Extension Type",
-                                                       "The extension GType managed by this set",
-                                                       G_TYPE_NONE,
-                                                       G_PARAM_READWRITE |
-                                                       G_PARAM_CONSTRUCT_ONLY |
-                                                       G_PARAM_STATIC_STRINGS));
+  properties[PROP_EXTENSION_TYPE] =
+    g_param_spec_gtype ("extension-type",
+                        "Extension Type",
+                        "The extension GType managed by this set",
+                        G_TYPE_NONE,
+                        G_PARAM_READWRITE |
+                        G_PARAM_CONSTRUCT_ONLY |
+                        G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_property (object_class, PROP_CONSTRUCT_PROPERTIES,
-                                   g_param_spec_pointer ("construct-properties",
-                                                         "Construct Properties",
-                                                         "The properties to pass the extensions when creating them",
-                                                         G_PARAM_WRITABLE |
-                                                         G_PARAM_CONSTRUCT_ONLY |
-                                                         G_PARAM_STATIC_STRINGS));
+  properties[PROP_CONSTRUCT_PROPERTIES] =
+    g_param_spec_pointer ("construct-properties",
+                          "Construct Properties",
+                          "The properties to pass the extensions when creating them",
+                          G_PARAM_WRITABLE |
+                          G_PARAM_CONSTRUCT_ONLY |
+                          G_PARAM_STATIC_STRINGS);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (klass, sizeof (PeasExtensionSetPrivate));
 }
 

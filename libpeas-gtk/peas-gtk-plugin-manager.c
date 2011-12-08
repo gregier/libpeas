@@ -73,8 +73,11 @@ struct _PeasGtkPluginManagerPrivate {
 enum {
   PROP_0,
   PROP_ENGINE,
-  PROP_VIEW
+  PROP_VIEW,
+  N_PROPERTIES
 };
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkPluginManager, peas_gtk_plugin_manager, GTK_TYPE_BOX);
 
@@ -529,31 +532,30 @@ peas_gtk_plugin_manager_class_init (PeasGtkPluginManagerClass *klass)
    *
    * The #PeasEngine this manager is attached to.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_ENGINE,
-                                   g_param_spec_object ("engine",
-                                                        "engine",
-                                                        "The PeasEngine this manager is attached to",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_ENGINE] =
+    g_param_spec_object ("engine",
+                         "engine",
+                         "The PeasEngine this manager is attached to",
+                         PEAS_TYPE_ENGINE,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
   /**
    * PeasGtkPluginManager:view:
    *
    * The #PeasGtkPluginManagerView shown in the #PeasGtkPluginManager.
    */
-  g_object_class_install_property (object_class,
-                                   PROP_VIEW,
-                                   g_param_spec_object ("view",
-                                                        "view",
-                                                        "The view shown in the manager",
-                                                        PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_VIEW] =
+    g_param_spec_object ("view",
+                         "view",
+                         "The view shown in the manager",
+                         PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (object_class, sizeof (PeasGtkPluginManagerPrivate));
 }
 

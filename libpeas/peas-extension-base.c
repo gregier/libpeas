@@ -52,8 +52,11 @@ struct _PeasExtensionBasePrivate {
 enum {
   PROP_0,
   PROP_PLUGIN_INFO,
-  PROP_DATA_DIR
+  PROP_DATA_DIR,
+  N_PROPERTIES
 };
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 static void
 peas_extension_base_get_property (GObject    *object,
@@ -112,26 +115,25 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
   object_class->get_property = peas_extension_base_get_property;
   object_class->set_property = peas_extension_base_set_property;
 
-  g_object_class_install_property (object_class,
-                                   PROP_PLUGIN_INFO,
-                                   g_param_spec_boxed ("plugin-info",
-                                                       "Plugin Information",
-                                                       "Information related to the current plugin",
-                                                       PEAS_TYPE_PLUGIN_INFO,
-                                                       G_PARAM_READWRITE |
-                                                       G_PARAM_CONSTRUCT_ONLY |
-                                                       G_PARAM_STATIC_STRINGS));
+  properties[PROP_PLUGIN_INFO] =
+    g_param_spec_boxed ("plugin-info",
+                        "Plugin Information",
+                        "Information related to the current plugin",
+                        PEAS_TYPE_PLUGIN_INFO,
+                        G_PARAM_READWRITE |
+                        G_PARAM_CONSTRUCT_ONLY |
+                        G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_property (object_class,
-                                   PROP_DATA_DIR,
-                                   g_param_spec_string ("data-dir",
-                                                        "Data Directory",
-                                                        "The full path of the directory where the "
-                                                        "plugin should look for its data files",
-                                                        NULL,
-                                                        G_PARAM_READABLE |
-                                                        G_PARAM_STATIC_STRINGS));
+  properties[PROP_DATA_DIR] =
+    g_param_spec_string ("data-dir",
+                         "Data Directory",
+                         "The full path of the directory where the "
+                         "plugin should look for its data files",
+                         NULL,
+                         G_PARAM_READABLE |
+                         G_PARAM_STATIC_STRINGS);
 
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (klass, sizeof (PeasExtensionBasePrivate));
 }
 
