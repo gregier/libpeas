@@ -40,8 +40,7 @@ peas_extension_wrapper_constructed (GObject *object)
 
   exten->constructed = TRUE;
 
-  if (G_OBJECT_CLASS (peas_extension_wrapper_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_extension_wrapper_parent_class)->constructed (object);
+  G_OBJECT_CLASS (peas_extension_wrapper_parent_class)->constructed (object);
 }
 
 static void

@@ -42,10 +42,7 @@ static const GType ColumnTypes[] = {
   G_TYPE_POINTER  /* PeasPluginInfo */
 };
 
-/* G_STATIC_ASSERT is in glib >= 2.20 and we only depend on 2.18.0 */
-#ifdef G_STATIC_ASSERT
 G_STATIC_ASSERT (G_N_ELEMENTS (ColumnTypes) == PEAS_GTK_PLUGIN_MANAGER_STORE_N_COLUMNS);
-#endif
 
 struct _PeasGtkPluginManagerStorePrivate {
   PeasEngine *engine;
@@ -259,8 +256,7 @@ peas_gtk_plugin_manager_store_constructed (GObject *object)
 
   peas_gtk_plugin_manager_store_reload (store);
 
-  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->constructed (object);
+  G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->constructed (object);
 }
 
 static void
@@ -273,9 +269,7 @@ peas_gtk_plugin_manager_store_dispose (GObject *object)
       g_signal_handlers_disconnect_by_func (store->priv->engine,
                                             plugin_loaded_toggled_cb,
                                             store);
-
-      g_object_unref (store->priv->engine);
-      store->priv->engine = NULL;
+      g_clear_object (&store->priv->engine);
     }
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->dispose (object);

@@ -431,8 +431,8 @@ peas_engine_finalize (GObject *object)
   GList *item;
 
   /* free the infos */
-  for (item = engine->priv->plugin_list; item; item = item->next)
-    _peas_plugin_info_unref (PEAS_PLUGIN_INFO (item->data));
+  g_list_free_full (engine->priv->plugin_list,
+                    (GDestroyNotify) _peas_plugin_info_unref);
 
   /* free the search path list */
   for (item = engine->priv->search_paths; item; item = item->next)
@@ -444,7 +444,6 @@ peas_engine_finalize (GObject *object)
       g_slice_free (SearchPath, sp);
     }
 
-  g_list_free (engine->priv->plugin_list);
   g_list_free (engine->priv->search_paths);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);

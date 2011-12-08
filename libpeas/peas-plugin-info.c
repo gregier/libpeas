@@ -60,6 +60,10 @@
  * ]|
  **/
 
+G_DEFINE_BOXED_TYPE (PeasPluginInfo, peas_plugin_info,
+                     _peas_plugin_info_ref,
+                     _peas_plugin_info_unref)
+
 PeasPluginInfo *
 _peas_plugin_info_ref (PeasPluginInfo *info)
 {
@@ -92,18 +96,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info);
 }
 
-GType
-peas_plugin_info_get_type (void)
-{
-  static GType the_type = 0;
-
-  if (G_UNLIKELY (!the_type))
-    the_type = g_boxed_type_register_static (g_intern_static_string ("PeasPluginInfo"),
-                                             (GBoxedCopyFunc) _peas_plugin_info_ref,
-                                             (GBoxedFreeFunc) _peas_plugin_info_unref);
-
-  return the_type;
-}
 
 GQuark
 peas_plugin_info_error_quark (void)

@@ -276,6 +276,8 @@ peas_extension_set_constructed (GObject *object)
           g_signal_connect_data (set->priv->engine, "unload-plugin",
                                  G_CALLBACK (remove_extension), set,
                                  NULL, G_CONNECT_SWAPPED);
+
+  G_OBJECT_CLASS (peas_extension_set_parent_class)->constructed (object);
 }
 
 static void
@@ -296,10 +298,13 @@ peas_extension_set_dispose (GObject *object)
       set->priv->unload_handler_id = 0;
     }
 
-  for (l = set->priv->extensions; l;)
+  if (set->priv->extensions != NULL)
     {
-      remove_extension_item (set, (ExtensionItem *) l->data);
-      l = g_list_delete_link (l, l);
+      for (l = set->priv->extensions; l != NULL; l = l->next)
+        remove_extension_item (set, (ExtensionItem *) l->data);
+
+      g_list_free (set->priv->extensions);
+      set->priv->extensions = NULL;
     }
 
   if (set->priv->parameters != NULL)
@@ -311,11 +316,7 @@ peas_extension_set_dispose (GObject *object)
       set->priv->parameters = NULL;
     }
 
-  if (set->priv->engine != NULL)
-    {
-      g_object_unref (set->priv->engine);
-      set->priv->engine = NULL;
-    }
+  g_clear_object (&set->priv->engine);
 }
 
 static gboolean

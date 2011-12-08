@@ -234,8 +234,7 @@ peas_gtk_disable_plugins_dialog_constructed (GObject *object)
   else
     build_multiple_dependant_plugins (dialog);
 
-  if (G_OBJECT_CLASS (peas_gtk_disable_plugins_dialog_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_gtk_disable_plugins_dialog_parent_class)->constructed (object);
+  G_OBJECT_CLASS (peas_gtk_disable_plugins_dialog_parent_class)->constructed (object);
 }
 
 static void

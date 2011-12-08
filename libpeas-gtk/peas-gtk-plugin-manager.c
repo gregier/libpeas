@@ -457,10 +457,7 @@ peas_gtk_plugin_manager_constructed (GObject *object)
       g_warn_if_fail (engine == pm->priv->engine);
 
       if (engine != pm->priv->engine)
-        {
-          g_object_unref (pm->priv->view);
-          pm->priv->view = NULL;
-        }
+        g_clear_object (&pm->priv->view);
 
       g_object_unref (engine);
     }
@@ -498,8 +495,7 @@ peas_gtk_plugin_manager_constructed (GObject *object)
   /* Update the button sensitivity */
   selection_changed_cb (pm);
 
-  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->constructed (object);
+  G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->constructed (object);
 }
 
 static void
@@ -512,9 +508,7 @@ peas_gtk_plugin_manager_dispose (GObject *object)
       g_signal_handlers_disconnect_by_func (pm->priv->engine,
                                             plugin_loaded_toggled_cb,
                                             pm);
-
-      g_object_unref (pm->priv->engine);
-      pm->priv->engine = NULL;
+      g_clear_object (&pm->priv->engine);
     }
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->dispose (object);

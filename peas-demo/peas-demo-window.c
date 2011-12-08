@@ -77,11 +77,7 @@ demo_window_dispose (GObject *object)
 {
   DemoWindow *dw = DEMO_WINDOW (object);
 
-  if (dw->exten_set != NULL)
-    {
-      g_object_unref (dw->exten_set);
-      dw->exten_set = NULL;
-    }
+  g_clear_object (&dw->exten_set);
 
   G_OBJECT_CLASS (demo_window_parent_class)->dispose (object);
 }

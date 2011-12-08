@@ -713,8 +713,7 @@ peas_gtk_plugin_manager_view_constructed (GObject *object)
                     G_CALLBACK (plugin_list_changed_cb),
                     view);
 
-  if (G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed != NULL)
-    G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed (object);
+  G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed (object);
 }
 
 static void
@@ -728,21 +727,15 @@ peas_gtk_plugin_manager_view_dispose (GObject *object)
       view->priv->popup_menu = NULL;
     }
 
-  if (view->priv->store != NULL)
-    {
-      g_object_unref (view->priv->store);
-      view->priv->store = NULL;
-    }
-
   if (view->priv->engine != NULL)
     {
       g_signal_handlers_disconnect_by_func (view->priv->engine,
                                             plugin_list_changed_cb,
                                             view);
-
-      g_object_unref (view->priv->engine);
-      view->priv->engine = NULL;
+      g_clear_object (&view->priv->engine);
     }
+
+  g_clear_object (&view->priv->store);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->dispose (object);
 }
@@ -794,9 +787,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
                                                          "show-builtin",
                                                          "If builtin plugins should be shown",
                                                          FALSE,
-#if GLIB_CHECK_VERSION (2, 26, 0)
                                                          G_PARAM_DEPRECATED |
-#endif
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_STRINGS));
 

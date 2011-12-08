@@ -168,7 +168,7 @@ peas_object_module_finalize (GObject *object)
     if (impls[i].destroy_func != NULL)
       impls[i].destroy_func (impls[i].user_data);
 
-  g_array_free (module->priv->implementations, TRUE);
+  g_array_unref (module->priv->implementations);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
 }
