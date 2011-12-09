@@ -252,7 +252,7 @@ test_extension_set_call_invalid (PeasEngine *engine)
 
   test_extension_set_activate (engine);
 
-  //testing_util_push_log_hook ("*Method 'PeasActivatable.invalid' not found*");
+  testing_util_push_log_hook ("Method 'PeasActivatable.invalid' was not found");
 
   extension_set = peas_extension_set_new (engine,
                                           PEAS_TYPE_ACTIVATABLE,

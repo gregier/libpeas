@@ -527,9 +527,12 @@ peas_extension_set_call_valist (PeasExtensionSet *set,
 
   callable_info = peas_gi_get_method_info (set->priv->exten_type, method_name);
 
-  /* Already warned */
   if (callable_info == NULL)
-    return FALSE;
+    {
+      g_warning ("Method '%s.%s' was not found",
+                 g_type_name (set->priv->exten_type), method_name);
+      return FALSE;
+    }
 
   n_args = g_callable_info_get_n_args (callable_info);
   g_return_val_if_fail (n_args >= 0, FALSE);
