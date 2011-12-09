@@ -312,7 +312,10 @@ peas_extension_seed_new (GType        exten_type,
 
   /* Already Warned */
   if (real_type == G_TYPE_INVALID)
-    return NULL;
+    {
+      g_free (interfaces);
+      return NULL;
+    }
 
   sexten = PEAS_EXTENSION_SEED (g_object_new (real_type, NULL));
 

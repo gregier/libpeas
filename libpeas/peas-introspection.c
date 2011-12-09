@@ -437,7 +437,7 @@ peas_gi_get_type_from_name (const gchar *type_name)
 
   /* Seems they did not import it */
 
-  g_free (ns);
+  g_strfreev (ns);
   return the_type;
 }
 

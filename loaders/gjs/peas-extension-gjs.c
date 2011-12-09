@@ -405,7 +405,10 @@ peas_extension_gjs_new (GType      exten_type,
 
   /* Already Warned */
   if (real_type == G_TYPE_INVALID)
-    return NULL;
+    {
+      g_free (interfaces);
+      return NULL;
+    }
 
   gexten = PEAS_EXTENSION_GJS (g_object_new (real_type, NULL));
 

@@ -147,7 +147,10 @@ peas_extension_python_new (GType     exten_type,
 
   /* Already Warned */
   if (real_type == G_TYPE_INVALID)
-    return NULL;
+    {
+      g_free (interfaces);
+      return NULL;
+    }
 
   pyexten = PEAS_EXTENSION_PYTHON (g_object_new (real_type, NULL));
 
