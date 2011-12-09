@@ -167,24 +167,27 @@ implement_interface_methods (gpointer iface,
                              GType    proxy_type)
 {
   GType exten_type = G_TYPE_FROM_INTERFACE (iface);
-  GIInterfaceInfo *iface_info;
-  guint n_vfuncs, i;
-  MethodImpl *impls;
+  guint i;
+  GArray *impls;
 
   g_debug ("Implementing interface '%s' for proxy type '%s'",
            g_type_name (exten_type), g_type_name (proxy_type));
-
-  iface_info = g_irepository_find_by_gtype (NULL, exten_type);
-  g_return_if_fail (iface_info != NULL);
-  g_return_if_fail (g_base_info_get_type (iface_info) == GI_INFO_TYPE_INTERFACE);
-
-  n_vfuncs = g_interface_info_get_n_vfuncs (iface_info);
 
   impls = g_type_get_qdata (exten_type, method_impl_quark ());
 
   if (impls == NULL)
     {
-      impls = g_new0 (MethodImpl, n_vfuncs);
+      GIInterfaceInfo *iface_info;
+      guint n_vfuncs;
+
+      iface_info = g_irepository_find_by_gtype (NULL, exten_type);
+      g_return_if_fail (iface_info != NULL);
+      g_return_if_fail (g_base_info_get_type (iface_info) == GI_INFO_TYPE_INTERFACE);
+
+      n_vfuncs = g_interface_info_get_n_vfuncs (iface_info);
+
+      impls = g_array_new (FALSE, TRUE, sizeof (MethodImpl));
+      g_array_set_size (impls, n_vfuncs);
 
       for (i = 0; i < n_vfuncs; i++)
         {
@@ -192,30 +195,31 @@ implement_interface_methods (gpointer iface,
 
           vfunc_info = g_interface_info_get_vfunc (iface_info, i);
           create_native_closure (exten_type, iface_info,
-                                 vfunc_info, &impls[i]);
+                                 vfunc_info,
+                                 &g_array_index (impls, MethodImpl, i));
 
-          g_base_info_unref ((GIBaseInfo *) vfunc_info);
+          g_base_info_unref (vfunc_info);
         }
-
+      
       g_type_set_qdata (exten_type, method_impl_quark (), impls);
+      g_base_info_unref (iface_info);
     }
 
-  for (i = 0; i < n_vfuncs; i++)
+  for (i = 0; i < impls->len; i++)
     {
+      MethodImpl *impl = &g_array_index (impls, MethodImpl, i);
       gpointer *method_ptr;
 
-      if (impls[i].closure == NULL)
+      if (impl->closure == NULL)
         continue;
 
-      method_ptr = G_STRUCT_MEMBER_P (iface, impls[i].struct_offset);
-      *method_ptr = impls[i].closure;
+      method_ptr = G_STRUCT_MEMBER_P (iface, impl->struct_offset);
+      *method_ptr = impl->closure;
 
       g_debug ("Implemented '%s.%s' at %d (%p) with %p",
-               g_type_name (exten_type), impls[i].method_name,
-               impls[i].struct_offset, method_ptr, impls[i].closure);
+               g_type_name (exten_type), impl->method_name,
+               impl->struct_offset, method_ptr, impl->closure);
     }
-
-  g_base_info_unref (iface_info);
 
   g_debug ("Implemented interface '%s' for '%s' proxy",
            g_type_name (exten_type), g_type_name (proxy_type));
