@@ -142,13 +142,10 @@ static gint
 prerequisites_sort (GType *a,
                     GType *b)
 {
-  if (g_type_is_a (*a, *b))
-    return 1;
-
   if (g_type_is_a (*b, *a))
     return -1;
 
-  return 0;
+  return 1;
 }
 
 static PeasExtension *
