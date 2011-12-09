@@ -31,17 +31,13 @@
 #include "introspection/introspection-callable.h"
 
 static void
-test_extension_seed_plugin_info (PeasEngine *engine)
+test_extension_seed_plugin_info (PeasEngine *engine,
+                                 PeasPluginInfo *info)
 {
-  PeasPluginInfo *info;
   PeasExtension *extension;
   PeasExtensionSeed *sexten;
   SeedValue seed_value;
   GValue gvalue = { 0 };
-
-  info = peas_engine_get_plugin_info (engine, "extension-seed");
-
-  g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
@@ -85,10 +81,10 @@ main (int   argc,
 
   g_type_init ();
 
-  EXTENSION_TESTS (seed);
+  testing_extension_all ("seed");
 
   EXTENSION_TEST (seed, "plugin-info", plugin_info);
   EXTENSION_TEST (seed, "nonexistent", nonexistent);
 
-  return testing_run_tests ();
+  return testing_extension_run_tests ();
 }

@@ -29,14 +29,10 @@
 #include "introspection/introspection-callable.h"
 
 static void
-test_extension_c_instance_refcount (PeasEngine *engine)
+test_extension_c_instance_refcount (PeasEngine     *engine,
+                                    PeasPluginInfo *info)
 {
-  PeasPluginInfo *info;
   PeasExtension *extension;
-
-  info = peas_engine_get_plugin_info (engine, "extension-c");
-
-  g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
@@ -94,16 +90,16 @@ main (int   argc,
   g_type_init ();
 
   /* Only test the basics */
-  EXTENSION_TESTS_INIT (c);
+  testing_extension_basic ("c");
 
   /* We still need to add the callable tests
    * because of peas_extension_call()
    */
-  EXTENSION_TESTS_CALLABLE (c);
+  testing_extension_callable ("c");
 
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
   EXTENSION_TEST (c, "plugin-info", plugin_info);
   EXTENSION_TEST (c, "nonexistent", nonexistent);
 
-  return testing_run_tests ();
+  return testing_extension_run_tests ();
 }

@@ -32,15 +32,11 @@
 #include "introspection/introspection-callable.h"
 
 static void
-test_extension_python_instance_refcount (PeasEngine *engine)
+test_extension_python_instance_refcount (PeasEngine     *engine,
+                                         PeasPluginInfo *info)
 {
-  PeasPluginInfo *info;
   PeasExtension *extension;
   PyObject *instance;
-
-  info = peas_engine_get_plugin_info (engine, "extension-python");
-
-  g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
@@ -59,15 +55,12 @@ test_extension_python_instance_refcount (PeasEngine *engine)
 }
 
 static void
-test_extension_python_activatable_subject_refcount (PeasEngine *engine)
+test_extension_python_activatable_subject_refcount (PeasEngine     *engine,
+                                                    PeasPluginInfo *info)
 {
-  PeasPluginInfo *info;
   PeasExtension *extension;
   GObject *object;
   PyObject *wrapper;
-
-  info = peas_engine_get_plugin_info (engine, "extension-python");
-  g_assert (peas_engine_load_plugin (engine, info));
 
   /* Create the 'object' property value, to be similar to a GtkWindow
    * instance: a sunk GInitiallyUnowned object. */
@@ -103,16 +96,12 @@ test_extension_python_activatable_subject_refcount (PeasEngine *engine)
 }
 
 static void
-test_extension_python_plugin_info (PeasEngine *engine)
+test_extension_python_plugin_info (PeasEngine *engine,
+                                   PeasPluginInfo *info)
 {
-  PeasPluginInfo *info;
   PeasExtension *extension;
   PyObject *instance;
   PyObject *plugin_info;
-
-  info = peas_engine_get_plugin_info (engine, "extension-python");
-
-  g_assert (peas_engine_load_plugin (engine, info));
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
@@ -147,12 +136,12 @@ main (int   argc,
   g_test_init (&argc, &argv, NULL);
   g_type_init ();
 
-  EXTENSION_TESTS (python);
+  testing_extension_all ("python");
 
   EXTENSION_TEST (python, "instance-refcount", instance_refcount);
   EXTENSION_TEST (python, "activatable-subject-refcount", activatable_subject_refcount);
   EXTENSION_TEST (python, "plugin-info", plugin_info);
   EXTENSION_TEST (python, "nonexistent", nonexistent);
 
-  return testing_run_tests ();
+  return testing_extension_run_tests ();
 }
