@@ -354,7 +354,6 @@ peas_gi_get_type_from_name (const gchar *type_name)
   if (the_type != G_TYPE_INVALID)
     return the_type;
 
-
   ns = g_irepository_get_loaded_namespaces (NULL);
 
   /* Attempt to find it via naming conventions */
@@ -362,8 +361,10 @@ peas_gi_get_type_from_name (const gchar *type_name)
     {
       gsize len;
 
-      /* Allow GObject and Gio Interfaces to use the fast path */
-      if (g_strcmp0 (ns[i], "GObject") == 0 || g_strcmp0 (ns[i], "Gio") == 0)
+      /* Allow GLib, GObject and Gio Interfaces to use the fast path */
+      if (g_strcmp0 (ns[i], "GLib") == 0 ||
+          g_strcmp0 (ns[i], "GObject") == 0 ||
+          g_strcmp0 (ns[i], "Gio") == 0)
         len = 1;
       else
         len = strlen (ns[i]);
