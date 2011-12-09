@@ -85,12 +85,14 @@ dnl ================================================================
 PKG_PROG_PKG_CONFIG
 
 GLIB_REQUIRED=2.28.0
+GIO_REQUIRED=2.31.2
 INTROSPECTION_REQUIRED=0.10.1
 
 PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= $GLIB_REQUIRED
 	gobject-2.0 >= $GLIB_REQUIRED
 	gmodule-2.0 >= $GLIB_REQUIRED
+	gio-2.0 >= $GIO_REQUIRED
 	gobject-introspection-1.0 >= $INTROSPECTION_REQUIRED
 ])
 
@@ -437,9 +439,11 @@ AC_SUBST(LT_AGE)
 
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
 TEST_PLUGIN_LIBTOOL_FLAGS="$PLUGIN_LIBTOOL_FLAGS -rpath /nowhere"
+TEST_INTROSPECTION_LIBTOOL_FLAGS="-rpath /nowhere -export-dynamic -no-undefined"
 LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex peas_register_types"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(TEST_PLUGIN_LIBTOOL_FLAGS)
+AC_SUBST(TEST_INTROSPECTION_LIBTOOL_FLAGS)
 AC_SUBST(LOADER_LIBTOOL_FLAGS)
 
 dnl ================================================================

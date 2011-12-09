@@ -79,6 +79,8 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
 
   g_free (info->module_dir);
   g_free (info->data_dir);
+  if (info->schema_source != NULL)
+    g_settings_schema_source_unref (info->schema_source);
   g_free (info->module_name);
   g_strfreev (info->dependencies);
   g_free (info->name);
@@ -424,6 +426,79 @@ peas_plugin_info_get_data_dir (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->data_dir;
+}
+
+/**
+ * peas_plugin_info_get_settings:
+ * @info: A #PeasPluginInfo.
+ * @schema_id: (allow-none): The schema id.
+ *
+ * Creates a new #GSettings for the given @schema_id and if
+ * gschemas.compiled is not in the module directory an attempt
+ * will be made to create it.
+ *
+ * Returns: (transfer full): a new #GSettings, or %NULL.
+ */
+GSettings *
+peas_plugin_info_get_settings (const PeasPluginInfo *info,
+                               const gchar          *schema_id)
+{
+  GSettingsSchema *schema;
+  GSettings *settings;
+
+  g_return_val_if_fail (info != NULL, NULL);
+
+  if (info->schema_source == NULL)
+    {
+      GFile *module_dir_location;
+      GFile *gschema_compiled;
+      GSettingsSchemaSource *default_source;
+
+      module_dir_location = g_file_new_for_path (info->module_dir);
+      gschema_compiled = g_file_get_child (module_dir_location,
+                                           "gschemas.compiled");
+
+      if (!g_file_query_exists (gschema_compiled, NULL))
+        {
+          const gchar *argv[] = {
+            "glib-compile-schemas",
+            "--targetdir", info->module_dir,
+            info->module_dir,
+            NULL
+          };
+
+          g_spawn_sync (NULL, (gchar **) argv, NULL, G_SPAWN_SEARCH_PATH,
+                        NULL, NULL, NULL, NULL, NULL, NULL);
+        }
+
+      g_object_unref (gschema_compiled);
+      g_object_unref (module_dir_location);
+
+      default_source = g_settings_schema_source_get_default ();
+      ((PeasPluginInfo *) info)->schema_source =
+            g_settings_schema_source_new_from_directory (info->module_dir,
+                                                         default_source,
+                                                         FALSE, NULL);
+
+      /* glib-compile-schemas already outputted a message */
+      if (info->schema_source == NULL)
+        return NULL;
+    }
+
+  if (schema_id == NULL)
+    schema_id = info->module_name;
+
+  schema = g_settings_schema_source_lookup (info->schema_source, schema_id,
+                                            FALSE);
+
+  if (schema == NULL)
+    return NULL;
+
+  settings = g_settings_new_full (schema, NULL, NULL);
+
+  g_settings_schema_unref (schema);
+
+  return settings;
 }
 
 /**

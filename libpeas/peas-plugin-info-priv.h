@@ -32,6 +32,8 @@ struct _PeasPluginInfo {
   gchar *module_dir;
   gchar *data_dir;
 
+  GSettingsSchemaSource *schema_source;
+
   gchar *module_name;
   gchar *loader;
   gchar **dependencies;

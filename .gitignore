@@ -11,6 +11,7 @@
 *.gcov
 .deps
 .libs
+gschemas.compiled
 Makefile
 Makefile.in
 /ABOUT-NLS
@@ -79,8 +80,10 @@ Makefile.in
 /tests/libpeas/extension-seed
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
+/tests/libpeas/plugins/extension-js/extension-gjs.gschema.xml
 /tests/libpeas/plugins/extension-js/extension-gjs.js
 /tests/libpeas/plugins/extension-js/extension-gjs.plugin
+/tests/libpeas/plugins/extension-js/extension-seed.gschema.xml
 /tests/libpeas/plugins/extension-js/extension-seed.js
 /tests/libpeas/plugins/extension-js/extension-seed.plugin
 /tests/libpeas-gtk/plugin-manager

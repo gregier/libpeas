@@ -23,7 +23,7 @@
 #ifndef __PEAS_PLUGIN_INFO_H__
 #define __PEAS_PLUGIN_INFO_H__
 
-#include <glib-object.h>
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -80,6 +80,8 @@ gboolean      peas_plugin_info_is_hidden        (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_module_name  (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_module_dir   (const PeasPluginInfo *info);
 const gchar  *peas_plugin_info_get_data_dir     (const PeasPluginInfo *info);
+GSettings    *peas_plugin_info_get_settings     (const PeasPluginInfo *info,
+                                                 const gchar          *schema_id);
 const gchar **peas_plugin_info_get_dependencies (const PeasPluginInfo *info);
 gboolean      peas_plugin_info_has_dependency   (const PeasPluginInfo *info,
                                                  const gchar          *module_name);

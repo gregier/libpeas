@@ -38,7 +38,10 @@ typedef struct _TestingLoadablePluginClass    TestingLoadablePluginClass;
 typedef struct _TestingLoadablePluginPrivate  TestingLoadablePluginPrivate;
 
 struct _TestingLoadablePlugin {
-  PeasExtensionBase parent_instance;
+  /* Inherit from GObject and not PeasExtensionBase
+   * to check that it is possible
+   */
+  GObject parent_instance;
 
   TestingLoadablePluginPrivate *priv;
 };

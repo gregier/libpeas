@@ -28,37 +28,6 @@
 #include "loaders/gjs/peas-extension-gjs.h"
 
 #include "testing/testing-extension.h"
-#include "introspection/introspection-callable.h"
-
-static void
-test_extension_gjs_plugin_info (PeasEngine     *engine,
-                                PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-  PeasExtensionGjs *gexten;
-  jsval js_value;
-  GValue gvalue = { 0 };
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
-                                            NULL);
-
-  g_assert (PEAS_IS_EXTENSION (extension));
-
-  gexten = (PeasExtensionGjs *) extension;
-
-  g_value_init (&gvalue, PEAS_TYPE_PLUGIN_INFO);
-
-  g_assert (JS_GetProperty (gexten->js_context, gexten->js_object,
-                            "plugin_info", &js_value));
-  g_assert (gjs_value_to_g_value (gexten->js_context, js_value, &gvalue));
-
-  g_assert (g_value_get_boxed (&gvalue) == info);
-
-  g_value_unset (&gvalue);
-
-  g_object_unref (extension);
-}
 
 static void
 test_extension_gjs_nonexistent (PeasEngine *engine)
@@ -83,7 +52,6 @@ main (int   argc,
 
   testing_extension_all ("gjs");
 
-  EXTENSION_TEST (gjs, "plugin-info", plugin_info);
   EXTENSION_TEST (gjs, "nonexistent", nonexistent);
 
   return testing_extension_run_tests ();

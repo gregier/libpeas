@@ -29,7 +29,7 @@
 #include "loaders/python/peas-extension-python.h"
 
 #include "testing/testing-extension.h"
-#include "introspection/introspection-callable.h"
+#include "introspection/introspection-base.h"
 
 static void
 test_extension_python_instance_refcount (PeasEngine     *engine,
@@ -39,7 +39,7 @@ test_extension_python_instance_refcount (PeasEngine     *engine,
   PyObject *instance;
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
+                                            INTROSPECTION_TYPE_BASE,
                                             NULL);
 
   g_assert (PEAS_IS_EXTENSION (extension));
@@ -96,28 +96,6 @@ test_extension_python_activatable_subject_refcount (PeasEngine     *engine,
 }
 
 static void
-test_extension_python_plugin_info (PeasEngine *engine,
-                                   PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-  PyObject *instance;
-  PyObject *plugin_info;
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
-                                            NULL);
-
-  g_assert (PEAS_IS_EXTENSION (extension));
-
-  instance = ((PeasExtensionPython *) extension)->instance;
-
-  plugin_info = PyObject_GetAttrString (instance, "plugin_info");
-  g_assert (((PyGBoxed *) plugin_info)->boxed == info);
-
-  g_object_unref (extension);
-}
-
-static void
 test_extension_python_nonexistent (PeasEngine *engine)
 {
   PeasPluginInfo *info;
@@ -140,7 +118,6 @@ main (int   argc,
 
   EXTENSION_TEST (python, "instance-refcount", instance_refcount);
   EXTENSION_TEST (python, "activatable-subject-refcount", activatable_subject_refcount);
-  EXTENSION_TEST (python, "plugin-info", plugin_info);
   EXTENSION_TEST (python, "nonexistent", nonexistent);
 
   return testing_extension_run_tests ();

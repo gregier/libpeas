@@ -33,6 +33,7 @@
 #include "testing.h"
 #include "testing-extension.h"
 
+#include "introspection-base.h"
 #include "introspection-callable.h"
 #include "introspection-has-missing-prerequisite.h"
 #include "introspection-has-prerequisite.h"
@@ -214,7 +215,7 @@ test_extension_create_with_prerequisite (PeasEngine     *engine,
 }
 
 static void
-test_extension_reload (PeasEngine *engine,
+test_extension_reload (PeasEngine     *engine,
                        PeasPluginInfo *info)
 {
   gint i;
@@ -227,6 +228,49 @@ test_extension_reload (PeasEngine *engine,
 }
 
 static void
+test_extension_plugin_info (PeasEngine     *engine,
+                            PeasPluginInfo *info)
+{
+  PeasExtension *extension;
+  IntrospectionBase *base;
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_BASE,
+                                            NULL);
+
+  base = INTROSPECTION_BASE (extension);
+
+  g_assert (introspection_base_get_plugin_info (base) == info);
+
+  g_object_unref (extension);
+}
+
+static void
+test_extension_get_settings (PeasEngine     *engine,
+                             PeasPluginInfo *info)
+{
+  PeasExtension *extension;
+  IntrospectionBase *base;
+  GSettings *settings;
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_BASE,
+                                            NULL);
+
+  base = INTROSPECTION_BASE (extension);
+
+  settings = introspection_base_get_settings (base);
+  g_assert (G_IS_SETTINGS (settings));
+
+  g_object_unref (settings);
+  g_object_unref (extension);
+}
+
+static void
 test_extension_call_no_args (PeasEngine     *engine,
                              PeasPluginInfo *info)
 {
@@ -234,8 +278,7 @@ test_extension_call_no_args (PeasEngine     *engine,
   IntrospectionCallable *callable;
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -255,8 +298,7 @@ test_extension_call_with_return (PeasEngine     *engine,
   const gchar *return_val = NULL;
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -281,8 +323,7 @@ test_extension_call_single_arg (PeasEngine     *engine,
   gboolean called = FALSE;
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -308,8 +349,7 @@ test_extension_call_multi_args (PeasEngine     *engine,
   gint inout_saved;
 
   extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            "object", NULL,
+                                            INTROSPECTION_TYPE_CALLABLE,
                                             NULL);
 
   callable = INTROSPECTION_CALLABLE (extension);
@@ -437,6 +477,9 @@ testing_extension_basic (const gchar *loader)
   _EXTENSION_TEST (loader, "create-with-prerequisite", create_with_prerequisite);
 
   _EXTENSION_TEST (loader, "reload", reload);
+
+  _EXTENSION_TEST (loader, "plugin-info", plugin_info);
+  _EXTENSION_TEST (loader, "get-settings", get_settings);
 }
 
 void

@@ -52,6 +52,10 @@ introspection_callable_call_with_return (IntrospectionCallable *callable)
   return NULL;
 }
 
+/**
+ * introspection_callable_call_no_args:
+ * @callable:
+ */
 void
 introspection_callable_call_no_args (IntrospectionCallable *callable)
 {

@@ -26,7 +26,7 @@
 #include "libpeas/peas.h"
 
 #include "testing/testing-extension.h"
-#include "introspection/introspection-callable.h"
+#include "introspection/introspection-base.h"
 
 static void
 test_extension_c_instance_refcount (PeasEngine     *engine,
@@ -35,7 +35,7 @@ test_extension_c_instance_refcount (PeasEngine     *engine,
   PeasExtension *extension;
 
   extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_CALLABLE,
+                                            INTROSPECTION_TYPE_BASE,
                                             NULL);
 
   g_assert (PEAS_IS_EXTENSION (extension));
@@ -44,26 +44,6 @@ test_extension_c_instance_refcount (PeasEngine     *engine,
    *  - one ref for the PeasExtension
    */
   g_assert_cmpint (extension->ref_count, ==, 1);
-
-  g_object_unref (extension);
-}
-
-static void
-test_extension_c_plugin_info (PeasEngine *engine)
-{
-  PeasPluginInfo *info;
-  PeasExtension *extension;
-
-  info = peas_engine_get_plugin_info (engine, "loadable");
-
-  g_assert (peas_engine_load_plugin (engine, info));
-
-  extension = peas_engine_create_extension (engine, info,
-                                            PEAS_TYPE_ACTIVATABLE,
-                                            NULL);
-
-  g_assert (PEAS_IS_EXTENSION_BASE (extension));
-  g_assert (peas_extension_base_get_plugin_info (PEAS_EXTENSION_BASE (extension)) == info);
 
   g_object_unref (extension);
 }
@@ -98,7 +78,6 @@ main (int   argc,
   testing_extension_callable ("c");
 
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
-  EXTENSION_TEST (c, "plugin-info", plugin_info);
   EXTENSION_TEST (c, "nonexistent", nonexistent);
 
   return testing_extension_run_tests ();

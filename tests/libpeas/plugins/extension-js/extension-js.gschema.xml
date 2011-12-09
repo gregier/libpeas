@@ -1,0 +1,9 @@
+<schemalist>
+  <schema id="extension-JS_LOADER" path="/org/gnome/libpeas/tests/extension-JS_LOADER/">
+    <key name="a-setting" type="s">
+      <default>'Blah'</default>
+      <summary>Just a setting.</summary>
+      <description>Just a setting.</description>
+    </key>
+  </schema>
+</schemalist>

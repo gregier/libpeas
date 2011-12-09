@@ -38,16 +38,11 @@ typedef struct _TestingCallablePluginClass    TestingCallablePluginClass;
 typedef struct _TestingCallablePluginPrivate  TestingCallablePluginPrivate;
 
 struct _TestingCallablePlugin {
-  /* Inherit from GObject and not PeasExtensionBase
-   * to check that it is possible
-   */
-  GObject parent_instance;
-
-  TestingCallablePluginPrivate *priv;
+  PeasExtensionBase parent_instance;
 };
 
 struct _TestingCallablePluginClass {
-  GObjectClass parent_class;
+  PeasExtensionBaseClass parent_class;
 };
 
 GType testing_callable_plugin_get_type (void) G_GNUC_CONST;

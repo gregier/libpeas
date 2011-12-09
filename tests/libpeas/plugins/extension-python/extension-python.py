@@ -3,8 +3,17 @@
 
 from gi.repository import GObject, Introspection, Peas
 
-class ActivatablePythonPlugin(GObject.Object, Peas.Activatable):
+class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
+                            Introspection.Base, Introspection.Callable,
+                            Introspection.Properties,
+                            Introspection.HasPrerequisite):
+
     object = GObject.property(type=GObject.Object)
+
+    construct_only = GObject.property(type=str)
+    read_only = GObject.property(type=str, default="read-only")
+    write_only = GObject.property(type=str)
+    readwrite = GObject.property(type=str, default="readwrite")
 
     def do_activate(self):
         pass
@@ -12,10 +21,16 @@ class ActivatablePythonPlugin(GObject.Object, Peas.Activatable):
     def do_deactivate(self):
         pass
 
-    def update_state(self):
+    def do_update_state(self):
         pass
 
-class CallablePythonPlugin(ActivatablePythonPlugin, Introspection.Callable):
+
+    def do_get_plugin_info(self):
+        return self.plugin_info
+
+    def do_get_settings(self):
+        return self.plugin_info.get_settings(None)
+
     def do_call_with_return(self):
         return "Hello, World!";
 
@@ -27,15 +42,3 @@ class CallablePythonPlugin(ActivatablePythonPlugin, Introspection.Callable):
 
     def do_call_multi_args(self, in_, inout):
         return (inout, in_)
-
-class PropertiesPythonPlugin(GObject.Object, Introspection.Properties):
-    construct_only = GObject.property(type=str)
-
-    read_only = GObject.property(type=str, default="read-only")
-
-    write_only = GObject.property(type=str)
-
-    readwrite = GObject.property(type=str, default="readwrite")
-
-class HasPrerequisitePythonPlugin(CallablePythonPlugin, Introspection.HasPrerequisite):
-    pass

@@ -25,11 +25,11 @@
 
 #include "introspection-has-prerequisite.h"
 
-#include "introspection-callable.h"
+#include "introspection-base.h"
 
 G_DEFINE_INTERFACE(IntrospectionHasPrerequisite,
                    introspection_has_prerequisite,
-                   INTROSPECTION_TYPE_CALLABLE)
+                   INTROSPECTION_TYPE_BASE)
 
 void
 introspection_has_prerequisite_default_init (IntrospectionHasPrerequisiteInterface *iface)
