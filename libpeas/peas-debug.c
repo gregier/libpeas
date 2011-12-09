@@ -44,4 +44,25 @@ peas_debug_init (void)
                          debug_log_handler,
                          NULL);
     }
+  else
+    {
+      const gchar *g_messages_debug;
+
+      g_messages_debug = g_getenv ("G_MESSAGES_DEBUG");
+
+      if (g_messages_debug == NULL)
+        {
+          g_setenv ("G_MESSAGES_DEBUG", G_LOG_DOMAIN, TRUE);
+        }
+      else
+        {
+          gchar *new_g_messages_debug;
+
+          new_g_messages_debug = g_strconcat (g_messages_debug, " ",
+                                              G_LOG_DOMAIN, NULL);
+          g_setenv ("G_MESSAGES_DEBUG", new_g_messages_debug, TRUE);
+
+          g_free (new_g_messages_debug);
+        }
+    }
 }
