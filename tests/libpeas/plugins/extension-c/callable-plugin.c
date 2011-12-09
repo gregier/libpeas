@@ -71,6 +71,11 @@ testing_callable_plugin_get_settings (IntrospectionBase *base)
   return peas_plugin_info_get_settings (info, NULL);
 }
 
+static void
+testing_callable_plugin_call_no_args (IntrospectionCallable *callable)
+{
+}
+
 static const gchar *
 testing_callable_plugin_call_with_return (IntrospectionCallable *callable)
 {
@@ -109,6 +114,7 @@ introspection_base_iface_init (IntrospectionBaseInterface *iface)
 static void
 introspection_callable_iface_init (IntrospectionCallableInterface *iface)
 {
+  iface->call_no_args = testing_callable_plugin_call_no_args;
   iface->call_with_return = testing_callable_plugin_call_with_return;
   iface->call_single_arg = testing_callable_plugin_call_single_arg;
   iface->call_multi_args = testing_callable_plugin_call_multi_args;
