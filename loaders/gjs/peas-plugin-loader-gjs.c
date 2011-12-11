@@ -271,8 +271,8 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
           !JSVAL_IS_STRING (prop_name_val) ||
           !gjs_string_to_utf8 (js_context, prop_name_val, &prop_name))
         {
-          g_warning ("Extension '%s' in plugin '%s' in not a valid "
-                     "constructor object", prop_name,
+          g_warning ("Invalid extension in plugin '%s' it is not a valid "
+                     "constructor object",
                      peas_plugin_info_get_module_name (info));
           continue;
         }
