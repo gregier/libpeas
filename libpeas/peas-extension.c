@@ -74,7 +74,7 @@ get_method_info (PeasExtension *exten,
 {
   guint i;
   GType *interfaces;
-  GICallableInfo *method_info;
+  GICallableInfo *method_info = NULL;
   gboolean must_free_interfaces = FALSE;
 
   if (PEAS_IS_EXTENSION_WRAPPER (exten))
