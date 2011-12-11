@@ -255,6 +255,9 @@ peas_extension_callv (PeasExtension *exten,
   GType interface;
   gboolean success;
 
+  g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
+  g_return_val_if_fail (method_name != NULL, FALSE);
+
   method_info = get_method_info (exten, method_name, &interface);
 
   /* Already warned */
