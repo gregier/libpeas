@@ -336,7 +336,11 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
 static void
 peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 {
-  GtkWidget *hbuttonbox;
+  GtkWidget *toolbar;
+  GtkStyleContext *context;
+  GtkToolItem *toolitem;
+  GtkWidget *box;
+  GtkWidget *box1;
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
                                           PEAS_GTK_TYPE_PLUGIN_MANAGER,
@@ -347,7 +351,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   g_irepository_require (g_irepository_get_default (),
                          "PeasGtk", "1.0", 0, NULL);
 
-  gtk_box_set_spacing (GTK_BOX (pm), 6);
   gtk_orientable_set_orientation (GTK_ORIENTABLE (pm),
                                   GTK_ORIENTATION_VERTICAL);
 
@@ -358,18 +361,36 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                        GTK_SHADOW_IN);
+  context = gtk_widget_get_style_context (pm->priv->sw);
+  gtk_style_context_set_junction_sides (context, GTK_JUNCTION_BOTTOM);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
 
-  hbuttonbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_box_set_spacing (GTK_BOX (hbuttonbox), 6);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
-  gtk_box_pack_start (GTK_BOX (pm), hbuttonbox, FALSE, FALSE, 0);
+  toolbar = gtk_toolbar_new();
+  gtk_toolbar_set_icon_size (GTK_TOOLBAR (toolbar), GTK_ICON_SIZE_MENU);
+  context = gtk_widget_get_style_context (toolbar);
+  gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
+  gtk_style_context_add_class (context, GTK_STYLE_CLASS_INLINE_TOOLBAR);
+  gtk_box_pack_start (GTK_BOX (pm), toolbar, FALSE, FALSE, 0);
 
-  pm->priv->about_button = gtk_button_new_from_stock (GTK_STOCK_ABOUT);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->about_button);
+  toolitem = gtk_tool_item_new ();
+  gtk_tool_item_set_expand (toolitem, TRUE);
 
-  pm->priv->configure_button = gtk_button_new_from_stock (GTK_STOCK_PREFERENCES);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox), pm->priv->configure_button);
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_container_add (GTK_CONTAINER (toolitem), box);
+
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
+
+  box1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_end (GTK_BOX (box), box1, FALSE, FALSE, 0);
+
+  pm->priv->about_button = gtk_button_new_with_mnemonic ("_About");
+  gtk_box_pack_start (GTK_BOX (box1), pm->priv->about_button, FALSE, FALSE, 0);
+
+  box1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_end (GTK_BOX (box), box1, FALSE, FALSE, 0);
+
+  pm->priv->configure_button = gtk_button_new_with_mnemonic ("_Preferences");
+  gtk_box_pack_start (GTK_BOX (box1), pm->priv->configure_button, FALSE, FALSE, 0);
 
   gtk_widget_pop_composite_child ();
 
