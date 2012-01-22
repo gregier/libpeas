@@ -54,19 +54,22 @@ notify_model_cb (GtkTreeView *view,
 
 static void
 plugin_manager_forall_cb (GtkWidget  *widget,
-                          GtkWidget **button_box)
+                          GtkWidget **toolbar)
 {
-  if (GTK_IS_BUTTON_BOX (widget))
-    *button_box = widget;
+  if (GTK_IS_TOOLBAR (widget))
+    *toolbar = widget;
 }
 
 static void
 test_setup (TestFixture   *fixture,
             gconstpointer  data)
 {
-  GList *buttons;
-  GList *button;
-  GtkContainer *button_box = NULL;
+  GList *children;
+  GtkContainer *toolbar = NULL;
+  GtkContainer *tool_item;
+  GtkContainer *toolbar_box;
+  GtkContainer *item_box1;
+  GtkContainer *item_box2;
 
   fixture->engine = testing_engine_new ();
   fixture->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -96,29 +99,56 @@ test_setup (TestFixture   *fixture,
   /* Must use forall as the buttons are "internal" children */
   gtk_container_forall (GTK_CONTAINER (fixture->manager),
                         (GtkCallback) plugin_manager_forall_cb,
-                        &button_box);
+                        &toolbar);
 
-  g_assert (button_box != NULL);
+  g_assert (toolbar != NULL);
 
-  buttons = gtk_container_get_children (button_box);
+  /* The structure for the toolbar is:
+     toolbar
+       toolitem
+         box
+           box
+             button
+           box
+             button
+  */
 
-  for (button = buttons; button != NULL; button = button->next)
-    {
-      if (GTK_IS_BUTTON (button->data))
-        {
-          const gchar *label = gtk_button_get_label (GTK_BUTTON (button->data));
+  children = gtk_container_get_children (toolbar);
+  g_assert (g_list_length (children) == 1);
 
-          if (g_strcmp0 (label, GTK_STOCK_ABOUT) == 0)
-            fixture->about_button = GTK_WIDGET (button->data);
-          else if (g_strcmp0 (label, GTK_STOCK_PREFERENCES) == 0)
-            fixture->configure_button = GTK_WIDGET (button->data);
-        }
-    }
+  tool_item = children->data;
+  g_assert (GTK_IS_TOOL_ITEM (tool_item));
+  g_list_free (children);
 
-  g_assert (fixture->about_button != NULL);
-  g_assert (fixture->configure_button != NULL);
+  children = gtk_container_get_children (tool_item);
+  g_assert (g_list_length (children) == 1);
 
-  g_list_free (buttons);
+  toolbar_box = children->data;
+  g_assert (GTK_IS_BOX (toolbar_box));
+  g_list_free (children);
+
+  children = gtk_container_get_children (toolbar_box);
+  g_assert (g_list_length (children) == 2);
+
+  item_box1 = children->data;
+  item_box2 = children->next->data;
+  g_assert (GTK_IS_BOX (item_box1));
+  g_assert (GTK_IS_BOX (item_box2));
+  g_list_free (children);
+
+  children = gtk_container_get_children (item_box1);
+  g_assert (g_list_length (children) == 1);
+
+  fixture->configure_button = GTK_WIDGET (children->data);
+  g_assert (GTK_IS_BUTTON (fixture->configure_button));
+  g_list_free (children);
+
+  children = gtk_container_get_children (item_box2);
+  g_assert (g_list_length (children) == 1);
+
+  fixture->about_button = GTK_WIDGET (children->data);
+  g_assert (GTK_IS_BUTTON (fixture->about_button));
+  g_list_free (children);
 }
 
 static void
