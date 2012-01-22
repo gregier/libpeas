@@ -339,8 +339,8 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   GtkWidget *toolbar;
   GtkStyleContext *context;
   GtkToolItem *toolitem;
-  GtkWidget *box;
-  GtkWidget *box1;
+  GtkWidget *toolbar_box;
+  GtkWidget *item_box;
 
   pm->priv = G_TYPE_INSTANCE_GET_PRIVATE (pm,
                                           PEAS_GTK_TYPE_PLUGIN_MANAGER,
@@ -375,22 +375,26 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   toolitem = gtk_tool_item_new ();
   gtk_tool_item_set_expand (toolitem, TRUE);
 
-  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_container_add (GTK_CONTAINER (toolitem), box);
-
+  // this box is needed to get the items at the end of the toolbar
+  toolbar_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_container_add (GTK_CONTAINER (toolitem), toolbar_box);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
-  box1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_end (GTK_BOX (box), box1, FALSE, FALSE, 0);
+  // we need another box to disable css grouping
+  item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_end (GTK_BOX (toolbar_box), item_box, FALSE, FALSE, 0);
 
   pm->priv->about_button = gtk_button_new_with_mnemonic ("_About");
-  gtk_box_pack_start (GTK_BOX (box1), pm->priv->about_button, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (item_box), pm->priv->about_button,
+                      FALSE, FALSE, 0);
 
-  box1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_end (GTK_BOX (box), box1, FALSE, FALSE, 0);
+  // we need another box to disable css grouping
+  item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_end (GTK_BOX (toolbar_box), item_box, FALSE, FALSE, 0);
 
   pm->priv->configure_button = gtk_button_new_with_mnemonic ("_Preferences");
-  gtk_box_pack_start (GTK_BOX (box1), pm->priv->configure_button, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (item_box), pm->priv->configure_button,
+                      FALSE, FALSE, 0);
 
   gtk_widget_pop_composite_child ();
 
