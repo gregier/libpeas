@@ -375,12 +375,12 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   toolitem = gtk_tool_item_new ();
   gtk_tool_item_set_expand (toolitem, TRUE);
 
-  // this box is needed to get the items at the end of the toolbar
+  /* this box is needed to get the items at the end of the toolbar */
   toolbar_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_container_add (GTK_CONTAINER (toolitem), toolbar_box);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
-  // we need another box to disable css grouping
+  /* we need another box to disable css grouping */
   item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_end (GTK_BOX (toolbar_box), item_box, FALSE, FALSE, 0);
 
@@ -388,7 +388,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_box_pack_start (GTK_BOX (item_box), pm->priv->about_button,
                       FALSE, FALSE, 0);
 
-  // we need another box to disable css grouping
+  /* we need another box to disable css grouping */
   item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_end (GTK_BOX (toolbar_box), item_box, FALSE, FALSE, 0);
 
