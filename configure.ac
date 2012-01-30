@@ -402,7 +402,7 @@ VALA_REQUIRED=0.14.0.22
 AC_ARG_ENABLE([vala],
 	      AS_HELP_STRING([--enable-vala],[Enable Vala support]),
 	      [enable_vala=$enableval],
-	      [enable_vala=auto])
+	      [enable_vala=no])
 
 if test "$enable_vala" = "no"; then
 	found_vala="no (disabled, use --enable-vala to enable)"
