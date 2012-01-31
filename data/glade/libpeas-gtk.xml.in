@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glade-catalog version="1.0" supports="gtkbuilder" name="libpeas-gtk" library="libpeas-gtk-1.0" domain="libpeas" depends="gtk+" book="libpeas-gtk">
+<glade-catalog version="1.0" supports="gtkbuilder" name="libpeas-gtk" library="peas-gtk-1.0" domain="libpeas" depends="gtk+" book="libpeas">
   <glade-widget-classes>
     <glade-widget-class name="PeasGtkPluginManager" _title="Plugin Manager" generic-name="pluginmanager">
       <properties>
