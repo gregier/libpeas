@@ -248,7 +248,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
       if (direction == GI_DIRECTION_IN &&
           !gjs_value_from_g_argument (gexten->js_context, &js_args[n_in_args++],
                                       &arg_cache[cached_args].type_info,
-                                      &args[i]))
+                                      &args[i], TRUE))
         {
           g_warning ("Error failed to convert argument '%s'",
                      g_base_info_get_name (&arg_cache[cached_args].arg_info));
@@ -263,7 +263,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
                                        args[i].v_pointer, &arg);
 
           if (!gjs_value_from_g_argument (gexten->js_context, &js_args[n_in_args++],
-                                          &arg_cache[cached_args].type_info, &arg))
+                                          &arg_cache[cached_args].type_info, &arg, TRUE))
             {
               g_warning ("Error failed to convert argument '%s'",
                          g_base_info_get_name (&arg_cache[cached_args].arg_info));
