@@ -174,9 +174,9 @@ pk_status_enum_to_progress_message (PkStatusEnum status)
 }
 
 static void
-pk_plugin_info_destroy_notify (PkPluginInfo *info)
+pk_plugin_info_destroy_notify (gpointer info)
 {
-  g_object_unref (info->package);
+  g_object_unref (((PkPluginInfo *) info)->package);
 }
 
 static void
@@ -366,25 +366,21 @@ get_plugins__get_requires_cb (PkTask             *task,
 
       for (i = 0; i < packages->len; ++i)
         {
-          PkPluginInfo *pk_plugin;
           PeasGtkInstallablePluginInfo *plugin;
           PkPackage *package = g_ptr_array_index (packages, i);
 
-          pk_plugin = g_new0 (PkPluginInfo, 1);
-          plugin = (PeasGtkInstallablePluginInfo *) pk_plugin;
-          plugin->refcount = 1;
-          plugin->available = TRUE;
-          plugin->notify = (GDestroyNotify) pk_plugin_info_destroy_notify;
+          plugin = peas_gtk_installable_plugin_info_new (sizeof (PkPluginInfo),
+                                                         pk_plugin_info_destroy_notify);
 
           plugin->module_name = g_strdup (pk_package_get_id (package));
           plugin->name = g_strdup (pk_package_get_name (package));
           plugin->desc = g_strdup (pk_package_get_summary (package));
-          plugin->icon_name = NULL; /* TODO */
+          /* TODO: plugin->icon_name = ...; */
 
           if (pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED)
             plugin->installed = TRUE;
 
-          pk_plugin->package = g_object_ref (package);
+          ((PkPlugin *) plugin)->package = g_object_ref (package);
 
           g_ptr_array_index (data->plugins, i) = plugin;
         }

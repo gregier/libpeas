@@ -43,6 +43,22 @@ peas_gtk_installable_plugin_info_error_quark (void)
 }
 
 PeasGtkInstallablePluginInfo *
+peas_gtk_installable_plugin_info_new (guint          sizeof_info,
+                                      GDestroyNotify destroy_notify)
+{
+  PeasGtkInstallablePluginInfo *info;
+
+  g_return_val_if_fail (sizeof_info >= sizeof (PeasGtkInstallableInfo), NULL);
+
+  info = g_malloc0 (sizeof_info);
+  info->refcount = 1;
+  info->available = TRUE;
+  info->notify = destroy_notify;
+
+  return info;
+}
+
+PeasGtkInstallablePluginInfo *
 peas_gtk_installable_plugin_info_ref (PeasGtkInstallablePluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);

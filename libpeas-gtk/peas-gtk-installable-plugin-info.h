@@ -72,8 +72,12 @@ GType         peas_gtk_installable_plugin_info_get_type         (void) G_GNUC_CO
 GQuark        peas_gtk_installable_plugin_info_error_quark      (void);
 
 PeasGtkInstallablePluginInfo *
-              peas_gtk_installable_plugin_info_ref              (PeasGtkInstallablePluginInfo *info);
-void          peas_gtk_installable_plugin_info_unref            (PeasGtkInstallablePluginInfo *info);
+              peas_gtk_installable_plugin_info_new              (guint                               sizeof_info,
+                                                                 GDestroyNotify                      destroy_notify);
+
+PeasGtkInstallablePluginInfo *
+              peas_gtk_installable_plugin_info_ref              (PeasGtkInstallablePluginInfo       *info);
+void          peas_gtk_installable_plugin_info_unref            (PeasGtkInstallablePluginInfo       *info);
 
 gboolean      peas_gtk_installable_plugin_info_is_available     (const PeasGtkInstallablePluginInfo *info,
                                                                  GError                             **error);
