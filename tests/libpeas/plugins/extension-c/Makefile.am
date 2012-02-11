@@ -20,6 +20,8 @@ libextension_c_la_LIBADD = \
 	$(PEAS_LIBS)						\
 	$(builddir)/../../introspection/libintrospection-1.0.la
 
-noinst_PLUGIN = extension-c.plugin
+noinst_PLUGIN = \
+	extension-c.gschema.xml	\
+	extension-c.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)

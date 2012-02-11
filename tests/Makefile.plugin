@@ -13,7 +13,8 @@ all-local:
 	 done
 
 clean-local:
-	@test -z "$(noinst_PLUGIN)" || \
+	@rm -f gschemas.compiled ; \
+	 test -z "$(noinst_PLUGIN)" || \
 	 test $(srcdir) = $(builddir) || \
 	 for plugin in $(noinst_PLUGIN) ; do \
 	   if test -e $(builddir)/$$plugin ; then \

@@ -1,3 +1,5 @@
+include $(top_srcdir)/tests/Makefile.plugin
+
 noinst_DATA = \
 	extension-gjs.gschema.xml	\
 	extension-gjs.js		\
