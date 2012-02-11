@@ -47,10 +47,16 @@ struct _TestFixture {
   PeasPluginInfo *info;
 };
 
-#define I_(s) (g_ptr_array_add (interned_strings, (s)), (const gchar *) (s))
-
 static GPtrArray *interned_strings = NULL;
 static const gchar *extension_plugin = NULL;
+
+static const gchar *
+I_(gchar *s)
+{
+  g_ptr_array_add (interned_strings, s);
+
+  return s;
+}
 
 static void
 test_setup (TestFixture    *fixture,

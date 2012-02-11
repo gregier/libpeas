@@ -292,13 +292,11 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
         {
           g_array_append_val (interfaces, the_type);
         }
-
-      g_free (property_name);
     }
 
   g_array_sort (interfaces, (GCompareFunc) prerequisites_sort);
 
-  g_free (property_names);
+  g_strfreev (property_names);
 
   return peas_extension_seed_new (exten_type,
                                   (GType *) g_array_free (interfaces, FALSE),

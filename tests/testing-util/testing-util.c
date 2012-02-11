@@ -129,6 +129,8 @@ testing_util_init (void)
 
   g_log_set_default_handler (log_handler, NULL);
 
+  g_setenv ("GSETTINGS_BACKEND", "memory", TRUE);
+
   g_irepository_prepend_search_path (BUILDDIR "/libpeas");
 
   g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);

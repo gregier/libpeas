@@ -159,6 +159,34 @@
 
 
 {
+  g_module_open
+  Memcheck:Cond
+  ...
+  fun:g_module_open
+}
+{
+  _dl_relocate_object
+  Memcheck:Cond
+  ...
+  fun:_dl_relocate_object
+}
+{
+  _dl_start
+  Memcheck:Cond
+  ...
+  fun:_dl_start
+}
+
+
+{
+  g_vfs_get_default
+  Memcheck:Leak
+  ...
+  fun:g_vfs_get_default
+}
+
+
+{
   gtk_init_check
   Memcheck:Leak
   ...
