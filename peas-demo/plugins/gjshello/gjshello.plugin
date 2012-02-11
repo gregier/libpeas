@@ -1,7 +1,6 @@
 [Plugin]
 Module=gjshello
 Loader=gjs
-IAge=2
 Name=GJS Also Says Hello
 Description=Inserts a box containing "GJS Also Says Hello" in every windows.
 Authors=Steve Frécinaux <code@istique.net>

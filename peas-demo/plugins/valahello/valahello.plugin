@@ -1,6 +1,5 @@
 [Plugin]
 Module=valahello
-IAge=2
 Name=Vala also says Hello
 Description=Inserts a box containing "Hello World" in every window.
 Authors=Abderrahim Kitouni <a.kitouni@gmail.com>

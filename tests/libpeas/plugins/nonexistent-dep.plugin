@@ -1,7 +1,6 @@
 [Plugin]
 Module=nonexistent-dep
 Depends=does-not-exist
-IAge=2
 Name=Nonexistent Dependency
 Description=This plugin has a nonexistent dependency.
 Authors=Garrett Regier

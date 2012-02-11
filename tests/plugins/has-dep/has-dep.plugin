@@ -1,7 +1,6 @@
 [Plugin]
 Module=has-dep
 Depends=loadable
-IAge=2
 Name=Has Dep
 Description=This plugin can be loaded and has a dep.
 Authors=Garrett Regier

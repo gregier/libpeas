@@ -1,6 +1,5 @@
 [Plugin]
 Module=helloworld
-IAge=2
 Name=Hello World
 Description=Inserts a box containing "Hello World" in every windows.
 Authors=Steve Frécinaux <code@istique.net>

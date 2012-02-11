@@ -1,6 +1,5 @@
 [Plugin]
 Module=extension-c-nonexistent
-IAge=2
 Name=Extension C Nonexistent
 Description=This plugin is nonexistent.
 Authors=Garrett Regier

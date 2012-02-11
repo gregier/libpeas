@@ -1,6 +1,5 @@
 [Plugin]
 Module=hidden
-IAge=2
 Name=Hidden
 Description=A plugin that is hidden.
 Authors=Garrett Regier
