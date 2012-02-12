@@ -11,16 +11,16 @@ noinst_DATA = \
 extension-js.%:
 	test -e $@
 
-%.gschema.xml: extension-js.gschema.xml
+extension-gjs.gschema.xml extension-seed.gschema.xml: extension-js.gschema.xml
 	$(AM_V_GEN) cp $< $@ && \
-	$(SED) -i -e 's/JS_LOADER/$(@:extension-%.gschema.xml=%)/g' $@
+	$(SED) -i -e 's%JS_LOADER%$(@:extension-%.gschema.xml=%)%g' $@
 
-%.js: extension-js.js
+extension-gjs.js extension-seed.js: extension-js.js
 	$(AM_V_GEN) $(LN_S) $< $@
 
-%.plugin: extension-js.plugin
+extension-gjs.plugin extension-seed.plugin: extension-js.plugin
 	$(AM_V_GEN) cp $< $@ && \
-	$(SED) -i -e 's/JS_LOADER/$(@:extension-%.plugin=%)/g' $@
+	$(SED) -i -e 's%JS_LOADER%$(@:extension-%.plugin=%)%g' $@
 
 EXTRA_DIST = \
 	extension-js.gschema.xml	\
