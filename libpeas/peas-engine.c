@@ -325,6 +325,17 @@ loader_destroy (LoaderInfo *info)
 static void
 peas_engine_init (PeasEngine *engine)
 {
+  /* Set the default engine here and not in constructor() to make sure
+   * that if a plugin is loaded and calls peas_engine_get_default()
+   * that this engine is returned and not another.
+   */
+  if (default_engine == NULL)
+    {
+      default_engine = engine;
+      g_object_add_weak_pointer (G_OBJECT (engine),
+                                 (gpointer *) &default_engine);
+    }
+
   engine->priv = G_TYPE_INSTANCE_GET_PRIVATE (engine,
                                               PEAS_TYPE_ENGINE,
                                               PeasEnginePrivate);
@@ -364,8 +375,6 @@ peas_engine_constructor (GType                  type,
                          guint                  n_construct_params,
                          GObjectConstructParam *construct_params)
 {
-  GObject *object;
-
   /* We don't support calling PeasEngine API without module support */
   if (!g_module_supported ())
     {
@@ -379,17 +388,9 @@ peas_engine_constructor (GType                  type,
                "as it has been shutdown.");
     }
 
-  object = G_OBJECT_CLASS (peas_engine_parent_class)->constructor (type,
-                                                                   n_construct_params,
-                                                                   construct_params);
-
-  if (default_engine == NULL)
-    {
-      default_engine = PEAS_ENGINE (object);
-      g_object_add_weak_pointer (object, (gpointer *) &default_engine);
-    }
-
-  return object;
+  return G_OBJECT_CLASS (peas_engine_parent_class)->constructor (type,
+                                                                 n_construct_params,
+                                                                 construct_params);
 }
 
 static void

@@ -93,9 +93,28 @@ test_engine_dispose (PeasEngine *engine)
 static void
 test_engine_get_default (void)
 {
+  GType the_type;
+  PeasEngine *test_engine;
+
   g_assert (peas_engine_get_default () == peas_engine_get_default ());
 
   g_object_unref (peas_engine_get_default ());
+
+
+  /* Check that the default engine is the newly created engine
+   * even when peas_engine_get_default() is called during init().
+   */
+  the_type = g_type_register_static_simple (PEAS_TYPE_ENGINE,
+                                            "TestEngineGetDefault",
+                                            sizeof (PeasEngineClass), NULL,
+                                            sizeof (PeasEngine),
+                                            (GInstanceInitFunc) peas_engine_get_default,
+                                            0);
+  test_engine = PEAS_ENGINE (g_object_new (the_type, NULL));
+
+  g_assert (peas_engine_get_default () == test_engine);
+
+  g_object_unref (test_engine);
 }
 
 static void
