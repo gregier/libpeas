@@ -10,8 +10,6 @@ INCLUDES = \
 noinst_LTLIBRARIES = libextension-c.la
 
 libextension_c_la_SOURCES = \
-	callable-plugin.c	\
-	callable-plugin.h	\
 	extension-c-plugin.c	\
 	extension-c-plugin.h
 
