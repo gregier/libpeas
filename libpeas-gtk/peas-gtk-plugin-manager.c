@@ -384,7 +384,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_end (GTK_BOX (toolbar_box), item_box, FALSE, FALSE, 0);
 
-  pm->priv->about_button = gtk_button_new_with_mnemonic ("_About");
+  pm->priv->about_button = gtk_button_new_with_mnemonic (_("_About"));
   gtk_box_pack_start (GTK_BOX (item_box), pm->priv->about_button,
                       FALSE, FALSE, 0);
 
@@ -392,7 +392,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_end (GTK_BOX (toolbar_box), item_box, FALSE, FALSE, 0);
 
-  pm->priv->configure_button = gtk_button_new_with_mnemonic ("_Preferences");
+  pm->priv->configure_button = gtk_button_new_with_mnemonic (_("_Preferences"));
   gtk_box_pack_start (GTK_BOX (item_box), pm->priv->configure_button,
                       FALSE, FALSE, 0);
 
