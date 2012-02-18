@@ -7,22 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-29 18:53+0200\n"
-"PO-Revision-Date: 2011-03-22 08:18+0100\n"
+"POT-Creation-Date: 2012-02-18 14:08+0100\n"
+"PO-Revision-Date: 2012-02-18 14:07+0100\n"
 "Last-Translator: Joan Duran <jodufi@gmail.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
-"Language: ca\n"
+"Language: ca-XV\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bits\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
-msgid "Peas Gtk"
-msgstr "Peas GTK+"
-
-#: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "Plugin Manager"
 msgstr "Gestor de connectors"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "Visualitza"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "Plugin Manager View"
@@ -34,47 +35,47 @@ msgid "Show Builtin"
 msgstr "Mostra els connectors integrats"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:6
-msgid "View"
-msgstr "Visualitza"
+msgid "Peas Gtk"
+msgstr "Peas GTK+"
 
-#: ../libpeas/peas-engine.c:785
+#: ../libpeas/peas-engine.c:789
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "No s'ha trobat la dependència «%s»"
 
-#: ../libpeas/peas-engine.c:795
+#: ../libpeas/peas-engine.c:799
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "No s'ha pogut carregar la dependència «%s»"
 
-#: ../libpeas/peas-engine.c:810
+#: ../libpeas/peas-engine.c:814
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "No s'ha trobat el carregador de connectors «%s»"
 
-#: ../libpeas/peas-engine.c:822
+#: ../libpeas/peas-engine.c:826
 #, c-format
 msgid "Failed to load"
 msgstr "No s'ha pogut carregar"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
 msgid "Additional plugins must be disabled"
 msgstr "S'han d'inhabilitar connectors addicionals"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Els connectors següents depenen de «%s» i també s'han d'inhabilitar:"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
 msgstr "Connectors"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
 msgid "An additional plugin must be disabled"
 msgstr "S'ha d'inhabilitar un connector addicional"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
@@ -83,47 +84,43 @@ msgstr ""
 "El connector «%s» depèn del connector «%s».\n"
 "Si inhabiliteu «%s» també s'inhabilitarà «%s»."
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:180
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "Inhabilita connectors"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:179
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
 msgid "There was an error displaying the help."
 msgstr "S'ha produït un error en mostrar l'ajuda."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
-msgid "C_onfigure"
-msgstr "C_onfigura"
-
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:331
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_About"
 msgstr "_Quant a"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:357
-msgid "_Plugins:"
-msgstr "_Connectors:"
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "_Preferències"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:331
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
 msgid "_Enabled"
 msgstr "_Habilitat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:342
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
 msgid "E_nable All"
 msgstr "H_abilita'ls tots"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:346
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
 msgid "_Disable All"
 msgstr "_Inhabilita'ls tots"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:505
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
 msgid "Enabled"
 msgstr "Habilitat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
 msgid "Plugin"
 msgstr "Connector"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:611
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -136,6 +133,12 @@ msgstr ""
 msgid "Run from build directory"
 msgstr "Executa des del directori de muntatge"
 
-#: ../peas-demo/peas-demo.c:99
+#: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
 msgstr "- aplicació de demostració de la libpeas"
+
+#~ msgid "C_onfigure"
+#~ msgstr "C_onfigura"
+
+#~ msgid "_Plugins:"
+#~ msgstr "_Connectors:"
