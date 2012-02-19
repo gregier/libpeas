@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-28 17:05+0100\n"
-"PO-Revision-Date: 2012-01-28 17:05+0100\n"
+"POT-Creation-Date: 2012-02-19 23:38+0100\n"
+"PO-Revision-Date: 2012-02-19 23:38+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: nb\n"
@@ -37,22 +37,22 @@ msgstr "Vis innebyggede"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:786
+#: ../libpeas/peas-engine.c:789
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Avhengighet «%s» ble ikke funnet"
 
-#: ../libpeas/peas-engine.c:796
+#: ../libpeas/peas-engine.c:799
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Avhengighet «%s» feilet ved lasting"
 
-#: ../libpeas/peas-engine.c:811
+#: ../libpeas/peas-engine.c:814
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Tilleggslaster «%s» ble ikke funnet"
 
-#: ../libpeas/peas-engine.c:823
+#: ../libpeas/peas-engine.c:826
 #, c-format
 msgid "Failed to load"
 msgstr "Feilet ved lasting"
@@ -90,6 +90,14 @@ msgstr "Slå av tillegg"
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
 msgid "There was an error displaying the help."
 msgstr "Det oppsto en feil under visning av hjelp."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_About"
+msgstr "_Om"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "_Brukervalg"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
 msgid "_Enabled"
