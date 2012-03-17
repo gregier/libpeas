@@ -416,7 +416,7 @@ gboolean
 peas_gtk_plugin_manager_store_get_enabled (PeasGtkPluginManagerStore *store,
                                            GtkTreeIter               *iter)
 {
-  GValue value = { 0 };
+  GValue value = G_VALUE_INIT;
   gboolean enabled;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store), FALSE);
@@ -498,7 +498,7 @@ gboolean
 peas_gtk_plugin_manager_store_can_enable (PeasGtkPluginManagerStore *store,
                                           GtkTreeIter               *iter)
 {
-  GValue value = { 0 };
+  GValue value = G_VALUE_INIT;
   gboolean can_enable;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store), FALSE);
@@ -528,7 +528,7 @@ PeasPluginInfo *
 peas_gtk_plugin_manager_store_get_plugin (PeasGtkPluginManagerStore *store,
                                           GtkTreeIter               *iter)
 {
-  GValue value = { 0 };
+  GValue value = G_VALUE_INIT;
   PeasPluginInfo *info;
 
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store), NULL);

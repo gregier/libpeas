@@ -84,7 +84,7 @@ dnl ================================================================
 
 PKG_PROG_PKG_CONFIG
 
-GLIB_REQUIRED=2.28.0
+GLIB_REQUIRED=2.30.0
 GIO_REQUIRED=2.31.2
 INTROSPECTION_REQUIRED=0.10.1
 
