@@ -2,27 +2,29 @@
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
 # Aron Xu <happyaron.xu@gmail.com>, 2010.
+# YunQiang Su <wzssyqa@gmail.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-03-19 19:14+0000\n"
-"PO-Revision-Date: 2011-03-20 10:24+0800\n"
-"Last-Translator: Xhacker Liu <liu.dongyuan@gmail.com>\n"
-"Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
+"POT-Creation-Date: 2012-02-17 07:46+0000\n"
+"PO-Revision-Date: 2012-03-21 01:02+0800\n"
+"Last-Translator: YunQiang Su <wzssyqa@gmail.com>\n"
+"Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bits\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
-msgid "Peas Gtk"
-msgstr "Peas Gtk"
-
-#: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "Plugin Manager"
 msgstr "插件管理器"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "查看"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "Plugin Manager View"
@@ -34,47 +36,47 @@ msgid "Show Builtin"
 msgstr "显示内置插件"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:6
-msgid "View"
-msgstr "查看"
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:785
+#: ../libpeas/peas-engine.c:789
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "找不到依赖“%s”"
 
-#: ../libpeas/peas-engine.c:795
+#: ../libpeas/peas-engine.c:799
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "加载依赖“%s”失败"
 
-#: ../libpeas/peas-engine.c:810
+#: ../libpeas/peas-engine.c:814
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "找不到插件加载器“%s”"
 
-#: ../libpeas/peas-engine.c:821
+#: ../libpeas/peas-engine.c:826
 #, c-format
 msgid "Failed to load"
 msgstr "加载失败"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
 msgid "Additional plugins must be disabled"
 msgstr "必须禁用额外的插件"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "以下依赖于“%s”的插件也将禁用："
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
 msgstr "插件"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
 msgid "An additional plugin must be disabled"
 msgstr "必须禁用另一插件"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
@@ -83,47 +85,43 @@ msgstr ""
 "“%s”插件依赖于“%s”插件。\n"
 "如果您禁用“%s”，“%s”也将禁用。"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "禁用插件"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:198
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
 msgid "There was an error displaying the help."
 msgstr "显示帮助时有错误。"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:346
-msgid "C_onfigure"
-msgstr "配置(_O)"
-
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:354
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_About"
 msgstr "关于(_A)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:380
-msgid "_Plugins:"
-msgstr "插件(_P)："
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "首选项(_P)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:331
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
 msgid "_Enabled"
 msgstr "已启用(_E)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:342
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
 msgid "E_nable All"
 msgstr "全部启用(_N)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:346
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
 msgid "_Disable All"
 msgstr "全部禁用(_D)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:511
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
 msgid "Enabled"
 msgstr "已启用"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:532
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
 msgid "Plugin"
 msgstr "插件"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:617
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -136,9 +134,15 @@ msgstr ""
 msgid "Run from build directory"
 msgstr "从构建目录运行"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
 msgstr "- libpeas 示例程序"
+
+#~ msgid "C_onfigure"
+#~ msgstr "配置(_O)"
+
+#~ msgid "_Plugins:"
+#~ msgstr "插件(_P)："
 
 #~ msgid "A_ctivate"
 #~ msgstr "激活(_C)"
