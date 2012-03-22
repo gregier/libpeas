@@ -64,6 +64,7 @@ handle_method_impl (ffi_cif  *cif,
   PeasExtensionWrapper *instance;
   GIArgument *arguments;
   GIArgument return_value;
+  gboolean success;
 
   instance = *((PeasExtensionWrapper **) args[0]);
   g_assert (PEAS_IS_EXTENSION_WRAPPER (instance));
@@ -83,9 +84,12 @@ handle_method_impl (ffi_cif  *cif,
         arguments[i].v_pointer = *((gpointer **) args[i + 1]);
     }
 
-  peas_extension_wrapper_callv (instance, impl->interface_type,
-                                impl->invoker_info, impl->method_name,
-                                arguments, &return_value);
+  success = peas_extension_wrapper_callv (instance, impl->interface_type,
+                                          impl->invoker_info, impl->method_name,
+                                          arguments, &return_value);
+
+  if (!success)
+    memset (&return_value, 0, sizeof (GIArgument));
 
   g_callable_info_load_return_type (impl->invoker_info, &return_type_info);
   if (g_type_info_get_tag (&return_type_info) != GI_TYPE_TAG_VOID)
