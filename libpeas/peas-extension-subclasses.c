@@ -278,6 +278,7 @@ extension_subclass_init (GObjectClass *klass,
                          GType        *exten_types)
 {
   guint i;
+  guint property_id = 1;
 
   g_debug ("Initializing class '%s'", G_OBJECT_CLASS_NAME (klass));
 
@@ -293,20 +294,17 @@ extension_subclass_init (GObjectClass *klass,
       iface_vtable = g_type_default_interface_peek (exten_types[i]);
       properties = g_object_interface_list_properties (iface_vtable, &n_props);
 
-      if (n_props > 0)
+      for (j = 0; j < n_props; ++j, ++property_id)
         {
-          for (j = 0; j < n_props; ++j)
-            {
-              const gchar *property_name;
+          const gchar *property_name;
 
-              property_name = g_param_spec_get_name (properties[j]);
+          property_name = g_param_spec_get_name (properties[j]);
 
-              g_object_class_override_property (klass, j + 1, property_name);
+          g_object_class_override_property (klass, property_id, property_name);
 
-              g_debug ("Overrided '%s:%s' for '%s' proxy",
-                       g_type_name (exten_types[i]), property_name,
-                       G_OBJECT_CLASS_NAME (klass));
-            }
+          g_debug ("Overrided '%s:%s' for '%s' proxy",
+                   g_type_name (exten_types[i]), property_name,
+                   G_OBJECT_CLASS_NAME (klass));
         }
 
       g_free (properties);
