@@ -41,30 +41,17 @@ typedef struct {
 static SeedEngine *seed = NULL;
 
 static gchar *
-get_script_for_plugin_info (PeasPluginInfo *info)
+get_script_filename_for_plugin_info (PeasPluginInfo *info)
 {
   gchar *basename;
   gchar *filename;
-  gchar *script = NULL;
-  GError *error = NULL;
 
   basename = g_strconcat (peas_plugin_info_get_module_name (info), ".js", NULL);
   filename = g_build_filename (peas_plugin_info_get_module_dir (info), basename, NULL);
 
-  g_debug ("Seed script filename is '%s'", filename);
-
-  g_file_get_contents (filename, &script, NULL, &error);
-
   g_free (basename);
-  g_free (filename);
 
-  if (error != NULL)
-    {
-      g_warning ("Error: %s", error->message);
-      g_error_free (error);
-    }
-
-  return script;
+  return filename;
 }
 
 static gboolean
@@ -72,23 +59,38 @@ peas_plugin_loader_seed_load (PeasPluginLoader *loader,
                               PeasPluginInfo   *info)
 {
   PeasPluginLoaderSeed *sloader = PEAS_PLUGIN_LOADER_SEED (loader);
+  gchar *filename;
+  gchar *content;
+  GError *error = NULL;
   SeedContext context;
-  gchar *script;
+  SeedScript *script;
   SeedException exc = NULL;
   SeedObject global, extensions;
   SeedInfo *sinfo;
 
-  script = get_script_for_plugin_info (info);
+  filename = get_script_filename_for_plugin_info (info);
 
-  if (script == NULL)
-    return FALSE;
+  g_debug ("Seed script filename is '%s'", filename);
+
+  if (!g_file_get_contents (filename, &content, NULL, &error))
+    {
+      g_warning ("Error: %s", error->message);
+      g_error_free (error);
+      g_free (filename);
+      return FALSE;
+    }
 
   context = seed_context_create (seed->group, NULL);
-
   seed_prepare_global_context (context);
-  seed_simple_evaluate (context, script, &exc);
 
-  g_free (script);
+  script = seed_make_script (context, content, filename, 0);
+
+  seed_evaluate (context, script, NULL);
+  exc = seed_script_exception (script);
+
+  seed_script_destroy (script);
+  g_free (content);
+  g_free (filename);
 
   if (exc)
     {
