@@ -364,6 +364,16 @@ test_extension_call_multi_args (PeasEngine     *engine,
   inout = g_random_int ();
   inout_saved = inout;
 
+  g_assert (peas_extension_call (extension, "call_multi_args",
+                                 in, &out, &inout));
+
+  g_assert_cmpint (inout_saved, ==, out);
+  g_assert_cmpint (in, ==, inout);
+
+  in = g_random_int ();
+  inout = g_random_int ();
+  inout_saved = inout;
+
   introspection_callable_call_multi_args (callable, in, &out, &inout);
 
   g_assert_cmpint (inout_saved, ==, out);
