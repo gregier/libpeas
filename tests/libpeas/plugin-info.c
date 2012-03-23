@@ -90,6 +90,9 @@ test_plugin_info_verify_full_info (PeasEngine *engine)
   authors = peas_plugin_info_get_authors (info);
   g_assert (authors != NULL && authors[1] == NULL);
   g_assert_cmpstr (authors[0], ==, "Garrett Regier");
+
+  g_assert_cmpstr (peas_plugin_info_get_external_data (info, "External"), ==, "external data");
+  g_assert_cmpstr (peas_plugin_info_get_external_data (info, "X-External"), ==, "external data");
 }
 
 static void

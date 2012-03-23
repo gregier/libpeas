@@ -95,6 +95,9 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   if (info->error != NULL)
     g_error_free (info->error);
 
+  if (info->external_data != NULL)
+    g_hash_table_unref (info->external_data);
+
   g_free (info);
 }
 
@@ -132,6 +135,8 @@ _peas_plugin_info_new (const gchar *filename,
   gchar **strv;
   gboolean b;
   GError *error = NULL;
+  gchar **keys;
+  gsize i;
 
   g_return_val_if_fail (filename != NULL, NULL);
 
@@ -251,6 +256,26 @@ _peas_plugin_info_new (const gchar *filename,
     g_clear_error (&error);
   else
     info->hidden = b;
+
+  keys = g_key_file_get_keys (plugin_file, "Plugin", NULL, NULL);
+
+  for (i = 0; keys[i] != NULL; ++i)
+    {
+      if (!g_str_has_prefix (keys[i], "X-"))
+        continue;
+
+      if (info->external_data == NULL)
+        info->external_data = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                     (GDestroyNotify) g_free,
+                                                     (GDestroyNotify) g_free);
+
+      g_hash_table_insert (info->external_data,
+                           g_strdup (keys[i] + 2),
+                           g_key_file_get_string (plugin_file, "Plugin",
+                                                  keys[i], NULL));
+    }
+
+  g_strfreev (keys);
 
   g_key_file_free (plugin_file);
 
@@ -711,4 +736,36 @@ peas_plugin_info_get_help_uri (const PeasPluginInfo *info)
   g_return_val_if_fail (info != NULL, NULL);
 
   return info->help_uri;
+}
+
+/**
+ * peas_plugin_info_get_external_data:
+ * @info: A #PeasPluginInfo.
+ * @key: The key to lookup.
+ *
+ * Gets external data specified for the plugin.
+ *
+ * External data is specified in the plugin info file prefixed with X-. For
+ * example, if a key/value pair X-Peas=1 is specified in the key file, you
+ * can use "Peas" for @key to retrieve the value "1".
+ *
+ * Note: that you can omit the X- prefix when retrieving the value,
+ * but not when specifying the value in the file.
+ *
+ * Returns: the external data, or %NULL if the external data could not be found.
+ */
+const gchar *
+peas_plugin_info_get_external_data (const PeasPluginInfo *info,
+                                    const gchar          *key)
+{
+  g_return_val_if_fail (info != NULL, NULL);
+  g_return_val_if_fail (key != NULL, NULL);
+
+  if (info->external_data == NULL)
+    return NULL;
+
+  if (g_str_has_prefix (key, "X-"))
+    key += 2;
+
+  return g_hash_table_lookup (info->external_data, key);
 }

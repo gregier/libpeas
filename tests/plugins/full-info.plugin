@@ -10,3 +10,4 @@ Website=http://live.gnome.org/Libpeas
 Icon=gtk-ok
 Version=1.0
 Help=http://git.gnome.org/browse/libpeas
+X-External=external data
