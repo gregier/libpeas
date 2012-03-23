@@ -204,7 +204,7 @@ implement_interface_methods (gpointer iface,
 
           g_base_info_unref (vfunc_info);
         }
-      
+
       g_type_set_qdata (exten_type, method_impl_quark (), impls);
       g_base_info_unref (iface_info);
     }

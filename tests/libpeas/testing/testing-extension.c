@@ -476,7 +476,7 @@ testing_extension_basic (const gchar *loader)
 
   engine = testing_engine_new ();
   peas_engine_enable_loader (engine, loader);
-  
+
   /* Check that the loaders are created lazily */
   g_assert (g_type_from_name ("PeasPluginLoader") == G_TYPE_INVALID);
 
