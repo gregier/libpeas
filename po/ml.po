@@ -1,0 +1,137 @@
+# Malayalam translation for libpeas.
+# Copyright (C) 2012 libpeas's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libpeas package.
+# Manilal K M <libregeek@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-03-21 02:17+0000\n"
+"PO-Revision-Date: 2012-03-21 02:17+0000\n"
+"Last-Translator: Manilal K M <libregeek@gmail.com>\n"
+"Language-Team: Malayalam <discuss@lists.smc.org.in>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "സംയോജക പാലകന്‍"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "ദൃശ്യം"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "സംയോജക പാലകന്റെ കാഴ്ചപ്പാടു്"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr "നേരത്തെയുള്ളതു കാണിക്കുക"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Peas Gtk"
+msgstr "പീസ് ജിടികെ"
+
+#: ../libpeas/peas-engine.c:789
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "'%s' എന്ന ആശ്രയത്വം കാണുന്നില്ല"
+
+#: ../libpeas/peas-engine.c:799
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "'%s' എന്ന ആശ്രയത്വം എടുക്കുന്നതു പരാജയപ്പെട്ടു"
+
+#: ../libpeas/peas-engine.c:814
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "'%s' എന്ന സംയോജക ലോഡറിനെ കാണുന്നില്ല"
+
+#: ../libpeas/peas-engine.c:826
+#, c-format
+msgid "Failed to load"
+msgstr "എടുക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr "അധികമുള്ള സംയോജകങ്ങള്‍ നിര്‍വീര്യമാക്കണം"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "ഇനി പറയുന്ന സംയോജകങ്ങള്‍ '%s' നെ ആശ്രയിക്കുന്നതിനാല്‍ അവയും നിര്‍വീര്യമാക്കപ്പെടും"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "സംയോജകങ്ങള്‍"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr "അധികമുള്ള ഒരു സംയോജകം നിര്‍വീര്യമാക്കണം"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"'%s' എന്ന സംയോജകം '%s' എന്ന സംയോജകത്തിനെ ആശ്രയിച്ചിരിക്കുന്നു.\n"
+"താങ്കള്‍ '%s' നിര്‍വീര്യമാക്കിയാല്‍ '%s' നിര്‍വീര്യമാക്കപ്പെടും"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "സംയോജകങ്ങള്‍ നിര്‍വീര്യമാക്കൂ"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+msgid "There was an error displaying the help."
+msgstr "സഹായം കാണിക്കുന്നതില്‍ ഒരു പിശകു്"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_About"
+msgstr "_കുറിച്ച്"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "_മുന്‍ഗണനകള്‍"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "_പ്രവര്‍ത്തന സജ്ജം"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "_എല്ലാം പ്രവര്‍ത്തന സജ്ജമാക്കുക"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "എല്ലാം _നിര്‍വീര്യമാക്കുക"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+msgid "Enabled"
+msgstr "പ്രവര്‍ത്തന സജ്ജം"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+msgid "Plugin"
+msgstr "സംയോജകം"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>'%s' എന്ന സംയോജകം എടുത്തുവയ്ക്കുവാന്‍ സാധിച്ചില്ല</b>\n"
+"ഒരു പിശകുണ്ടായി: %s"
+
+#: ../peas-demo/peas-demo.c:40
+msgid "Run from build directory"
+msgstr "ബില്‍ഡ് ചെയ്യുന്ന അറയില്‍ നിന്നും ഓടിക്കുക"
+
+#: ../peas-demo/peas-demo.c:100
+msgid "- libpeas demo application"
+msgstr "- ലിബ്പീസ് മാതൃക പ്രയോഗം"
