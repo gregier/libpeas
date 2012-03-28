@@ -858,6 +858,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
  * actually occurs in the default signal handler.
  *
  * Returns: whether the plugin has been successfully loaded.
+ * Virtual: load_plugin
  */
 gboolean
 peas_engine_load_plugin (PeasEngine     *engine,
@@ -929,6 +930,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
  * actually occurs in the default signal handler.
  *
  * Returns: whether the plugin has been successfully unloaded.
+ * Virtual: unload_plugin
  */
 gboolean
 peas_engine_unload_plugin (PeasEngine     *engine,
