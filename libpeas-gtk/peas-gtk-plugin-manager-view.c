@@ -961,7 +961,11 @@ peas_gtk_plugin_manager_view_get_selected_plugin (PeasGtkPluginManagerView *view
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
 
-  if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+  /* Since gtk+ 3.4 gtk_tree_view_get_selection() can in practice return NULL
+   * here because 'cursor-changed' is emitted during 'destroy' (it wasn't
+   * the case previously and is not properly documented as of today).
+   */
+  if (selection != NULL && gtk_tree_selection_get_selected (selection, NULL, &iter))
     {
       convert_iter_to_child_iter (view, &iter);
       info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
