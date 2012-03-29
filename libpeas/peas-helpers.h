@@ -24,12 +24,7 @@
 
 #include <glib-object.h>
 
-gpointer  _g_type_struct_ref        (GType         the_type);
-void      _g_type_struct_unref      (GType         the_type,
-                                     gpointer      type_struct);
-
-gboolean  _valist_to_parameter_list (GType         the_type,
-                                     gpointer      type_struct,
+gboolean  _valist_to_parameter_list (GType         iface_type,
                                      const gchar  *first_property_name,
                                      va_list       var_args,
                                      GParameter  **params,

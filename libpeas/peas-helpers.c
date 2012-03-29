@@ -29,54 +29,20 @@
 
 #include "peas-helpers.h"
 
-gpointer
-_g_type_struct_ref (GType the_type)
-{
-  if (G_TYPE_IS_INTERFACE (the_type))
-    return g_type_default_interface_ref (the_type);
-  else if (G_TYPE_IS_OBJECT (the_type))
-    return g_type_class_ref (the_type);
-  else
-    g_return_val_if_reached (NULL);
-}
-
-void
-_g_type_struct_unref (GType    the_type,
-                      gpointer type_struct)
-{
-  if (G_TYPE_IS_INTERFACE (the_type))
-    g_type_default_interface_unref (type_struct);
-  else if (G_TYPE_IS_OBJECT (the_type))
-    g_type_class_unref (type_struct);
-  else
-    g_return_if_reached ();
-}
-
-static GParamSpec *
-_g_type_struct_find_property (GType        the_type,
-                              gpointer     type_struct,
-                              const gchar *property_name)
-{
-  if (G_TYPE_IS_INTERFACE (the_type))
-    return g_object_interface_find_property (type_struct, property_name);
-  else if (G_TYPE_IS_OBJECT (the_type))
-    return g_object_class_find_property (type_struct, property_name);
-  else
-    g_return_val_if_reached (NULL);
-}
-
 gboolean
-_valist_to_parameter_list (GType         the_type,
-                           gpointer      type_struct,
+_valist_to_parameter_list (GType         iface_type,
                            const gchar  *first_property_name,
                            va_list       args,
                            GParameter  **params,
                            guint        *n_params)
 {
+  gpointer type_struct;
   const gchar *name;
   guint n_allocated_params;
 
-  g_return_val_if_fail (type_struct != NULL, FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (iface_type), FALSE);
+
+  type_struct = g_type_default_interface_ref (iface_type);
 
   *n_params = 0;
   n_allocated_params = 16;
@@ -86,12 +52,12 @@ _valist_to_parameter_list (GType         the_type,
   while (name)
     {
       gchar *error_msg = NULL;
-      GParamSpec *pspec = _g_type_struct_find_property (the_type, type_struct, name);
+      GParamSpec *pspec = g_object_interface_find_property (type_struct, name);
 
       if (!pspec)
         {
           g_warning ("%s: type '%s' has no property named '%s'",
-                     G_STRFUNC, g_type_name (the_type), name);
+                     G_STRFUNC, g_type_name (iface_type), name);
           goto error;
         }
 
@@ -119,6 +85,8 @@ _valist_to_parameter_list (GType         the_type,
       name = va_arg (args, gchar*);
     }
 
+  g_type_default_interface_unref (type_struct);
+
   return TRUE;
 
 error:
@@ -127,6 +95,7 @@ error:
     g_value_unset (&(*params)[*n_params].value);
 
   g_free (*params);
+  g_type_default_interface_unref (type_struct);
 
   return FALSE;
 }

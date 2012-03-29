@@ -1080,7 +1080,6 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
                                      const gchar    *first_property,
                                      va_list         var_args)
 {
-  gpointer type_struct;
   guint n_parameters;
   GParameter *parameters;
   PeasExtension *exten;
@@ -1090,13 +1089,10 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
-  type_struct = _g_type_struct_ref (extension_type);
-
-  if (!_valist_to_parameter_list (extension_type, type_struct, first_property,
+  if (!_valist_to_parameter_list (extension_type, first_property,
                                   var_args, &parameters, &n_parameters))
     {
       /* Already warned */
-      _g_type_struct_unref (extension_type, type_struct);
       return NULL;
     }
 
@@ -1106,8 +1102,6 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   while (n_parameters-- > 0)
     g_value_unset (&parameters[n_parameters].value);
   g_free (parameters);
-
-  _g_type_struct_unref (extension_type, type_struct);
 
   return exten;
 }
