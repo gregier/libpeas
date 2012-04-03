@@ -409,9 +409,11 @@ get_plugins__search_files_cb (PkTask             *task,
   gint i;
   PkBitfield filters = 0;
   const PkFilterEnum wanted_filters[] = {
-    PK_FILTER_ENUM_NOT_APPLICATION, PK_FILTER_ENUM_GUI,
+    PK_FILTER_ENUM_NOT_APPLICATION,
+    /*PK_FILTER_ENUM_GUI, ? */
     PK_FILTER_ENUM_VISIBLE,
-    PK_FILTER_ENUM_NOT_DEVELOPMENT, PK_FILTER_ENUM_NOT_SOURCE,
+    PK_FILTER_ENUM_NOT_DEVELOPMENT,
+    PK_FILTER_ENUM_NOT_SOURCE,
     PK_FILTER_ENUM_NOT_COLLECTIONS
   };
 
@@ -445,8 +447,8 @@ get_plugins__search_files_cb (PkTask             *task,
     }
 
   if (filters == 0)
-    filters = PK_FILTER_ENUM_NONE;
-
+    filters = pk_bitfield_value (PK_FILTER_ENUM_NONE);
+    
   pk_task_get_requires_async (task, filters, (gchar **) package_ids,
                               FALSE /* Recursive? */, data->cancellable,
                               NULL, NULL, /* Progress callback & user_data */
@@ -513,9 +515,9 @@ get_plugins__get_properties_cb (PkControl          *control,
     }
 
   if (pk_bitfield_contain (pk_backend->priv->filters, PK_FILTER_ENUM_INSTALLED))
-    filters = PK_FILTER_ENUM_INSTALLED;
+    filters = pk_bitfield_value (PK_FILTER_ENUM_INSTALLED);
   else
-    filters = PK_FILTER_ENUM_NONE;
+    filters = pk_bitfield_value (PK_FILTER_ENUM_NONE);
 
   pk_task_search_files_async (pk_backend->priv->task, filters, files,
                               data->cancellable,
@@ -596,7 +598,7 @@ uninstall_plugin__get_files_cb (PkTask             *task,
     return;
 
   files_array = pk_results_get_files_array (results);
-  g_assert_cmpint (files_array->len, ==, 1);
+  g_warn_if_fail (files_array->len == 1);
   pk_files = g_ptr_array_index (files_array, 0);
   g_object_get (pk_files,
                 "files", &files,
