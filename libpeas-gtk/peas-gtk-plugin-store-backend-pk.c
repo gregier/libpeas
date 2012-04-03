@@ -570,54 +570,6 @@ uninstall_plugin__remove_package_cb (PkTask             *task,
 }
 
 static void
-uninstall_plugin__get_requires_cb (PkTask             *task,
-                                   GAsyncResult       *result,
-                                   GSimpleAsyncResult *simple)
-{
-  UnInstallAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
-  PkPluginInfo *pk_info = (PkPluginInfo *) data->info;
-  PeasGtkPluginStoreBackendPk *pk_backend;
-  GError *error = NULL;
-  PkResults *results;
-  GPtrArray *packages;
-  guint i;
-  const gchar *package_ids[2] = { NULL, NULL };
-
-  pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (
-                    g_async_result_get_source_object (G_ASYNC_RESULT (simple)));
-  g_object_unref (pk_backend);
-
-  results = pk_task_generic_finish (task, result, &error);
-
-  if (uninstall_plugin__results_set_error (simple, error, results))
-    return;
-
-  packages = pk_results_get_package_array (results);
-
-  if (packages != NULL)
-    {
-      for (i = 0; i < packages->len; ++i)
-        {
-          PkPackage *package = g_ptr_array_index (packages, i);
-
-          g_message ("Found: %s", pk_package_get_name (package));
-        }
-
-      g_ptr_array_unref (packages);
-    }
-
-  package_ids[0] = pk_package_get_id (pk_info->package);
-
-  pk_task_remove_packages_async (pk_backend->priv->task, (gchar **) package_ids,
-                                 FALSE, FALSE, data->cancellable,
-                                 (PkProgressCallback) progress_proxy_cb, data,
-                                 (GAsyncReadyCallback) uninstall_plugin__remove_package_cb,
-                                 simple);
-
-  g_object_unref (results);
-}
-
-static void
 uninstall_plugin__get_files_cb (PkTask             *task,
                                 GAsyncResult       *result,
                                 GSimpleAsyncResult *simple)
@@ -644,6 +596,7 @@ uninstall_plugin__get_files_cb (PkTask             *task,
     return;
 
   files_array = pk_results_get_files_array (results);
+  g_assert_cmpint (files_array->len, ==, 1);
   pk_files = g_ptr_array_index (files_array, 0);
   g_object_get (pk_files,
                 "files", &files,
@@ -674,19 +627,80 @@ uninstall_plugin__get_files_cb (PkTask             *task,
         }
     }
 
+  /* Show a user friendly progress message */
+  if (data->progress.callback != NULL)
+    data->progress.callback (-1, _("Uninstalling Plugin"),
+                             data->progress.user_data);
+
   package_ids[0] = pk_package_get_id (pk_info->package);
 
-  pk_task_get_requires_async (task, 0, (gchar **) package_ids,
-                              FALSE /* Recursive? */, data->cancellable,
-                              NULL, NULL, /* Progress callback & user_data */
-                              (GAsyncReadyCallback) uninstall_plugin__get_requires_cb,
-                              simple);
-
+  pk_task_remove_packages_async (task, (gchar **) package_ids,
+                                 FALSE, FALSE, data->cancellable,
+                                 (PkProgressCallback) progress_proxy_cb, data,
+                                 (GAsyncReadyCallback) uninstall_plugin__remove_package_cb,
+                                 simple);
 
 out:
 
   g_strfreev (files);
   g_ptr_array_unref (files_array);
+  g_object_unref (results);
+}
+
+static void
+uninstall_plugin__get_requires_cb (PkTask             *task,
+                                   GAsyncResult       *result,
+                                   GSimpleAsyncResult *simple)
+{
+  UnInstallAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
+  PkPluginInfo *pk_info = (PkPluginInfo *) data->info;
+  PeasGtkPluginStoreBackendPk *pk_backend;
+  GError *error = NULL;
+  PkResults *results;
+  GPtrArray *package_ids;
+  GPtrArray *packages;
+  guint i;
+
+  pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (
+                    g_async_result_get_source_object (G_ASYNC_RESULT (simple)));
+  g_object_unref (pk_backend);
+
+  results = pk_task_generic_finish (task, result, &error);
+
+  if (uninstall_plugin__results_set_error (simple, error, results))
+    return;
+
+  package_ids = g_ptr_array_new ();
+  packages = pk_results_get_package_array (results);
+
+  if (packages == NULL)
+    {
+      g_ptr_array_set_size (package_ids, 2);
+    }
+  else
+    {
+      g_ptr_array_set_size (package_ids, packages->len + 2);
+
+      for (i = 0; i < packages->len; ++i)
+        {
+          PkPackage *package = g_ptr_array_index (packages, i);
+
+          g_ptr_array_index (package_ids, i + 1) = (gchar *) pk_package_get_id (package);
+        }
+
+      g_ptr_array_unref (packages);
+    }
+
+  g_ptr_array_index (package_ids, 0) = (gchar *) pk_package_get_id (pk_info->package);
+  g_ptr_array_index (package_ids, package_ids->len - 1) = NULL;
+
+  pk_task_get_files_async (task, (gchar **) &g_ptr_array_index (package_ids, 0),
+                           data->cancellable,
+                           NULL, NULL, /* Progress callback & user_data */
+                           (GAsyncReadyCallback) uninstall_plugin__get_files_cb,
+                           simple);
+
+  g_ptr_array_unref (package_ids);
   g_object_unref (results);
 }
 
@@ -934,10 +948,8 @@ peas_gtk_plugin_store_backend_pk_install_plugin_finish (PeasGtkPluginStoreBacken
 
   data->info->in_use = FALSE;
 
-  if (g_simple_async_result_propagate_error (simple, error))
-    return data->info;
-
-  data->info->installed = TRUE;
+  if (!g_simple_async_result_propagate_error (simple, error))
+    data->info->installed = TRUE;
 
   return data->info;
 }
@@ -978,11 +990,11 @@ peas_gtk_plugin_store_backend_pk_uninstall_plugin (PeasGtkPluginStoreBackend    
   if (progress_callback != NULL)
     progress_callback (-1, _("Unloading Plugin"), progress_user_data);
 
-  pk_task_get_files_async (pk_backend->priv->task,
-                           (gchar **) package_ids, cancellable,
-                           NULL, NULL, /* Progress callback & user_data */
-                           (GAsyncReadyCallback) uninstall_plugin__get_files_cb,
-                           simple);
+  pk_task_get_requires_async (pk_backend->priv->task, 0, (gchar **) package_ids,
+                              FALSE /* Recursive? */, cancellable,
+                              NULL, NULL, /* Progress callback & user_data */
+                              (GAsyncReadyCallback) uninstall_plugin__get_requires_cb,
+                              simple);
 }
 
 static PeasGtkInstallablePluginInfo *
