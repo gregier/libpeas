@@ -49,8 +49,6 @@ typedef struct {
 
 typedef struct {
   GCancellable *cancellable;
-
-  GPtrArray *plugins;
 } GetPluginsAsyncData;
 
 typedef struct {
@@ -66,6 +64,7 @@ struct _PeasGtkPluginStoreBackendPkPrivate {
   PkControl *control;
   PkTask *task;
   PkBitfield filters;
+  PkPackage *program_package;
 
   GError *error;
   GPtrArray *plugins;
@@ -182,7 +181,6 @@ pk_plugin_info_destroy_notify (gpointer info)
 static void
 get_plugins_async_data_free (GetPluginsAsyncData *data)
 {
-  g_ptr_array_unref (data->plugins);
   g_object_unref (data->cancellable);
   g_free (data);
 }
@@ -351,6 +349,7 @@ get_plugins__get_requires_cb (PkTask             *task,
   GError *error = NULL;
   PkResults *results;
   GPtrArray *packages;
+  GPtrArray *plugins;
   guint i;
 
   results = pk_task_generic_finish (task, result, &error);
@@ -359,10 +358,13 @@ get_plugins__get_requires_cb (PkTask             *task,
     return;
 
   packages = pk_results_get_package_array (results);
+  plugins = g_ptr_array_new ();
+  g_ptr_array_set_free_func (plugins,
+                             (GDestroyNotify) peas_gtk_installable_plugin_info_unref);
 
   if (packages != NULL)
     {
-      g_ptr_array_set_size (data->plugins, packages->len);
+      g_ptr_array_set_size (plugins, packages->len);
 
       for (i = 0; i < packages->len; ++i)
         {
@@ -382,16 +384,57 @@ get_plugins__get_requires_cb (PkTask             *task,
 
           ((PkPluginInfo *) plugin)->package = g_object_ref (package);
 
-          g_ptr_array_index (data->plugins, i) = plugin;
+          g_ptr_array_index (plugins, i) = plugin;
         }
 
       g_ptr_array_unref (packages);
     }
 
+  if (pk_backend->priv->plugins != NULL)
+    g_ptr_array_unref (pk_backend->priv->plugins);
+
+  pk_backend->priv->plugins = plugins;
+
   g_object_unref (results);
 
   g_simple_async_result_complete (simple);
   g_object_unref (simple);
+}
+
+static void
+get_plugins__update (PeasGtkPluginStoreBackendPk *pk_backend,
+                     GSimpleAsyncResult          *simple,
+                     GCancellable                *cancellable)
+{
+  gint i;
+  PkBitfield filters = 0;
+  const gchar *package_ids[2] = { NULL, NULL };
+  const PkFilterEnum wanted_filters[] = {
+    PK_FILTER_ENUM_NOT_APPLICATION,
+    PK_FILTER_ENUM_GUI,
+    PK_FILTER_ENUM_VISIBLE,
+    PK_FILTER_ENUM_NOT_DEVELOPMENT,
+    PK_FILTER_ENUM_NOT_SOURCE,
+    PK_FILTER_ENUM_NOT_COLLECTIONS
+  };
+
+  package_ids[0] = pk_package_get_id (pk_backed->program_package);
+
+  for (i = 0; i < G_N_ELEMENTS (wanted_filters); ++i)
+    {
+      if (pk_bitfield_contain (pk_backend->priv->filters, wanted_filters[i]))
+        pk_bitfield_add (filters, wanted_filters[i]);
+    }
+
+  if (filters == 0)
+    filters = pk_bitfield_value (PK_FILTER_ENUM_NONE);
+
+  pk_task_get_requires_async (pk_backend->priv->task, filters,
+                              (gchar **) package_ids,
+                              FALSE /* Recursive? */, cancellable,
+                              NULL, NULL, /* Progress callback & user_data */
+                              (GAsyncReadyCallback) get_plugins__get_requires_cb,
+                              simple);
 }
 
 static void
@@ -404,18 +447,6 @@ get_plugins__search_files_cb (PkTask             *task,
   GError *error = NULL;
   PkResults *results;
   GPtrArray *packages;
-  PkPackage *package;
-  const gchar *package_ids[2] = { NULL, NULL };
-  gint i;
-  PkBitfield filters = 0;
-  const PkFilterEnum wanted_filters[] = {
-    PK_FILTER_ENUM_NOT_APPLICATION,
-    PK_FILTER_ENUM_GUI,
-    PK_FILTER_ENUM_VISIBLE,
-    PK_FILTER_ENUM_NOT_DEVELOPMENT,
-    PK_FILTER_ENUM_NOT_SOURCE,
-    PK_FILTER_ENUM_NOT_COLLECTIONS
-  };
 
   pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (
                     g_async_result_get_source_object (G_ASYNC_RESULT (simple)));
@@ -437,24 +468,9 @@ get_plugins__search_files_cb (PkTask             *task,
       goto out;
     }
 
-  package = g_ptr_array_index (packages, 0);
-  package_ids[0] = pk_package_get_id (package);
+  pk_backed->program_package = g_object_ref (g_ptr_array_index (packages, 0));
 
-  for (i = 0; i < G_N_ELEMENTS (wanted_filters); ++i)
-    {
-      if (pk_bitfield_contain (pk_backend->priv->filters, wanted_filters[i]))
-        pk_bitfield_add (filters, wanted_filters[i]);
-    }
-
-  if (filters == 0)
-    filters = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-    
-  pk_task_get_requires_async (task, filters, (gchar **) package_ids,
-                              FALSE /* Recursive? */, data->cancellable,
-                              NULL, NULL, /* Progress callback & user_data */
-                              (GAsyncReadyCallback) get_plugins__get_requires_cb,
-                              simple);
-
+  get_plugins__update (pk_backend, simple, data->cancellable);
 
 out:
 
@@ -546,12 +562,9 @@ install_plugin__install_package_cb (PkTask             *task,
   if (install_plugin__results_set_error (simple, error, results))
     return;
 
-  peas_engine_rescan_plugins (pk_backend->priv->engine);
+  get_plugins__update (pk_backend, simple, data->cancellable);
 
   g_object_unref (results);
-
-  g_simple_async_result_complete (simple);
-  g_object_unref (simple);
 }
 
 static void
@@ -572,12 +585,9 @@ uninstall_plugin__remove_package_cb (PkTask             *task,
   if (uninstall_plugin__results_set_error (simple, error, results))
     return;
 
-  peas_engine_rescan_plugins (pk_backend->priv->engine);
+  get_plugins__update (pk_backend, simple, data->cancellable);
 
   g_object_unref (results);
-
-  g_simple_async_result_complete (simple);
-  g_object_unref (simple);
 }
 
 static void
@@ -796,6 +806,7 @@ peas_gtk_plugin_store_backend_pk_dispose (GObject *object)
   g_clear_object (&pk_backend->priv->engine);
   g_clear_object (&pk_backend->priv->control);
   g_clear_object (&pk_backend->priv->task);
+  g_clear_object (&pk_backend->priv->program_package);
   g_clear_error (&pk_backend->priv->error);
 
   G_OBJECT_CLASS (peas_gtk_plugin_store_backend_pk_parent_class)->dispose (object);
@@ -857,9 +868,6 @@ peas_gtk_plugin_store_backend_pk_get_plugins (PeasGtkPluginStoreBackend         
    * the user we do not use the progress callback or data.
    */
   data = g_new0 (GetPluginsAsyncData, 1);
-  data->plugins = g_ptr_array_new ();
-  g_ptr_array_set_free_func (data->plugins,
-                             (GDestroyNotify) peas_gtk_installable_plugin_info_unref);
 
   if (cancellable != NULL)
     data->cancellable = g_object_ref (cancellable);
@@ -894,14 +902,6 @@ peas_gtk_plugin_store_backend_pk_get_plugins_finish (PeasGtkPluginStoreBackend  
   /* Non-fatal error */
   if (g_simple_async_result_propagate_error (simple, error))
     return NULL;
-
-  if (pk_backend->priv->plugins == NULL)
-    {
-      GetPluginsAsyncData *data;
-
-      data = g_simple_async_result_get_op_res_gpointer (simple);
-      pk_backend->priv->plugins = g_ptr_array_ref (data->plugins);
-    }
 
   return g_ptr_array_ref (pk_backend->priv->plugins);
 }
@@ -950,6 +950,7 @@ peas_gtk_plugin_store_backend_pk_install_plugin_finish (PeasGtkPluginStoreBacken
                                                         GAsyncResult               *result,
                                                         GError                    **error)
 {
+  PeasGtkPluginStoreBackendPk *pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (backend);
   GSimpleAsyncResult *simple = G_SIMPLE_ASYNC_RESULT (result);
   UnInstallAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
 
@@ -961,6 +962,8 @@ peas_gtk_plugin_store_backend_pk_install_plugin_finish (PeasGtkPluginStoreBacken
 
   if (!g_simple_async_result_propagate_error (simple, error))
     data->info->installed = TRUE;
+
+  peas_engine_rescan_plugins (pk_backend->priv->engine);
 
   return data->info;
 }
@@ -1013,6 +1016,7 @@ peas_gtk_plugin_store_backend_pk_uninstall_plugin_finish (PeasGtkPluginStoreBack
                                                           GAsyncResult               *result,
                                                           GError                    **error)
 {
+  PeasGtkPluginStoreBackendPk *pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (backend);
   GSimpleAsyncResult *simple = G_SIMPLE_ASYNC_RESULT (result);
   UnInstallAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
 
@@ -1024,6 +1028,8 @@ peas_gtk_plugin_store_backend_pk_uninstall_plugin_finish (PeasGtkPluginStoreBack
 
   if (!g_simple_async_result_propagate_error (simple, error))
     data->info->installed = FALSE;
+
+  peas_engine_rescan_plugins (pk_backend->priv->engine);
 
   return data->info;
 }

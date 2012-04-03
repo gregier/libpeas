@@ -451,6 +451,20 @@ out:
 }
 
 static void
+update_plugins (PeasGtkPluginStore *store)
+{
+  GetPluginsAsyncData *data;
+
+  data = get_plugins_async_data_new (store);
+
+  peas_gtk_plugin_store_backend_get_plugins (store->priv->backend,
+                                             store->priv->get_plugins_cancellable,
+                                             NULL, NULL, /* Progress callback & user_data */
+                                             (GAsyncReadyCallback) get_plugins_cb,
+                                             data);
+}
+
+static void
 install_plugin_cb (PeasGtkPluginStoreBackend *backend,
                    GAsyncResult              *result,
                    AsyncData                 *data)
