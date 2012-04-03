@@ -994,7 +994,7 @@ peas_gtk_plugin_store_get_selected_plugin (PeasGtkPluginStore *store)
 
   selection = gtk_tree_view_get_selection (store->priv->view);
 
-  if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+  if (selection != NULL && gtk_tree_selection_get_selected (selection, NULL, &iter))
     info = peas_gtk_plugin_store_model_get_plugin (store->priv->model, &iter);
 
   return info;
