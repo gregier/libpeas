@@ -410,7 +410,7 @@ get_plugins__search_files_cb (PkTask             *task,
   PkBitfield filters = 0;
   const PkFilterEnum wanted_filters[] = {
     PK_FILTER_ENUM_NOT_APPLICATION,
-    /*PK_FILTER_ENUM_GUI, ? */
+    PK_FILTER_ENUM_GUI,
     PK_FILTER_ENUM_VISIBLE,
     PK_FILTER_ENUM_NOT_DEVELOPMENT,
     PK_FILTER_ENUM_NOT_SOURCE,
@@ -493,7 +493,9 @@ get_plugins__get_properties_cb (PkControl          *control,
 
   if (!pk_bitfield_contain (roles, PK_ROLE_ENUM_SEARCH_FILE) ||
       !pk_bitfield_contain (roles, PK_ROLE_ENUM_GET_REQUIRES) ||
-      !pk_bitfield_contain (roles, PK_ROLE_ENUM_GET_FILES))
+      !pk_bitfield_contain (roles, PK_ROLE_ENUM_GET_FILES) ||
+      !pk_bitfield_contain (roles, PK_ROLE_ENUM_INSTALL_PACKAGES) ||
+      !pk_bitfield_contain (roles, PK_ROLE_ENUM_REMOVE_PACKAGES))
     {
       g_set_error (&error, PEAS_GTK_INSTALLABLE_PLUGIN_INFO_ERROR,
                    PEAS_GTK_INSTALLABLE_PLUGIN_INFO_ERROR_GET_PLUGINS,
