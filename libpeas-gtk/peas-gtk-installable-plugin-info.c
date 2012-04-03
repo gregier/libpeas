@@ -48,7 +48,7 @@ peas_gtk_installable_plugin_info_new (guint          sizeof_info,
 {
   PeasGtkInstallablePluginInfo *info;
 
-  g_return_val_if_fail (sizeof_info >= sizeof (PeasGtkInstallableInfo), NULL);
+  g_return_val_if_fail (sizeof_info >= sizeof (PeasGtkInstallablePluginInfo), NULL);
 
   info = g_malloc0 (sizeof_info);
   info->refcount = 1;
