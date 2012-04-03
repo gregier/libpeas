@@ -380,7 +380,7 @@ get_plugins__get_requires_cb (PkTask             *task,
           if (pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED)
             plugin->installed = TRUE;
 
-          ((PkPlugin *) plugin)->package = g_object_ref (package);
+          ((PkPluginInfo *) plugin)->package = g_object_ref (package);
 
           g_ptr_array_index (data->plugins, i) = plugin;
         }
