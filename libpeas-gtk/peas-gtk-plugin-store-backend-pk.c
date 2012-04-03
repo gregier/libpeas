@@ -559,13 +559,20 @@ uninstall_plugin__remove_package_cb (PkTask             *task,
                                      GAsyncResult       *result,
                                      GSimpleAsyncResult *simple)
 {
+  PeasGtkPluginStoreBackendPk *pk_backend;
   GError *error = NULL;
   PkResults *results;
+
+  pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (
+                    g_async_result_get_source_object (G_ASYNC_RESULT (simple)));
+  g_object_unref (pk_backend);
 
   results = pk_task_generic_finish (task, result, &error);
 
   if (uninstall_plugin__results_set_error (simple, error, results))
     return;
+
+  peas_engine_rescan_plugins (pk_backend->priv->engine);
 
   g_object_unref (results);
 
