@@ -213,6 +213,15 @@ peas_engine_rescan_plugins (PeasEngine *engine)
       load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
     }
 
+  /* Plugin may have been uninstalled */
+  for (item = engine->priv->plugin_list; item != NULL; item = item->next)
+    {
+      PeasPluginInfo *info = (PeasPluginInfo *) item->data;
+
+      if (!g_file_test (info->filename, G_FILE_TEST_EXISTS))
+        info->available = FALSE;
+    }
+
   g_object_thaw_notify (G_OBJECT (engine));
 }
 
