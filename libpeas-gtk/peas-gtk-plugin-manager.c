@@ -66,7 +66,7 @@ struct _PeasGtkPluginManagerPrivate {
 
   GtkWidget *about;
 
-  GtkWidget *plugins_holder;
+  GtkWidget *list_holder;
   GtkWidget *sw;
   GtkWidget *view;
   GtkWidget *about_button;
@@ -347,7 +347,7 @@ static void
 plugin_store_back_cb (PeasGtkPluginStore   *store,
                       PeasGtkPluginManager *pm)
 {
-  gtk_widget_show (pm->priv->plugins_holder);
+  gtk_widget_show (pm->priv->list_holder);
   gtk_widget_hide (pm->priv->store_holder);
 }
 
@@ -369,7 +369,7 @@ get_plugins_cb (GtkWidget            *widget,
       gtk_widget_show (pm->priv->store);
     }
 
-  gtk_widget_hide (pm->priv->plugins_holder);
+  gtk_widget_hide (pm->priv->list_holder);
   gtk_widget_show (pm->priv->store_holder);
 }
 #endif
@@ -406,8 +406,8 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
    * placed inside another notebook.
    */
 
-  pm->priv->plugins_holder = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_box_pack_start (GTK_BOX (pm), pm->priv->plugins_holder,
+  pm->priv->list_holder = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_box_pack_start (GTK_BOX (pm), pm->priv->list_holder,
                       TRUE, TRUE, 0);
 
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
@@ -417,7 +417,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
                                        GTK_SHADOW_IN);
   context = gtk_widget_get_style_context (pm->priv->sw);
   gtk_style_context_set_junction_sides (context, GTK_JUNCTION_BOTTOM);
-  gtk_box_pack_start (GTK_BOX (pm->priv->plugins_holder), pm->priv->sw,
+  gtk_box_pack_start (GTK_BOX (pm->priv->list_holder), pm->priv->sw,
                       TRUE, TRUE, 0);
 
   toolbar = gtk_toolbar_new ();
@@ -425,7 +425,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   context = gtk_widget_get_style_context (toolbar);
   gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
   gtk_style_context_add_class (context, GTK_STYLE_CLASS_INLINE_TOOLBAR);
-  gtk_box_pack_start (GTK_BOX (pm->priv->plugins_holder), toolbar,
+  gtk_box_pack_start (GTK_BOX (pm->priv->list_holder), toolbar,
                       FALSE, FALSE, 0);
 
 #ifdef ENABLE_PACKAGEKIT
