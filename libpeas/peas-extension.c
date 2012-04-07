@@ -73,9 +73,22 @@ get_method_info (PeasExtension *exten,
                  GType         *interface)
 {
   guint i;
+  GType exten_type;
   GType *interfaces;
-  GICallableInfo *method_info = NULL;
+  GICallableInfo *method_info;
   gboolean must_free_interfaces = FALSE;
+
+  /* Must prioritize the initial GType */
+  exten_type = peas_extension_get_extension_type (exten);
+  method_info = peas_gi_get_method_info (exten_type, method_name);
+
+  if (method_info != NULL)
+    {
+      if (interface != NULL)
+        *interface = exten_type;
+
+      return method_info;
+    }
 
   if (PEAS_IS_EXTENSION_WRAPPER (exten))
     {
