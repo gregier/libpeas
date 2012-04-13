@@ -62,6 +62,7 @@ PeasEngineClass
 peas_engine_new
 peas_engine_get_default
 peas_engine_add_search_path
+peas_engine_prepend_search_path
 peas_engine_enable_loader
 peas_engine_rescan_plugins
 peas_engine_get_plugin_list

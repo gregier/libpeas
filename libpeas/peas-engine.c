@@ -216,6 +216,30 @@ peas_engine_rescan_plugins (PeasEngine *engine)
   g_object_thaw_notify (G_OBJECT (engine));
 }
 
+static void
+peas_engine_insert_search_path (PeasEngine  *engine,
+                                guint        position,
+                                const gchar *module_dir,
+                                const gchar *data_dir)
+{
+  SearchPath *sp;
+
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
+  g_return_if_fail (module_dir != NULL);
+
+  sp = g_slice_new (SearchPath);
+  sp->module_dir = g_strdup (module_dir);
+  sp->data_dir = g_strdup (data_dir ? data_dir : module_dir);
+
+  engine->priv->search_paths = g_list_insert (engine->priv->search_paths,
+                                              sp,
+                                              position);
+
+  g_object_freeze_notify (G_OBJECT (engine));
+  load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+  g_object_thaw_notify (G_OBJECT (engine));
+}
+
 /**
  * peas_engine_add_search_path:
  * @engine: A #PeasEngine.
@@ -244,22 +268,26 @@ peas_engine_add_search_path (PeasEngine *engine,
                              const gchar *module_dir,
                              const gchar *data_dir)
 {
-  SearchPath *sp;
+  peas_engine_insert_search_path (engine, -1, module_dir, data_dir);
+}
 
-  g_return_if_fail (PEAS_IS_ENGINE (engine));
-  g_return_if_fail (module_dir != NULL);
-
-  sp = g_slice_new (SearchPath);
-  sp->module_dir = g_strdup (module_dir);
-  sp->data_dir = g_strdup (data_dir ? data_dir : module_dir);
-
-  /* Appending to a list is bad, but is easier to handle wrt refreshing
-   * the plugin list. */
-  engine->priv->search_paths = g_list_append (engine->priv->search_paths, sp);
-
-  g_object_freeze_notify (G_OBJECT (engine));
-  load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
-  g_object_thaw_notify (G_OBJECT (engine));
+/**
+ * peas_engine_prepend_search_path:
+ * @engine: A #PeasEngine.
+ * @module_dir: the plugin module directory.
+ * @data_dir: (allow-none): the plugin data directory.
+ *
+ * This function prepends a search path to the list of paths where to
+ * look for plugins.
+ *
+ * See Also: peas_engine_add_search_path()
+ */
+void
+peas_engine_prepend_search_path (PeasEngine *engine,
+                                 const gchar *module_dir,
+                                 const gchar *data_dir)
+{
+  peas_engine_insert_search_path (engine, 0, module_dir, data_dir);
 }
 
 static guint

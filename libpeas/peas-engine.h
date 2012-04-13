@@ -80,6 +80,9 @@ PeasEngine       *peas_engine_get_default         (void);
 void              peas_engine_add_search_path     (PeasEngine      *engine,
                                                    const gchar     *module_dir,
                                                    const gchar     *data_dir);
+void              peas_engine_prepend_search_path (PeasEngine      *engine,
+                                                   const gchar     *module_dir,
+                                                   const gchar     *data_dir);
 
 /* plugin management */
 void              peas_engine_enable_loader       (PeasEngine      *engine,
