@@ -218,7 +218,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 
 static void
 peas_engine_insert_search_path (PeasEngine  *engine,
-                                guint        position,
+                                gint         position,
                                 const gchar *module_dir,
                                 const gchar *data_dir)
 {
