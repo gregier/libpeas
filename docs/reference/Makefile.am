@@ -6,7 +6,7 @@
 AUTOMAKE_OPTIONS = 1.6
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE=libpeas
+DOC_MODULE=libpeas2
 
 # The top-level SGML file. You can change this if you want to.
 DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.sgml
@@ -89,8 +89,8 @@ GTKDOC_CFLAGS = \
 	$(PEAS_GTK_CFLAGS)
 
 GTKDOC_LIBS = \
-	$(top_builddir)/libpeas/libpeas-1.0.la		\
-	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
+	$(top_builddir)/libpeas/libpeas-2.0.la		\
+	$(top_builddir)/libpeas-gtk/libpeas-gtk-2.0.la	\
 	$(PEAS_LIBS)					\
 	$(PEAS_GTK_LIBS)
 

@@ -31,8 +31,8 @@ Makefile.in
 /config.sub
 /configure
 /configure.lineno
-/data/libpeas-1.0.pc
-/data/libpeas-gtk-1.0.pc
+/data/libpeas-2.0.pc
+/data/libpeas-gtk-2.0.pc
 /data/glade/libpeas-gtk.xml
 /depcomp
 /docs/reference/gtkdoc-check.test

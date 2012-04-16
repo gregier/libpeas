@@ -539,8 +539,8 @@ loaders/python3/Makefile
 data/Makefile
 data/glade/Makefile
 data/icons/Makefile
-data/libpeas-1.0.pc
-data/libpeas-gtk-1.0.pc
+data/libpeas-2.0.pc
+data/libpeas-gtk-2.0.pc
 peas-demo/Makefile
 peas-demo/plugins/Makefile
 peas-demo/plugins/helloworld/Makefile

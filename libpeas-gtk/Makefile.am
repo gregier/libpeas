@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libpeas-gtk-1.0.la
+lib_LTLIBRARIES = libpeas-gtk-2.0.la
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)			\
@@ -9,15 +9,15 @@ AM_CPPFLAGS = \
 	$(WARN_CFLAGS)			\
 	$(DISABLE_DEPRECATED)
 
-libpeas_gtk_1_0_la_LDFLAGS = \
+libpeas_gtk_2_0_la_LDFLAGS = \
 	$(GCOV_LDFLAGS) \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
-libpeas_gtk_1_0_la_LIBADD = \
+libpeas_gtk_2_0_la_LIBADD = \
 	$(PEAS_LIBS)							\
 	$(PEAS_GTK_LIBS)						\
-	$(top_builddir)/libpeas/libpeas-1.0.la
+	$(top_builddir)/libpeas/libpeas-2.0.la
 
 if OS_OSX
 AM_CPPFLAGS += -xobjective-c
@@ -41,17 +41,17 @@ C_FILES = \
 	peas-gtk-plugin-manager-store.c		\
 	peas-gtk-plugin-manager-view.c
 
-libpeas_gtk_1_0_la_SOURCES = \
+libpeas_gtk_2_0_la_SOURCES = \
 	$(INST_H_FILES)			\
 	$(NOINST_H_FILES)		\
 	$(C_FILES)
 
-headerdir = $(prefix)/include/libpeas-1.0/libpeas-gtk
+headerdir = $(prefix)/include/libpeas-2.0/libpeas-gtk
 header_DATA = $(INST_H_FILES)
 
 if HAVE_INTROSPECTION
   -include $(INTROSPECTION_MAKEFILE)
-  INTROSPECTION_GIRS = PeasGtk-1.0.gir
+  INTROSPECTION_GIRS = PeasGtk-2.0.gir
   INTROSPECTION_SCANNER_ARGS = \
 	--add-include-path=$(top_builddir)/libpeas	\
 	--c-include=libpeas-gtk/peas-gtk.h		\
@@ -62,13 +62,13 @@ if HAVE_INTROSPECTION
 
   introspection_sources = $(INST_H_FILES) $(C_FILES)
 
-  PeasGtk-1.0.gir: libpeas-gtk-1.0.la
-  PeasGtk_1_0_gir_INCLUDES = GObject-2.0 Gtk-3.0
-  PeasGtk_1_0_gir_CFLAGS = $(PEAS_CFLAGS) $(PEAS_GTK_CFLAGS) -I$(top_srcdir)
-  PeasGtk_1_0_gir_LIBS = $(top_builddir)/libpeas/libpeas-1.0.la libpeas-gtk-1.0.la
-  PeasGtk_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
-  PeasGtk_1_0_gir_EXPORT_PACKAGES = libpeas-gtk-1.0
-  PeasGtk_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(top_builddir)/libpeas/Peas-1.0.gir
+  PeasGtk-2.0.gir: libpeas-gtk-2.0.la
+  PeasGtk_2_0_gir_INCLUDES = GObject-2.0 Gtk-3.0
+  PeasGtk_2_0_gir_CFLAGS = $(PEAS_CFLAGS) $(PEAS_GTK_CFLAGS) -I$(top_srcdir)
+  PeasGtk_2_0_gir_LIBS = $(top_builddir)/libpeas/libpeas-2.0.la libpeas-gtk-2.0.la
+  PeasGtk_2_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+  PeasGtk_2_0_gir_EXPORT_PACKAGES = libpeas-gtk-2.0
+  PeasGtk_2_0_gir_SCANNERFLAGS = --include-uninstalled=$(top_builddir)/libpeas/Peas-2.0.gir
 
   girdir = $(datadir)/gir-1.0
   gir_DATA = $(INTROSPECTION_GIRS)

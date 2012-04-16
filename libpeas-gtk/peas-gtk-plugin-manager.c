@@ -344,7 +344,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   /* If we are using a PeasGtkPluginManager, we know for sure we will be using
      libpeas-gtk, so let's load the typelib for it here. */
   g_irepository_require (g_irepository_get_default (),
-                         "PeasGtk", "1.0", 0, NULL);
+                         "PeasGtk", "2.0", 0, NULL);
 
   gtk_orientable_set_orientation (GTK_ORIENTABLE (pm),
                                   GTK_ORIENTATION_VERTICAL);

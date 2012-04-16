@@ -17,8 +17,8 @@ libtesting_la_LDFLAGS = \
 libtesting_la_LIBADD = \
 	$(PEAS_LIBS)					\
 	$(PEAS_GTK_LIBS)				\
-	$(top_builddir)/libpeas/libpeas-1.0.la		\
-	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
+	$(top_builddir)/libpeas/libpeas-2.0.la		\
+	$(top_builddir)/libpeas-gtk/libpeas-gtk-2.0.la	\
 	../../testing-util/libtesting-util.la
 
 libtesting_la_SOURCES = testing.c testing.h

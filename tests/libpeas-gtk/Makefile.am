@@ -19,8 +19,8 @@ noinst_PROGRAMS = $(TEST_PROGS)
 LDADD = \
 	$(PEAS_LIBS)					\
 	$(PEAS_GTK_LIBS)				\
-	$(top_builddir)/libpeas/libpeas-1.0.la		\
-	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
+	$(top_builddir)/libpeas/libpeas-2.0.la		\
+	$(top_builddir)/libpeas-gtk/libpeas-gtk-2.0.la	\
 	./testing/libtesting.la				\
 	../testing-util/libtesting-util.la
 

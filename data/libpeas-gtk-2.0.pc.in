@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: libpeas-gtk
 Description: libpeas-gtk, a GObject plugins library (Gtk widgets)
-Requires: glib-2.0 >= @GLIB_REQUIRED@, gtk+-3.0 >= @GTK_REQUIRED@, libpeas-1.0 >= @VERSION@
+Requires: glib-2.0 >= @GLIB_REQUIRED@, gtk+-3.0 >= @GTK_REQUIRED@, libpeas-2.0 >= @VERSION@
 Version: @VERSION@
-Cflags: -I${includedir}/libpeas-1.0
-Libs: -L${libdir} -lpeas-gtk-1.0
+Cflags: -I${includedir}/libpeas-2.0
+Libs: -L${libdir} -lpeas-gtk-2.0

@@ -16,8 +16,8 @@ peas_demo_SOURCES = \
 	peas-demo.c
 
 peas_demo_LDADD = \
-	../libpeas/libpeas-1.0.la		\
-	../libpeas-gtk/libpeas-gtk-1.0.la	\
+	../libpeas/libpeas-2.0.la		\
+	../libpeas-gtk/libpeas-gtk-2.0.la	\
 	$(PEAS_LIBS)				\
 	$(PEAS_GTK_LIBS)
 

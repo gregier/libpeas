@@ -14,7 +14,7 @@ libtesting_util_la_LDFLAGS = \
 
 libtesting_util_la_LIBADD = \
 	$(PEAS_LIBS)					\
-	$(top_builddir)/libpeas/libpeas-1.0.la
+	$(top_builddir)/libpeas/libpeas-2.0.la
 
 libtesting_util_la_SOURCES = \
 	testing-util.c		\

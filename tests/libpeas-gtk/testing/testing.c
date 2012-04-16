@@ -53,7 +53,7 @@ testing_init (gint    *argc,
 
   g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
 
-  g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error);
+  g_irepository_require (g_irepository_get_default (), "PeasGtk", "2.0", 0, &error);
   g_assert_no_error (error);
 
   initialized = TRUE;

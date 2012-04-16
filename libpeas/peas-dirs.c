@@ -68,11 +68,11 @@ dirs_os_x_get_resource_dir (const gchar *subdir,
 
   if (res_dir == NULL)
     {
-      ret = g_build_filename (default_dir, "libpeas-1.0", NULL);
+      ret = g_build_filename (default_dir, "libpeas-2.0", NULL);
     }
   else
     {
-      ret = g_build_filename (res_dir, subdir, "libpeas-1.0", NULL);
+      ret = g_build_filename (res_dir, subdir, "libpeas-2.0", NULL);
       g_free (res_dir);
     }
 
@@ -124,12 +124,12 @@ peas_dirs_get_data_dir (void)
 
   win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
 
-  data_dir = g_build_filename (win32_dir, "share", "libpeas-1.0", NULL);
+  data_dir = g_build_filename (win32_dir, "share", "libpeas-2.0", NULL);
   g_free (win32_dir);
 #elif defined (OS_OSX)
   data_dir = dirs_os_x_get_data_dir ();
 #else
-  data_dir = g_build_filename (DATADIR, "libpeas-1.0", NULL);
+  data_dir = g_build_filename (DATADIR, "libpeas-2.0", NULL);
 #endif
 
   return data_dir;
@@ -145,12 +145,12 @@ peas_dirs_get_lib_dir (void)
 
   win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
 
-  lib_dir = g_build_filename (win32_dir, "lib", "libpeas-1.0", NULL);
+  lib_dir = g_build_filename (win32_dir, "lib", "libpeas-2.0", NULL);
   g_free (win32_dir);
 #elif defined (OS_OSX)
   lib_dir = dirs_os_x_get_lib_dir ();
 #else
-  lib_dir = g_build_filename (LIBDIR, "libpeas-1.0", NULL);
+  lib_dir = g_build_filename (LIBDIR, "libpeas-2.0", NULL);
 #endif
 
   return lib_dir;

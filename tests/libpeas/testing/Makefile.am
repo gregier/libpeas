@@ -16,7 +16,7 @@ libtesting_la_LDFLAGS = \
 
 libtesting_la_LIBADD = \
 	$(PEAS_LIBS)					\
-	$(top_builddir)/libpeas/libpeas-1.0.la		\
+	$(top_builddir)/libpeas/libpeas-2.0.la		\
 	../introspection/libintrospection-1.0.la	\
 	../../testing-util/libtesting-util.la
 

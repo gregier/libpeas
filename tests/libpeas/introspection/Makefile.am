@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 libintrospection_1_0_la_LDFLAGS = $(TEST_INTROSPECTION_LIBTOOL_FLAGS)
 libintrospection_1_0_la_LIBADD = \
 	$(PEAS_LIBS)				\
-	$(top_builddir)/libpeas/libpeas-1.0.la
+	$(top_builddir)/libpeas/libpeas-2.0.la
 
 libintrospection_1_0_la_SOURCES = \
 	introspection-base.c				\
@@ -39,9 +39,9 @@ introspection_sources = $(libintrospection_1_0_la_SOURCES)
 Introspection-1.0.gir: libintrospection-1.0.la
 Introspection_1_0_gir_INCLUDES = GObject-2.0
 Introspection_1_0_gir_CFLAGS = $(PEAS_CFLAGS) -I$(top_srcdir)
-Introspection_1_0_gir_LIBS = $(top_builddir)/libpeas/libpeas-1.0.la libintrospection-1.0.la
+Introspection_1_0_gir_LIBS = $(top_builddir)/libpeas/libpeas-2.0.la libintrospection-1.0.la
 Introspection_1_0_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
-Introspection_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(top_builddir)/libpeas/Peas-1.0.gir
+Introspection_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(top_builddir)/libpeas/Peas-2.0.gir
 
 CLEANFILES = $(INTROSPECTION_GIRS) $(INTROSPECTION_TYPELIBS)
 
