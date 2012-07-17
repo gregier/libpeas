@@ -177,7 +177,7 @@ peas_plugin_loader_seed_create_extension (PeasPluginLoader *loader,
   SeedValue extension_ctor, extension;
   guint i, j;
   SeedValue value;
-  GValue gvalue = { 0 };
+  GValue gvalue = G_VALUE_INIT;
   GArray *interfaces;
   gchar **property_names;
 

@@ -183,7 +183,7 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
   JSObject *extension;
   guint i;
   jsval js_value;
-  GValue gvalue = { 0 };
+  GValue gvalue = G_VALUE_INIT;
   GArray *interfaces;
   JSObject *prop_iter;
   jsid prop_name_id;
