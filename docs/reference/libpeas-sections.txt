@@ -216,6 +216,7 @@ peas_plugin_info_get_authors
 peas_plugin_info_get_website
 peas_plugin_info_get_copyright
 peas_plugin_info_get_version
+peas_plugin_info_get_external_data
 <SUBSECTION Standard>
 PEAS_TYPE_PLUGIN_INFO
 PEAS_PLUGIN_INFO
