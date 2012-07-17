@@ -26,7 +26,6 @@ class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
     def do_update_state(self):
         pass
 
-
     def do_get_plugin_info(self):
         return self.plugin_info
 
@@ -34,7 +33,7 @@ class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
         return self.plugin_info.get_settings(None)
 
     def do_call_with_return(self):
-        return "Hello, World!";
+        return "Hello, World!"
 
     def do_call_no_args(self):
         pass
