@@ -1,3 +1,22 @@
+Overview of Changes in libpeas 1.5.0
+====================================
+
+* Warn if activate or deactivate are not implemented
+
+* Find extension construct properties also in interface prerequisites
+
+* Fix interface sorting in GJS and Seed
+
+* Added peas_engine_prepend_search_path
+
+* Added peas_plugin_info_get_external_data
+
+* Misc bugfixes
+
+* Translation updates:
+  - Greek
+  - Indonesian
+
 Overview of Changes in libpeas 1.3.0
 ====================================
 
