@@ -91,8 +91,9 @@ peas_activatable_activate (PeasActivatable *activatable)
   g_return_if_fail (PEAS_IS_ACTIVATABLE (activatable));
 
   iface = PEAS_ACTIVATABLE_GET_IFACE (activatable);
-  if (iface->activate != NULL)
-    iface->activate (activatable);
+  g_return_if_fail (iface->activate != NULL);
+
+  iface->activate (activatable);
 }
 
 /**
@@ -113,8 +114,9 @@ peas_activatable_deactivate (PeasActivatable *activatable)
   g_return_if_fail (PEAS_IS_ACTIVATABLE (activatable));
 
   iface = PEAS_ACTIVATABLE_GET_IFACE (activatable);
-  if (iface->deactivate != NULL)
-    iface->deactivate (activatable);
+  g_return_if_fail (iface->deactivate != NULL);
+
+  iface->deactivate (activatable);
 }
 
 /**
