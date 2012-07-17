@@ -144,14 +144,29 @@ peas_plugin_loader_gjs_provides_extension  (PeasPluginLoader *loader,
          JSVAL_IS_OBJECT (extension) && !JSVAL_IS_NULL (extension);
 }
 
-static gint
-prerequisites_sort (GType *a,
-                    GType *b)
+static void
+sort_interfaces (GArray *interfaces)
 {
-  if (g_type_is_a (*b, *a))
-    return -1;
+  gint i;
 
-  return 1;
+  for (i = 0; i < interfaces->len; ++i)
+    {
+      gint j;
+      GType *a = &g_array_index (interfaces, GType, i);
+
+      for (j = i + 1; j < interfaces->len; ++j)
+        {
+          GType *b = &g_array_index (interfaces, GType, j);
+
+          if (g_type_is_a (*a, *b))
+            {
+              GType temp = *a;
+
+              *a = *b;
+              *b = temp;
+            }
+        }
+    }
 }
 
 static PeasExtension *
@@ -292,7 +307,7 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
       g_free (prop_name);
     }
 
-  g_array_sort (interfaces, (GCompareFunc) prerequisites_sort);
+  sort_interfaces (interfaces);
 
   return peas_extension_gjs_new (exten_type,
                                  (GType *) g_array_free (interfaces, FALSE),
