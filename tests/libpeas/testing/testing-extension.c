@@ -458,6 +458,25 @@ test_extension_properties_readwrite (PeasEngine     *engine,
   g_object_unref (extension);
 }
 
+static void
+test_extension_properties_prerequisite (PeasEngine     *engine,
+                                        PeasPluginInfo *info)
+{
+  PeasExtension *extension;
+  gchar *prerequisite;
+
+  extension = peas_engine_create_extension (engine, info,
+                                            INTROSPECTION_TYPE_PROPERTIES,
+                                            "prerequisite", "prerequisite",
+                                            NULL);
+
+  g_object_get (extension, "prerequisite", &prerequisite, NULL);
+  g_assert_cmpstr (prerequisite, ==, "prerequisite");
+  g_free (prerequisite);
+
+  g_object_unref (extension);
+}
+
 #define _EXTENSION_TEST(loader, path, ftest) \
   g_test_add (I_(g_strdup_printf ("/extension/%s/" path, loader)), \
               TestFixture, \
@@ -514,6 +533,7 @@ testing_extension_properties (const gchar *loader)
   _EXTENSION_TEST (loader, "properties-read-only", properties_read_only);
   _EXTENSION_TEST (loader, "properties-write-only", properties_write_only);
   _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite);
+  _EXTENSION_TEST (loader, "properties-prerequisite", properties_prerequisite);
 }
 
 void

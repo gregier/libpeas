@@ -1,8 +1,8 @@
 /*
- * introspection-properties.h
+ * introspection-properties-prerequisite.c
  * This file is part of libpeas
  *
- * Copyright (C) 2010 Garrett Regier
+ * Copyright (C) 2012 Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -23,16 +23,14 @@
 #include <config.h>
 #endif
 
-#include "introspection-properties.h"
-
 #include "introspection-properties-prerequisite.h"
 
-G_DEFINE_INTERFACE(IntrospectionProperties,
-                   introspection_properties,
-                   INTROSPECTION_TYPE_PROPERTIES_PREREQUISITE)
+G_DEFINE_INTERFACE(IntrospectionPropertiesPrerequisite,
+                   introspection_properties_prerequisite,
+                   G_TYPE_OBJECT)
 
 void
-introspection_properties_default_init (IntrospectionPropertiesInterface *iface)
+introspection_properties_prerequisite_default_init (IntrospectionPropertiesPrerequisiteInterface *iface)
 {
   static gboolean initialized = FALSE;
 
@@ -45,10 +43,7 @@ introspection_properties_default_init (IntrospectionPropertiesInterface *iface)
 
   if (!initialized)
     {
-      DEFINE_PROP ("construct-only", G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-      DEFINE_PROP ("read-only", G_PARAM_READABLE);
-      DEFINE_PROP ("write-only", G_PARAM_WRITABLE);
-      DEFINE_PROP ("readwrite", G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+      DEFINE_PROP ("prerequisite", G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
       initialized = TRUE;
     }

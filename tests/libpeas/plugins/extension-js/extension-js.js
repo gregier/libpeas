@@ -39,6 +39,7 @@ var extensions = {
   "IntrospectionBase": extension_js_plugin,
   "IntrospectionCallable": extension_js_plugin,
   "IntrospectionProperties": extension_js_plugin,
+  "IntrospectionPropertiesPrerequisite": extension_js_plugin,
   "IntrospectionHasPrerequisite": extension_js_plugin,
   "IntrospectionHasMissingPrerequisite": missing_prerequisite_extension
 };
