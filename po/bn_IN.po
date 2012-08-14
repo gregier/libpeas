@@ -1,0 +1,140 @@
+# Bengali (India) translation for libpeas.
+# Copyright (C) 2012 libpeas's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libpeas package.
+#
+# Sayak Sarkar <sayak.bugsmith@gmail.com>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-07-17 21:08+0000\n"
+"PO-Revision-Date: 2012-07-31 13:54+0530\n"
+"Last-Translator: Sayak Sarkar <sayak.bugsmith@gmail.com>\n"
+"Language-Team: Bengali (India) <anubad@lists.ankur.org.in>\n"
+"Language: bn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 1.4\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "প্লাগিন ব্যবস্থাপক"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "প্রদর্শন"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "প্লাগিন ব্যবস্থাপক প্রদর্শন"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr "নির্মিত প্রদর্শন করুন"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:818
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "নির্ভরতা '%s' খুঁজে পাওয়া যায়নি"
+
+#: ../libpeas/peas-engine.c:828
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "নির্ভরতা '%s' লোড করতে ব্যর্থ হয়েছে"
+
+#: ../libpeas/peas-engine.c:843
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "প্লাগিন লোডার '%s' পাওয়া যায়নি"
+
+#: ../libpeas/peas-engine.c:855
+#, c-format
+msgid "Failed to load"
+msgstr "লোড করা ব্যর্থ হয়েছে"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr "অতিরিক্ত প্লাগিন নিষ্ক্রিয় করা আবশ্যক"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "নিম্নলিখিত প্লাগিনগুলি '% s' উপর নির্ভর করে এবং তাই নিষ্ক্রিয় করা হবে:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "প্লাগইনসমূহ"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr "একটি অতিরিক্ত প্লাগিন নিষ্ক্রিয় করা আবশ্যক"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"'%s' প্লাগিন '%s' প্লাগিনের উপর নির্ভর করে. \n"
+"যদি আপনি '%s' কে নিষ্ক্রিয় করেন, তাহলে '%s' কেও নিষ্ক্রিয় করা হবে।"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "প্লাগইনসমূহ নিষ্ক্রিয় করুন"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+msgid "There was an error displaying the help."
+msgstr " সাহায্য বার্তা প্রদর্শন করার সময় একটি ত্রুটি ঘটেছে।"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_About"
+msgstr "সম্পর্কে(_A)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "পছন্দসমূহ(_P)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "সক্রিয়(_E)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "সমস্ত সক্রিয় করুন(_n)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "সমস্ত নিষ্ক্রিয় করুন(_D)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+msgid "Enabled"
+msgstr "সক্রিয়"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+msgid "Plugin"
+msgstr "প্লাগিন"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b> প্লাগিন '%s' লোড করা যায়নি </b> \n"
+"একটি ত্রুটি ঘটেছে: %s"
+
+#: ../peas-demo/peas-demo.c:40
+msgid "Run from build directory"
+msgstr "বিল্ড ডিরেক্টরি থেকে চালান"
+
+#: ../peas-demo/peas-demo.c:100
+msgid "- libpeas demo application"
+msgstr "- Libpeas এর ডেমো আবেদন"
