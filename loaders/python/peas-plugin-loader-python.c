@@ -348,6 +348,23 @@ peas_wchar_from_str (const gchar *str)
 }
 #endif
 
+#ifdef HAVE_SIGACTION
+static void
+default_sigint (int sig)
+{
+  struct sigaction sigint;
+
+  /* Invoke default sigint handler */
+  sigint.sa_handler = SIG_DFL;
+  sigint.sa_flags = 0;
+  sigemptyset (&sigint.sa_mask);
+
+  sigaction (SIGINT, &sigint, NULL);
+
+  raise (SIGINT);
+}
+#endif
+
 static gboolean
 peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
@@ -368,6 +385,27 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   /* Python initialization */
   if (!Py_IsInitialized ())
     {
+#ifdef HAVE_SIGACTION
+      struct sigaction sigint;
+
+      /* We are going to install a signal handler for SIGINT if the current
+         signal handler for sigint is SIG_DFL. We do this because even if
+         Py_InitializeEx will not set the signal handlers, the 'signal' module
+         (which can be used by plugins for various reasons) will install a
+         SIGINT handler when imported, if SIGINT is set to SIG_DFL. Our
+         override will simply call the default SIGINT handler in the end. */
+      sigaction (SIGINT, NULL, &sigint);
+
+      if (sigint.sa_handler == SIG_DFL)
+        {
+          sigemptyset (&sigint.sa_mask);
+          sigint.sa_flags = 0;
+          sigint.sa_handler = default_sigint;
+
+          sigaction (SIGINT, &sigint, NULL);
+        }
+#endif
+
       Py_InitializeEx (FALSE);
       pyloader->priv->must_finalize_python = TRUE;
     }
