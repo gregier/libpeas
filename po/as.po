@@ -136,7 +136,7 @@ msgstr "নিৰ্মান ডাইৰেকটৰিৰ পৰা চলা
 
 #: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
-msgstr "- libpeas ডেমো অনুপ্ৰয়োগ"
+msgstr "- libpeas ডেমো এপ্লিকেচন"
 
 #~ msgid "C_onfigure"
 #~ msgstr "সংৰূপীত কৰক (_o)"
