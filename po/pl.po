@@ -4,12 +4,14 @@
 # pomóc w jego rozwijaniu i pielęgnowaniu, napisz do nas:
 # gnomepl@aviary.pl
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# Piotr Drąg <piotrdrag@gmail.com>, 2010-2012.
+# Aviary.pl <gnomepl@aviary.pl>, 2010-2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-19 21:03+0100\n"
-"PO-Revision-Date: 2012-02-19 21:04+0100\n"
+"POT-Creation-Date: 2012-09-04 18:49+0200\n"
+"PO-Revision-Date: 2012-09-04 18:50+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -22,12 +24,12 @@ msgstr ""
 "X-Poedit-Country: Poland\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
-msgid "Peas Gtk"
-msgstr "Peas GTK+"
-
-#: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "Plugin Manager"
 msgstr "Menedżer wtyczek"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "Widok"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "Plugin Manager View"
@@ -39,25 +41,25 @@ msgid "Show Builtin"
 msgstr "Wyświetlanie wbudowanych"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:6
-msgid "View"
-msgstr "Widok"
+msgid "Peas Gtk"
+msgstr "Peas GTK+"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:818
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Nie odnaleziono zależności \"%s\""
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:828
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Wczytanie zależności \"%s\" się nie powiodło"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:843
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Nie odnaleziono programu wczytującego wtyczkę \"%s\""
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:855
 #, c-format
 msgid "Failed to load"
 msgstr "Wczytanie się nie powiodło"
@@ -135,7 +137,7 @@ msgstr ""
 
 #: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
-msgstr "Uruchomia z katalogu budowania"
+msgstr "Uruchamia z katalogu budowania"
 
 #: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
