@@ -2,17 +2,18 @@
 # Copyright (C) 2011 the Free Software Foundation, Inc.
 # This file is distributed under the same license as the libpeas-master package.
 # Muhammed Eken <gnome@m-eken.com>, 2011.
-# Muhammet Kara <muhammet.k@gmail.com>, 2011.
+# Muhammet Kara <muhammetk@acikkaynak.name.tr>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-04-13 08:45+0000\n"
-"PO-Revision-Date: 2011-04-27 21:26+0300\n"
-"Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
-"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"POT-Creation-Date: 2012-08-06 08:46+0000\n"
+"PO-Revision-Date: 2012-08-12 19:39+0300\n"
+"Last-Translator: Muhammet Kara <muhammetk@acikkaynak.name.tr>\n"
+"Language-Team: Türkçe <gnome-turk@gnome.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,12 +21,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
-msgid "Peas Gtk"
-msgstr "Peas Gtk"
-
-#: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "Plugin Manager"
 msgstr "Eklenti Yöneticisi"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "Görünüm"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "Plugin Manager View"
@@ -37,47 +38,47 @@ msgid "Show Builtin"
 msgstr "Yerleşik Eklentileri Göster"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:6
-msgid "View"
-msgstr "Görünüm"
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:785
+#: ../libpeas/peas-engine.c:818
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "'%s' bağımlılığı bulunamadı"
 
-#: ../libpeas/peas-engine.c:795
+#: ../libpeas/peas-engine.c:828
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "'%s' bağımlılığının yüklenmesi başarısız oldu"
 
-#: ../libpeas/peas-engine.c:810
+#: ../libpeas/peas-engine.c:843
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Eklenti yükleyicisi '%s' bulunamadı"
 
-#: ../libpeas/peas-engine.c:822
+#: ../libpeas/peas-engine.c:855
 #, c-format
 msgid "Failed to load"
 msgstr "Yükleme başarısız"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:88
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
 msgid "Additional plugins must be disabled"
 msgstr "İlave eklentilerin devre dışı bırakılması gerekiyor"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Şu eklentiler '%s' ile bağlantılı ve devre dışı bırakılacak:"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:137
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
 msgstr "Eklentiler"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:153
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
 msgid "An additional plugin must be disabled"
 msgstr "İlave bir eklentinin devre dışı bırakılması gerekiyor"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:160
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
@@ -86,47 +87,43 @@ msgstr ""
 "'%s' eklentisi '%s' eklentisine bağlı.\n"
 "Eğer '%s'i devre dışı bırakırsanız, '%s' de devre dışı kalacak."
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:180
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "Eklentileri Devre Dışı Bırak"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:179
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
 msgid "There was an error displaying the help."
 msgstr "Yardım görüntülenirken bir hata oluştu."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
-msgid "C_onfigure"
-msgstr "_Yapılandır"
-
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:331
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_About"
 msgstr "_Hakkında"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:357
-msgid "_Plugins:"
-msgstr "_Eklentiler:"
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "_Tercihler"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:331
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
 msgid "_Enabled"
 msgstr "_Etkinleştirildi"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:342
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
 msgid "E_nable All"
 msgstr "_Tümünü Etkinleştir"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:346
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
 msgid "_Disable All"
 msgstr "Tü_münü Devre Dışı Bırak"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:505
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
 msgid "Enabled"
 msgstr "Etkinleştirildi"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
 msgid "Plugin"
 msgstr "Eklenti"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:611
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -139,6 +136,12 @@ msgstr ""
 msgid "Run from build directory"
 msgstr "İnşa klasöründe çalıştır."
 
-#: ../peas-demo/peas-demo.c:99
+#: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
 msgstr "- libpeas deneme uygulaması"
+
+#~ msgid "C_onfigure"
+#~ msgstr "_Yapılandır"
+
+#~ msgid "_Plugins:"
+#~ msgstr "_Eklentiler:"
