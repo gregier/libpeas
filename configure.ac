@@ -102,11 +102,14 @@ AC_SUBST(GLIB_REQUIRED)
 AC_SUBST(GIO_REQUIRED)
 AC_SUBST(INTROSPECTION_REQUIRED)
 
+AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_32, [minimum glib version])
+AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_32, [maximum glib version])
+
 dnl ================================================================
 dnl Build libpeas-gtk
 dnl ================================================================
 
-GTK_REQUIRED=2.91.1
+GTK_REQUIRED=3.0.0
 
 AC_ARG_ENABLE(gtk,
 	      AS_HELP_STRING([--enable-gtk],[Build libpeas-gtk for Gtk widgetry]),
@@ -120,6 +123,9 @@ if test "$enable_gtk" = "yes"; then
 fi
 
 AC_SUBST(GTK_REQUIRED)
+
+AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_0, [minimum gdk version])
+AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_0, [maximum gdk version])
 
 AM_CONDITIONAL([ENABLE_GTK],[test "x$enable_gtk" = "xyes"])
 
