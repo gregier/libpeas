@@ -1,6 +1,0 @@
-[Plugin]
-Module=valahello
-Name=Vala also says Hello
-Description=Inserts a box containing "Hello World" in every window.
-Authors=Abderrahim Kitouni <a.kitouni@gmail.com>
-Copyright=Copyright © 2010 Abderrahim Kitouni

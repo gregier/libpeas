@@ -375,55 +375,6 @@ fi
 AM_CONDITIONAL([ENABLE_PYTHON],[test "$found_python" = "yes"])
 
 dnl ================================================================
-dnl Vala
-dnl ================================================================
-
-# AM_PROG_VALAC errors if a different version of vala is found
-# so we copied, renamed and fixed it
-# Autoconf support for the Vala compiler
-# Copyright (C) 2008, 2009 Free Software Foundation, Inc.
-#
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-AC_DEFUN([CHECK_VALAC],
-[AC_PATH_PROG([VALAC], [valac], [])
- AS_IF([test -z "$VALAC"],
-   [AC_MSG_WARN([No Vala compiler found.  You will not be able to compile .vala source files.])],
-   [AS_IF([test -n "$1"],
-      [AC_MSG_CHECKING([$VALAC is at least version $1])
-       am__vala_version=`$VALAC --version | sed 's/Vala  *//'`
-       AS_VERSION_COMPARE([$1], ["$am__vala_version"],
-         [AC_MSG_RESULT([yes])],
-         [AC_MSG_RESULT([yes])],
-         [AC_MSG_RESULT([no])])])])
-])
-
-VALA_REQUIRED=0.14.0.22
-
-AC_ARG_ENABLE([vala],
-	      AS_HELP_STRING([--enable-vala],[Enable Vala support]),
-	      [enable_vala=$enableval],
-	      [enable_vala=no])
-
-if test "$enable_vala" = "no"; then
-	found_vala="no (disabled, use --enable-vala to enable)"
-else
-	CHECK_VALAC($VALA_REQUIRED)
-	if test "$VALAC" = ""; then
-		found_vala="no (valac >= $VALA_REQUIRED not found)"
-	else
-		found_vala="yes"
-	fi
-fi
-
-if test "$enable_vala" = "yes" -a "$found_vala" != "yes"; then
-	AC_MSG_ERROR([$found_vala])
-fi
-
-AM_CONDITIONAL([ENABLE_VALA],[test "$found_vala" = "yes"])
-
-dnl ================================================================
 dnl Documentation
 dnl ================================================================
 
@@ -498,7 +449,6 @@ peas-demo/plugins/helloworld/Makefile
 peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
 peas-demo/plugins/seedhello/Makefile
-peas-demo/plugins/valahello/Makefile
 po/Makefile.in
 tests/Makefile
 tests/libpeas/Makefile
@@ -541,5 +491,4 @@ Languages support:
         Python support                : ${found_python}
         Javascript support (Seed)     : ${found_seed}
         Javascript support (GJS)      : ${found_gjs}
-        Vala support                  : ${found_vala}
 "
