@@ -47,16 +47,7 @@ struct _TestFixture {
   PeasPluginInfo *info;
 };
 
-static GPtrArray *interned_strings = NULL;
-static const gchar *extension_plugin = NULL;
-
-static const gchar *
-I_(gchar *s)
-{
-  g_ptr_array_add (interned_strings, s);
-
-  return s;
-}
+static gchar *extension_plugin = NULL;
 
 static void
 test_setup (TestFixture    *fixture,
@@ -478,10 +469,15 @@ test_extension_properties_prerequisite (PeasEngine     *engine,
 }
 
 #define _EXTENSION_TEST(loader, path, ftest) \
-  g_test_add (I_(g_strdup_printf ("/extension/%s/" path, loader)), \
-              TestFixture, \
-              (gpointer) test_extension_##ftest, \
-              test_setup, test_runner, test_teardown)
+  G_STMT_START { \
+    gchar *full_path = g_strdup_printf ("/extension/%s/" path, loader); \
+\
+    g_test_add (full_path, TestFixture, \
+                (gpointer) test_extension_##ftest, \
+                test_setup, test_runner, test_teardown); \
+\
+    g_free (full_path); \
+  } G_STMT_END
 
 void
 testing_extension_basic (const gchar *loader)
@@ -490,8 +486,7 @@ testing_extension_basic (const gchar *loader)
 
   testing_init ();
 
-  interned_strings = g_ptr_array_new_with_free_func (g_free);
-  extension_plugin = I_(g_strdup_printf ("extension-%s", loader));
+  extension_plugin = g_strdup_printf ("extension-%s", loader);
 
   engine = testing_engine_new ();
   peas_engine_enable_loader (engine, loader);
@@ -550,7 +545,7 @@ testing_extension_run_tests (void)
 
   retval = testing_run_tests ();
 
-  g_ptr_array_unref (interned_strings);
+  g_free (extension_plugin);
 
   return retval;
 }
