@@ -1,3 +1,22 @@
+Overview of Changes in libpeas 1.6.0
+====================================
+
+* Remove the vala demo plugin
+
+* Add min required and max allowed version for glib and Gdk
+
+* Translation updates:
+  - Assamese
+  - Bengali (India)
+  - Galician
+  - Gujarati
+  - Hindi
+  - Latvian
+  - Marathi
+  - Polish
+  - Thai
+  - Türkçe
+
 Overview of Changes in libpeas 1.5.0
 ====================================
 
