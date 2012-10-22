@@ -1,0 +1,152 @@
+# Slovak translation for libpeas.
+# Copyright (C) 2012 Free Software Foundation, Inc.
+# This file is distributed under the same license as the libpeas package.
+# Richard Stanislavský <kenny.vv@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-10-16 06:22+0000\n"
+"PO-Revision-Date: 2012-10-21 18:19+0100\n"
+"Last-Translator: Richard Stanislavský <kenny.vv@gmail.com>\n"
+"Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 1 : (n>=2 && n<=4) ? 2 : 0;\n"
+"X-Generator: Poedit 1.5.4\n"
+
+# widget title
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Správca zásuvných modulov"
+
+# PM: nie som si istý, či tam predsa len nemá byť "zobraziť", vyžiadaj si pre istotu komentár
+# property name
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+#, fuzzy
+msgid "View"
+msgstr "Pohľad"
+
+# nieco ako list view alebo tree view
+# widget title
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Zobrazenie zásuvných modulov"
+
+# property name
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr "Zobraziť vstavané"
+
+# widget group title
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:818
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "Nepodarilo sa nájsť závislosť „%s“"
+
+#: ../libpeas/peas-engine.c:828
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Nepodarilo sa načítať závislosť „%s“"
+
+#: ../libpeas/peas-engine.c:843
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "Nepodarilo sa nájsť „%s“, načítavač zásuvných modulov"
+
+#: ../libpeas/peas-engine.c:855
+#, c-format
+msgid "Failed to load"
+msgstr "Zlyhalo načítavanie"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr "Doplnkové zásuvné moduly musia byť zakázané"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Následujúce zásuvné moduly závisia na „%s“ a budú tiež zakázané:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "Zásuvné moduly"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr "Doplnkový zásuvný modul musí byť zakázaný"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"Zásuvný modul „%s“ závisí na zásuvnom module „%s“.\n"
+"Ak zakážete „%s“, „%s“ bude tiež zakázaný."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "Zakázať zásuvné moduly"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+msgid "There was an error displaying the help."
+msgstr "Vyskytla sa chyba pri zobrazení pomocníka."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_About"
+msgstr "_O zásuvnom module"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "Nas_tavenia"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "Povol_ený"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "_Povoliť všetky"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "_Zakázať všetky"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+msgid "Enabled"
+msgstr "Povolený"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+msgid "Plugin"
+msgstr "Zásuvný modul"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>Zásuvný modul „%s“ sa nepodarilo načítať</b>\n"
+"Vyskytla sa chyba: %s"
+
+# PM: toto treba preložiť popisne
+# PM: nepáči sa mi preklad build directory, vyžiadaj si komentár čo je to za adresár
+# popis príkazu príkazového riadka
+#: ../peas-demo/peas-demo.c:40
+#, fuzzy
+msgid "Run from build directory"
+msgstr "Spustiť z pracovného adresára"
+
+#: ../peas-demo/peas-demo.c:100
+msgid "- libpeas demo application"
+msgstr "- predvádzacia aplikácia služby libpeas"
