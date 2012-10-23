@@ -345,12 +345,16 @@ get_plugins__get_requires_cb (PkTask             *task,
                               GAsyncResult       *result,
                               GSimpleAsyncResult *simple)
 {
-  GetPluginsAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
+  PeasGtkPluginStoreBackendPk *pk_backend;
   GError *error = NULL;
   PkResults *results;
   GPtrArray *packages;
   GPtrArray *plugins;
   guint i;
+
+  pk_backend = PEAS_GTK_PLUGIN_STORE_BACKEND_PK (
+                    g_async_result_get_source_object (G_ASYNC_RESULT (simple)));
+  g_object_unref (pk_backend);
 
   results = pk_task_generic_finish (task, result, &error);
 
@@ -418,7 +422,7 @@ get_plugins__update (PeasGtkPluginStoreBackendPk *pk_backend,
     PK_FILTER_ENUM_NOT_COLLECTIONS
   };
 
-  package_ids[0] = pk_package_get_id (pk_backed->program_package);
+  package_ids[0] = pk_package_get_id (pk_backend->priv->program_package);
 
   for (i = 0; i < G_N_ELEMENTS (wanted_filters); ++i)
     {
@@ -468,7 +472,7 @@ get_plugins__search_files_cb (PkTask             *task,
       goto out;
     }
 
-  pk_backed->program_package = g_object_ref (g_ptr_array_index (packages, 0));
+  pk_backend->priv->program_package = g_object_ref (g_ptr_array_index (packages, 0));
 
   get_plugins__update (pk_backend, simple, data->cancellable);
 
@@ -549,6 +553,7 @@ install_plugin__install_package_cb (PkTask             *task,
                                     GAsyncResult       *result,
                                     GSimpleAsyncResult *simple)
 {
+  GetPluginsAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
   PeasGtkPluginStoreBackendPk *pk_backend;
   GError *error = NULL;
   PkResults *results;
@@ -572,6 +577,7 @@ uninstall_plugin__remove_package_cb (PkTask             *task,
                                      GAsyncResult       *result,
                                      GSimpleAsyncResult *simple)
 {
+  GetPluginsAsyncData *data = g_simple_async_result_get_op_res_gpointer (simple);
   PeasGtkPluginStoreBackendPk *pk_backend;
   GError *error = NULL;
   PkResults *results;
