@@ -16,7 +16,7 @@ INCLUDES = \
 
 noinst_PROGRAMS = $(TEST_PROGS)
 
-progs_ldadd = \
+LDADD = \
 	$(PEAS_LIBS)					\
 	$(PEAS_GTK_LIBS)				\
 	$(top_builddir)/libpeas/libpeas-1.0.la		\
@@ -28,12 +28,3 @@ TEST_PROGS += \
 	plugin-manager		\
 	plugin-manager-store	\
 	plugin-manager-view
-
-plugin_manager_SOURCES = plugin-manager.c
-plugin_manager_LDADD   = $(progs_ldadd)
-
-plugin_manager_store_SOURCES = plugin-manager-store.c
-plugin_manager_store_LDADD   = $(progs_ldadd)
-
-plugin_manager_view_SOURCES = plugin-manager-view.c
-plugin_manager_view_LDADD   = $(progs_ldadd)
