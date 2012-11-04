@@ -299,8 +299,6 @@ main (int    argc,
 {
   gtk_test_init (&argc, &argv, NULL);
 
-  g_type_init ();
-
 #define TEST(path, ftest) \
   g_test_add ("/gtk/plugin-manager-store/" path, TestFixture, \
               (gpointer) test_gtk_plugin_manager_store_##ftest, \

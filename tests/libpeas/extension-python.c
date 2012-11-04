@@ -112,7 +112,6 @@ main (int   argc,
       char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-  g_type_init ();
 
   testing_extension_all ("python");
 

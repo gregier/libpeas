@@ -292,8 +292,6 @@ main (int    argc,
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_type_init ();
-
 #define TEST(path, ftest) \
   g_test_add ("/extension-set/" path, TestFixture, \
               (gpointer) test_extension_set_##ftest, \

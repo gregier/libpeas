@@ -48,8 +48,6 @@ main (int   argc,
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_type_init ();
-
   testing_extension_all ("seed");
 
   EXTENSION_TEST (seed, "nonexistent", nonexistent);

@@ -124,6 +124,10 @@ testing_util_init (void)
   if (initialized)
     return;
 
+#if !GLIB_CHECK_VERSION (2, 35, 0)
+  g_type_init ();
+#endif
+
   /* Don't abort on warnings or criticals */
   g_log_set_always_fatal (G_LOG_LEVEL_ERROR);
 

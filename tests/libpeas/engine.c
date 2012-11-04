@@ -452,8 +452,6 @@ main (int    argc,
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_type_init ();
-
 #define TEST(path, ftest) \
   g_test_add ("/engine/" path, TestFixture, \
               (gpointer) test_engine_##ftest, \

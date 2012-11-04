@@ -182,8 +182,6 @@ main (int    argc,
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_type_init ();
-
 #define TEST(path, ftest) \
   g_test_add ("/plugin-info/" path, TestFixture, \
               (gpointer) test_plugin_info_##ftest, \
