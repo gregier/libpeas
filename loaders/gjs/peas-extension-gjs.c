@@ -25,6 +25,7 @@
 
 #include <string.h>
 
+#include <gjs/gjs-module.h>
 #include <girepository.h>
 #include <gi/arg.h>
 #include <gi/value.h>
