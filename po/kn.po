@@ -7,15 +7,15 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-09-22 11:50+0000\n"
-"PO-Revision-Date: 2012-10-05 17:17+0530\n"
+"POT-Creation-Date: 2012-10-14 18:23+0000\n"
+"PO-Revision-Date: 2012-12-10 15:42+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <kde-i18n-doc@kde.org>\n"
-"Language: \n"
+"Language: kn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.2\n"
+"X-Generator: Lokalize 1.5\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
@@ -33,40 +33,42 @@ msgstr "ಪ್ಲಗ್‌ಇನ್‌ ವ್ಯವಸ್ಥಾಪಕ ನೋಟ"
 #. Translators: Whether builtin plugins should appear in the view (property name)
 #: ../data/glade/libpeas-gtk.xml.in.h:5
 msgid "Show Builtin"
-msgstr ""
+msgstr "ಒಳನಿರ್ಮಿತವನ್ನು ತೋರಿಸು"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Peas Gtk"
-msgstr ""
+msgstr "Peas Gtk"
 
 #: ../libpeas/peas-engine.c:818
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr ""
+msgstr "'%s' ಅವಲಂಬನೆ ಕಂಡುಬಂದಿಲ್ಲ"
 
 #: ../libpeas/peas-engine.c:828
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr ""
+msgstr "'%s' ಅವಲಂಬನೆ ಲೋಡ್ ಆಗುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #: ../libpeas/peas-engine.c:843
 #, c-format
 msgid "Plugin loader '%s' was not found"
-msgstr ""
+msgstr "'%s' ಪ್ಲಗ್‌ಇನ್ ಲೋಡರ್ ಕಂಡು ಬಂದಿಲ್ಲ"
 
 #: ../libpeas/peas-engine.c:855
 #, c-format
 msgid "Failed to load"
-msgstr ""
+msgstr "ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
 msgid "Additional plugins must be disabled"
-msgstr ""
+msgstr "ಹೆಚ್ಚುವರಿ ಪ್ಲಗ್‌ಇನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕು"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr ""
+"ಈ ಕೆಳಗಿನ ಪ್ಲಗ್‌ಇನ್‌ಗಳು '%s' ಮೇಲೆ ಅವಲಂಬಿತವಾಗಿರುತ್ತವೆ ಮತ್ತು ಅವುಗಳನ್ನೂ ಸಹ "
+"ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
@@ -74,7 +76,7 @@ msgstr "ಪ್ಲಗ್ಇನ್‌ಗಳು"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
 msgid "An additional plugin must be disabled"
-msgstr ""
+msgstr "ಒಂದು ಹೆಚ್ಚುವರಿ ಪ್ಲಗ್‌ಇನ್‌ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕು"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
 #, c-format
@@ -82,14 +84,16 @@ msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
+"'%s' ಪ್ಲಗ್‌ಇನ್ '%s' ಪ್ಲಗ್‌ಇನ್‌ ಮೇಲೆ ಅವಲಂಬಿತವಾಗಿದೆ.\n"
+"ನೀವು '%s' ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದಲ್ಲಿ, '%s' ಸಹ ನಿಷ್ಕ್ರಿಯಗೊಳ್ಳುತ್ತದೆ."
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
-msgstr ""
+msgstr "ಪ್ಲಗ್‌ಇನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
 msgid "There was an error displaying the help."
-msgstr ""
+msgstr "ನೆರವನ್ನು ತೋರಿಸುವಾಗ ಒಂದು ದೋಷ ಉಂಟಾಗಿದೆ."
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_About"
@@ -105,11 +109,11 @@ msgstr "ಶಕ್ತಗೊಂಡಿದೆ (_E)"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
 msgid "E_nable All"
-msgstr ""
+msgstr "ಎಲ್ಲವನ್ನೂ ಸಕ್ರಿಯಗೊಳಿಸು (_n)"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
 msgid "_Disable All"
-msgstr ""
+msgstr "ಎಲ್ಲವನ್ನೂ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು (_D)"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
 msgid "Enabled"
@@ -125,12 +129,14 @@ msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
 "An error occurred: %s"
 msgstr ""
+"<b>'%s' ಪ್ಲಗ್‌ಇನ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ</b>\n"
+"ಒಂದು ದೋಷವು ಸಂಭವಿಸಿದೆ: %s"
 
 #: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
-msgstr ""
+msgstr "ನಿರ್ಮಾಣ ಕೋಶದಿಂದ ಚಲಾಯಿಸಿ"
 
 #: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
-msgstr ""
+msgstr "- libpeas ಪ್ರಾಯೋಗಿಕ ಅನ್ವಯ"
 
