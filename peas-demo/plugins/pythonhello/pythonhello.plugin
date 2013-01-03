@@ -1,6 +1,6 @@
 [Plugin]
 Module=pythonhello
-Loader=python
+Loader=python3
 Name=Python Says Hello
 Description=Inserts a box containing "Python Says Hello" in every windows.
 Authors=Steve Frécinaux <code@istique.net>

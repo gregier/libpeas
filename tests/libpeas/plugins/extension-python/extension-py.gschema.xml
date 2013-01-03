@@ -1,5 +1,5 @@
 <schemalist>
-  <schema id="extension-python" path="/org/gnome/libpeas/tests/extension-python/">
+  <schema id="extension-PY_LOADER" path="/org/gnome/libpeas/tests/extension-PY_LOADER/">
     <key name="a-setting" type="s">
       <default>'Blah'</default>
       <summary>Just a setting.</summary>

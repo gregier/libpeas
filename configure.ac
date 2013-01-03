@@ -311,68 +311,106 @@ dnl ================================================================
 dnl Python
 dnl ================================================================
 
-PYTHON_REQUIRED=2.5.2
+PYTHON2_REQUIRED=2.5.2
+PYTHON3_REQUIRED=3.2.0
 
 dnl Used by the Python loader to check the PyGObject version at runtime
 PYGOBJECT_MAJOR_VERSION=3
 PYGOBJECT_MINOR_VERSION=0
 PYGOBJECT_MICRO_VERSION=0
 PYGOBJECT_REQUIRED=$PYGOBJECT_MAJOR_VERSION.$PYGOBJECT_MINOR_VERSION.$PYGOBJECT_MICRO_VERSION
+AC_DEFINE_UNQUOTED(PYGOBJECT_MAJOR_VERSION,[$PYGOBJECT_MAJOR_VERSION], [PyGObject major version.])
+AC_DEFINE_UNQUOTED(PYGOBJECT_MINOR_VERSION,[$PYGOBJECT_MINOR_VERSION], [PyGObject minor version.])
+AC_DEFINE_UNQUOTED(PYGOBJECT_MICRO_VERSION,[$PYGOBJECT_MICRO_VERSION], [PyGObject micro version.])
 
-AC_ARG_ENABLE(python,
-	      AS_HELP_STRING([--enable-python],[Enable Python support]),
-	      [enable_python=$enableval],
-	      [enable_python=auto])
+AC_MSG_CHECKING([for Python 2 availability.])
 
-if test "$enable_python" = "no"; then
-	found_python="no (disabled, use --enable-python to enable)"
+AC_ARG_ENABLE(python2,
+    AS_HELP_STRING([--enable-python2],[Enable Python 2 support]),
+    [enable_python2=$enableval],
+    [enable_python2=auto])
+
+if test "x$enable_python2" = "xno"; then
+    found_python2="no (disabled, use --enable-python2 to enable)"
 else
-	AM_PATH_PYTHON($PYTHON_REQUIRED,
-		       [found_python=yes],
-		       [found_python="no (python interpretor >= ${PYTHON_REQUIRED} not found"])
-
-	if test "$found_python" = "yes"; then
-		AC_PATH_TOOL(PYTHON_CONFIG, "python${PYTHON_VERSION}-config")
-		if test -z "$PYTHON_CONFIG"; then
-			AC_PATH_TOOL(PYTHON_CONFIG, "python-config-${PYTHON_VERSION}")
-			if test -z "$PYTHON_CONFIG"; then
-				found_python="no (python${PYTHON_VERSION}-config not found)"
-			fi
-		fi
-	fi
-
-	if test "$found_python" = "yes"; then
-		save_CPPFLAGS="${CPPFLAGS}"
-		CPPFLAGS="$CPPFLAGS `$PYTHON_CONFIG --includes`"
-		AC_CHECK_HEADER(Python.h,,[found_python="no (Python headers not found)"])
-		CPPFLAGS="${save_CPPFLAGS}"
-	fi
-
-	AC_MSG_CHECKING([for PyGObject availability.])
-	if test "$found_python" = "yes"; then
-		PKG_CHECK_EXISTS([pygobject-3.0 >= $PYGOBJECT_REQUIRED],,
-				 [found_python="no (pygobject >= $PYGOBJECT_REQUIRED not found)"])
-	fi
-	AC_MSG_RESULT([$found_python])
+    dnl NOTE: we do not use AM_PATH_PYTHON, since it does not allow
+    dnl to call it twice for py2 and py3, so we just check the prog
+    AC_PATH_PROGS(PYTHON2, [python2 python2.7 python2.6 python2.5])
+    if test -z "${PYTHON2}"; then
+        found_python2="no (python2 not found)"
+    else
+        AM_PYTHON_CHECK_VERSION($PYTHON2, $PYTHON2_REQUIRED, [
+            AC_PATH_TOOL(PYTHON2_CONFIG, "python2-config")
+            if test -n "${PYTHON2_CONFIG}"; then
+                PKG_CHECK_MODULES(PYGOBJECT, pygobject-3.0 >= $PYGOBJECT_REQUIRED, [
+                    found_python2=yes
+                    PYTHON2_CFLAGS=`${PYTHON2_CONFIG} --includes`
+                    PYTHON2_LIBS=`${PYTHON2_CONFIG} --libs`
+                    pyexecdir=`$PYTHON2 -c "import sys; from distutils import sysconfig; print sysconfig.get_python_lib(True, prefix='')"`
+                    PYTHON2_PYEXECDIR="\${exec_prefix}/${pyexecdir}"
+                    AC_SUBST(PYTHON2_CFLAGS)
+                    AC_SUBST(PYTHON2_LIBS)
+                    AC_SUBST(PYTHON2_PYEXECDIR)
+                    AC_DEFINE(ENABLE_PYTHON2, 1, [Define to compile with Python 2 support])
+                ], [
+                    found_python2="no (PyGObject not found)"
+                ])
+            else
+                found_python2="no (python2-config not found)"
+            fi
+        ], [
+            found_python2="no (python2 version too old)"
+        ])
+    fi
 fi
 
-if test "$enable_python" = "yes" -a "$found_python" != "yes"; then
-	AC_MSG_ERROR([$found_python])
+if test "x$enable_python2" = "xyes" -a "x$found_python2" != "xyes"; then
+    AC_MSG_ERROR([You need to have Python 2 and PyGobject installed to build libpeas])
+fi
+AC_MSG_RESULT([$found_python2])
+
+AM_CONDITIONAL([ENABLE_PYTHON2],[test "x$found_python2" = "xyes"])
+
+
+AC_MSG_CHECKING([for Python 3 availability.])
+
+AC_ARG_ENABLE(python3,
+    AS_HELP_STRING([--enable-python3],[Enable Python 3 support]),
+    [enable_python3=$enableval],
+    [enable_python3=auto])
+
+if test "x$enable_python3" = "xno"; then
+    found_python3="no (disabled, use --enable-python3 to enable)"
+else
+    AM_PATH_PYTHON($PYTHON3_REQUIRED, [
+        AC_PATH_TOOL(PYTHON3_CONFIG, "python3-config")
+        if test -n "${PYTHON3_CONFIG}"; then
+            PKG_CHECK_MODULES(PYGOBJECT, pygobject-3.0 >= $PYGOBJECT_REQUIRED, [
+                found_python3=yes
+                PYTHON3_CFLAGS=`${PYTHON3_CONFIG} --includes`
+                PYTHON3_LIBS=`${PYTHON3_CONFIG} --libs`
+                PYTHON3_PYEXECDIR="${pyexecdir}"
+                AC_SUBST(PYTHON3_CFLAGS)
+                AC_SUBST(PYTHON3_LIBS)
+                AC_SUBST(PYTHON3_PYEXECDIR)
+                AC_DEFINE(ENABLE_PYTHON3, 1, [Define to compile with Python 3 support])
+            ], [
+                found_python3="no (PyGObject not found)"
+            ])
+        else
+            found_python3="no (python3-config not found)"
+        fi
+    ], [
+        found_python3="no (python3 not found)"
+    ])
 fi
 
-if test "$found_python" = "yes"; then
-	PYTHON_CFLAGS="`$PKG_CONFIG --cflags pygobject-3.0` `$PYTHON_CONFIG --includes`"
-	PYTHON_LIBS="`$PKG_CONFIG --libs pygobject-3.0` `$PYTHON_CONFIG --libs`"
-	AC_SUBST(PYTHON_CFLAGS)
-	AC_SUBST(PYTHON_LIBS)
-
-	AC_DEFINE_UNQUOTED(PYGOBJECT_MAJOR_VERSION,[$PYGOBJECT_MAJOR_VERSION], [PyGObject major version.])
-	AC_DEFINE_UNQUOTED(PYGOBJECT_MINOR_VERSION,[$PYGOBJECT_MINOR_VERSION], [PyGObject minor version.])
-	AC_DEFINE_UNQUOTED(PYGOBJECT_MICRO_VERSION,[$PYGOBJECT_MICRO_VERSION], [PyGObject micro version.])
-	AC_DEFINE(ENABLE_PYTHON,1,[Define to compile with Python support])
+if test "x$enable_python3" = "xyes" -a "x$found_python3" != "xyes"; then
+    AC_MSG_ERROR([You need to have Python 3 and PyGObject installed to build libpeas])
 fi
+AC_MSG_RESULT([$found_python3])
 
-AM_CONDITIONAL([ENABLE_PYTHON],[test "$found_python" = "yes"])
+AM_CONDITIONAL([ENABLE_PYTHON3],[test "x$found_python3" = "xyes"])
 
 dnl ================================================================
 dnl Documentation
@@ -436,6 +474,7 @@ libpeas-gtk/Makefile
 loaders/Makefile
 loaders/gjs/Makefile
 loaders/python/Makefile
+loaders/python3/Makefile
 loaders/seed/Makefile
 data/Makefile
 data/glade/Makefile
@@ -488,7 +527,8 @@ Configuration:
 
 Languages support:
 
-        Python support                : ${found_python}
+        Python 2 support              : ${found_python2}
+        Python 3 support              : ${found_python3}
         Javascript support (Seed)     : ${found_seed}
         Javascript support (GJS)      : ${found_gjs}
 "

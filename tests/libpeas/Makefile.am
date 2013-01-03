@@ -35,11 +35,18 @@ extension_gjs_CFLAGS   = $(GJS_CFLAGS)
 extension_gjs_LDADD    = $(progs_ldadd) $(GJS_LIBS)
 endif
 
-if ENABLE_PYTHON
+if ENABLE_PYTHON2
 TEST_PROGS               += extension-python
 extension_python_SOURCES  = extension-python.c
-extension_python_CFLAGS   = $(PYTHON_CFLAGS)
-extension_python_LDADD    = $(progs_ldadd) $(PYTHON_LIBS)
+extension_python_CFLAGS   = $(PYGOBJECT_CFLAGS) $(PYTHON2_CFLAGS)
+extension_python_LDADD    = $(progs_ldadd) $(PYGOBJECT_LIBS) $(PYTHON2_LIBS)
+endif
+
+if ENABLE_PYTHON3
+TEST_PROGS                += extension-python3
+extension_python3_SOURCES  = extension-python3.c
+extension_python3_CFLAGS   = $(PYGOBJECT_CFLAGS) $(PYTHON3_CFLAGS)
+extension_python3_LDADD    = $(progs_ldadd) $(PYGOBJECT_LIBS) $(PYTHON3_LIBS)
 endif
 
 if ENABLE_SEED

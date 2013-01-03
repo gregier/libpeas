@@ -1,8 +1,0 @@
-[Plugin]
-Module=extension-python
-Loader=python
-Name=Extension Python
-Description=This plugin is for the Python PeasExtension tests.
-Authors=Garrett Regier
-Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas

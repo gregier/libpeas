@@ -76,6 +76,7 @@ Makefile.in
 /tests/libpeas/extension-c
 /tests/libpeas/extension-gjs
 /tests/libpeas/extension-python
+/tests/libpeas/extension-python3
 /tests/libpeas/extension-seed
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
@@ -85,6 +86,12 @@ Makefile.in
 /tests/libpeas/plugins/extension-js/extension-seed.gschema.xml
 /tests/libpeas/plugins/extension-js/extension-seed.js
 /tests/libpeas/plugins/extension-js/extension-seed.plugin
+/tests/libpeas/plugins/extension-python/extension-python.gschema.xml
+/tests/libpeas/plugins/extension-python/extension-python.plugin
+/tests/libpeas/plugins/extension-python/extension-python.py
+/tests/libpeas/plugins/extension-python/extension-python3.gschema.xml
+/tests/libpeas/plugins/extension-python/extension-python3.plugin
+/tests/libpeas/plugins/extension-python/extension-python3.py
 /tests/libpeas-gtk/plugin-manager
 /tests/libpeas-gtk/plugin-manager-store
 /tests/libpeas-gtk/plugin-manager-view

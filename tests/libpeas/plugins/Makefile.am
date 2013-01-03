@@ -10,8 +10,12 @@ SUBDIRS += extension-js
 endif
 endif
 
-if ENABLE_PYTHON
+if ENABLE_PYTHON3
 SUBDIRS += extension-python
+else
+if ENABLE_PYTHON2
+SUBDIRS += extension-python
+endif
 endif
 
 noinst_PLUGIN = \
@@ -19,6 +23,7 @@ noinst_PLUGIN = \
 	extension-c-nonexistent.plugin		\
 	extension-gjs-nonexistent.plugin	\
 	extension-python-nonexistent.plugin	\
+	extension-python3-nonexistent.plugin	\
 	extension-seed-nonexistent.plugin	\
 	info-missing-module.plugin		\
 	info-missing-name.plugin		\

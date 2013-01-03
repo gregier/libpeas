@@ -4,7 +4,7 @@ if ENABLE_GJS
 SUBDIRS += gjshello
 endif
 
-if ENABLE_PYTHON
+if ENABLE_PYTHON3
 SUBDIRS += pythonhello
 endif
 
