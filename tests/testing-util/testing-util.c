@@ -135,6 +135,9 @@ testing_util_init (void)
 
   g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
 
+  /* Prevent python from generating compiled files, they break distcheck */
+  g_setenv ("PYTHONDONTWRITEBYTECODE", "yes", TRUE);
+
   g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
   g_assert_no_error (error);
 
