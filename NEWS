@@ -1,3 +1,13 @@
+Overview of Changes in libpeas 1.7.0
+====================================
+
+* Add python3 loader
+
+* Translation updates:
+  - Friulan
+  - Kannada
+  - Odia
+
 Overview of Changes in libpeas 1.6.2
 ====================================
 
@@ -5,7 +15,6 @@ Overview of Changes in libpeas 1.6.2
 
 * Translation updates:
   - Slovak
-
 
 Overview of Changes in libpeas 1.6.1
 ====================================
