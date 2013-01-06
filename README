@@ -78,13 +78,6 @@ Let's try and give a definition of both of these words in this context:
   the configuration dialog, the left panel pane and a completion provider for
   file names.
 
-Building libpeas
-----------------
-
-Building libpeas is quite straightforward. But as of today (8 jun 2010) you need
-to be careful to build pygobject with the --enable-pygi option if you plan on
-using the Python bindings capability, or you will experience weird bugs.
-
 Sample code
 -----------
 
@@ -97,4 +90,4 @@ the information needed for it to find your plugins. Then you load some plugins
 through some PeasExtensions objects you can get from the engine.
 
 
-Copied from http://log.istique.net/2010-06-03/announcing-libpeas.html
+Copied from http://log.istique.net/2010/announcing-libpeas
