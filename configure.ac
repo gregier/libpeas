@@ -346,10 +346,11 @@ else
                     found_python2=yes
                     PYTHON2_CFLAGS=`${PYTHON2_CONFIG} --includes`
                     PYTHON2_LIBS=`${PYTHON2_CONFIG} --libs`
-                    pyexecdir=`$PYTHON2 -c "import sys; from distutils import sysconfig; print sysconfig.get_python_lib(True, prefix='')"`
-                    PYTHON2_PYEXECDIR="\${exec_prefix}/${pyexecdir}"
+                    PYTHON2_LDFLAGS=`${PYTHON2_CONFIG} --ldflags`
+                    PYTHON2_PYEXECDIR=`$PYTHON2 -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1, 0, prefix='\\$' '{exec_prefix}'))"`
                     AC_SUBST(PYTHON2_CFLAGS)
                     AC_SUBST(PYTHON2_LIBS)
+                    AC_SUBST(PYTHON2_LDFLAGS)
                     AC_SUBST(PYTHON2_PYEXECDIR)
                     AC_DEFINE(ENABLE_PYTHON2, 1, [Define to compile with Python 2 support])
                 ], [
@@ -389,9 +390,11 @@ else
                 found_python3=yes
                 PYTHON3_CFLAGS=`${PYTHON3_CONFIG} --includes`
                 PYTHON3_LIBS=`${PYTHON3_CONFIG} --libs`
+                PYTHON3_LDFLAGS=`${PYTHON3_CONFIG} --ldflags`
                 PYTHON3_PYEXECDIR="${pyexecdir}"
                 AC_SUBST(PYTHON3_CFLAGS)
                 AC_SUBST(PYTHON3_LIBS)
+                AC_SUBST(PYTHON3_LDFLAGS)
                 AC_SUBST(PYTHON3_PYEXECDIR)
                 AC_DEFINE(ENABLE_PYTHON3, 1, [Define to compile with Python 3 support])
             ], [
@@ -435,7 +438,9 @@ AC_SUBST(LT_AGE)
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
 TEST_PLUGIN_LIBTOOL_FLAGS="$PLUGIN_LIBTOOL_FLAGS -rpath /nowhere"
 TEST_INTROSPECTION_LIBTOOL_FLAGS="-rpath /nowhere -export-dynamic -no-undefined"
-LOADER_LIBTOOL_FLAGS="-module -avoid-version -export-symbols-regex peas_register_types"
+# Cannot use "-export-symbols-regex peas_register_types"
+# because it might make the python plugin loader not work!
+LOADER_LIBTOOL_FLAGS="-module -avoid-version"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(TEST_PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(TEST_INTROSPECTION_LIBTOOL_FLAGS)

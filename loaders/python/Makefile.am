@@ -22,8 +22,9 @@ libpythonloader_la_SOURCES = \
 	peas-plugin-loader-python.h
 
 libpythonloader_la_LDFLAGS = \
-	$(LOADER_LIBTOOL_FLAGS)	\
-	$(GCOV_LDFLAGS)
+	$(LOADER_LIBTOOL_FLAGS)		\
+	$(GCOV_LDFLAGS)			\
+	$(PYTHON2_LDFLAGS)
 
 libpythonloader_la_LIBADD = \
 	$(PEAS_LIBS)			\

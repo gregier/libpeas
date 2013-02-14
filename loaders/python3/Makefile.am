@@ -22,8 +22,9 @@ libpython3loader_la_SOURCES = \
 	$(top_srcdir)/loaders/python/peas-plugin-loader-python.h
 
 libpython3loader_la_LDFLAGS = \
-	$(LOADER_LIBTOOL_FLAGS)	\
-	$(GCOV_LDFLAGS)
+	$(LOADER_LIBTOOL_FLAGS)		\
+	$(GCOV_LDFLAGS)			\
+	$(PYTHON3_LDFLAGS)
 
 libpython3loader_la_LIBADD = \
 	$(PEAS_LIBS)			\
