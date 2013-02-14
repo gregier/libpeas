@@ -370,7 +370,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *mdict, *gettext, *install, *gettext_args;
-  gchar *prgname;
+  const gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
   const char *argv[] = { "", NULL };
 #else
@@ -442,7 +442,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   pygobject_init (PYGOBJECT_MAJOR_VERSION, PYGOBJECT_MINOR_VERSION, PYGOBJECT_MICRO_VERSION);
   if (PyErr_Occurred ())
     {
-      g_warning ("Error initializing Python Plugin Loader:"
+      g_warning ("Error initializing Python Plugin Loader: "
                  "PyGObject initialization failed");
       PyErr_Print ();
 

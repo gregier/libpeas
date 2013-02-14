@@ -56,7 +56,6 @@
  * Copyright=Copyright © 2009-10 Steve Frécinaux
  * Website=http://live.gnome.org/Libpeas
  * Help=http://library.gnome.org/devel/libpeas/unstable/
- * IAge=2
  * ]|
  **/
 

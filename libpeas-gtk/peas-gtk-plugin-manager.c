@@ -365,7 +365,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_style_context_set_junction_sides (context, GTK_JUNCTION_BOTTOM);
   gtk_box_pack_start (GTK_BOX (pm), pm->priv->sw, TRUE, TRUE, 0);
 
-  toolbar = gtk_toolbar_new();
+  toolbar = gtk_toolbar_new ();
   gtk_toolbar_set_icon_size (GTK_TOOLBAR (toolbar), GTK_ICON_SIZE_MENU);
   context = gtk_widget_get_style_context (toolbar);
   gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
@@ -374,11 +374,11 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
 
   toolitem = gtk_tool_item_new ();
   gtk_tool_item_set_expand (toolitem, TRUE);
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
   /* this box is needed to get the items at the end of the toolbar */
   toolbar_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_container_add (GTK_CONTAINER (toolitem), toolbar_box);
-  gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
   /* we need another box to disable css grouping */
   item_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
