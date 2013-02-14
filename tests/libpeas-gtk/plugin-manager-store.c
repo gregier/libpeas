@@ -125,29 +125,68 @@ verify_model (TestFixture    *fixture,
               PeasPluginInfo *info,
               gboolean        can_enable,
               const gchar    *icon_name,
+              GType           icon_type,
               gboolean        icon_visible,
               gboolean        info_sensitive)
 {
   GtkTreeIter iter;
   gboolean model_can_enable, model_icon_visible, model_info_sensitive;
-  gchar *model_icon_name;
+  GIcon *model_icon_gicon;
+  gchar *model_icon_stock_id;
 
   g_assert (peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
                                                                 &iter, info));
 
   gtk_tree_model_get (fixture->model, &iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,     &model_can_enable,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN,      &model_icon_name,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_GICON_COLUMN,     &model_icon_gicon,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_STOCK_ID_COLUMN,  &model_icon_stock_id,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,   &model_icon_visible,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN, &model_info_sensitive,
     -1);
 
   g_assert_cmpint (model_can_enable, ==, can_enable);
-  g_assert_cmpstr (model_icon_name, ==, icon_name);
   g_assert_cmpint (model_icon_visible, ==, icon_visible);
   g_assert_cmpint (model_info_sensitive, ==, info_sensitive);
 
-  g_free (model_icon_name);
+  if (icon_type == G_TYPE_INVALID)
+    {
+      g_assert_cmpstr (model_icon_stock_id, ==, icon_name);
+    }
+  else
+    {
+      g_assert (g_type_is_a (G_OBJECT_TYPE (model_icon_gicon), icon_type));
+
+      if (icon_type == G_TYPE_FILE_ICON)
+        {
+          GFile *file;
+          gchar *basename;
+
+          file = g_file_icon_get_file (G_FILE_ICON (model_icon_gicon));
+          basename = g_file_get_basename (file);
+
+          g_assert_cmpstr (basename, ==, icon_name);
+
+          g_free (basename);
+        }
+      else if (icon_type == G_TYPE_THEMED_ICON)
+        {
+          GThemedIcon *themed_icon;
+          const gchar * const *icon_names;
+
+          themed_icon = G_THEMED_ICON (model_icon_gicon);
+          icon_names = g_themed_icon_get_names (themed_icon);
+
+          g_assert (icon_names);
+          g_assert_cmpstr (icon_names[0], ==, icon_name);
+        }
+      else
+        {
+          g_assert_not_reached ();
+        }
+    }
+
+  g_free (model_icon_stock_id);
 }
 
 static void
@@ -157,7 +196,8 @@ test_gtk_plugin_manager_store_verify_loadable (TestFixture *fixture)
 
   info = peas_engine_get_plugin_info (fixture->engine, "loadable");
 
-  verify_model (fixture, info, TRUE, "libpeas-plugin", FALSE, TRUE);
+  verify_model (fixture, info, TRUE, "libpeas-plugin", G_TYPE_THEMED_ICON,
+                FALSE, TRUE);
 }
 
 static void
@@ -169,11 +209,13 @@ test_gtk_plugin_manager_store_verify_unavailable (TestFixture *fixture)
 
   info = peas_engine_get_plugin_info (fixture->engine, "unavailable");
 
-  verify_model (fixture, info, TRUE, "libpeas-plugin", FALSE, TRUE);
+  verify_model (fixture, info, TRUE, "libpeas-plugin", G_TYPE_THEMED_ICON,
+                FALSE, TRUE);
 
   peas_engine_load_plugin (fixture->engine, info);
 
-  verify_model (fixture, info, FALSE, GTK_STOCK_DIALOG_ERROR, TRUE, FALSE);
+  verify_model (fixture, info, FALSE, "dialog-error",
+                G_TYPE_THEMED_ICON, TRUE, FALSE);
 }
 
 static void
@@ -183,11 +225,13 @@ test_gtk_plugin_manager_store_verify_builtin (TestFixture *fixture)
 
   info = peas_engine_get_plugin_info (fixture->engine, "builtin");
 
-  verify_model (fixture, info, FALSE, "libpeas-plugin", FALSE, FALSE);
+  verify_model (fixture, info, FALSE, "libpeas-plugin", G_TYPE_THEMED_ICON,
+                FALSE, FALSE);
 
   peas_engine_load_plugin (fixture->engine, info);
 
-  verify_model (fixture, info, FALSE, "libpeas-plugin", FALSE, TRUE);
+  verify_model (fixture, info, FALSE, "libpeas-plugin", G_TYPE_THEMED_ICON,
+                FALSE, TRUE);
 }
 
 static void
@@ -224,59 +268,49 @@ test_gtk_plugin_manager_store_verify_info (TestFixture *fixture)
 static void
 verify_icon (TestFixture *fixture,
              const gchar *plugin_name,
-             gboolean     has_pixbuf,
-             const gchar *icon_name)
+             const gchar *icon_name,
+             GType        icon_type)
 {
   PeasPluginInfo *info;
-  GtkTreeIter iter;
-  GdkPixbuf *model_icon_pixbuf;
-  gchar *model_icon_name;
 
   info = peas_engine_get_plugin_info (fixture->engine, plugin_name);
-  g_assert (peas_gtk_plugin_manager_store_get_iter_from_plugin (fixture->store,
-                                                                &iter, info));
 
-  gtk_tree_model_get (fixture->model, &iter,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN, &model_icon_pixbuf,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN, &model_icon_name,
-    -1);
-
-  if (has_pixbuf)
-    g_assert (GDK_IS_PIXBUF (model_icon_pixbuf));
-  else
-    g_assert (!GDK_IS_PIXBUF (model_icon_pixbuf));
-
-  g_assert_cmpstr (model_icon_name, ==, icon_name);
-
-  if (model_icon_pixbuf != NULL)
-    g_object_unref (model_icon_pixbuf);
-
-  if (model_icon_name != NULL)
-    g_free (model_icon_name);
+  verify_model (fixture, info, TRUE, icon_name, icon_type, FALSE, TRUE);
 }
 
 static void
 test_gtk_plugin_manager_store_valid_custom_icon (TestFixture *fixture)
 {
-  verify_icon (fixture, "valid-custom-icon", TRUE, NULL);
+  verify_icon (fixture, "valid-custom-icon", "exists.png", G_TYPE_FILE_ICON);
 }
 
 static void
 test_gtk_plugin_manager_store_valid_stock_icon (TestFixture *fixture)
 {
-  verify_icon (fixture, "valid-stock-icon", FALSE, "gtk-about");
+  GtkIconTheme *icon_theme;
+  GType icon_type = icon_type = G_TYPE_INVALID;
+
+  icon_theme = gtk_icon_theme_get_default ();
+
+  /* Usually the theme does not have this icon */
+  if (gtk_icon_theme_has_icon (icon_theme, "gtk-unindent"))
+    icon_type = G_TYPE_THEMED_ICON;
+
+  verify_icon (fixture, "valid-stock-icon", "gtk-unindent", icon_type);
 }
 
 static void
 test_gtk_plugin_manager_store_invalid_custom_icon (TestFixture *fixture)
 {
-  verify_icon (fixture, "invalid-custom-icon", FALSE, "libpeas-plugin");
+  verify_icon (fixture, "invalid-custom-icon", "libpeas-plugin",
+               G_TYPE_THEMED_ICON);
 }
 
 static void
 test_gtk_plugin_manager_store_invalid_stock_icon (TestFixture *fixture)
 {
-  verify_icon (fixture, "invalid-stock-icon", FALSE, "libpeas-plugin");
+  verify_icon (fixture, "invalid-stock-icon", "libpeas-plugin",
+               G_TYPE_THEMED_ICON);
 }
 
 static void

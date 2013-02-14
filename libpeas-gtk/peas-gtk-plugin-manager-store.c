@@ -26,6 +26,8 @@
 #include <config.h>
 #endif
 
+#include <gio/gio.h>
+
 #include <libpeas/peas-plugin-info.h>
 
 #include "peas-gtk-plugin-manager-store.h"
@@ -33,8 +35,8 @@
 static const GType ColumnTypes[] = {
   G_TYPE_BOOLEAN, /* Enabled */
   G_TYPE_BOOLEAN, /* Enabled Visible */
-  G_TYPE_OBJECT,  /* Pixbuf Icon */
-  G_TYPE_STRING,  /* Stock Icon */
+  G_TYPE_OBJECT,  /* GIcon Icon */
+  G_TYPE_STRING,  /* Stock ID Icon */
   G_TYPE_BOOLEAN, /* Icon Visible */
   G_TYPE_STRING,  /* Info */
   G_TYPE_BOOLEAN, /* Info Visible */
@@ -69,7 +71,8 @@ update_plugin (PeasGtkPluginManagerStore *store,
   gboolean builtin;
   gchar *markup;
   const gchar *icon_name;
-  GdkPixbuf *icon_pixbuf = NULL;
+  const gchar *icon_stock_id = NULL;
+  GIcon *icon_gicon = NULL;
 
   loaded = peas_plugin_info_is_loaded (info);
   available = peas_plugin_info_is_available (info, NULL);
@@ -89,66 +92,77 @@ update_plugin (PeasGtkPluginManagerStore *store,
 
   if (!available)
     {
-      icon_name = GTK_STOCK_DIALOG_ERROR;
+      icon_gicon = g_themed_icon_new ("dialog-error");
     }
   else
     {
-      gchar *icon_filename;
+      gchar *icon_path;
 
       icon_name = peas_plugin_info_get_icon_name (info);
-      icon_filename = g_build_filename (peas_plugin_info_get_data_dir (info),
-                                        icon_name,
-                                        NULL);
+      icon_path = g_build_filename (peas_plugin_info_get_data_dir (info),
+                                    icon_name,
+                                    NULL);
 
-      if (!gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
-        icon_name = "libpeas-plugin";
-
-      /* Prevent warning for the common case that icon_filename
+      /* Prevent warning for the common case that icon_path
        * does not exist but warn when it is a directory
        */
-      if (g_file_test (icon_filename, G_FILE_TEST_EXISTS))
+      if (g_file_test (icon_path, G_FILE_TEST_EXISTS))
         {
-          GError *error = NULL;
-          gint width, height;
+          GFile *icon_file;
 
-          /* Attempt to load the icon scaled to the correct size */
-          if (!gtk_icon_size_lookup (GTK_ICON_SIZE_SMALL_TOOLBAR,
-                                     &width, &height))
-            {
-              icon_pixbuf = gdk_pixbuf_new_from_file (icon_filename, &error);
-            }
-          else
-            {
-              icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename,
-                                                              width, height,
-                                                              &error);
-            }
+          icon_file = g_file_new_for_path (icon_path);
+          icon_gicon = g_file_icon_new (icon_file);
 
-          if (error == NULL)
-            icon_name = NULL;
-          else
+          g_object_unref (icon_file);
+        }
+      else
+        {
+          gint i;
+          GtkIconTheme *icon_theme;
+          const gchar * const *names;
+          gboolean found_icon = FALSE;
+
+          icon_gicon = g_themed_icon_new_with_default_fallbacks (icon_name);
+
+          icon_theme = gtk_icon_theme_get_default ();
+          names = g_themed_icon_get_names (G_THEMED_ICON (icon_gicon));
+
+          for (i = 0; !found_icon && i < g_strv_length ((gchar **) names); ++i)
+            found_icon = gtk_icon_theme_has_icon (icon_theme, names[i]);
+
+          if (!found_icon)
             {
-              g_warning ("Error while loading icon: %s", error->message);
-              g_error_free (error);
+              GtkStockItem stock_item;
+
+              g_clear_object (&icon_gicon);
+
+              if (gtk_stock_lookup (icon_name, &stock_item))
+                {
+                  icon_stock_id = icon_name;
+                }
+              else
+                {
+                  icon_gicon = g_themed_icon_new ("libpeas-plugin");
+                }
             }
         }
 
-      g_free (icon_filename);
+      g_free (icon_path);
     }
 
   gtk_list_store_set (GTK_LIST_STORE (store), iter,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ENABLED_COLUMN,        loaded,
     PEAS_GTK_PLUGIN_MANAGER_STORE_CAN_ENABLE_COLUMN,     !builtin && available,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_PIXBUF_COLUMN,    icon_pixbuf,
-    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_NAME_COLUMN,      icon_name,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_GICON_COLUMN,     icon_gicon,
+    PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_STOCK_ID_COLUMN,  icon_stock_id,
     PEAS_GTK_PLUGIN_MANAGER_STORE_ICON_VISIBLE_COLUMN,   !available,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_COLUMN,           markup,
     PEAS_GTK_PLUGIN_MANAGER_STORE_INFO_SENSITIVE_COLUMN, available && (!builtin || loaded),
     PEAS_GTK_PLUGIN_MANAGER_STORE_PLUGIN_COLUMN,         info,
     -1);
 
-  if (icon_pixbuf != NULL)
-    g_object_unref (icon_pixbuf);
+  if (icon_gicon != NULL)
+    g_object_unref (icon_gicon);
 
   g_free (markup);
 }
