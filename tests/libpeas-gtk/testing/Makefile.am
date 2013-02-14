@@ -21,4 +21,10 @@ libtesting_la_LIBADD = \
 	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
 	../../testing-util/libtesting-util.la
 
-libtesting_la_SOURCES = testing.c testing.h
+libtesting_la_SOURCES = \
+	testing.c		\
+	testing.h		\
+	testing-console.c	\
+	testing-console.h	\
+	testing-interpreter.c	\
+	testing-interpreter.h

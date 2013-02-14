@@ -14,6 +14,25 @@ PEAS_GTK_CONFIGURABLE_GET_IFACE
 </SECTION>
 
 <SECTION>
+<FILE>peas-gtk-console</FILE>
+<TITLE>PeasGtkConsole</TITLE>
+PeasGtkConsole
+PeasGtkConsoleClass
+peas_gtk_console_new
+peas_gtk_console_get_interpreter
+<SUBSECTION Standard>
+PEAS_GTK_CONSOLE
+PEAS_GTK_IS_CONSOLE
+PEAS_GTK_TYPE_CONSOLE
+peas_gtk_console_get_type
+PEAS_GTK_CONSOLE_CLASS
+PEAS_GTK_IS_CONSOLE_CLASS
+PEAS_GTK_CONSOLE_GET_CLASS
+<SUBSECTION Private>
+PeasGtkConsolePrivate
+</SECTION>
+
+<SECTION>
 <FILE>peas-gtk-plugin-manager</FILE>
 <TITLE>PeasGtkPluginManager</TITLE>
 PeasGtkPluginManager
@@ -130,6 +149,27 @@ PEAS_IS_EXTENSION_SET_CLASS
 PEAS_EXTENSION_SET_GET_CLASS
 <SUBSECTION Private>
 PeasExtensionSetPrivate
+</SECTION>
+
+<SECTION>
+<FILE>peas-interpreter</FILE>
+<TITLE>PeasInterpreter</TITLE>
+PeasInterpreterInterface
+peas_interpreter_complete
+peas_interpreter_execute
+peas_interpreter_prompt
+peas_interpreter_write
+peas_interpreter_write_error
+peas_interpreter_reset
+peas_interpreter_get_namespace
+peas_interpreter_set_namespace
+<SUBSECTION Standard>
+PEAS_INTERPRETER
+PEAS_IS_INTERPRETER
+PEAS_TYPE_INTERPRETER
+peas_interpreter_get_type
+PEAS_INTERPRETER_IFACE
+PEAS_INTERPRETER_GET_IFACE
 </SECTION>
 
 <SECTION>

@@ -33,17 +33,29 @@ class PythonHelloPlugin(GObject.Object, Peas.Activatable):
 
     def do_activate(self):
         window = self.object
-        print("PythonHelloPlugin.do_activate", repr(window))
-        window._pythonhello_label = Gtk.Label()
-        window._pythonhello_label.set_text(LABEL_STRING)
-        window._pythonhello_label.show()
-        window.get_child().pack_start(window._pythonhello_label, True, True, 0)
+        print "PythonHelloPlugin.do_activate", repr(window)
+
+        engine = Peas.Engine.get_default()
+        plugin = engine.get_plugin_info("peas-interpreter-python3")
+
+        self.interpreter = engine.create_extension(plugin,
+                                                   Peas.Interpreter.__gtype__,
+                                                   None)
+        #self.interpreter.set_namespace({ "window": window })
+
+        self.console = PeasGtk.Console.new(self.interpreter)
+
+        # How do we write that: "You can access the window through 'window':\n " + repr(window)
+
+        window.get_child().pack_start(self.console, True, True, 0)
+        self.console.show()
 
     def do_deactivate(self):
         window = self.object
-        print("PythonHelloPlugin.do_deactivate", repr(window))
-        window.get_child().remove(window._pythonhello_label)
-        window._pythonhello_label.destroy()
+        print "PythonHelloPlugin.do_deactivate", repr(window)
+
+        window.get_child().remove(self.console)
+        self.console.destroy()
 
     def do_update_state(self):
         print("PythonHelloPlugin.do_update_state", repr(self.object))

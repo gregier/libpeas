@@ -48,6 +48,7 @@ create_new_window (void)
   GtkWidget *window;
 
   window = demo_window_new ();
+  gtk_widget_set_size_request (window, 300, 400);
   gtk_widget_show_all (window);
 }
 
@@ -118,6 +119,9 @@ main (int    argc,
 
   g_option_context_free (option_context);
 
+  g_irepository_require (g_irepository_get_default (),
+                         "Peas", "1.0", 0, NULL);
+
   if (run_from_build_dir)
     {
       g_debug ("Running from build directory: %s", PEAS_BUILDDIR);
@@ -126,8 +130,7 @@ main (int    argc,
       g_irepository_prepend_search_path (PEAS_BUILDDIR "/libpeas");
       g_irepository_prepend_search_path (PEAS_BUILDDIR "/libpeas-gtk");
 
-      /* Use the uninstalled plugin loaders */
-      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", PEAS_BUILDDIR "/loaders", TRUE);
+      g_setenv ("PEAS_BUILD_DIR", PEAS_BUILDDIR, TRUE);
     }
 
   engine = peas_engine_get_default ();
@@ -141,15 +144,27 @@ main (int    argc,
   peas_engine_enable_loader (engine, "python3");
 
   if (run_from_build_dir)
-    peas_engine_add_search_path (engine, PEAS_BUILDDIR "/peas-demo/plugins", NULL);
+    {
+      peas_engine_add_search_path (engine, PEAS_BUILDDIR "/../plugins", NULL);
+      peas_engine_add_search_path (engine, PEAS_BUILDDIR "/peas-demo/plugins", NULL);
+    }
   else
-    peas_engine_add_search_path (engine,
-                                 PEAS_LIBDIR "/peas-demo/plugins/",
-                                 PEAS_PREFIX "/share/peas-demo/plugins");
+    {
+      peas_engine_add_search_path (engine,
+                                   PEAS_LIBDIR "/peas-demo/plugins/",
+                                   PEAS_PREFIX "/share/peas-demo/plugins");
+      peas_engine_add_search_path (engine,
+                                   PEAS_LIBDIR "/libpeas-1.0/plugins/",
+                                   PEAS_PREFIX "/share/libpeas-1.0/plugins");
+    }
+
+  peas_engine_load_plugin (engine,
+                           peas_engine_get_plugin_info (engine, "helloworld"));
 
   n_windows = 0;
-  main_window = create_main_window ();
-  gtk_widget_show_all (main_window);
+  /*main_window = create_main_window ();
+  gtk_widget_show_all (main_window);*/
+  create_new_window ();
 
   gtk_main ();
 

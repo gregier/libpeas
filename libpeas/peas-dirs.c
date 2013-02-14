@@ -163,9 +163,9 @@ peas_dirs_get_plugin_loader_dir (const gchar *loader_name)
   gchar *lib_dir;
   gchar *loader_dir;
 
-  env_var = g_getenv ("PEAS_PLUGIN_LOADERS_DIR");
+  env_var = g_getenv ("PEAS_BUILD_DIR");
   if (env_var != NULL)
-    return g_build_filename (env_var, loader_name, NULL);
+    return g_build_filename (env_var, "loaders", loader_name, NULL);
 
   lib_dir = peas_dirs_get_lib_dir ();
   loader_dir = g_build_filename (lib_dir, "loaders", NULL);
@@ -173,6 +173,44 @@ peas_dirs_get_plugin_loader_dir (const gchar *loader_name)
   g_free (lib_dir);
 
   return loader_dir;
+}
+
+gchar *
+peas_dirs_get_plugins_dir (void)
+{
+  const gchar *env_var;
+  gchar *lib_dir;
+  gchar *plugins_dir;
+
+  env_var = g_getenv ("PEAS_BUILD_DIR");
+  if (env_var != NULL)
+    return g_build_filename (env_var, "plugins", NULL);
+
+  lib_dir = peas_dirs_get_lib_dir ();
+  plugins_dir = g_build_filename (lib_dir, "plugins", NULL);
+
+  g_free (lib_dir);
+
+  return plugins_dir;
+}
+
+gchar *
+peas_dirs_get_plugins_data_dir (void)
+{
+  const gchar *env_var;
+  gchar *data_dir;
+  gchar *plugins_data_dir;
+
+  env_var = g_getenv ("PEAS_BUILD_DIR");
+  if (env_var != NULL)
+    return g_build_filename (env_var, "plugins", NULL);
+
+  data_dir = peas_dirs_get_data_dir ();
+  plugins_data_dir = g_build_filename (data_dir, "plugins", NULL);
+
+  g_free (data_dir);
+
+  return plugins_data_dir;
 }
 
 gchar *

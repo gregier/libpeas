@@ -118,13 +118,35 @@ static void
 peasdemo_hello_world_plugin_activate (PeasActivatable *activatable)
 {
   PeasDemoHelloWorldPlugin *plugin = PEASDEMO_HELLO_WORLD_PLUGIN (activatable);
+  PeasEngine *engine;
+  PeasPluginInfo *python_interpreter;
+  PeasExtension *interpreter;
+  GHashTable *namespace_;
+  GValue value = { 0 };
 
-  g_debug ("%s", G_STRFUNC);
+  engine = peas_engine_get_default ();
+  python_interpreter = peas_engine_get_plugin_info (engine,
+                                                    "peas-interpreter-python3");
 
-  plugin->label = gtk_label_new ("Hello World!");
-  gtk_box_pack_start (get_box (plugin->window), plugin->label, 1, 1, 0);
+  interpreter = peas_engine_create_extension (engine, python_interpreter,
+                                              PEAS_TYPE_INTERPRETER,
+                                              NULL);
+
+  namespace_ = g_hash_table_new (g_str_hash, g_str_equal);
+
+  g_value_init (&value, G_TYPE_OBJECT);
+  g_value_set_object (&value, G_OBJECT (engine));
+  g_hash_table_insert (namespace_, (gpointer) "engine", &value);
+
+  peas_interpreter_set_namespace (PEAS_INTERPRETER (interpreter), namespace_);
+
+  plugin->label = peas_gtk_console_new (PEAS_INTERPRETER (interpreter));
+  gtk_box_pack_start (get_box (plugin->window), plugin->label, TRUE, TRUE, 0);
   gtk_widget_show (plugin->label);
+
   g_object_ref (plugin->label);
+  g_object_unref (interpreter);
+  g_hash_table_unref (namespace_);
 }
 
 static void

@@ -4,16 +4,17 @@ TEST_PROGS =
 
 test: all
 	@test -z "$(TEST_PROGS)" || \
-	 G_SLICE=debug-blocks $(GTESTER) --verbose $(TEST_PROGS)
+	 G_SLICE=debug-blocks $(GTESTER) --verbose $(GTESTER_ARGS) $(TEST_PROGS)
 
 if GDB_ENABLED
 
 test-gdb: all
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
-	   G_SLICE=debug-blocks $(GTESTER) --verbose $$test_prog || { \
+	   G_SLICE=debug-blocks $(GTESTER) --verbose $(GTESTER_ARGS) $$test_prog || { \
 	     G_SLICE=debug-blocks \
-	       libtool --mode=execute gdb --ex "run --verbose" $$test_prog ; \
+	       libtool --mode=execute gdb --ex "run --verbose" \
+	       $$test_prog $(GTESTER_ARGS); \
 	     exit 1 ; \
 	   } \
 	 done
@@ -38,6 +39,7 @@ test-valgrind: all
 	     --leak-resolution=high --num-callers=20 \
 	     --suppressions=$(top_srcdir)/tests/valgrind.suppressions \
 	     --log-file=valgrind-$${test_prog}.log $$test_prog || exit 1 ; \
+	     --log-file=vgdump-$$test_prog $$test_prog $(GTESTER_ARGS) || exit 1 ; \
 	 done
 
 test-callgrind: all
@@ -48,7 +50,7 @@ test-callgrind: all
 	   fi ; \
 	   libtool --mode=execute valgrind --tool=callgrind \
 	     --callgrind-out-file=callgrind-$${test_prog}.log \
-	     --log-file=/dev/null $$test_prog || exit 1 ; \
+	     --log-file=/dev/null $$test_prog $(GTESTER_ARGS) || exit 1 ; \
 	 done
 
 else

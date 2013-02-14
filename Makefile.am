@@ -14,7 +14,7 @@ SUBDIRS += libpeas-gtk peas-demo
 GCOVDIRS += libpeas-gtk
 endif
 
-SUBDIRS += tests data po docs
+SUBDIRS += plugins tests data po docs
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \
@@ -62,8 +62,11 @@ demo: all
 
 if GCOV_ENABLED
 
-gcov: test
-	@for dir in $(GCOVDIRS); do \
+# Make sure that all of the tests run when generating a gcov report
+gcov:
+	@export GTESTER_ARGS="-m=perf -m=slow"; \
+	 $(MAKE) $(AM_MAKEFLAGS) test; \
+	 for dir in $(GCOVDIRS); do \
 	   (cd $$dir && $(MAKE) $(AM_MAKEFLAGS) $(@)); \
 	 done
 

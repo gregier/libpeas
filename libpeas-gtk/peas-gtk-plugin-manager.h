@@ -51,7 +51,7 @@ struct _PeasGtkPluginManager
 {
   GtkBox box;
 
-  /*< private > */
+  /*< private >*/
   PeasGtkPluginManagerPrivate *priv;
 };
 

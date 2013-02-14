@@ -1,0 +1,7 @@
+[Plugin]
+Module=peas-interpreter-python3
+Loader=python3
+Name=Peas Interpreter for Python 3
+Authors=Steve Frécinaux;Garrett Regier
+Copyright=Copyright © 2006 Steve Frécinaux;Copyright © 2011 Garrett Regier
+Hidden=true

@@ -10,3 +10,4 @@ Help=http://git.gnome.org/browse/error
 Help-Windows=http://git.gnome.org/browse/libpeas
 Help-MacOS-X=http://git.gnome.org/browse/libpeas
 Help-GNOME=http://git.gnome.org/browse/libpeas
+Depends=peas-interpreter-python3

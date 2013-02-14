@@ -50,6 +50,7 @@ typedef struct _PeasExtensionSetPrivate  PeasExtensionSetPrivate;
 struct _PeasExtensionSet {
   GObject parent;
 
+  /*< private >*/
   PeasExtensionSetPrivate *priv;
 };
 

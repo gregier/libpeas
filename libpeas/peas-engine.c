@@ -470,6 +470,8 @@ static void
 peas_engine_init (PeasEngine *engine)
 {
   PeasEnginePrivate *priv = GET_PRIV (engine);
+  gchar *plugins_dir;
+  gchar *plugins_data_dir;
 
   /* Don't need to use atomics as peas_engine_shutdown()
    * is private API and as such is not multithread-safe
@@ -502,6 +504,14 @@ peas_engine_init (PeasEngine *engine)
 
   /* The C plugin loader is always enabled */
   priv->loaders[PEAS_UTILS_C_LOADER_ID].enabled = TRUE;
+
+  plugins_dir = peas_dirs_get_plugins_dir ();
+  plugins_data_dir = peas_dirs_get_plugins_data_dir ();
+
+  peas_engine_add_search_path (engine, plugins_dir, plugins_data_dir);
+
+  g_free (plugins_data_dir);
+  g_free (plugins_dir);
 }
 
 /**

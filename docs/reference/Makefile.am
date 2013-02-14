@@ -55,6 +55,8 @@ IGNORE_HFILES = \
 	peas-debug.h				\
 	peas-dirs.h				\
 	peas-engine-priv.h			\
+	peas-gtk-console-buffer.h		\
+	peas-gtk-console-history.h		\
 	peas-gtk-disable-plugins-dialog.h       \
 	peas-gtk-plugin-manager-store.h		\
 	peas-i18n.h				\

@@ -95,6 +95,7 @@ Makefile.in
 /tests/libpeas/plugins/extension-python/extension-python3.gschema.xml
 /tests/libpeas/plugins/extension-python/extension-python3.plugin
 /tests/libpeas/plugins/extension-python/extension-python3.py
+/tests/libpeas-gtk/console
 /tests/libpeas-gtk/plugin-manager
 /tests/libpeas-gtk/plugin-manager-store
 /tests/libpeas-gtk/plugin-manager-view

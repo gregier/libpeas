@@ -25,6 +25,7 @@ LDADD = \
 	../testing-util/libtesting-util.la
 
 TEST_PROGS += \
+	console			\
 	plugin-manager		\
 	plugin-manager-store	\
 	plugin-manager-view

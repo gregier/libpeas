@@ -8,6 +8,7 @@ libpeas/peas-extension-set.c
 libpeas/peas-object-module.c
 libpeas/peas-plugin-info.c
 libpeas/peas-plugin-loader.c
+libpeas-gtk/peas-gtk-console-buffer.c
 libpeas-gtk/peas-gtk-disable-plugins-dialog.c
 libpeas-gtk/peas-gtk-plugin-manager.c
 libpeas-gtk/peas-gtk-plugin-manager-view.c
