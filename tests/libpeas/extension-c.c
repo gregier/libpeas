@@ -65,7 +65,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  testing_init (&argc, &argv);
 
   /* Only test the basics */
   testing_extension_basic ("c");

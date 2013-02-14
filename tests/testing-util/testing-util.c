@@ -39,6 +39,7 @@ typedef struct {
 
 static PeasEngine *engine = NULL;
 static GPtrArray *log_hooks = NULL;
+static gboolean initialized = FALSE;
 
 /* These are warnings and criticals that just have to happen
  * for testing purposes and as such we don't want to abort on them.
@@ -119,7 +120,6 @@ void
 testing_util_init (void)
 {
   GError *error = NULL;
-  static gboolean initialized = FALSE;
 
   if (initialized)
     return;
@@ -153,12 +153,12 @@ testing_util_init (void)
 PeasEngine *
 testing_util_engine_new (void)
 {
+  g_assert (initialized);
+
   /* testing_util_engine_free() checks that the
    * engine is freed so only one engine can be created
    */
   g_assert (engine == NULL);
-
-  testing_util_init ();
 
   /* Must be after requiring typelibs */
   engine = peas_engine_new ();
@@ -191,6 +191,8 @@ int
 testing_util_run_tests (void)
 {
   int retval;
+
+  g_assert (initialized);
 
   retval = g_test_run ();
 

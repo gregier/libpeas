@@ -47,7 +47,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  testing_init (&argc, &argv);
 
   testing_extension_all ("gjs");
 

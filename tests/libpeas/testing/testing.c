@@ -32,7 +32,8 @@
 #include "testing.h"
 
 void
-testing_init (void)
+testing_init (gint    *argc,
+              gchar ***argv)
 {
   GError *error = NULL;
   static gboolean initialized = FALSE;
@@ -40,6 +41,9 @@ testing_init (void)
   if (initialized)
     return;
 
+  g_test_init (argc, argv, NULL);
+
+  /* Must be after g_test_init() changes the log settings*/
   testing_util_init ();
 
   g_irepository_require_private (g_irepository_get_default (),
@@ -55,8 +59,6 @@ testing_engine_new (void)
 {
   PeasEngine *engine;
 
-  testing_init ();
-
   testing_util_push_log_hook ("*Bad plugin file: *invalid.plugin*");
   testing_util_push_log_hook ("*Error loading *invalid.plugin*");
 
@@ -65,9 +67,8 @@ testing_engine_new (void)
   testing_util_push_log_hook ("*Error loading *info-missing-module.plugin*");
   testing_util_push_log_hook ("*Error loading *info-missing-name.plugin*");
 
-  /* Must be after requiring typelibs */
+  /* Must be after pushing log hooks */
   engine = testing_util_engine_new ();
-
   peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas/plugins",
                                        SRCDIR   "/tests/libpeas/plugins");
 

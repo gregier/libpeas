@@ -485,8 +485,6 @@ testing_extension_basic (const gchar *loader)
 {
   PeasEngine *engine;
 
-  testing_init ();
-
   extension_plugin = g_strdup_printf ("extension-%s", loader);
 
   engine = testing_engine_new ();

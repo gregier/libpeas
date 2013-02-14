@@ -27,7 +27,8 @@
 
 G_BEGIN_DECLS
 
-void        testing_init        (void);
+void        testing_init        (gint    *argc,
+                                 gchar ***argv);
 
 PeasEngine *testing_engine_new  (void);
 
