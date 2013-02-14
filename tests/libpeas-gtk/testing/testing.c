@@ -136,6 +136,7 @@ void
 testing_show_widget (gpointer widget)
 {
   GtkWidget *window;
+  GLogFunc orig_log_handler;
 
   g_assert (GTK_IS_WIDGET (widget));
 
@@ -160,5 +161,10 @@ testing_show_widget (gpointer widget)
                     G_CALLBACK (delete_event_cb),
                     widget);
 
+  /* Do not abort if a warning occurs while running the widget */
+  orig_log_handler = g_log_set_default_handler (g_log_default_handler, NULL);
+
   gtk_main ();
+
+  g_log_set_default_handler (orig_log_handler, NULL);
 }
