@@ -1,0 +1,138 @@
+# Aragonese translation for libpeas.
+# Copyright (C) 2013 libpeas's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libpeas package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-02-14 12:02+0000\n"
+"PO-Revision-Date: 2013-02-20 23:23+0100\n"
+"Last-Translator: Daniel Martinez <entaltoaragon@gmail.com>\n"
+"Language-Team: Aragonese <softaragones@googlegroups.com>\n"
+"Language: an\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Chestor de complementos"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "Veyer"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Vista d'o chestor de complementos"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr "Amostrar incluyius"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:818
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "No se trobó a dependencia \"%s\""
+
+#: ../libpeas/peas-engine.c:828
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Falló en cargar a dependencia \"%s\""
+
+#: ../libpeas/peas-engine.c:843
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "No se trobó o cargador de complemento \"%s\""
+
+#: ../libpeas/peas-engine.c:855
+#, c-format
+msgid "Failed to load"
+msgstr "Falló en cargar"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr "S'han de desactivar complementos adicionals"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Os siguients complementos dependen de \"%s\" y tamién se desactivarán:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "Complementos"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr "S'ha de desactivar un complemento adicional"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"O complemento \"%s\" depende d'o complemento \"%s\".\n"
+"Si desactiva \"%s\" tamién desactivará \"%s\"."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "Desactivar complementos"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+msgid "There was an error displaying the help."
+msgstr "I habió una error en amostrar la aduya."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_About"
+msgstr "_Arredol"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "_Preferencias"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "_Activau"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "A_ctivar totz"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "_Desactivar totz"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
+msgid "Enabled"
+msgstr "Activau"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
+msgid "Plugin"
+msgstr "Complemento"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>No se podió cargar o complemento \"%s\"</b>\n"
+"Ocurrió una error: %s"
+
+#: ../peas-demo/peas-demo.c:40
+msgid "Run from build directory"
+msgstr " Executar dende a carpeta de construcción"
+
+#: ../peas-demo/peas-demo.c:100
+msgid "- libpeas demo application"
+msgstr "- libpeas aplicación de demostración"
+
