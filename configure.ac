@@ -340,7 +340,7 @@ else
         found_python2="no (python2 not found)"
     else
         AM_PYTHON_CHECK_VERSION($PYTHON2, $PYTHON2_REQUIRED, [
-            AC_PATH_PROGS(PYTHON2_CONFIG, [python2-config python2.7-config python2.6-config python2.5-config])
+            AC_PATH_PROGS(PYTHON2_CONFIG, [python2-config python-config python2.7-config python2.6-config python2.5-config])
             if test -n "${PYTHON2_CONFIG}"; then
                 PKG_CHECK_MODULES(PYGOBJECT, pygobject-3.0 >= $PYGOBJECT_REQUIRED, [
                     found_python2=yes
