@@ -1,13 +1,13 @@
 # Portuguese translation for libpeas.
-# Copyright © 2010 libpeas
+# Copyright © 2010, 2011, 2012, 2013 libpeas
 # This file is distributed under the same license as the libpeas package.
-# António Lima <amrlima@gmail.com>, 2010, 2011, 2012.
+# António Lima <amrlima@gmail.com>, 2010, 2011, 2012, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-17 11:37+0000\n"
-"PO-Revision-Date: 2012-03-16 23:08+0000\n"
+"POT-Creation-Date: 2013-03-17 01:03+0000\n"
+"PO-Revision-Date: 2013-03-17 01:10+0000\n"
 "Last-Translator: António Lima <amrlima@gmail.com>\n"
 "Language-Team: gnome_pt@yahoogroups.com\n"
 "Language: pt\n"
@@ -39,34 +39,34 @@ msgstr "Apresentar Embutidos"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:818
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Não foi encontrada a dependência '%s'"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:828
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Falha ao carregar a dependência '%s'"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:843
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "O carregador de plugins '%s' não foi encontrado"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:855
 #, c-format
 msgid "Failed to load"
 msgstr "Falha ao carregar"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
 msgid "Additional plugins must be disabled"
-msgstr "É necessário desactivar plugins adicionais"
+msgstr "É necessário desativar plugins adicionais"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr "Os seguintes plugins dependem de '%s' e também serão desactivados:"
+msgstr "Os seguintes plugins dependem de '%s' e também serão desativados:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
@@ -74,7 +74,7 @@ msgstr "Plugins"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
 msgid "An additional plugin must be disabled"
-msgstr "É necessário desactivar mais um plugin"
+msgstr "É necessário desativar mais um plugin"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
 #, c-format
@@ -83,11 +83,11 @@ msgid ""
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
 "O plugin '%s' depende do plugin '%s'.\n"
-"Se desactivar '%s', '%s' também será desactivado."
+"Se desativar '%s', '%s' também será desativado."
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
-msgstr "Desactivar Plugins"
+msgstr "Desativar Plugins"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
 msgid "There was an error displaying the help."
@@ -103,7 +103,7 @@ msgstr "_Preferências"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
 msgid "_Enabled"
-msgstr "_Activo"
+msgstr "_Ativo"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
 msgid "E_nable All"
@@ -111,17 +111,17 @@ msgstr "A_ctivar Todos"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
 msgid "_Disable All"
-msgstr "_Desactivar Todos"
+msgstr "_Desativar Todos"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
 msgid "Enabled"
-msgstr "Activo"
+msgstr "Ativo"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
 msgid "Plugin"
 msgstr "Plugin"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -132,7 +132,7 @@ msgstr ""
 
 #: ../peas-demo/peas-demo.c:40
 msgid "Run from build directory"
-msgstr "Executar a partir de directório de compilação"
+msgstr "Executar a partir de diretório de compilação"
 
 #: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
