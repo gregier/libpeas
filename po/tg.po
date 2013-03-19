@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Victor Ibragimov <victor.ibragimov@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Tajik Gnome\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-02-14 12:02+0000\n"
+"PO-Revision-Date: 2013-01-21 14:04+0500\n"
+"Last-Translator: Victor Ibragimov <victor.ibragimov@gmail.com>\n"
+"Language-Team: \n"
+"Language: Tajik\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Мудири плагинҳо"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "Намоиш"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr ""
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr ""
+
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Peas Gtk"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:818
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:828
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:843
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:855
+#, c-format
+msgid "Failed to load"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "Плагинҳо"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+msgid "There was an error displaying the help."
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_About"
+msgstr "_Дар бораи барнома"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+msgid "_Preferences"
+msgstr "_Хусусиятҳо"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "_Фаъол"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
+msgid "Enabled"
+msgstr "Фаъол"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
+msgid "Plugin"
+msgstr "Плагин"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+
+#: ../peas-demo/peas-demo.c:40
+msgid "Run from build directory"
+msgstr ""
+
+#: ../peas-demo/peas-demo.c:100
+msgid "- libpeas demo application"
+msgstr ""
