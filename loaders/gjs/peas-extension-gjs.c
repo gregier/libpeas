@@ -362,7 +362,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
 
           if (!JS_GetElement (gexten->js_context, JSVAL_TO_OBJECT (js_retval),
                               nth_out_arg++, &js_value) ||
-              js_value == JSVAL_VOID)
+              JSVAL_IS_VOID (js_value))
             {
               g_warning ("Error failed to get out argument %i", nth_out_arg);
               return FALSE;

@@ -279,7 +279,7 @@ peas_plugin_loader_gjs_create_extension (PeasPluginLoader *loader,
 
       if (!JS_GetPropertyById (js_context, ginfo->extensions,
                                prop_name_id, &prop_extension_ctor) ||
-          prop_extension_ctor != extension_ctor)
+          JSVAL_TO_OBJECT (prop_extension_ctor) != JSVAL_TO_OBJECT (extension_ctor))
         continue;
 
       if (!JS_IdToValue (js_context, prop_name_id, &prop_name_val) ||
@@ -327,7 +327,7 @@ static void
 garbage_collect (PeasPluginInfo *info,
                  GjsInfo        *ginfo)
 {
-  JS_GC (gjs_context_get_native_context (ginfo->context));
+  gjs_context_gc (ginfo->context);
 }
 
 static void
