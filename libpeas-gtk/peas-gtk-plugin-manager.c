@@ -354,8 +354,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_orientable_set_orientation (GTK_ORIENTABLE (pm),
                                   GTK_ORIENTATION_VERTICAL);
 
-  gtk_widget_push_composite_child ();
-
   pm->priv->sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (pm->priv->sw),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -395,8 +393,6 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   pm->priv->configure_button = gtk_button_new_with_mnemonic (_("_Preferences"));
   gtk_box_pack_start (GTK_BOX (item_box), pm->priv->configure_button,
                       FALSE, FALSE, 0);
-
-  gtk_widget_pop_composite_child ();
 
   /* setup a window of a sane size. */
   gtk_widget_set_size_request (GTK_WIDGET (pm->priv->sw), 270, 100);
