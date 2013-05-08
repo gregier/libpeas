@@ -274,7 +274,7 @@ dnl ================================================================
 dnl GJS Javascript Engine
 dnl ================================================================
 
-GJS_REQUIRED=1.31.11
+GJS_REQUIRED=1.36.0
 
 AC_ARG_ENABLE(gjs,
 	      AS_HELP_STRING([--enable-gjs],[Enable GJS support]),

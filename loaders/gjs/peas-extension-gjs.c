@@ -284,7 +284,7 @@ peas_extension_gjs_call (PeasExtensionWrapper *exten,
 
   if (!success)
     {
-      if (!gjs_log_exception (gexten->js_context, NULL))
+      if (!gjs_log_exception (gexten->js_context))
         {
           g_warning ("Error while calling '%s.%s'",
                      g_type_name (exten_type), method_name);
