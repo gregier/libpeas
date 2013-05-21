@@ -114,7 +114,7 @@ test_extension_set_create_invalid (PeasEngine *engine)
 {
   PeasExtensionSet *extension_set;
 
-  testing_util_push_log_hook ("*assertion `G_TYPE_IS_INTERFACE (*)' failed");
+  testing_util_push_log_hook ("*assertion*G_TYPE_IS_INTERFACE*failed");
   testing_util_push_log_hook ("*type 'PeasActivatable' has no property named 'invalid-property'");
 
   /* Invalid GType */

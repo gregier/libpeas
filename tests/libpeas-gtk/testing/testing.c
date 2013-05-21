@@ -43,7 +43,7 @@ testing_init (gint    *argc,
 
   gtk_test_init (argc, argv, NULL);
 
-  /* Must be after gtk_test_init() changes the log settings*/
+  /* Must be after gtk_test_init() changes the log settings */
   testing_util_init ();
 
   g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
