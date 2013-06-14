@@ -110,7 +110,7 @@ _valist_to_parameter_list (GType         iface_type,
         {
           n_allocated_params += 16;
           *params = g_renew (GParameter, *params, n_allocated_params);
-          memset (*params + sizeof (GParameter) * (n_allocated_params - 16),
+          memset (*params + (n_allocated_params - 16),
                   0, sizeof (GParameter) * 16);
         }
 
