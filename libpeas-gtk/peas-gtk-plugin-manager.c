@@ -489,9 +489,7 @@ peas_gtk_plugin_manager_constructed (GObject *object)
   if (pm->priv->view == NULL)
     pm->priv->view = peas_gtk_plugin_manager_view_new (pm->priv->engine);
 
-  gtk_widget_push_composite_child ();
   gtk_container_add (GTK_CONTAINER (pm->priv->sw), pm->priv->view);
-  gtk_widget_pop_composite_child ();
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
 
