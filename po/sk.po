@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-10-16 06:22+0000\n"
-"PO-Revision-Date: 2012-10-21 18:19+0100\n"
+"POT-Creation-Date: 2013-09-17 07:44+0000\n"
+"PO-Revision-Date: 2013-09-17 16:19+0100\n"
 "Last-Translator: Richard Stanislavský <kenny.vv@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
@@ -24,12 +24,11 @@ msgstr ""
 msgid "Plugin Manager"
 msgstr "Správca zásuvných modulov"
 
-# PM: nie som si istý, či tam predsa len nemá byť "zobraziť", vyžiadaj si pre istotu komentár
 # property name
+# https://bugzilla.gnome.org/show_bug.cgi?id=697452
 #: ../data/glade/libpeas-gtk.xml.in.h:2
-#, fuzzy
 msgid "View"
-msgstr "Pohľad"
+msgstr "Zobrazenie"
 
 # nieco ako list view alebo tree view
 # widget title
@@ -102,11 +101,11 @@ msgstr "Zakázať zásuvné moduly"
 msgid "There was an error displaying the help."
 msgstr "Vyskytla sa chyba pri zobrazení pomocníka."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:385
 msgid "_About"
 msgstr "_O zásuvnom module"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:393
 msgid "_Preferences"
 msgstr "Nas_tavenia"
 
@@ -122,15 +121,15 @@ msgstr "_Povoliť všetky"
 msgid "_Disable All"
 msgstr "_Zakázať všetky"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
 msgid "Enabled"
 msgstr "Povolený"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
 msgid "Plugin"
 msgstr "Zásuvný modul"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -139,13 +138,11 @@ msgstr ""
 "<b>Zásuvný modul „%s“ sa nepodarilo načítať</b>\n"
 "Vyskytla sa chyba: %s"
 
-# PM: toto treba preložiť popisne
-# PM: nepáči sa mi preklad build directory, vyžiadaj si komentár čo je to za adresár
 # popis príkazu príkazového riadka
+# https://bugzilla.gnome.org/show_bug.cgi?id=697452
 #: ../peas-demo/peas-demo.c:40
-#, fuzzy
 msgid "Run from build directory"
-msgstr "Spustiť z pracovného adresára"
+msgstr "Spustí z pracovného adresára"
 
 #: ../peas-demo/peas-demo.c:100
 msgid "- libpeas demo application"
