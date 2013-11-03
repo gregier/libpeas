@@ -46,7 +46,8 @@ typedef GObject PeasExtension;
  * used. Due to gi-scanner's touchiness, we also hide these legacy API from
  * GI to avoid hairy issues.
  */
-#if !defined(PEAS_DISABLE_DEPRECATED) && !defined(__GI_SCANNER__)
+#ifndef __GI_SCANNER__
+#ifndef PEAS_DISABLE_DEPRECATED
 GType        peas_extension_get_type        (void)  G_GNUC_CONST;
 
 GType        peas_extension_get_extension_type
@@ -62,6 +63,7 @@ gboolean     peas_extension_callv           (PeasExtension *exten,
                                              const gchar   *method_name,
                                              GIArgument    *args,
                                              GIArgument    *return_value);
+#endif
 #endif
 
 G_END_DECLS

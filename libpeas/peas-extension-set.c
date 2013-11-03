@@ -602,7 +602,7 @@ peas_extension_set_foreach (PeasExtensionSet            *set,
 }
 
 /**
- * peas_extension_set_newv:
+ * peas_extension_set_newv: (rename-to peas_extension_set_new)
  * @engine: (allow-none): A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @n_parameters: the length of the @parameters array.
@@ -615,8 +615,6 @@ peas_extension_set_foreach (PeasExtensionSet            *set,
  * See peas_extension_set_new() for more information.
  *
  * Returns: (transfer full): a new instance of #PeasExtensionSet.
- *
- * Rename to: peas_extension_set_new
  */
 PeasExtensionSet *
 peas_extension_set_newv (PeasEngine *engine,
@@ -638,7 +636,7 @@ peas_extension_set_newv (PeasEngine *engine,
 
 /**
  * peas_extension_set_new_valist: (skip)
- * @engine: A #PeasEngine, or %NULL.
+ * @engine: (allow-none): A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
  * @var_args: the value of the first property, followed optionally by more
@@ -683,7 +681,7 @@ peas_extension_set_new_valist (PeasEngine  *engine,
 
 /**
  * peas_extension_set_new: (skip)
- * @engine: A #PeasEngine, or %NULL.
+ * @engine: (allow-none): A #PeasEngine, or %NULL.
  * @exten_type: the extension #GType.
  * @first_property: the name of the first property.
  * @...: the value of the first property, followed optionally by more

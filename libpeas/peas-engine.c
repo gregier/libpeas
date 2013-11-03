@@ -878,7 +878,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_load_plugin:
+ * peas_engine_load_plugin: (virtual load_plugin)
  * @engine: A #PeasEngine.
  * @info: A #PeasPluginInfo.
  *
@@ -887,7 +887,6 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
  * actually occurs in the default signal handler.
  *
  * Returns: whether the plugin has been successfully loaded.
- * Virtual: load_plugin
  */
 gboolean
 peas_engine_load_plugin (PeasEngine     *engine,
@@ -950,7 +949,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_unload_plugin:
+ * peas_engine_unload_plugin: (virtual unload_plugin)
  * @engine: A #PeasEngine.
  * @info: A #PeasPluginInfo.
  *
@@ -959,7 +958,6 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
  * actually occurs in the default signal handler.
  *
  * Returns: whether the plugin has been successfully unloaded.
- * Virtual: unload_plugin
  */
 gboolean
 peas_engine_unload_plugin (PeasEngine     *engine,
@@ -1006,7 +1004,7 @@ peas_engine_provides_extension (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_create_extensionv:
+ * peas_engine_create_extensionv: (rename-to peas_engine_create_extension)
  * @engine: A #PeasEngine.
  * @info: A loaded #PeasPluginInfo.
  * @extension_type: The implemented extension #GType.
@@ -1022,8 +1020,6 @@ peas_engine_provides_extension (PeasEngine     *engine,
  *
  * Returns: (transfer full): a new instance of #PeasExtension wrapping
  * the @extension_type instance, or %NULL.
- *
- * Rename to: peas_engine_create_extension
  */
 PeasExtension *
 peas_engine_create_extensionv (PeasEngine     *engine,
