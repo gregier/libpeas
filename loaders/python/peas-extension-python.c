@@ -53,13 +53,13 @@ peas_extension_python_call (PeasExtensionWrapper *exten,
   GObject *instance;
   gboolean success;
 
-  state = pyg_gil_state_ensure ();
+  state = PyGILState_Ensure ();
 
   instance = pygobject_get (pyexten->instance);
   success = peas_gi_method_call (instance, method_info, interface_type,
                                  method_name, args, retval);
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
   return success;
 }
 
@@ -75,12 +75,12 @@ peas_extension_python_set_property (GObject      *object,
 
   /* Don't add properties as they could shadow the instance's */
 
-  state = pyg_gil_state_ensure ();
+  state = PyGILState_Ensure ();
 
   instance = pygobject_get (pyexten->instance);
   g_object_set_property (instance, pspec->name, value);
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 }
 
 static void
@@ -95,12 +95,12 @@ peas_extension_python_get_property (GObject      *object,
 
   /* Don't add properties as they could shadow the instance's */
 
-  state = pyg_gil_state_ensure ();
+  state = PyGILState_Ensure ();
 
   instance = pygobject_get (pyexten->instance);
   g_object_get_property (instance, pspec->name, value);
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 }
 
 static void
@@ -110,12 +110,12 @@ peas_extension_python_dispose (GObject *object)
 
   if (pyexten->instance)
     {
-      PyGILState_STATE state = pyg_gil_state_ensure ();
+      PyGILState_STATE state = PyGILState_Ensure ();
 
       Py_DECREF (pyexten->instance);
       pyexten->instance = NULL;
 
-      pyg_gil_state_release (state);
+      PyGILState_Release (state);
     }
 
   G_OBJECT_CLASS (peas_extension_python_parent_class)->dispose (object);

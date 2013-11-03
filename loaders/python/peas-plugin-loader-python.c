@@ -120,9 +120,9 @@ peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
-  state = pyg_gil_state_ensure ();
+  state = PyGILState_Ensure ();
   extension_type = find_python_extension_type (info, exten_type, pyinfo->module);
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 
   return extension_type != NULL;
 }
@@ -146,7 +146,7 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
-  state = pyg_gil_state_ensure ();
+  state = PyGILState_Ensure ();
 
   pytype = find_python_extension_type (info, exten_type, pyinfo->module);
 
@@ -184,7 +184,7 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
 
 out:
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 
   return exten;
 }
@@ -217,7 +217,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   if (g_hash_table_lookup (pyloader->priv->loaded_plugins, info))
     return TRUE;
 
-  state = pyg_gil_state_ensure ();
+  state = PyGILState_Ensure ();
 
   /* If we have a special path, we register it */
   peas_plugin_loader_python_add_module_path (pyloader,
@@ -235,7 +235,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   if (!pymodule)
     {
       PyErr_Print ();
-      pyg_gil_state_release (state);
+      PyGILState_Release (state);
 
       return FALSE;
     }
@@ -244,7 +244,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
 
   Py_DECREF (pymodule);
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 
   return TRUE;
 }
@@ -261,12 +261,12 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
 static void
 run_gc_protected (void)
 {
-  PyGILState_STATE state = pyg_gil_state_ensure ();
+  PyGILState_STATE state = PyGILState_Ensure ();
 
   while (PyGC_Collect ())
     ;
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 }
 
 static gboolean
@@ -451,6 +451,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 
   /* Initialize support for threads */
   pyg_enable_threads ();
+  PyEval_InitThreads ();
 
   pyg_disable_warning_redirections ();
 
@@ -491,11 +492,11 @@ python_init_error:
 static void
 destroy_python_info (PythonInfo *info)
 {
-  PyGILState_STATE state = pyg_gil_state_ensure ();
+  PyGILState_STATE state = PyGILState_Ensure ();
 
   Py_DECREF (info->module);
 
-  pyg_gil_state_release (state);
+  PyGILState_Release (state);
 
   g_free (info);
 }
@@ -541,7 +542,7 @@ peas_plugin_loader_python_finalize (GObject *object)
       if (pyloader->priv->must_finalize_python)
         {
           if (!pyloader->priv->init_failed)
-            pyg_gil_state_ensure ();
+            PyGILState_Ensure ();
 
           Py_Finalize ();
         }
