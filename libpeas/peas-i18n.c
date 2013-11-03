@@ -47,10 +47,10 @@ peas_gettext (const gchar *msgid)
 
       locale_dir = peas_dirs_get_locale_dir ();
 
-      bindtextdomain (GETTEXT_PACKAGE, locale_dir);
+      (void) bindtextdomain (GETTEXT_PACKAGE, locale_dir);
       g_free (locale_dir);
 
-      bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+      (void) bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
       initialized = TRUE;
     }
 
