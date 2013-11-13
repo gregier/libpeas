@@ -92,6 +92,7 @@ find_python_extension_type (PeasPluginInfo *info,
           switch (PyObject_IsSubclass (value, pytype))
             {
             case 1:
+              Py_DECREF (pytype);
               Py_DECREF (pygtype);
               return (PyTypeObject *) value;
             case 0:
@@ -104,6 +105,7 @@ find_python_extension_type (PeasPluginInfo *info,
         }
     }
 
+  Py_DECREF (pytype);
   Py_DECREF (pygtype);
 
   return NULL;
