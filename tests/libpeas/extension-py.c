@@ -121,6 +121,43 @@ test_extension_py_nonexistent (PeasEngine *engine)
   g_assert (!peas_engine_load_plugin (engine, info));
 }
 
+#if GLIB_CHECK_VERSION (2, 38, 0)
+static void
+test_extension_py_already_initialized (void)
+{
+  g_test_trap_subprocess (EXTENSION_TEST_NAME (PY_LOADER,
+                                               "already-initialized/subprocess"),
+                          0, 0);
+  g_test_trap_assert_passed ();
+  g_test_trap_assert_stderr ("");
+}
+
+static void
+test_extension_py_already_initialized_subprocess (void)
+{
+  PeasEngine *engine;
+  PeasPluginInfo *info;
+
+  /* Check that python has not been initialized yet */
+  g_assert (!Py_IsInitialized ());
+
+  Py_InitializeEx (FALSE);
+
+  engine = testing_engine_new ();
+  info = peas_engine_get_plugin_info (engine, "extension-" PY_LOADER_STR);
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  testing_engine_free (engine);
+
+  peas_engine_shutdown ();
+
+  /* Should still be initialized */
+  g_assert (Py_IsInitialized ());
+  Py_Finalize ();
+}
+#endif
+
 int
 main (int   argc,
       char *argv[])
@@ -130,15 +167,26 @@ main (int   argc,
   testing_extension_all (PY_LOADER_STR);
 
 #undef EXTENSION_TEST
+#undef EXTENSION_TEST_FUNC
   
 #define EXTENSION_TEST(loader, path, func) \
   testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
                          (gpointer) test_extension_py_##func)
 
+#define EXTENSION_TEST_FUNC(loader, path, func) \
+  g_test_add_func (EXTENSION_TEST_NAME (loader, path), \
+                   (gpointer) test_extension_py_##func)
+
   EXTENSION_TEST (PY_LOADER, "instance-refcount", instance_refcount);
   EXTENSION_TEST (PY_LOADER, "activatable-subject-refcount",
                   activatable_subject_refcount);
   EXTENSION_TEST (PY_LOADER, "nonexistent", nonexistent);
+
+#if GLIB_CHECK_VERSION (2, 38, 0)
+  EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized", already_initialized);
+  EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized/subprocess",
+                       already_initialized_subprocess);
+#endif
 
   return testing_extension_run_tests ();
 }
