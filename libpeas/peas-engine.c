@@ -319,7 +319,13 @@ loader_destroy (LoaderInfo *info)
     return;
 
   if (info->loader)
-    g_object_unref (info->loader);
+    {
+      g_object_add_weak_pointer (G_OBJECT (info->loader),
+                                 (gpointer *) &info->loader);
+
+      g_object_unref (info->loader);
+      g_assert (info->loader == NULL);
+    }
 
   g_free (info);
 }
