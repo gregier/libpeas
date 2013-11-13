@@ -15,6 +15,7 @@ gschemas.compiled
 Makefile
 Makefile.in
 /ABOUT-NLS
+/INSTALL
 /aclocal.m4
 /autom4te.cache
 /config.cache
