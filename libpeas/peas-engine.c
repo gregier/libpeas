@@ -281,6 +281,8 @@ peas_engine_add_search_path (PeasEngine *engine,
  * look for plugins.
  *
  * See Also: peas_engine_add_search_path()
+ *
+ * Since: 1.6
  */
 void
 peas_engine_prepend_search_path (PeasEngine *engine,
