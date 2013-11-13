@@ -41,10 +41,17 @@ int testing_extension_run_tests   (void);
   testing_extension_callable (loader); \
   testing_extension_properties (loader)
 
-/* This macro is there to add loader-specific tests. */
+/* These macros are here to add loader-specific tests. */
+#define EXTENSION_TEST_NAME(loader, path) \
+  ("/extension/" G_STRINGIFY (loader) "/" path)
+
 #define EXTENSION_TEST(loader, path, func) \
-  testing_extension_add ("/extension/" #loader "/" path, \
+  testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
                          (gpointer) test_extension_##loader##_##func)
+
+#define EXTENSION_TEST_FUNC(loader, path, func) \
+  g_test_add_func (EXTENSION_TEST_NAME (loader, path), \
+                   (gpointer) test_extension_##loader##_##func)
 
 G_END_DECLS
 

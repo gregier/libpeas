@@ -33,12 +33,14 @@ endif
 
 if ENABLE_PYTHON2
 TEST_PROGS               += extension-python
+extension_python_SOURCES  = extension-py.c
 extension_python_CFLAGS   = $(PYGOBJECT_CFLAGS) $(PYTHON2_CFLAGS)
 extension_python_LDADD    = $(LDADD) $(PYGOBJECT_LIBS) $(PYTHON2_LIBS)
 endif
 
 if ENABLE_PYTHON3
 TEST_PROGS                += extension-python3
+extension_python3_SOURCES  = extension-py.c
 extension_python3_CFLAGS   = $(PYGOBJECT_CFLAGS) $(PYTHON3_CFLAGS)
 extension_python3_LDADD    = $(LDADD) $(PYGOBJECT_LIBS) $(PYTHON3_LIBS)
 endif

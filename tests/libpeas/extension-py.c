@@ -1,8 +1,9 @@
 /*
- * extension-python.c
+ * extension-py.c
  * This file is part of libpeas
  *
- * Copyright (C) 2011 - Steve Frécinaux, Garrett Regier
+ * Copyright (C) 2011 - Steve Frécinaux
+ * Copyright (C) 2011-2013 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -26,14 +27,25 @@
 #include <pygobject.h>
 
 #include <libpeas/peas-activatable.h>
+#include "libpeas/peas-engine-priv.h"
 #include "loaders/python/peas-extension-python.h"
 
 #include "testing/testing-extension.h"
 #include "introspection/introspection-base.h"
 
+
+#if PY_VERSION_HEX < 0x03000000
+#define PY_LOADER       python
+#else
+#define PY_LOADER       python3
+#endif
+
+#define PY_LOADER_STR       G_STRINGIFY (PY_LOADER)
+
+
 static void
-test_extension_python_instance_refcount (PeasEngine     *engine,
-                                         PeasPluginInfo *info)
+test_extension_py_instance_refcount (PeasEngine     *engine,
+                                     PeasPluginInfo *info)
 {
   PeasExtension *extension;
   PyObject *instance;
@@ -55,8 +67,8 @@ test_extension_python_instance_refcount (PeasEngine     *engine,
 }
 
 static void
-test_extension_python_activatable_subject_refcount (PeasEngine     *engine,
-                                                    PeasPluginInfo *info)
+test_extension_py_activatable_subject_refcount (PeasEngine     *engine,
+                                                PeasPluginInfo *info)
 {
   PeasExtension *extension;
   GObject *object;
@@ -96,13 +108,15 @@ test_extension_python_activatable_subject_refcount (PeasEngine     *engine,
 }
 
 static void
-test_extension_python_nonexistent (PeasEngine *engine)
+test_extension_py_nonexistent (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("Error loading plugin 'extension-python-nonexistent'");
+  testing_util_push_log_hook ("Error loading plugin 'extension-"
+                              PY_LOADER_STR "-nonexistent'");
 
-  info = peas_engine_get_plugin_info (engine, "extension-python-nonexistent");
+  info = peas_engine_get_plugin_info (engine,
+                                      "extension-" PY_LOADER_STR "-nonexistent");
 
   g_assert (!peas_engine_load_plugin (engine, info));
 }
@@ -113,11 +127,18 @@ main (int   argc,
 {
   testing_init (&argc, &argv);
 
-  testing_extension_all ("python");
+  testing_extension_all (PY_LOADER_STR);
 
-  EXTENSION_TEST (python, "instance-refcount", instance_refcount);
-  EXTENSION_TEST (python, "activatable-subject-refcount", activatable_subject_refcount);
-  EXTENSION_TEST (python, "nonexistent", nonexistent);
+#undef EXTENSION_TEST
+  
+#define EXTENSION_TEST(loader, path, func) \
+  testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
+                         (gpointer) test_extension_py_##func)
+
+  EXTENSION_TEST (PY_LOADER, "instance-refcount", instance_refcount);
+  EXTENSION_TEST (PY_LOADER, "activatable-subject-refcount",
+                  activatable_subject_refcount);
+  EXTENSION_TEST (PY_LOADER, "nonexistent", nonexistent);
 
   return testing_extension_run_tests ();
 }

@@ -471,7 +471,8 @@ test_extension_properties_prerequisite (PeasEngine     *engine,
 
 #define _EXTENSION_TEST(loader, path, ftest) \
   G_STMT_START { \
-    gchar *full_path = g_strdup_printf ("/extension/%s/" path, loader); \
+    gchar *full_path = g_strdup_printf (EXTENSION_TEST_NAME (%s, "%s"), \
+                                        loader, path); \
 \
     g_test_add (full_path, TestFixture, \
                 (gpointer) test_extension_##ftest, \
