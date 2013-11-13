@@ -374,9 +374,9 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   PyObject *mdict, *gettext, *install, *gettext_args;
   const gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
-  const char *argv[] = { "", NULL };
+  const char *argv[] = { NULL, NULL };
 #else
-  wchar_t *argv[] = { L"", NULL };
+  wchar_t *argv[] = { NULL, NULL };
 #endif
 
   /* We are trying to initialize Python for the first time,
@@ -413,14 +413,13 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
     }
 
   prgname = g_get_prgname ();
-  if (prgname != NULL)
-    {
+  prgname = prgname == NULL ? "" : prgname;
+
 #if PY_VERSION_HEX < 0x03000000
-      argv[0] = prgname;
+  argv[0] = prgname;
 #else
-      argv[0] = peas_wchar_from_str (prgname);
+  argv[0] = peas_wchar_from_str (prgname);
 #endif
-    }
 
   /* See http://docs.python.org/c-api/init.html#PySys_SetArgvEx */
 #if PY_VERSION_HEX < 0x02060600
