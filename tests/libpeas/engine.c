@@ -63,6 +63,7 @@ test_engine_new (PeasEngine *engine)
 {
   PeasEngine *new_engine;
 
+  /* Only one testing engine can be alive */
   new_engine = peas_engine_new ();
 
   g_assert (engine != NULL);
@@ -98,7 +99,11 @@ test_engine_get_default (void)
 
   g_assert (peas_engine_get_default () == peas_engine_get_default ());
 
-  g_object_unref (peas_engine_get_default ());
+  /* Only has a single ref */
+  test_engine = peas_engine_get_default ();
+  g_object_add_weak_pointer (test_engine, &test_engine);
+  g_object_unref (test_engine);
+  g_assert (test_engine == NULL);
 
 
   /* Check that the default engine is the newly created engine
