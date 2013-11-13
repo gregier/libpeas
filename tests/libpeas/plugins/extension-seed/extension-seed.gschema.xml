@@ -1,5 +1,5 @@
 <schemalist>
-  <schema id="extension-JS_LOADER" path="/org/gnome/libpeas/tests/extension-JS_LOADER/">
+  <schema id="extension-seed" path="/org/gnome/libpeas/tests/extension-seed/">
     <key name="a-setting" type="s">
       <default>'Blah'</default>
       <summary>Just a setting.</summary>

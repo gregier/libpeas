@@ -268,43 +268,6 @@ fi
 AM_CONDITIONAL([ENABLE_SEED],[test "x$found_seed" = "xyes"])
 
 dnl ================================================================
-dnl GJS Javascript Engine
-dnl ================================================================
-
-GJS_REQUIRED=1.37.1
-
-AC_ARG_ENABLE(gjs,
-	      AS_HELP_STRING([--enable-gjs],[Enable GJS support]),
-	      [enable_gjs=$enableval],
-	      [enable_gjs=auto])
-
-AC_MSG_CHECKING([for GJS JS availability.])
-
-if test "x$enable_gjs" = "xno"; then
-	found_gjs="no (disabled, use --enable-gjs to enable)"
-else
-	PKG_CHECK_EXISTS([gjs-internals-1.0 >= $GJS_REQUIRED],
-			 [found_gjs=yes],
-			 [found_gjs=no])
-fi
-
-if test "$enable_gjs" = "yes" -a "$found_gjs" = "no"; then
-	AC_MSG_ERROR([You need to have gjs-internals-1.0 >= $GJS_REQUIRED installed to build libpeas])
-fi
-AC_MSG_RESULT([$found_gjs])
-
-if test "$found_gjs" = "yes"; then
-	GJS_CFLAGS=`$PKG_CONFIG --cflags gjs-internals-1.0`
-	GJS_LIBS=`$PKG_CONFIG --libs gjs-internals-1.0`
-	AC_SUBST(GJS_CFLAGS)
-	AC_SUBST(GJS_LIBS)
-
-	AC_DEFINE(ENABLE_GJS,1,[Define to compile with GJS support])
-fi
-
-AM_CONDITIONAL([ENABLE_GJS],[test "x$found_gjs" = "xyes"])
-
-dnl ================================================================
 dnl Python
 dnl ================================================================
 
@@ -474,7 +437,6 @@ docs/reference/version.xml
 libpeas/Makefile
 libpeas-gtk/Makefile
 loaders/Makefile
-loaders/gjs/Makefile
 loaders/python/Makefile
 loaders/python3/Makefile
 loaders/seed/Makefile
@@ -485,7 +447,6 @@ data/libpeas-1.0.pc
 data/libpeas-gtk-1.0.pc
 peas-demo/Makefile
 peas-demo/plugins/Makefile
-peas-demo/plugins/gjshello/Makefile
 peas-demo/plugins/helloworld/Makefile
 peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
@@ -495,8 +456,8 @@ tests/Makefile
 tests/libpeas/Makefile
 tests/libpeas/plugins/Makefile
 tests/libpeas/plugins/extension-c/Makefile
-tests/libpeas/plugins/extension-js/Makefile
 tests/libpeas/plugins/extension-python/Makefile
+tests/libpeas/plugins/extension-seed/Makefile
 tests/libpeas/introspection/Makefile
 tests/libpeas/testing/Makefile
 tests/libpeas-gtk/Makefile
@@ -531,6 +492,5 @@ Languages support:
 
         Python 2 support              : ${found_python2}
         Python 3 support              : ${found_python3}
-        Javascript support (Seed)     : ${found_seed}
-        Javascript support (GJS)      : ${found_gjs}
+        Seed Javascript support       : ${found_seed}
 "

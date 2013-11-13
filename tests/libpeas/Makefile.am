@@ -25,12 +25,6 @@ TEST_PROGS += \
 	extension-set	\
 	plugin-info
 
-if ENABLE_GJS
-TEST_PROGS            += extension-gjs
-extension_gjs_CFLAGS   = $(GJS_CFLAGS)
-extension_gjs_LDADD    = $(LDADD) $(GJS_LIBS)
-endif
-
 if ENABLE_PYTHON2
 TEST_PROGS               += extension-python
 extension_python_SOURCES  = extension-py.c

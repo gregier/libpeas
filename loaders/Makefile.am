@@ -1,9 +1,5 @@
 SUBDIRS =
 
-if ENABLE_GJS
-SUBDIRS += gjs
-endif
-
 if ENABLE_PYTHON2
 SUBDIRS += python
 endif

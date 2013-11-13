@@ -2,14 +2,6 @@ include $(top_srcdir)/tests/Makefile.plugin
 
 SUBDIRS = extension-c
 
-if ENABLE_GJS
-SUBDIRS += extension-js
-else
-if ENABLE_SEED
-SUBDIRS += extension-js
-endif
-endif
-
 if ENABLE_PYTHON3
 SUBDIRS += extension-python
 else
@@ -18,10 +10,13 @@ SUBDIRS += extension-python
 endif
 endif
 
+if ENABLE_SEED
+SUBDIRS += extension-seed
+endif
+
 noinst_PLUGIN = \
 	disabled-loader.plugin			\
 	extension-c-nonexistent.plugin		\
-	extension-gjs-nonexistent.plugin	\
 	extension-python-nonexistent.plugin	\
 	extension-python3-nonexistent.plugin	\
 	extension-seed-nonexistent.plugin	\
