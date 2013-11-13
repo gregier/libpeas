@@ -16,8 +16,6 @@ INCLUDES = \
 loader_LTLIBRARIES = libpythonloader.la
 
 libpythonloader_la_SOURCES = \
-	peas-extension-python.c		\
-	peas-extension-python.h		\
 	peas-plugin-loader-python.c 	\
 	peas-plugin-loader-python.h
 

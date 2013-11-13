@@ -24,7 +24,6 @@
 #include <config.h>
 #endif
 
-#include "peas-extension-python.h"
 #include "peas-plugin-loader-python.h"
 
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
@@ -141,11 +140,10 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   PythonInfo *pyinfo;
   PyTypeObject *pytype;
   GType the_type;
-  GObject *object;
+  GObject *object = NULL;
   PyObject *pyobject;
   PyObject *pyplinfo;
   PyGILState_STATE state;
-  PeasExtension *exten = NULL;
 
   pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
 
@@ -172,24 +170,27 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   if (!object)
     goto out;
 
+  /* As we do not instantiate a PeasExtensionWrapper, we have to remember
+   * somehow which interface we are instantiating, to make it possible to use
+   * the deprecated peas_extension_get_extension_type() method.
+   */
+  g_object_set_data (object, "peas-extension-type",
+                     GUINT_TO_POINTER (exten_type));
+
   pyobject = pygobject_new (object);
-  g_object_unref (object);
 
   /* Set the plugin info as an attribute of the instance */
   pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);
   PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo);
   Py_DECREF (pyplinfo);
 
-  exten = peas_extension_python_new (exten_type,
-                                     g_type_interfaces (the_type, NULL),
-                                     pyobject);
   Py_DECREF (pyobject);
 
 out:
 
   PyGILState_Release (state);
 
-  return exten;
+  return object;
 }
 
 /* NOTE: This must be called with the GIL held */

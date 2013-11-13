@@ -16,8 +16,6 @@ INCLUDES = \
 loader_LTLIBRARIES = libpython3loader.la
 
 libpython3loader_la_SOURCES = \
-	$(top_srcdir)/loaders/python/peas-extension-python.c		\
-	$(top_srcdir)/loaders/python/peas-extension-python.h		\
 	$(top_srcdir)/loaders/python/peas-plugin-loader-python.c	\
 	$(top_srcdir)/loaders/python/peas-plugin-loader-python.h
 
