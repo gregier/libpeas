@@ -427,24 +427,30 @@ test_engine_nonexistent_search_path (PeasEngine *engine)
   peas_engine_add_search_path (engine, "/nowhere", NULL);
 }
 
-
+#if GLIB_CHECK_VERSION (2, 38, 0)
 static void
 test_engine_shutdown (void)
 {
-  /* Should be able to shutdown multiple times */
-  peas_engine_shutdown ();
-  peas_engine_shutdown ();
-
-  /* Cannot create an engine because libpeas has been shutdown */
-  if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDOUT | G_TEST_TRAP_SILENCE_STDERR))
-    {
-      peas_engine_new ();
-      exit (0);
-    }
+  g_test_trap_subprocess ("/engine/shutdown/subprocess", 0, 0);
   g_test_trap_assert_failed ();
   g_test_trap_assert_stderr ("*libpeas cannot create a plugin "
                               "engine as it has been shutdown*");
 }
+
+static void
+test_engine_shutdown_subprocess (PeasEngine *engine)
+{
+    testing_engine_free (engine);
+
+    /* Should be able to shutdown multiple times */
+    peas_engine_shutdown ();
+    peas_engine_shutdown ();
+
+    /* Cannot create an engine because libpeas has been shutdown */
+    engine = peas_engine_new ();
+    g_assert (engine == NULL);
+}
+#endif
 
 int
 main (int    argc,
@@ -484,8 +490,10 @@ main (int    argc,
 
   TEST ("nonexistent-search-path", nonexistent_search_path);
 
-  /* MUST be last */
+#if GLIB_CHECK_VERSION (2, 38, 0)
   TEST_FUNC ("shutdown", shutdown);
+  TEST ("shutdown/subprocess", shutdown_subprocess);
+#endif
 
 #undef TEST
 

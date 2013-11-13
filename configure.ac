@@ -100,7 +100,7 @@ AC_SUBST(GIO_REQUIRED)
 AC_SUBST(INTROSPECTION_REQUIRED)
 
 AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_32, [minimum glib version])
-AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_32, [maximum glib version])
+AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_38, [maximum glib version])
 
 dnl ================================================================
 dnl Build libpeas-gtk
