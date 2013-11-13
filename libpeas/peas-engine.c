@@ -81,12 +81,10 @@ enum {
 static guint signals[LAST_SIGNAL];
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
-typedef struct _LoaderInfo LoaderInfo;
-
-struct _LoaderInfo {
+typedef struct _LoaderInfo {
   PeasPluginLoader *loader;
   PeasObjectModule *module;
-};
+} LoaderInfo;
 
 typedef struct _SearchPath {
   gchar *module_dir;
@@ -264,7 +262,7 @@ peas_engine_insert_search_path (PeasEngine  *engine,
  * @module_dir.
  */
 void
-peas_engine_add_search_path (PeasEngine *engine,
+peas_engine_add_search_path (PeasEngine  *engine,
                              const gchar *module_dir,
                              const gchar *data_dir)
 {
@@ -285,7 +283,7 @@ peas_engine_add_search_path (PeasEngine *engine,
  * Since: 1.6
  */
 void
-peas_engine_prepend_search_path (PeasEngine *engine,
+peas_engine_prepend_search_path (PeasEngine  *engine,
                                  const gchar *module_dir,
                                  const gchar *data_dir)
 {
@@ -793,9 +791,9 @@ peas_engine_get_plugin_info (PeasEngine  *engine,
   return l == NULL ? NULL : (PeasPluginInfo *) l->data;
 }
 
-static gboolean
-load_plugin (PeasEngine     *engine,
-             PeasPluginInfo *info)
+static void
+peas_engine_load_plugin_real (PeasEngine     *engine,
+                              PeasPluginInfo *info)
 {
   const gchar **dependencies;
   PeasPluginInfo *dep_info;
@@ -803,10 +801,10 @@ load_plugin (PeasEngine     *engine,
   PeasPluginLoader *loader;
 
   if (peas_plugin_info_is_loaded (info))
-    return TRUE;
+    return;
 
   if (!peas_plugin_info_is_available (info, NULL))
-    return FALSE;
+    return;
 
   /* We set the plugin info as loaded before trying to load the dependencies,
    * to make sure we won't have an infinite loop. */
@@ -866,23 +864,15 @@ load_plugin (PeasEngine     *engine,
 
   g_debug ("Loaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
-  return TRUE;
+  g_object_notify_by_pspec (G_OBJECT (engine),
+                            properties[PROP_LOADED_PLUGINS]);
+
+  return;
 
 error:
 
   info->loaded = FALSE;
   info->available = FALSE;
-
-  return FALSE;
-}
-
-static void
-peas_engine_load_plugin_real (PeasEngine     *engine,
-                              PeasPluginInfo *info)
-{
-  if (load_plugin (engine, info))
-    g_object_notify_by_pspec (G_OBJECT (engine),
-                              properties[PROP_LOADED_PLUGINS]);
 }
 
 /**
@@ -903,11 +893,11 @@ peas_engine_load_plugin (PeasEngine     *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
 
-  if (!peas_plugin_info_is_available (info, NULL))
-    return FALSE;
-
   if (peas_plugin_info_is_loaded (info))
     return TRUE;
+
+  if (!peas_plugin_info_is_available (info, NULL))
+    return FALSE;
 
   g_signal_emit (engine, signals[LOAD_PLUGIN], 0, info);
 
@@ -922,8 +912,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   const gchar *module_name;
   PeasPluginLoader *loader;
 
-  if (!peas_plugin_info_is_loaded (info) ||
-      !peas_plugin_info_is_available (info, NULL))
+  if (!peas_plugin_info_is_loaded (info))
     return;
 
   /* We set the plugin info as unloaded before trying to unload the
@@ -951,6 +940,9 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
 
   g_debug ("Unloaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
+  /* Don't notify while in dispose so the
+   * loaded plugins can easily be kept in GSettings
+   */
   if (!engine->priv->in_dispose)
     g_object_notify_by_pspec (G_OBJECT (engine),
                               properties[PROP_LOADED_PLUGINS]);

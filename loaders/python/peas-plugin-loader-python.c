@@ -28,7 +28,8 @@
 #include "peas-plugin-loader-python.h"
 
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
- * glib-object.h, so we unset it here to avoid a warning. Yep, that's bad. */
+ * glib-object.h, so we unset it here to avoid a warning. Yep, that's bad.
+ */
 #undef _POSIX_C_SOURCE
 #include <pygobject.h>
 #include <Python.h>
@@ -283,8 +284,7 @@ peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
 
-  /*
-   * We both run the GC right now and we schedule
+  /* We both run the GC right now and we schedule
    * a further collection in the main loop.
    */
   run_gc_protected ();
@@ -435,11 +435,16 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   g_free (argv[0]);
 #endif
 
-  /* Note that we don't call this with the GIL held, since we haven't initialised pygobject yet */
+  /* Note that we don't call this with the GIL held,
+   * since we haven't initialised pygobject yet
+   */
   peas_plugin_loader_python_add_module_path (pyloader, PEAS_PYEXECDIR);
 
   /* Initialize PyGObject */
-  pygobject_init (PYGOBJECT_MAJOR_VERSION, PYGOBJECT_MINOR_VERSION, PYGOBJECT_MICRO_VERSION);
+  pygobject_init (PYGOBJECT_MAJOR_VERSION,
+                  PYGOBJECT_MINOR_VERSION,
+                  PYGOBJECT_MICRO_VERSION);
+
   if (PyErr_Occurred ())
     {
       g_warning ("Error initializing Python Plugin Loader: "
@@ -480,8 +485,8 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 
 python_init_error:
 
-  g_warning ("Please check the installation of all the Python related packages "
-             "required by libpeas and try again");
+  g_warning ("Please check the installation of all the Python "
+             "related packages required by libpeas and try again");
 
   if (PyErr_Occurred ())
     PyErr_Clear ();
