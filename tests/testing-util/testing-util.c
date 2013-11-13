@@ -196,6 +196,9 @@ testing_util_run_tests (void)
 
   retval = g_test_run ();
 
+  /* Make sure all the engines have been freed */
+  g_assert (engine == NULL);
+
   if (log_hooks != NULL)
     {
       g_assert_cmpuint (log_hooks->len, ==, 0);
