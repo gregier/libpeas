@@ -28,6 +28,12 @@
 G_DEFINE_ABSTRACT_TYPE (PeasPluginLoader, peas_plugin_loader, G_TYPE_OBJECT);
 
 static void
+peas_plugin_loader_finalize (GObject *object)
+{
+  g_debug ("Plugin Loader '%s' Finalized", G_OBJECT_TYPE_NAME (object));
+}
+
+static void
 peas_plugin_loader_init (PeasPluginLoader *loader)
 {
 }
@@ -35,6 +41,9 @@ peas_plugin_loader_init (PeasPluginLoader *loader)
 static void
 peas_plugin_loader_class_init (PeasPluginLoaderClass *klass)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->finalize = peas_plugin_loader_finalize;
 }
 
 gboolean
