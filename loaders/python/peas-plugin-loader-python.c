@@ -371,6 +371,7 @@ static gboolean
 peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  long hexversion;
   PyObject *mdict, *gettext, *install, *gettext_args;
   const gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
@@ -410,6 +411,19 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 
       Py_InitializeEx (FALSE);
       pyloader->priv->must_finalize_python = TRUE;
+    }
+
+  hexversion = PyLong_AsLong (PySys_GetObject ((char *) "hexversion"));
+
+#if PY_VERSION_HEX < 0x03000000
+  if (hexversion >= 0x03000000)
+#else
+  if (hexversion < 0x03000000)
+#endif
+    {
+      g_critical ("Attempting to mix incompatible Python versions");
+
+      goto python_init_error;
     }
 
   prgname = g_get_prgname ();
