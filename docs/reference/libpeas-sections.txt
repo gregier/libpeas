@@ -189,8 +189,6 @@ PEAS_EXTENSION
 PEAS_IS_EXTENSION
 PEAS_TYPE_EXTENSION
 peas_extension_get_type
-<SUBSECTION Private>
-PeasExtensionPrivate
 </SECTION>
 
 <SECTION>
