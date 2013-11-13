@@ -459,7 +459,9 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   pyg_enable_threads ();
   PyEval_InitThreads ();
 
-  pyg_disable_warning_redirections ();
+  /* Only redirect warnings when python was not already initialized */
+  if (!pyloader->priv->must_finalize_python)
+    pyg_disable_warning_redirections ();
 
   /* i18n support */
   gettext = PyImport_ImportModule ("gettext");
