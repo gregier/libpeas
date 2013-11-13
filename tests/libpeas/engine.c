@@ -101,7 +101,8 @@ test_engine_get_default (void)
 
   /* Only has a single ref */
   test_engine = peas_engine_get_default ();
-  g_object_add_weak_pointer (test_engine, &test_engine);
+  g_object_add_weak_pointer (G_OBJECT (test_engine),
+                             (gpointer *) &test_engine);
   g_object_unref (test_engine);
   g_assert (test_engine == NULL);
 
