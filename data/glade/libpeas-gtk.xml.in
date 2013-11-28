@@ -3,6 +3,7 @@
   <glade-widget-classes>
     <glade-widget-class name="PeasGtkPluginManager" _title="Plugin Manager" generic-name="pluginmanager">
       <properties>
+        <!-- Translators: What PeasGtkPluginManagerView to use -->
         <property id="view" _name="View" create-type="PeasGtkPluginManagerView" query="False" />
 
         <!-- Disable GtkBox properties that should never be modified -->

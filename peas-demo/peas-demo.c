@@ -37,6 +37,7 @@ static int n_windows;
 
 static GOptionEntry demo_args[] = {
   { "run-from-build-dir", 'b', 0, G_OPTION_ARG_NONE, &run_from_build_dir,
+    /* Translators: The directory in which the demo program was compiled at */
     N_("Run from build directory"), NULL },
   { NULL }
 };
