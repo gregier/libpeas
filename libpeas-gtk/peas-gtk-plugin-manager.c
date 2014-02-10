@@ -108,6 +108,7 @@ show_about_cb (GtkWidget            *widget,
 {
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
+  GtkWindow *parent;
 
   view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
 
@@ -139,8 +140,11 @@ show_about_cb (GtkWidget            *widget,
                     G_CALLBACK (gtk_widget_destroyed),
                     &pm->priv->about);
 
+  parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
   gtk_window_set_transient_for (GTK_WINDOW (pm->priv->about),
-                                GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm))));
+                                parent);
+  gtk_window_set_modal (GTK_WINDOW (pm->priv->about),
+                        gtk_window_get_modal (parent));
   gtk_widget_show (pm->priv->about);
 }
 
