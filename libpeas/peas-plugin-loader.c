@@ -25,7 +25,7 @@
 
 #include "peas-plugin-loader.h"
 
-G_DEFINE_ABSTRACT_TYPE (PeasPluginLoader, peas_plugin_loader, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (PeasPluginLoader, peas_plugin_loader, G_TYPE_OBJECT)
 
 static void
 peas_plugin_loader_finalize (GObject *object)

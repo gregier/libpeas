@@ -28,7 +28,7 @@
 #include <libpeas/peas-extension-subclasses.h>
 #include <girepository.h>
 
-G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION_WRAPPER);
+G_DEFINE_TYPE (PeasExtensionSeed, peas_extension_seed, PEAS_TYPE_EXTENSION_WRAPPER)
 
 typedef struct {
   GITypeInfo type_info;

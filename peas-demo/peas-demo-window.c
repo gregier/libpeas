@@ -25,7 +25,7 @@
 
 #include "peas-demo-window.h"
 
-G_DEFINE_TYPE (DemoWindow, demo_window, GTK_TYPE_WINDOW);
+G_DEFINE_TYPE (DemoWindow, demo_window, GTK_TYPE_WINDOW)
 
 static void
 on_extension_added (PeasExtensionSet *set,

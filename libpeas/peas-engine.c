@@ -57,7 +57,7 @@
  *   </listitem>
  * </itemizedlist>
  **/
-G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT);
+G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT)
 
 static PeasEngine *default_engine = NULL;
 static gboolean shutdown = FALSE;

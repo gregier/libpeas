@@ -42,7 +42,7 @@
  * the same purpose.
  **/
 
-G_DEFINE_ABSTRACT_TYPE (PeasExtensionBase, peas_extension_base, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (PeasExtensionBase, peas_extension_base, G_TYPE_OBJECT)
 
 struct _PeasExtensionBasePrivate {
   PeasPluginInfo *info;

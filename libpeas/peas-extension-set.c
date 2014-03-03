@@ -86,7 +86,7 @@
  * ]|
  **/
 
-G_DEFINE_TYPE (PeasExtensionSet, peas_extension_set, G_TYPE_OBJECT);
+G_DEFINE_TYPE (PeasExtensionSet, peas_extension_set, G_TYPE_OBJECT)
 
 struct _PeasExtensionSetPrivate {
   PeasEngine *engine;

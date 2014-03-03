@@ -31,7 +31,7 @@
 #include "peas-plugin-loader-seed.h"
 #include "peas-extension-seed.h"
 
-G_DEFINE_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER);
+G_DEFINE_TYPE (PeasPluginLoaderSeed, peas_plugin_loader_seed, PEAS_TYPE_PLUGIN_LOADER)
 
 typedef struct {
   SeedContext context;

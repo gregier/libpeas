@@ -34,7 +34,7 @@ struct _PeasPluginLoaderCPrivate {
   GHashTable *loaded_plugins;
 };
 
-G_DEFINE_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER);
+G_DEFINE_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER)
 
 static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader *loader,

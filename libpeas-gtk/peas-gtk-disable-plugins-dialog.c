@@ -49,7 +49,7 @@ static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkDisablePluginsDialog,
                peas_gtk_disable_plugins_dialog,
-               GTK_TYPE_MESSAGE_DIALOG);
+               GTK_TYPE_MESSAGE_DIALOG)
 
 static gint
 model_name_sort_func (GtkListStore *store,

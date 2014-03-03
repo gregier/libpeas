@@ -42,7 +42,7 @@
  * function.
  **/
 
-G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE);
+G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE)
 
 typedef void     (*PeasObjectModuleRegisterFunc) (PeasObjectModule *);
 

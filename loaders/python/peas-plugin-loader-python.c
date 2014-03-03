@@ -55,7 +55,7 @@ typedef struct {
 static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
                                                              const gchar            *module_path);
 
-G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER);
+G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER)
 
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)

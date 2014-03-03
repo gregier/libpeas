@@ -26,7 +26,7 @@
 #include "peas-extension-wrapper.h"
 #include "peas-introspection.h"
 
-G_DEFINE_ABSTRACT_TYPE (PeasExtensionWrapper, peas_extension_wrapper, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (PeasExtensionWrapper, peas_extension_wrapper, G_TYPE_OBJECT)
 
 static void
 peas_extension_wrapper_init (PeasExtensionWrapper *exten)
