@@ -28,11 +28,11 @@
 
 G_BEGIN_DECLS
 
-void testing_extension_basic      (const gchar *loader);
-void testing_extension_callable   (const gchar *loader);
-void testing_extension_properties (const gchar *loader);
-void testing_extension_add        (const gchar *path,
-                                   gpointer     func);
+void testing_extension_basic      (const gchar   *loader);
+void testing_extension_callable   (const gchar   *loader);
+void testing_extension_properties (const gchar   *loader);
+void testing_extension_add        (const gchar   *path,
+                                   GTestDataFunc  func);
 
 int testing_extension_run_tests   (void);
 
@@ -47,11 +47,11 @@ int testing_extension_run_tests   (void);
 
 #define EXTENSION_TEST(loader, path, func) \
   testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
-                         (gpointer) test_extension_##loader##_##func)
+                         (GTestDataFunc) test_extension_##loader##_##func)
 
 #define EXTENSION_TEST_FUNC(loader, path, func) \
   g_test_add_func (EXTENSION_TEST_NAME (loader, path), \
-                   (gpointer) test_extension_##loader##_##func)
+                   (GTestFunc) test_extension_##loader##_##func)
 
 G_END_DECLS
 

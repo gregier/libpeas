@@ -532,10 +532,11 @@ testing_extension_properties (const gchar *loader)
 }
 
 void
-testing_extension_add (const gchar *path,
-                       gpointer     func)
+testing_extension_add (const gchar   *path,
+                       GTestDataFunc  func)
 {
-  g_test_add (path, TestFixture, func, test_setup, test_runner, test_teardown);
+  g_test_add (path, TestFixture, (gpointer) func,
+              test_setup, test_runner, test_teardown);
 }
 
 int
