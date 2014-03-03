@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libintrospection-1.0.la
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)		\
 	-I$(srcdir)		\
 	$(PEAS_CFLAGS)		\

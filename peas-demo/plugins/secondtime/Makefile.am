@@ -1,6 +1,6 @@
 plugindir = $(libdir)/peas-demo/plugins/secondtime
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir) 	\
 	$(PEAS_CFLAGS)		\
 	$(PEAS_GTK_CFLAGS)

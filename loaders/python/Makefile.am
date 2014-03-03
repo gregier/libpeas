@@ -2,7 +2,7 @@
 
 loaderdir = $(libdir)/libpeas-1.0/loaders
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)			\
 	$(PEAS_CFLAGS)			\
 	$(GCOV_CFLAGS)			\

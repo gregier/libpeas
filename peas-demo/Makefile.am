@@ -2,12 +2,12 @@ SUBDIRS=plugins
 
 bin_PROGRAMS = peas-demo
 
-INCLUDES =								\
-	-I$(top_srcdir)							\
-	-I$(srcdir)							\
-	$(PEAS_CFLAGS)							\
-	$(PEAS_GTK_CFLAGS)						\
-	$(WARN_CFLAGS)							\
+AM_CPPFLAGS = \
+	-I$(top_srcdir)		\
+	-I$(srcdir)		\
+	$(PEAS_CFLAGS)		\
+	$(PEAS_GTK_CFLAGS)	\
+	$(WARN_CFLAGS)		\
 	$(DISABLE_DEPRECATED)
 
 peas_demo_SOURCES = \

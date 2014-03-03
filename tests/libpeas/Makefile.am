@@ -2,7 +2,7 @@ include $(top_srcdir)/tests/Makefile.tests
 
 SUBDIRS = introspection plugins testing
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)			\
 	-I$(srcdir)			\
 	-I$(srcdir)/../testing-util	\

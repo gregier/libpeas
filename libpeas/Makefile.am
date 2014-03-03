@@ -1,14 +1,14 @@
 lib_LTLIBRARIES = libpeas-1.0.la
 
-INCLUDES =								\
-	-I$(top_srcdir)							\
-	-I$(srcdir)							\
-	$(PEAS_CFLAGS)							\
-	$(IGE_MAC_CFLAGS)						\
-	$(GCOV_CFLAGS)							\
-	$(WARN_CFLAGS)							\
-	$(DISABLE_DEPRECATED)						\
-	-DDATADIR=\""$(datadir)"\"					\
+AM_CPPFLAGS =				\
+	-I$(top_srcdir)			\
+	-I$(srcdir)			\
+	$(PEAS_CFLAGS)			\
+	$(IGE_MAC_CFLAGS)		\
+	$(GCOV_CFLAGS)			\
+	$(WARN_CFLAGS)			\
+	$(DISABLE_DEPRECATED)		\
+	-DDATADIR=\""$(datadir)"\"	\
 	-DLIBDIR=\""$(libdir)"\"
 
 libpeas_1_0_la_LDFLAGS = \

@@ -1,6 +1,6 @@
 include $(top_srcdir)/tests/Makefile.plugin
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)		\
 	-I$(srcdir)/../../introspection	\
 	$(PEAS_CFLAGS)		\
