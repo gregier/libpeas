@@ -292,8 +292,10 @@ peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
    */
   run_gc_protected ();
 
-  if (pyloader->priv->idle_gc == 0)
+  if (pyloader->priv->idle_gc == 0) {
     pyloader->priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
+    g_source_set_name_by_id (pyloader->priv->idle_gc, "[libpeas] run_gc");
+  }
 }
 
 /* C equivalent of
