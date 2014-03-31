@@ -1,3 +1,9 @@
+Overview of Changes in libpeas 1.10.0
+====================================
+
+* Remove support for gjs-based Javascript plugins
+* Misc bugfixes
+
 Overview of Changes in libpeas 1.9.0
 ====================================
 
