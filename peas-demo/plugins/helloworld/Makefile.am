@@ -14,7 +14,11 @@ libhelloworld_la_SOURCES = \
 	peasdemo-hello-world-configurable.c
 
 libhelloworld_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
-libhelloworld_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
+libhelloworld_la_LIBADD  = \
+	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
+	$(top_builddir)/libpeas/libpeas-1.0.la		\
+	$(PEAS_LIBS)					\
+	$(PEAS_GTK_LIBS)
 
 plugin_DATA = helloworld.plugin
 

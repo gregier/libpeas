@@ -13,7 +13,9 @@ libloadable_la_SOURCES = \
 	loadable-plugin.h
 
 libloadable_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
-libloadable_la_LIBADD  = $(PEAS_LIBS)
+libloadable_la_LIBADD  = \
+	$(top_builddir)/libpeas/libpeas-1.0.la	\
+	$(PEAS_LIBS)
 
 noinst_PLUGIN = loadable.plugin
 

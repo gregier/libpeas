@@ -14,7 +14,11 @@ libconfigurable_la_SOURCES = \
 	configurable-plugin.h
 
 libconfigurable_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
-libconfigurable_la_LIBADD  = $(PEAS_LIBS) $(PEAS_GTK_LIBS)
+libconfigurable_la_LIBADD  = \
+	$(top_builddir)/libpeas-gtk/libpeas-gtk-1.0.la	\
+	$(top_builddir)/libpeas/libpeas-1.0.la		\
+	$(PEAS_LIBS) 					\
+	$(PEAS_GTK_LIBS)
 
 noinst_PLUGIN = configurable.plugin
 

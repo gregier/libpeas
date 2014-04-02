@@ -19,7 +19,10 @@ libseedloader_la_SOURCES = \
 	peas-plugin-loader-seed.h
 
 libseedloader_la_LDFLAGS = $(LOADER_LIBTOOL_FLAGS) $(GCOV_LDFLAGS)
-libseedloader_la_LIBADD = $(PEAS_LIBS) $(SEED_LIBS)
+libseedloader_la_LIBADD = \
+	$(top_builddir)/libpeas/libpeas-1.0.la	\
+	$(PEAS_LIBS) 				\
+	$(SEED_LIBS)
 
 gcov_sources = $(libseedloader_la_SOURCES)
 include $(top_srcdir)/Makefile.gcov

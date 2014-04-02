@@ -25,8 +25,9 @@ libpythonloader_la_LDFLAGS = \
 	$(PYTHON2_LDFLAGS)
 
 libpythonloader_la_LIBADD = \
-	$(PEAS_LIBS)			\
-	$(PYGOBJECT_LIBS)		\
+	$(top_builddir)/libpeas/libpeas-1.0.la	\
+	$(PEAS_LIBS)				\
+	$(PYGOBJECT_LIBS)			\
 	$(PYTHON2_LIBS)
 
 gcov_sources = $(libpythonloader_la_SOURCES)

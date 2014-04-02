@@ -397,12 +397,12 @@ AC_SUBST(LT_AGE)
 # The reasons for -rpath /nowhere can be found at:
 # http://www.mail-archive.com/automake@gnu.org/msg10725.htm
 
-PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
+PLUGIN_LIBTOOL_FLAGS="-module -avoid-version -no-undefined"
 TEST_PLUGIN_LIBTOOL_FLAGS="$PLUGIN_LIBTOOL_FLAGS -rpath /nowhere"
 TEST_INTROSPECTION_LIBTOOL_FLAGS="-rpath /nowhere -export-dynamic -no-undefined"
 # Cannot use "-export-symbols-regex peas_register_types"
 # because it might make the python plugin loader not work!
-LOADER_LIBTOOL_FLAGS="-module -avoid-version"
+LOADER_LIBTOOL_FLAGS="-module -avoid-version -no-undefined"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(TEST_PLUGIN_LIBTOOL_FLAGS)
 AC_SUBST(TEST_INTROSPECTION_LIBTOOL_FLAGS)
