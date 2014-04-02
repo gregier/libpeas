@@ -70,6 +70,8 @@ dnl Gettext stuff.
 dnl ================================================================
 
 IT_PROG_INTLTOOL([0.40.0])
+AS_IF([test "$USE_NLS" = "yes"],
+      [AC_DEFINE([ENABLE_NLS], [1], [Defined if native language support should be enabled.])])
 
 GETTEXT_PACKAGE=libpeas
 AC_SUBST(GETTEXT_PACKAGE)
