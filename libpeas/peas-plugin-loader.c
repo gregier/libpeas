@@ -31,6 +31,8 @@ static void
 peas_plugin_loader_finalize (GObject *object)
 {
   g_debug ("Plugin Loader '%s' Finalized", G_OBJECT_TYPE_NAME (object));
+
+  G_OBJECT_CLASS (peas_plugin_loader_parent_class)->finalize (object);
 }
 
 static void
