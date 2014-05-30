@@ -376,7 +376,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   long hexversion;
-  PyObject *mdict, *gettext, *install, *gettext_args;
+  PyObject *gettext, *result;
   const gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
   const char *argv[] = { NULL, NULL };
@@ -491,11 +491,17 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
       goto python_init_error;
     }
 
-  mdict = PyModule_GetDict (gettext);
-  install = PyDict_GetItemString (mdict, "install");
-  gettext_args = Py_BuildValue ("ss", GETTEXT_PACKAGE, PEAS_LOCALEDIR);
-  PyObject_CallObject (install, gettext_args);
-  Py_DECREF (gettext_args);
+  result = PyObject_CallMethod (gettext, "install", "ss",
+                                GETTEXT_PACKAGE, PEAS_LOCALEDIR);
+  Py_XDECREF (result);
+
+  if (PyErr_Occurred ())
+    {
+      g_warning ("Error initializing Python Plugin Loader: "
+                 "failed to install gettext");
+
+      goto python_init_error;
+    }
 
   /* Python has been successfully initialized */
   pyloader->priv->init_failed = FALSE;
