@@ -180,6 +180,9 @@ test_extension_py_mixed_python_subprocess (void)
   testing_util_push_log_hook ("*Could not find loader '"
                               ALT_PY_LOADER_STR "'*");
 
+  /* Required when loading multiple loaders */
+  g_setenv ("PEAS_ALLOW_ALL_LOADERS", "1", TRUE);
+
   engine = testing_engine_new ();
   peas_engine_enable_loader (engine, ALT_PY_LOADER_STR);
 

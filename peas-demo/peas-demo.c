@@ -125,6 +125,8 @@ main (int    argc,
   peas_engine_add_search_path (engine, plugin_dir, plugin_dir);
   g_free (plugin_dir);
 
+  /* We don't care about leaking memory */
+  g_setenv ("PEAS_ALLOW_ALL_LOADERS", "1", TRUE);
   peas_engine_enable_loader (engine, "python3");
   peas_engine_enable_loader (engine, "seed");
 

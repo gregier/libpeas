@@ -712,13 +712,19 @@ get_plugin_loader (PeasEngine     *engine,
  * @loader_id: The id of the loader to enable.
  *
  * Enable a loader, enables a loader for plugins.
- * The C plugin loader is always enabled.
+ * The C plugin loader is always enabled. The other plugin
+ * loaders are: python, python3 and seed.
  *
- * For instance, the following code will enable python plugin
- * from being loaded:
+ * For instance, the following code will enable python plugins
+ * to be loaded:
  * |[
  * peas_engine_enable_loader (engine, "python");
  * ]|
+ *
+ * Due to the use of toggle references in the python, python3 and
+ * seed bindings only one of them should be enabled. Otherwise vast
+ * memory leaks are to be expected and as such it is an error to
+ * enable more than one of them.
  *
  * Note: plugin loaders are shared across #PeasEngines so enabling
  *       a loader on one #PeasEngine will enable it on all #PeasEngines.
@@ -732,6 +738,28 @@ peas_engine_enable_loader (PeasEngine  *engine,
 
   if (g_hash_table_lookup_extended (loaders, loader_id, NULL, NULL))
     return;
+
+  /* The demo and some tests need to load multiple loaders */
+  if (g_getenv ("PEAS_ALLOW_ALL_LOADERS") == NULL)
+    {
+      static const gchar *plugin_loader_ids[] = {"python", "python3", "seed"};
+      gint i;
+
+      for (i = 0; i < G_N_ELEMENTS (plugin_loader_ids); ++i)
+        {
+          if (g_ascii_strcasecmp (loader_id, plugin_loader_ids[i]) == 0)
+            continue;
+
+          if (g_hash_table_lookup_extended (loaders, plugin_loader_ids[i],
+                                            NULL, NULL))
+            {
+              g_warning ("Cannot enable plugin loader '%s' as the "
+                         "'%s' plugin loader has already been enabled.",
+                         loader_id, plugin_loader_ids[i]);
+              return;
+            }
+        }
+    }
 
   /* We do not load the plugin loader immediately and instead
    * load it in get_plugin_loader() so that it is loaded lazily.
