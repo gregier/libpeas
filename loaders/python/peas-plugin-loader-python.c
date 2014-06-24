@@ -178,12 +178,21 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
                      GUINT_TO_POINTER (exten_type));
 
   pyobject = pygobject_new (object);
+  pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);
 
   /* Set the plugin info as an attribute of the instance */
-  pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);
-  PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo);
-  Py_DECREF (pyplinfo);
+  if (PyObject_SetAttrString (pyobject, "plugin_info", pyplinfo) == -1)
+    {
+      g_warning ("Failed to set 'plugin_info' for '%s'",
+                 g_type_name (the_type));
 
+      if (PyErr_Occurred ())
+        PyErr_Print ();
+
+      g_clear_object (&object);
+    }
+
+  Py_DECREF (pyplinfo);
   Py_DECREF (pyobject);
 
 out:
@@ -213,27 +222,38 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  const gchar *module_dir, *module_name;
   PyObject *pymodule, *fromlist;
-  const gchar *module_name;
   PyGILState_STATE state;
 
-  /* see if py definition for the plugin is already loaded */
+  /* See if python definition for the plugin is already loaded */
   if (g_hash_table_lookup (pyloader->priv->loaded_plugins, info))
     return TRUE;
+
+  module_dir = peas_plugin_info_get_module_dir (info);
+  module_name = peas_plugin_info_get_module_name (info);
 
   state = PyGILState_Ensure ();
 
   /* If we have a special path, we register it */
-  peas_plugin_loader_python_add_module_path (pyloader,
-                                             peas_plugin_info_get_module_dir (info));
+  if (!peas_plugin_loader_python_add_module_path (pyloader, module_dir))
+    {
+      g_warning ("Error loading plugin '%s': failed to add module path '%s'",
+                 module_name, module_dir);
 
-  /* we need a fromlist to be able to import modules with a '.' in the
-     name. */
+      if (PyErr_Occurred ())
+        PyErr_Print ();
+
+      PyGILState_Release (state);
+
+      return FALSE;
+    }
+
+  /* We need a fromlist to be able to import modules with a '.' in the name */
   fromlist = PyTuple_New (0);
-  module_name = peas_plugin_info_get_module_name (info);
 
-  pymodule = PyImport_ImportModuleEx ((gchar *) module_name, NULL, NULL, fromlist);
-
+  pymodule = PyImport_ImportModuleEx ((gchar *) module_name,
+                                      NULL, NULL, fromlist);
   Py_DECREF (fromlist);
 
   if (!pymodule)
@@ -245,7 +265,6 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
     }
 
   add_python_info (pyloader, info, pymodule);
-
   Py_DECREF (pymodule);
 
   PyGILState_Release (state);
@@ -309,11 +328,14 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
                                            const gchar            *module_path)
 {
   PyObject *pathlist, *pathstring;
+  gboolean success = TRUE;
 
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (pyloader), FALSE);
   g_return_val_if_fail (module_path != NULL, FALSE);
 
   pathlist = PySys_GetObject ((char *) "path");
+  if (pathlist == NULL)
+    return FALSE;
 
 #if PY_VERSION_HEX < 0x03000000
   pathstring = PyString_FromString (module_path);
@@ -321,11 +343,24 @@ peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
   pathstring = PyUnicode_FromString (module_path);
 #endif
 
-  if (PySequence_Contains (pathlist, pathstring) == 0)
-    PyList_Insert (pathlist, 0, pathstring);
-  Py_DECREF (pathstring);
+  if (pathstring == NULL)
+    return FALSE;
 
-  return TRUE;
+  switch (PySequence_Contains (pathlist, pathstring))
+    {
+    case 0:
+      success = PyList_Insert (pathlist, 0, pathstring) >= 0;
+      break;
+    case 1:
+      break;
+    case -1:
+    default:
+      success = FALSE;
+      break;
+    }
+
+  Py_DECREF (pathstring);
+  return success;
 }
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -462,7 +497,16 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   /* Note that we don't call this with the GIL held,
    * since we haven't initialised pygobject yet
    */
-  peas_plugin_loader_python_add_module_path (pyloader, PEAS_PYEXECDIR);
+  if (!peas_plugin_loader_python_add_module_path (pyloader, PEAS_PYEXECDIR))
+    {
+      g_warning ("Error initializing Python Plugin Loader: "
+                 "failed to add the module path");
+
+      if (PyErr_Occurred ())
+        PyErr_Print ();
+
+      goto python_init_error;
+    }
 
   /* Initialize PyGObject */
   pygobject_init (PYGOBJECT_MAJOR_VERSION,
