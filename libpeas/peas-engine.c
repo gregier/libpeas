@@ -642,7 +642,11 @@ get_plugin_loader (PeasEngine     *engine,
 
   /* The loader has not been enabled. */
   if (loader_info == NULL)
-    return NULL;
+    {
+      g_warning ("The '%s' plugin loader has not been enabled",
+                 info->loader);
+      return NULL;
+    }
 
   /* The loader has already been loaded. */
   if (loader_info->loader != NULL)
@@ -869,8 +873,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 
   if (loader == NULL)
     {
-      g_warning ("Could not find loader '%s' for plugin '%s'",
-                 info->loader, peas_plugin_info_get_module_name (info));
+      /* Already warned */
       g_set_error (&info->error,
                    PEAS_PLUGIN_INFO_ERROR,
                    PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,

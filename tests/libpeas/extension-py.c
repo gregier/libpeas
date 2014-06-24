@@ -177,8 +177,6 @@ test_extension_py_mixed_python_subprocess (void)
   testing_util_push_log_hook ("*check the installation*");
   testing_util_push_log_hook ("*'" ALT_PY_LOADER_STR
                               "' is not a valid PeasPluginLoader*");
-  testing_util_push_log_hook ("*Could not find loader '"
-                              ALT_PY_LOADER_STR "'*");
 
   /* Required when loading multiple loaders */
   g_setenv ("PEAS_ALLOW_ALL_LOADERS", "1", TRUE);

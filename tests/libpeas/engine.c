@@ -387,7 +387,6 @@ test_engine_nonexistent_loader (PeasEngine *engine)
   PeasPluginInfo *info;
 
   testing_util_push_log_hook ("Could not load plugin loader 'does-not-exist'*");
-  testing_util_push_log_hook ("Could not find loader 'does-not-exist' for*");
 
   info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
   peas_engine_enable_loader (engine, "does-not-exist");
@@ -407,7 +406,8 @@ test_engine_disabled_loader (PeasEngine *engine)
   PeasPluginInfo *info;
   GError *error = NULL;
 
-  testing_util_push_log_hook ("Could not find loader 'disabled'*");
+  testing_util_push_log_hook ("The 'disabled' plugin "
+                              "loader has not been enabled*");
 
   info = peas_engine_get_plugin_info (engine, "disabled-loader");
 
