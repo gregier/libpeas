@@ -126,7 +126,7 @@ test_extension_py_already_initialized (void)
 {
   g_test_trap_subprocess (EXTENSION_TEST_NAME (PY_LOADER,
                                                "already-initialized/subprocess"),
-                          0, 0);
+                          0, G_TEST_SUBPROCESS_INHERIT_STDERR);
   g_test_trap_assert_passed ();
   g_test_trap_assert_stderr ("");
 }
@@ -162,7 +162,7 @@ test_extension_py_mixed_python (void)
 {
   g_test_trap_subprocess (EXTENSION_TEST_NAME (PY_LOADER,
                                                "mixed-python/subprocess"),
-                          0, 0);
+                          0, G_TEST_SUBPROCESS_INHERIT_STDERR);
   g_test_trap_assert_passed ();
   g_test_trap_assert_stderr ("");
 }
