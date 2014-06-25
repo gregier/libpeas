@@ -106,8 +106,19 @@ test_extension_py_activatable_subject_refcount (PeasEngine     *engine,
   g_object_unref (object);
 }
 
+#if GLIB_CHECK_VERSION (2, 38, 0)
 static void
-test_extension_py_nonexistent (PeasEngine *engine)
+test_extension_py_nonexistent (void)
+{
+  g_test_trap_subprocess (EXTENSION_TEST_NAME (PY_LOADER,
+                                               "nonexistent/subprocess"),
+                          0, 0);
+  g_test_trap_assert_passed ();
+  g_test_trap_assert_stderr ("*ImportError*");
+}
+
+static void
+test_extension_py_nonexistent_subprocess (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
@@ -120,7 +131,6 @@ test_extension_py_nonexistent (PeasEngine *engine)
   g_assert (!peas_engine_load_plugin (engine, info));
 }
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
 static void
 test_extension_py_already_initialized (void)
 {
@@ -221,9 +231,12 @@ main (int   argc,
   EXTENSION_TEST (PY_LOADER, "instance-refcount", instance_refcount);
   EXTENSION_TEST (PY_LOADER, "activatable-subject-refcount",
                   activatable_subject_refcount);
-  EXTENSION_TEST (PY_LOADER, "nonexistent", nonexistent);
 
 #if GLIB_CHECK_VERSION (2, 38, 0)
+  EXTENSION_TEST_FUNC (PY_LOADER, "nonexistent", nonexistent);
+  EXTENSION_TEST (PY_LOADER, "nonexistent/subprocess",
+                  nonexistent_subprocess);
+
   EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized", already_initialized);
   EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized/subprocess",
                        already_initialized_subprocess);
