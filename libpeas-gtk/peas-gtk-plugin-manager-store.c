@@ -136,6 +136,7 @@ update_plugin (PeasGtkPluginManagerStore *store,
 
               g_clear_object (&icon_gicon);
 
+              G_GNUC_BEGIN_IGNORE_DEPRECATIONS
               if (gtk_stock_lookup (icon_name, &stock_item))
                 {
                   icon_stock_id = icon_name;
@@ -144,6 +145,7 @@ update_plugin (PeasGtkPluginManagerStore *store,
                 {
                   icon_gicon = g_themed_icon_new ("libpeas-plugin");
                 }
+              G_GNUC_END_IGNORE_DEPRECATIONS
             }
         }
 

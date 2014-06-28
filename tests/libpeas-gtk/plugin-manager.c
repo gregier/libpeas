@@ -363,7 +363,6 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
   GList *list_it;
   GtkWidget *content;
   GtkWidget *label = NULL;
-  GtkWidget *button_box;
   GtkWidget *close_button = NULL;
   GtkWidget *help_button = NULL;
 
@@ -399,26 +398,13 @@ test_gtk_plugin_manager_configure_dialog (TestFixture *fixture)
   g_list_free (list);
 
 
-  button_box = gtk_dialog_get_action_area (GTK_DIALOG (window));
-  list = gtk_container_get_children (GTK_CONTAINER (button_box));
-
-  for (list_it = list; list_it != NULL; list_it = list_it->next)
-    {
-      if (GTK_IS_BUTTON (list_it->data))
-        {
-          const gchar *text = gtk_button_get_label (GTK_BUTTON (list_it->data));
-
-          if (g_strcmp0 (text, GTK_STOCK_CLOSE) == 0)
-            close_button = GTK_WIDGET (list_it->data);
-          else if (g_strcmp0 (text, GTK_STOCK_HELP) == 0)
-            help_button = GTK_WIDGET (list_it->data);
-        }
-    }
-
+  close_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (window),
+                                                     GTK_RESPONSE_CLOSE);
   g_assert (close_button != NULL);
-  g_assert (help_button != NULL);
 
-  g_list_free (list);
+  help_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (window),
+                                                    GTK_RESPONSE_HELP);
+  g_assert (help_button != NULL);
 
   gtk_widget_destroy (window);
 }

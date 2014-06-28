@@ -180,7 +180,8 @@ help_button_cb (GtkWidget      *button,
 
   toplevel = GTK_WINDOW (gtk_widget_get_toplevel (button));
   error_dlg = gtk_message_dialog_new (toplevel,
-                                      0,
+                                      GTK_DIALOG_MODAL |
+                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                       GTK_MESSAGE_ERROR,
                                       GTK_BUTTONS_CLOSE,
                                       _("There was an error displaying the help."));
@@ -203,8 +204,6 @@ help_button_cb (GtkWidget      *button,
     }
 
   gtk_window_group_add_window (wg, GTK_WINDOW (error_dlg));
-
-  gtk_window_set_modal (GTK_WINDOW (error_dlg), TRUE);
   gtk_widget_show_all (error_dlg);
 
   g_error_free (error);
@@ -240,8 +239,9 @@ show_configure_cb (GtkWidget            *widget,
 
   conf_dlg = gtk_dialog_new_with_buttons (peas_plugin_info_get_name (info),
                                           toplevel,
-                                          0,
-                                          GTK_STOCK_CLOSE,
+                                          GTK_DIALOG_MODAL |
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
+                                          _("_Close"),
                                           GTK_RESPONSE_CLOSE,
                                           NULL);
 
@@ -250,14 +250,10 @@ show_configure_cb (GtkWidget            *widget,
 
   if (peas_plugin_info_get_help_uri (info) != NULL)
     {
-      GtkWidget *hbuttonbox;
       GtkWidget *help_button;
 
-      hbuttonbox = gtk_dialog_get_action_area (GTK_DIALOG (conf_dlg));
-      help_button = gtk_button_new_from_stock (GTK_STOCK_HELP);
-      gtk_container_add (GTK_CONTAINER (hbuttonbox), help_button);
-      gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (hbuttonbox),
-                                          help_button, TRUE);
+      help_button = gtk_dialog_add_button (GTK_DIALOG (conf_dlg),
+                                           _("_Help"), GTK_RESPONSE_HELP);
 
       g_signal_connect (help_button,
                         "clicked",
@@ -276,9 +272,6 @@ show_configure_cb (GtkWidget            *widget,
     }
 
   gtk_window_group_add_window (wg, GTK_WINDOW (conf_dlg));
-
-  gtk_window_set_transient_for (GTK_WINDOW (conf_dlg), toplevel);
-  gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
   gtk_widget_show_all (conf_dlg);
 
   g_signal_connect (conf_dlg,
@@ -327,12 +320,12 @@ populate_popup_cb (PeasGtkPluginManagerView *view,
   if (info == NULL)
     return;
 
-  item = gtk_image_menu_item_new_from_stock (GTK_STOCK_PREFERENCES, NULL);
+  item = gtk_check_menu_item_new_with_mnemonic (_("Pr_eferences"));
   g_signal_connect (item, "activate", G_CALLBACK (show_configure_cb), pm);
   gtk_widget_set_sensitive (item, plugin_is_configurable (pm, info));
   gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 
-  item = gtk_image_menu_item_new_from_stock (GTK_STOCK_ABOUT, NULL);
+  item = gtk_check_menu_item_new_with_mnemonic (_("_About"));
   g_signal_connect (item, "activate", G_CALLBACK (show_about_cb), pm);
   gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 }

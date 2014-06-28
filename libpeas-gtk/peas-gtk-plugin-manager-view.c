@@ -502,7 +502,6 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
 
   gtk_widget_set_has_tooltip (GTK_WIDGET (view), TRUE);
 
-  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view), FALSE);
 
   /* first column */

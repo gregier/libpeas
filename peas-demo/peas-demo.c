@@ -65,8 +65,6 @@ create_main_window (void)
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
   gtk_window_set_title (GTK_WINDOW (window), "Peas Demo");
 
-  gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
-
   box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_container_add (GTK_CONTAINER (window), box);
 
@@ -82,7 +80,7 @@ create_main_window (void)
   g_signal_connect (button, "clicked", G_CALLBACK (create_new_window), NULL);
   gtk_container_add (GTK_CONTAINER (button_box), button);
 
-  button = gtk_button_new_from_stock (GTK_STOCK_QUIT);
+  button = gtk_button_new_with_mnemonic (_("_Quit"));
   g_signal_connect (button, "clicked", G_CALLBACK (gtk_main_quit), NULL);
   gtk_container_add (GTK_CONTAINER (button_box), button);
 
