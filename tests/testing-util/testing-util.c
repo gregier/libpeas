@@ -133,6 +133,9 @@ testing_util_init (void)
 
   g_log_set_default_handler (log_handler, NULL);
 
+  /* Allow test runners to set this to 1 */
+  g_setenv ("G_ENABLE_DIAGNOSTIC", "0", FALSE);
+
   g_setenv ("GSETTINGS_BACKEND", "memory", TRUE);
 
   g_irepository_prepend_search_path (BUILDDIR "/libpeas");
