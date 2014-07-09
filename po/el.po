@@ -6,21 +6,22 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas 1.0\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-02-17 07:46+0000\n"
-"PO-Revision-Date: 2012-06-14 03:49+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-03-09 10:42+0000\n"
+"PO-Revision-Date: 2014-07-09 14:47+0200\n"
 "Last-Translator: Tom Tryfonidis <tomtryf@gmail.com>\n"
 "Language-Team: team@gnome.gr\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.6.1\n"
+"X-Generator: Poedit 1.6.5\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
-msgstr "Διαχειριστής πρόσθετων"
+msgstr "Διαχειριστής προσθέτων"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "View"
@@ -28,7 +29,7 @@ msgstr "Προβολή"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "Plugin Manager View"
-msgstr "Προβολή Διαχειριστή πρόσθετων"
+msgstr "Προβολή διαχειριστή προσθέτων"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
 #: ../data/glade/libpeas-gtk.xml.in.h:5
@@ -39,22 +40,22 @@ msgstr "Εμφάνιση ενσωματωμένων"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:824
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr "Δε βρέθηκε η εξάρτηση «%s»"
+msgstr "Δε βρέθηκε η εξάρτηση '%s'"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:834
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr "Αποτυχία φόρτωσης της εξάρτησης «%s»"
+msgstr "Αποτυχία φόρτωσης της εξάρτησης '%s'"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:849
 #, c-format
 msgid "Plugin loader '%s' was not found"
-msgstr "Δε βρέθηκε ο φορτωτής του προσθέτου «%s»"
+msgstr "Δε βρέθηκε ο φορτωτής του προσθέτου '%s'"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:861
 #, c-format
 msgid "Failed to load"
 msgstr "Αποτυχία φόρτωσης"
@@ -66,7 +67,8 @@ msgstr "Πρέπει να απενεργοποιηθούν επιπλέον πρ
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr "Τα ακόλουθα πρόσθετα βασίζονται στο «%s» και θα απενεργοποιηθούν επίσης:"
+msgstr ""
+"Τα ακόλουθα πρόσθετα βασίζονται στο '%s' και θα απενεργοποιηθούν και αυτά:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
@@ -82,22 +84,22 @@ msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
-"Το πρόσθετο «%s» εξαρτάται από το πρόσθετο «%s».\n"
-"Αν απενεργοποίησετε το «%s», το «%s» θα απενεργοποιηθεί επίσης."
+"Το πρόσθετο '%s' εξαρτάται από το πρόσθετο '%s'.\n"
+"Αν απενεργοποίησετε το '%s', θα απενεργοποιηθεί επίσης και το '%s'."
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
-msgstr "Απενεργοποίηση πρόσθετων"
+msgstr "Απενεργοποίηση προσθέτων"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:186
 msgid "There was an error displaying the help."
-msgstr "Υπήρξε ένα σφάλμα κατά την απεικόνιση της βοήθειας."
+msgstr "Παρουσιάστηκε σφάλμα κατά την εμφάνιση της βοήθειας."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:389
 msgid "_About"
 msgstr "_Περί"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:397
 msgid "_Preferences"
 msgstr "_Προτιμήσεις"
 
@@ -113,21 +115,21 @@ msgstr "Ε_νεργοποίηση όλων"
 msgid "_Disable All"
 msgstr "Α_πενεργοποίηση όλων"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
 msgid "Enabled"
 msgstr "Ενεργοποιημένο"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
 msgid "Plugin"
 msgstr "Πρόσθετο"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
 "An error occurred: %s"
 msgstr ""
-"<b>Το πρόσθετο «%s» δε μπόρεσε να φορτωθεί</b>\n"
+"<b>Το πρόσθετο '%s' δε μπόρεσε να φορτωθεί</b>\n"
 "Προέκυψε σφάλμα: %s"
 
 #: ../peas-demo/peas-demo.c:40
