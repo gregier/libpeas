@@ -145,18 +145,37 @@ static void
 test_extension_py_already_initialized_subprocess (void)
 {
   PeasEngine *engine;
-  PeasPluginInfo *info;
+  PyObject *module, *dict, *pyengine, *result;
 
   /* Check that python has not been initialized yet */
   g_assert (!Py_IsInitialized ());
-
   Py_InitializeEx (FALSE);
 
+  /* Initialize PyGObject */
+  pygobject_init (PYGOBJECT_MAJOR_VERSION,
+                  PYGOBJECT_MINOR_VERSION,
+                  PYGOBJECT_MICRO_VERSION);
+  g_assert (!PyErr_Occurred ());
+
   engine = testing_engine_new ();
-  info = peas_engine_get_plugin_info (engine, "extension-" PY_LOADER_STR);
+  peas_engine_enable_loader (engine, PY_LOADER_STR);
 
-  g_assert (peas_engine_load_plugin (engine, info));
+  module = PyImport_AddModule ("__main__");
+  dict = PyModule_GetDict (module);
 
+  pyengine = pygobject_new (G_OBJECT (engine));
+  g_assert (PyDict_SetItemString (dict, "engine", pyengine) == 0);
+  Py_DECREF (pyengine);
+
+  result = PyRun_String ("plugin_name = 'extension-" PY_LOADER_STR "'\n"
+                         "info = engine.get_plugin_info(plugin_name)\n"
+                         "assert engine.load_plugin(info)\n",
+                         Py_file_input, dict, dict);
+  Py_XDECREF (result);
+
+  g_assert (!PyErr_Occurred ());
+
+  PyDict_Clear (dict);
   testing_engine_free (engine);
 
   peas_engine_shutdown ();

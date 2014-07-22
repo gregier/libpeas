@@ -375,6 +375,7 @@ static gboolean
 peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PyGILState_STATE state = 0;
   long hexversion;
   PyObject *gettext, *result;
   const gchar *prgname;
@@ -390,7 +391,11 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   pyloader->priv->init_failed = TRUE;
 
   /* Python initialization */
-  if (!Py_IsInitialized ())
+  if (Py_IsInitialized ())
+    {
+      state = PyGILState_Ensure ();
+    }
+  else
     {
 #ifdef HAVE_SIGACTION
       struct sigaction sigint;
@@ -506,7 +511,10 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   /* Python has been successfully initialized */
   pyloader->priv->init_failed = FALSE;
 
-  pyloader->priv->py_thread_state = PyEval_SaveThread ();
+  if (!pyloader->priv->must_finalize_python)
+    PyGILState_Release (state);
+  else
+    pyloader->priv->py_thread_state = PyEval_SaveThread ();
 
   return TRUE;
 
@@ -517,6 +525,9 @@ python_init_error:
 
   if (PyErr_Occurred ())
     PyErr_Clear ();
+
+  if (!pyloader->priv->must_finalize_python)
+    PyGILState_Release (state);
 
   return FALSE;
 }
