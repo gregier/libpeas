@@ -1,3 +1,11 @@
+Overview of Changes in libpeas 1.10.1
+====================================
+
+* Fix initializing Python loader from Python application
+* Prevent and warn when trying to enable multiple loaders
+* W32: Allow shared libs to be built
+* Misc bugfixes
+
 Overview of Changes in libpeas 1.10.0
 ====================================
 
