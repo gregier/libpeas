@@ -16,7 +16,12 @@ libpeas_1_0_la_LDFLAGS = \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic -no-undefined -export-symbols-regex "^[^_].*"
 
-libpeas_1_0_la_LIBADD = $(PEAS_LIBS) $(IGE_MAC_LIBS)
+if OS_OSX
+AM_CPPFLAGS += -xobjective-c
+libpeas_1_0_la_LDFLAGS += -framework Cocoa
+endif
+
+libpeas_1_0_la_LIBADD = $(PEAS_LIBS)
 
 INST_H_FILES =			\
 	peas-plugin-info.h	\

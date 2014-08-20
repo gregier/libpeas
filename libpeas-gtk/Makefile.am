@@ -19,6 +19,11 @@ libpeas_gtk_1_0_la_LIBADD = \
 	$(PEAS_GTK_LIBS)						\
 	$(top_builddir)/libpeas/libpeas-1.0.la
 
+if OS_OSX
+AM_CPPFLAGS += -xobjective-c
+libpeas_gtk_1_0_la_LDFLAGS += -framework Cocoa
+endif
+
 INST_H_FILES = \
 	peas-gtk-configurable.h		\
 	peas-gtk-plugin-manager.h	\

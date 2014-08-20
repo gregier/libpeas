@@ -30,7 +30,7 @@
 #include <girepository.h>
 
 #ifdef OS_OSX
-#include <Carbon/Carbon.h>
+#import <Cocoa/Cocoa.h>
 #endif
 
 #include <libpeas/peas-engine.h>
