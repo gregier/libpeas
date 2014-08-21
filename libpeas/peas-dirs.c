@@ -30,7 +30,7 @@
 #import <Cocoa/Cocoa.h>
 
 static gchar *
-dirs_os_x_get_bundle_resource_dir ()
+dirs_os_x_get_bundle_resource_dir (void)
 {
   NSAutoreleasePool *pool;
   gchar *str = NULL;
@@ -72,19 +72,19 @@ dirs_os_x_get_resource_dir (const gchar *subdir, const gchar *default_dir)
 }
 
 static gchar *
-dirs_os_x_get_data_dir ()
+dirs_os_x_get_data_dir (void)
 {
   return dirs_os_x_get_resource_dir ("share", DATADIR);
 }
 
 static gchar *
-dirs_os_x_get_lib_dir ()
+dirs_os_x_get_lib_dir (void)
 {
   return dirs_os_x_get_resource_dir ("lib", LIBDIR);
 }
 
 static gchar *
-dirs_os_x_get_locale_dir ()
+dirs_os_x_get_locale_dir (void)
 {
   gchar *res_dir;
   gchar *ret;
