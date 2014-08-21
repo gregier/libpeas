@@ -51,7 +51,8 @@ dirs_os_x_get_bundle_resource_dir (void)
 }
 
 static gchar *
-dirs_os_x_get_resource_dir (const gchar *subdir, const gchar *default_dir)
+dirs_os_x_get_resource_dir (const gchar *subdir,
+                            const gchar *default_dir)
 {
   gchar *res_dir;
   gchar *ret;
