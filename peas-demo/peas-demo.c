@@ -109,13 +109,16 @@ main (int    argc,
 
   g_option_context_free (option_context);
 
-  /* Ensure we pick the uninstalled plugin loaders if we're running from build dir */
   if (run_from_build_dir)
     {
-      g_debug ("Running from build dir.");
-      g_irepository_prepend_search_path ("../libpeas");
-      g_irepository_prepend_search_path ("../libpeas-gtk");
-      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", "../loaders", TRUE);
+      g_debug ("Running from build directory: %s", PEAS_BUILDDIR);
+
+      /* Use the uninstalled typelibs */
+      g_irepository_prepend_search_path (PEAS_BUILDDIR "/libpeas");
+      g_irepository_prepend_search_path (PEAS_BUILDDIR "/libpeas-gtk");
+
+      /* Use the uninstalled plugin loaders */
+      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", PEAS_BUILDDIR "/loaders", TRUE);
     }
 
   engine = peas_engine_get_default ();
@@ -129,7 +132,7 @@ main (int    argc,
   peas_engine_enable_loader (engine, "seed");
 
   if (run_from_build_dir)
-    peas_engine_add_search_path (engine, "./plugins", NULL);
+    peas_engine_add_search_path (engine, PEAS_BUILDDIR "/peas-demo/plugins", NULL);
   else
     peas_engine_add_search_path (engine,
                                  PEAS_LIBDIR "/peas-demo/plugins/",

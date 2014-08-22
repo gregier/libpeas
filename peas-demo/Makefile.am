@@ -22,9 +22,10 @@ peas_demo_LDADD = \
 	$(PEAS_GTK_LIBS)
 
 peas_demo_CFLAGS = \
-	$(PEAS_CFLAGS)			\
-	-DPEAS_LIBDIR="\"$(libdir)\""	\
-	-DPEAS_PREFIX="\"$(prefix)\""
+	$(PEAS_CFLAGS)					\
+	-DPEAS_LIBDIR="\"$(libdir)\""			\
+	-DPEAS_PREFIX="\"$(prefix)\""			\
+	-DPEAS_BUILDDIR="\"$(abs_top_builddir)\""
 
 .PHONY: demo
 demo: $(bin_PROGRAMS)
