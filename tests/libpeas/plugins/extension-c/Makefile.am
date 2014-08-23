@@ -7,7 +7,9 @@ AM_CPPFLAGS = \
 	$(WARN_CFLAGS)		\
 	$(DISABLE_DEPRECATED)
 
-noinst_LTLIBRARIES = libextension-c.la
+noinst_LTLIBRARIES = \
+	libextension-c.la			\
+	libextension-c-missing-symbol.la
 
 libextension_c_la_SOURCES = \
 	extension-c-plugin.c	\
@@ -18,8 +20,15 @@ libextension_c_la_LIBADD = \
 	$(PEAS_LIBS)						\
 	$(builddir)/../../introspection/libintrospection-1.0.la
 
+libextension_c_missing_symbol_la_SOURCES = \
+	extension-c-missing-symbol-plugin.c
+
+libextension_c_missing_symbol_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
+libextension_c_missing_symbol_la_LIBADD = $(PEAS_LIBS)
+
 noinst_PLUGIN = \
-	extension-c.gschema.xml	\
-	extension-c.plugin
+	extension-c.gschema.xml			\
+	extension-c.plugin			\
+	extension-c-missing-symbol.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)

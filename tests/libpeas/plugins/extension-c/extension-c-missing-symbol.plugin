@@ -1,0 +1,7 @@
+[Plugin]
+Module=extension-c-missing-symbol
+Name=Extension C Missing Symbol
+Description=This plugin is missing peas_register_types.
+Authors=Garrett Regier
+Copyright=Copyright © 2014 Garrett Regier
+Website=http://live.gnome.org/Libpeas

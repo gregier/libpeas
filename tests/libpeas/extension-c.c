@@ -99,6 +99,21 @@ test_extension_c_local_linkage (PeasEngine     *engine,
   g_object_unref (c_extension);
 }
 
+static void
+test_extension_c_missing_symbol (PeasEngine *engine)
+{
+  PeasPluginInfo *info;
+
+  testing_util_push_log_hook ("Failed to get 'peas_register_types' for "
+                              "module 'extension-c-missing-symbol'*");
+  testing_util_push_log_hook ("Error loading plugin "
+                              "'extension-c-missing-symbol'");
+
+  info = peas_engine_get_plugin_info (engine, "extension-c-missing-symbol");
+
+  g_assert (!peas_engine_load_plugin (engine, info));
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -116,6 +131,7 @@ main (int   argc,
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
   EXTENSION_TEST (c, "nonexistent", nonexistent);
   EXTENSION_TEST (c, "local-linkage", local_linkage);
+  EXTENSION_TEST (c, "missing-symbol", missing_symbol);
 
   return testing_extension_run_tests ();
 }
