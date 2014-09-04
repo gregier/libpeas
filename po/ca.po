@@ -2,14 +2,16 @@
 # Copyright (C) 2011 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
 # Joan Duran <jodufi@gmail.com>, 2011.
+# Gil Forcada <gilforcada@guifi.net>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-18 14:07+0100\n"
-"PO-Revision-Date: 2012-02-18 14:07+0100\n"
-"Last-Translator: Joan Duran <jodufi@gmail.com>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-09-04 21:44+0000\n"
+"PO-Revision-Date: 2014-09-04 23:48+0200\n"
+"Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
@@ -21,39 +23,40 @@ msgstr ""
 msgid "Plugin Manager"
 msgstr "Gestor de connectors"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "View"
 msgstr "Visualitza"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
 msgstr "Visualització del gestor de connectors"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "Mostra els connectors integrats"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
+#: ../data/glade/libpeas-gtk.xml.in.h:7
 msgid "Peas Gtk"
 msgstr "Peas GTK+"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:856
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "No s'ha trobat la dependència «%s»"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:866
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "No s'ha pogut carregar la dependència «%s»"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:880
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "No s'ha trobat el carregador de connectors «%s»"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:892
 #, c-format
 msgid "Failed to load"
 msgstr "No s'ha pogut carregar"
@@ -84,19 +87,36 @@ msgstr ""
 "El connector «%s» depèn del connector «%s».\n"
 "Si inhabiliteu «%s» també s'inhabilitarà «%s»."
 
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "_Cancel·la"
+
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "Inhabilita connectors"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
 msgid "There was an error displaying the help."
 msgstr "S'ha produït un error en mostrar l'ajuda."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "_Tanca"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "_Ajuda"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "_Preferències"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_About"
 msgstr "_Quant a"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
 msgid "_Preferences"
 msgstr "_Preferències"
 
@@ -112,15 +132,15 @@ msgstr "H_abilita'ls tots"
 msgid "_Disable All"
 msgstr "_Inhabilita'ls tots"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
 msgid "Enabled"
 msgstr "Habilitat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
 msgid "Plugin"
 msgstr "Connector"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -129,16 +149,15 @@ msgstr ""
 "<b>No s'ha pogut carregar el connector «%s»</b>\n"
 "S'ha produït un error: %s"
 
-#: ../peas-demo/peas-demo.c:40
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Executa des del directori de muntatge"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "_Surt"
+
+#: ../peas-demo/peas-demo.c:99
 msgid "- libpeas demo application"
 msgstr "- aplicació de demostració de la libpeas"
-
-#~ msgid "C_onfigure"
-#~ msgstr "C_onfigura"
-
-#~ msgid "_Plugins:"
-#~ msgstr "_Connectors:"
