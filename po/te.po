@@ -1,60 +1,63 @@
 # Telugu translation for libpeas.
 # Copyright (C) 2011 Gnome Telugu Contributors
 # This file is distributed under the same license as the libpeas package.
-# Praveen Illa <mail2ipn@gmail.com>, 2011, 2012.
 #
+# Praveen Illa <mail2ipn@gmail.com>, 2011, 2012.
+# Krishnababu Krothapalli <kkrothap@redhat.com>, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-02-18 13:08+0000\n"
-"PO-Revision-Date: 2012-02-18 22:55+0530\n"
-"Last-Translator: Praveen Illa <mail2ipn@gmail.com>\n"
+"POT-Creation-Date: 2014-09-09 09:44+0000\n"
+"PO-Revision-Date: 2014-09-09 15:26+0530\n"
+"Last-Translator: Krishnababu Krothapalli <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <indlinux-telugu@lists.sourceforge.net>\n"
-"Language: \n"
+"Language: te\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
 msgstr "ప్లగిన్ నిర్వాహకం"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "View"
 msgstr "వీక్షణం"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
 msgstr "ప్లగిన్ నిర్వాహకం వీక్షణం"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "బిల్ట్ఇన్ చూపించు"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
+#: ../data/glade/libpeas-gtk.xml.in.h:7
 msgid "Peas Gtk"
 msgstr "పియాస్ జిటికె"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:856
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "'%s' ఆధారితత్వం కనపడలేదు"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:866
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "'%s' ఆధారితత్వం నింపుటలో విఫలమైంది"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:880
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "ప్లగిన్ లోడర్ %s కనపడలేదు"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:892
 #, c-format
 msgid "Failed to load"
 msgstr "నింపుటలో విఫలమైంది"
@@ -66,7 +69,9 @@ msgstr "అదనపు ప్లగిన్లు అచేతనం చేస
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr "క్రిందపేర్కొన్న ప్లగిన్లు '%s'పై ఆధారపడివున్నాయి మరియు ఈ ఇవి అచేతనం చేయబడి ఉండాలి:"
+msgstr ""
+"క్రిందపేర్కొన్న ప్లగిన్లు '%s'పై ఆధారపడివున్నాయి మరియు ఈ ఇవి అచేతనం చేయబడి "
+"ఉండాలి:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
@@ -85,19 +90,37 @@ msgstr ""
 "'%s' ప్లగిన్ '%s' ప్లగిన్ పై ఆధారపడివుంది.\n"
 "ఒకవేళ '%s'ను అచేతనపరచినట్టయితే, '%s' కూడా అచేతనం చేయబడుతుంది."
 
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "రద్దు(_C)"
+
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "ప్లగిన్లను అచేతనపరుచు"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
 msgid "There was an error displaying the help."
 msgstr "సహాయమును ప్రదర్శించుటలో ఒక దోషం ఉన్నది."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "మూయి (_C)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "సహాయం(_H)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+#| msgid "_Preferences"
+msgid "Pr_eferences"
+msgstr "ప్రాధాన్యతలు (_P)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_About"
 msgstr "గురించి (_A)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
 msgid "_Preferences"
 msgstr "ప్రాధాన్యతలు (_P)"
 
@@ -113,15 +136,15 @@ msgstr "అన్నిటినీ చేతనపరుచు (_n)"
 msgid "_Disable All"
 msgstr "అన్నిటినీ అచేతనపరుచు (_D)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
 msgid "Enabled"
 msgstr "చేతనమైవుంది"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
 msgid "Plugin"
 msgstr "ప్లగిన్"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -130,10 +153,16 @@ msgstr ""
 "<b>'%s' ప్లగిన్ నింపుట వీలుకాదు</b>\n"
 "ఒక దోషం సంభవించినది: %s"
 
-#: ../peas-demo/peas-demo.c:40
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "బిల్డ్ సంచయం నుండి నడుపు"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "నిష్క్రమించు (_Q)"
+
+#: ../peas-demo/peas-demo.c:99
 msgid "- libpeas demo application"
 msgstr "- లైబ్‌పియాస్ డెమో అనువర్తనం"
+
