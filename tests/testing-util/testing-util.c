@@ -160,6 +160,24 @@ log_handler (const gchar    *log_domain,
 }
 
 void
+testing_util_envars (void)
+{
+  /* Allow test runners to set this to 1 */
+  g_setenv ("G_ENABLE_DIAGNOSTIC", "0", FALSE);
+
+  /* Prevent GDBus from being used by GIO internally */
+  g_setenv ("GIO_USE_VFS", "local", TRUE);
+
+  /* We never want to save the settings */
+  g_setenv ("GSETTINGS_BACKEND", "memory", TRUE);
+
+  /* Prevent python from generating compiled files, they break distcheck */
+  g_setenv ("PYTHONDONTWRITEBYTECODE", "yes", TRUE);
+
+  g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
+}
+
+void
 testing_util_init (void)
 {
   GError *error = NULL;
@@ -176,17 +194,8 @@ testing_util_init (void)
 
   g_log_set_default_handler (log_handler, NULL);
 
-  /* Allow test runners to set this to 1 */
-  g_setenv ("G_ENABLE_DIAGNOSTIC", "0", FALSE);
-
-  g_setenv ("GSETTINGS_BACKEND", "memory", TRUE);
 
   g_irepository_prepend_search_path (BUILDDIR "/libpeas");
-
-  g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
-
-  /* Prevent python from generating compiled files, they break distcheck */
-  g_setenv ("PYTHONDONTWRITEBYTECODE", "yes", TRUE);
 
   g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
   g_assert_no_error (error);

@@ -41,6 +41,8 @@ testing_init (gint    *argc,
   if (initialized)
     return;
 
+  testing_util_envars ();
+
   g_test_init (argc, argv, NULL);
 
   /* Must be after g_test_init() changes the log settings*/

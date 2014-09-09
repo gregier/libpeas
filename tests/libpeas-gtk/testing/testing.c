@@ -41,9 +41,14 @@ testing_init (gint    *argc,
   if (initialized)
     return;
 
+  /* Must set environment variables first */
+  testing_util_envars ();
+
   gtk_test_init (argc, argv, NULL);
 
-  /* Must be after gtk_test_init() changes the log settings */
+  /* Must be called after gtk_test_init()
+   * because it changed the log settings
+   */
   testing_util_init ();
 
   g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");

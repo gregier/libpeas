@@ -26,6 +26,7 @@
 
 G_BEGIN_DECLS
 
+void        testing_util_envars          (void);
 void        testing_util_init            (void);
 
 PeasEngine *testing_util_engine_new_full (gboolean    nonglobal_loaders);
