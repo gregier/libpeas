@@ -31,8 +31,8 @@ class Hooks(object):
         if not self.profiling_enabled:
             return
 
-        sort = os.getenv('PEAS_PYTHON_PROFILE')
-        self.stat_sort = ('time',) if sort == '' else sort.split(';')
+        sort = os.getenv('PEAS_PYTHON_PROFILE', default='time')
+        self.stat_sort = sort.split(';')
 
         self.stats = None
         self.stats_lock = threading.Lock()
@@ -46,6 +46,8 @@ class Hooks(object):
         self.profile.enable()
 
     def add_stats(self, profile):
+        profile.disable()
+
         with self.stats_lock:
             if self.stats is None:
                 self.stats = pstats.Stats(profile)
@@ -60,7 +62,6 @@ class Hooks(object):
         thread_profile = cProfile.Profile()
 
         def thread_finished(thread_ref):
-            thread_profile.disable()
             self.add_stats(thread_profile)
 
             self.thread_refs.remove(thread_ref)
@@ -79,7 +80,6 @@ class Hooks(object):
         if not self.profiling_enabled:
             return
 
-        self.profile.disable()
         self.add_stats(self.profile)
 
         with self.stats_lock:
