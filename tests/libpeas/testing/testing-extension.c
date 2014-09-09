@@ -401,7 +401,7 @@ test_extension_call_with_return (PeasEngine     *engine,
 {
   PeasExtension *extension;
   IntrospectionCallable *callable;
-  const gchar *return_val = NULL;
+  gchar *return_val = NULL;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
@@ -412,11 +412,13 @@ test_extension_call_with_return (PeasEngine     *engine,
   g_assert (peas_extension_call (extension, "call_with_return", &return_val));
   g_assert_cmpstr (return_val, ==, "Hello, World!");
 
+  g_free (return_val);
   return_val = NULL;
 
   return_val = introspection_callable_call_with_return (callable);
   g_assert_cmpstr (return_val, ==, "Hello, World!");
 
+  g_free (return_val);
   g_object_unref (extension);
 }
 

@@ -88,10 +88,10 @@ testing_extension_c_plugin_call_no_args (IntrospectionCallable *callable)
 {
 }
 
-static const gchar *
+static gchar *
 testing_extension_c_plugin_call_with_return (IntrospectionCallable *callable)
 {
-  return "Hello, World!";
+  return g_strdup ("Hello, World!");
 }
 
 static void

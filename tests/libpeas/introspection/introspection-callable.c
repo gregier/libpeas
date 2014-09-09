@@ -36,9 +36,9 @@ introspection_callable_default_init (IntrospectionCallableInterface *iface)
  * introspection_callable_call_with_return:
  * @callable:
  *
- * Returns: (transfer none):
+ * Returns: (transfer full):
  */
-const gchar *
+gchar *
 introspection_callable_call_with_return (IntrospectionCallable *callable)
 {
   IntrospectionCallableInterface *iface;
