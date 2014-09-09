@@ -60,6 +60,8 @@ create_main_window (void)
   GtkWidget *button_box;
   GtkWidget *button;
 
+  gtk_window_set_default_icon_name ("libpeas-plugin");
+
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_signal_connect (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
   gtk_container_set_border_width (GTK_CONTAINER (window), 6);
