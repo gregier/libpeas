@@ -36,7 +36,6 @@ typedef struct _TestFixture TestFixture;
 struct _TestFixture {
   PeasEngine *engine;
   GtkWidget *window;
-  GtkWindowGroup *window_group;
   PeasGtkPluginManager *manager;
   PeasGtkPluginManagerView *view;
   GtkTreeSelection *selection;
@@ -59,17 +58,9 @@ test_setup (TestFixture   *fixture,
 {
   fixture->engine = testing_engine_new ();
   fixture->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  fixture->window_group = gtk_window_group_new ();
   fixture->manager = PEAS_GTK_PLUGIN_MANAGER (peas_gtk_plugin_manager_new (NULL));
   fixture->view = PEAS_GTK_PLUGIN_MANAGER_VIEW (peas_gtk_plugin_manager_get_view (fixture->manager));
   fixture->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (fixture->view));
-
-  /* gtk_window_set_transient_for() will not add to the
-   * window group unless one has already been created and
-   * find_window_by_title() will need need it to be in the group
-   */
-  gtk_window_group_add_window (fixture->window_group,
-                               GTK_WINDOW (fixture->window));
 
   gtk_container_add (GTK_CONTAINER (fixture->window),
                      GTK_WIDGET (fixture->manager));
@@ -98,7 +89,6 @@ test_teardown (TestFixture   *fixture,
                gconstpointer  data)
 {
   gtk_widget_destroy (GTK_WIDGET (fixture->window));
-  g_object_unref (fixture->window_group);
 
   testing_engine_free (fixture->engine);
 }
