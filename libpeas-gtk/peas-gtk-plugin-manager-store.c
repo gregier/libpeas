@@ -393,7 +393,6 @@ peas_gtk_plugin_manager_store_set_enabled (PeasGtkPluginManagerStore *store,
                                            gboolean                   enabled)
 {
   PeasPluginInfo *info;
-  gboolean success = TRUE;
 
   g_return_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store));
   g_return_if_fail (iter != NULL);
@@ -404,19 +403,16 @@ peas_gtk_plugin_manager_store_set_enabled (PeasGtkPluginManagerStore *store,
 
   if (enabled)
     {
-      /* load the plugin */
-      if (!peas_engine_load_plugin (store->priv->engine, info))
-        success = FALSE;
+      peas_engine_load_plugin (store->priv->engine, info);
     }
   else
     {
-      /* unload the plugin */
-      if (!peas_engine_unload_plugin (store->priv->engine, info))
-        success = FALSE;
+      peas_engine_unload_plugin (store->priv->engine, info);
     }
 
-  if (success)
-    update_plugin (store, iter, info);
+  /* Don't need to manually update the plugin as
+   * PeasEngine::{load,unload}-plugin are connected to
+   */
 }
 
 /*
