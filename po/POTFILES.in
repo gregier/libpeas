@@ -11,3 +11,4 @@ libpeas-gtk/peas-gtk-disable-plugins-dialog.c
 libpeas-gtk/peas-gtk-plugin-manager.c
 libpeas-gtk/peas-gtk-plugin-manager-view.c
 peas-demo/peas-demo.c
+tests/libpeas-gtk/plugin-manager.c
