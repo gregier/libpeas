@@ -3,59 +3,61 @@
 # This file is distributed under the same license as the libpeas package.
 #
 # Gabor Kelemen <kelemeng at gnome dot hu>, 2010, 2011, 2012.
+# Balázs Úr <urbalazs@gmail.com>, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
-"cgi?product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-02-17 07:46+0000\n"
-"PO-Revision-Date: 2012-02-29 03:38+0100\n"
-"Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
-"Language-Team: Magyar <gnome-hu-list at gnome dot org>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-09-09 21:42+0000\n"
+"PO-Revision-Date: 2014-09-10 00:19+0200\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"Language-Team: Hungarian <kde-l10n-hu@kde.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"X-Generator: Lokalize 1.0\n"
+"X-Generator: Lokalize 1.2\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
 msgstr "Bővítménykezelő"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "View"
 msgstr "Nézet"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
 msgstr "Bővítménykezelő nézet"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "Beépített megjelenítése"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
+#: ../data/glade/libpeas-gtk.xml.in.h:7
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:856
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "A függőség („%s”) nem található"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:866
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "A függőség („%s”) betöltése meghiúsult"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:880
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "A bővítménybetöltő („%s”) nem található"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:892
 #, c-format
 msgid "Failed to load"
 msgstr "A betöltés meghiúsult"
@@ -88,19 +90,37 @@ msgstr ""
 "A(z) „%s” bővítmény a(z) „%s” bővítménytől függ.\n"
 "A(z) „%s” letiltása esetén a(z) „%s” is letiltásra kerül."
 
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "_Mégse"
+
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "Bővítmények letiltása"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
 msgid "There was an error displaying the help."
 msgstr "Hiba történt a súgó megjelenítése közben."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "Be_zárás"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "_Súgó"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+#| msgid "_Preferences"
+msgid "Pr_eferences"
+msgstr "_Beállítások"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_About"
 msgstr "_Névjegy"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
 msgid "_Preferences"
 msgstr "_Beállítások"
 
@@ -116,15 +136,15 @@ msgstr "Összes e_ngedélyezése"
 msgid "_Disable All"
 msgstr "Összes le_tiltása"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
 msgid "Plugin"
 msgstr "Bővítmény"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -133,11 +153,16 @@ msgstr ""
 "<b>A(z) „%s” bővítmény nem tölthető be</b>\n"
 "Hiba történt: %s"
 
-#: ../peas-demo/peas-demo.c:40
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Futtatás a build könyvtárból"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "_Kilépés"
+
+#: ../peas-demo/peas-demo.c:99
 msgid "- libpeas demo application"
 msgstr "- libpeas demó alkalmazás"
 
