@@ -81,6 +81,28 @@ static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 G_DEFINE_TYPE (PeasGtkPluginManager, peas_gtk_plugin_manager, GTK_TYPE_BOX)
 
+static GtkWindow *
+get_toplevel (GtkWidget *widget)
+{
+  GtkWindow *toplevel;
+
+  toplevel = (GtkWindow *) gtk_widget_get_toplevel (widget);
+  if (!GTK_IS_WINDOW (toplevel))
+    return NULL;
+
+  /* Make sure the window always has a window group */
+  if (!gtk_window_has_group (toplevel))
+    {
+      GtkWindowGroup *window_group;
+
+      window_group = gtk_window_group_new ();
+      gtk_window_group_add_window (window_group, toplevel);
+      g_object_unref (window_group);
+    }
+
+  return toplevel;
+}
+
 static gboolean
 plugin_is_configurable (PeasGtkPluginManager *pm,
                         PeasPluginInfo       *info)
@@ -108,16 +130,19 @@ show_about_cb (GtkWidget            *widget,
 {
   PeasGtkPluginManagerView *view;
   PeasPluginInfo *info;
-  GtkWindow *parent;
+  GtkWindow *toplevel;
+  gboolean modal;
 
   view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
 
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
   g_return_if_fail (info != NULL);
 
-  /* if there is another about dialog already open destroy it */
-  if (pm->priv->about)
-    gtk_widget_destroy (pm->priv->about);
+  toplevel = get_toplevel (GTK_WIDGET (pm));
+  modal = toplevel == NULL ? FALSE : gtk_window_get_modal (toplevel);
+
+  /* If there is another about dialog already open destroy it */
+  g_clear_pointer (&pm->priv->about, (GDestroyNotify) gtk_widget_destroy);
 
   pm->priv->about = GTK_WIDGET (g_object_new (GTK_TYPE_ABOUT_DIALOG,
                                               "program-name", peas_plugin_info_get_name (info),
@@ -127,9 +152,10 @@ show_about_cb (GtkWidget            *widget,
                                               "website", peas_plugin_info_get_website (info),
                                               "logo-icon-name", peas_plugin_info_get_icon_name (info),
                                               "version", peas_plugin_info_get_version (info),
+                                              "destroy-with-parent", TRUE,
+                                              "transient-for", toplevel,
+                                              "modal", modal,
                                               NULL));
-
-  gtk_window_set_destroy_with_parent (GTK_WINDOW (pm->priv->about), TRUE);
 
   g_signal_connect (pm->priv->about,
                     "response",
@@ -140,11 +166,6 @@ show_about_cb (GtkWidget            *widget,
                     G_CALLBACK (gtk_widget_destroyed),
                     &pm->priv->about);
 
-  parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
-  gtk_window_set_transient_for (GTK_WINDOW (pm->priv->about),
-                                parent);
-  gtk_window_set_modal (GTK_WINDOW (pm->priv->about),
-                        gtk_window_get_modal (parent));
   gtk_widget_show (pm->priv->about);
 }
 
@@ -155,9 +176,7 @@ help_button_cb (GtkWidget      *button,
   const gchar *help_uri;
 #ifndef OS_OSX
   GError *error = NULL;
-  GtkWindow *toplevel;
   GtkWidget *error_dlg;
-  GtkWindowGroup *wg;
 #endif
 
   g_return_if_fail (peas_plugin_info_get_help_uri (info) != NULL);
@@ -168,42 +187,27 @@ help_button_cb (GtkWidget      *button,
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:help_uri]]];
 #else
 
-  gtk_show_uri (NULL,
-                help_uri,
-                GDK_CURRENT_TIME,
-                &error);
-
+  gtk_show_uri (NULL, help_uri, GDK_CURRENT_TIME, &error);
   if (error == NULL)
     return;
 
-  g_debug ("PeasGtkPluginManager: could not show help uri: '%s'", help_uri);
+  g_debug ("Failed to show help URI: '%s'", help_uri);
 
-  toplevel = GTK_WINDOW (gtk_widget_get_toplevel (button));
-  error_dlg = gtk_message_dialog_new (toplevel,
+  error_dlg = gtk_message_dialog_new (get_toplevel (button),
                                       GTK_DIALOG_MODAL |
                                       GTK_DIALOG_DESTROY_WITH_PARENT,
                                       GTK_MESSAGE_ERROR,
                                       GTK_BUTTONS_CLOSE,
                                       _("There was an error displaying the help."));
 
-  g_signal_connect (error_dlg,
-                    "response",
-                    G_CALLBACK (gtk_widget_destroy), NULL);
-
   gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (error_dlg),
                                             "%s", error->message);
 
-  if (gtk_window_has_group (toplevel))
-    {
-      wg = gtk_window_get_group (toplevel);
-    }
-  else
-    {
-      wg = gtk_window_group_new ();
-      gtk_window_group_add_window (wg, toplevel);
-    }
+  g_signal_connect (error_dlg,
+                    "response",
+                    G_CALLBACK (gtk_widget_destroy),
+                    NULL);
 
-  gtk_window_group_add_window (wg, GTK_WINDOW (error_dlg));
   gtk_widget_show_all (error_dlg);
 
   g_error_free (error);
@@ -217,11 +221,9 @@ show_configure_cb (GtkWidget            *widget,
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (pm->priv->view);
   PeasPluginInfo *info;
   PeasExtension *exten;
-  GtkWindow *toplevel;
   GtkWidget *conf_widget = NULL;
   GtkWidget *conf_dlg;
   GtkWidget *vbox;
-  GtkWindowGroup *wg;
 
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
   g_return_if_fail (info != NULL);
@@ -235,10 +237,8 @@ show_configure_cb (GtkWidget            *widget,
   g_return_if_fail (GTK_IS_WIDGET (conf_widget));
   g_return_if_fail (!gtk_widget_is_toplevel (conf_widget));
 
-  toplevel = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pm)));
-
   conf_dlg = gtk_dialog_new_with_buttons (peas_plugin_info_get_name (info),
-                                          toplevel,
+                                          get_toplevel (GTK_WIDGET (pm)),
                                           GTK_DIALOG_MODAL |
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
                                           _("_Close"),
@@ -261,17 +261,6 @@ show_configure_cb (GtkWidget            *widget,
                         info);
     }
 
-  if (gtk_window_has_group (toplevel))
-    {
-      wg = gtk_window_get_group (toplevel);
-    }
-  else
-    {
-      wg = gtk_window_group_new ();
-      gtk_window_group_add_window (wg, toplevel);
-    }
-
-  gtk_window_group_add_window (wg, GTK_WINDOW (conf_dlg));
   gtk_widget_show_all (conf_dlg);
 
   g_signal_connect (conf_dlg,
