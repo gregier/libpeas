@@ -147,11 +147,23 @@ static void
 peas_object_module_unload (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
+  InterfaceImplementation *impls;
+  guint i;
 
   g_module_close (module->priv->library);
 
   module->priv->library = NULL;
   module->priv->register_func = NULL;
+
+  impls = (InterfaceImplementation *) module->priv->implementations->data;
+  for (i = 0; i < module->priv->implementations->len; ++i)
+    {
+      if (impls[i].destroy_func != NULL)
+        impls[i].destroy_func (impls[i].user_data);
+    }
+
+  g_array_remove_range (module->priv->implementations, 0,
+                        module->priv->implementations->len);
 }
 
 static void
@@ -168,17 +180,9 @@ static void
 peas_object_module_finalize (GObject *object)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
-  InterfaceImplementation *impls;
-  unsigned i;
 
   g_free (module->priv->path);
   g_free (module->priv->module_name);
-
-  impls = (InterfaceImplementation *) module->priv->implementations->data;
-  for (i = 0; i < module->priv->implementations->len; ++i)
-    if (impls[i].destroy_func != NULL)
-      impls[i].destroy_func (impls[i].user_data);
-
   g_array_unref (module->priv->implementations);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
