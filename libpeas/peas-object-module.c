@@ -491,6 +491,7 @@ peas_object_module_register_extension_factory (PeasObjectModule *module,
   InterfaceImplementation impl = { iface_type, factory_func, user_data, destroy_func };
 
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
+  g_return_if_fail (!peas_object_module_provides_object (module, iface_type));
   g_return_if_fail (factory_func != NULL);
 
   if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
@@ -545,6 +546,7 @@ peas_object_module_register_extension_type (PeasObjectModule *module,
                                             GType             extension_type)
 {
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
+  g_return_if_fail (!peas_object_module_provides_object (module, iface_type));
 
   if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
     {
