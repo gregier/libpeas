@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-20 22:36+0100\n"
-"PO-Revision-Date: 2012-02-18 00:12+0100\n"
+"POT-Creation-Date: 2014-09-20 17:22+0200\n"
+"PO-Revision-Date: 2014-09-19 20:39+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -18,14 +18,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
-msgid "Peas Gtk"
-msgstr "Peas Gtk"
-
-#: ../data/glade/libpeas-gtk.xml.in.h:2
 msgid "Plugin Manager"
 msgstr "Håndtering af udvidelsesmoduler"
 
+#. Translators: What PeasGtkPluginManagerView to use
 #: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "View"
+msgstr "Vis"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
 msgstr "Visning af udvidelsesmodulhåndtering"
 
@@ -35,30 +36,30 @@ msgstr "Visning af udvidelsesmodulhåndtering"
 # shell itself, instead of an external executable program 
 # which the shell would load and execute.
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "Vis builtin"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
-msgid "View"
-msgstr "Vis"
+#: ../data/glade/libpeas-gtk.xml.in.h:7
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:856
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Afhængighed \"%s\" blev ikke fundet"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:866
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Afhængighed \"%s\" kunne ikke indlæses"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:880
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Indlæser \"%s\" for udvidelsesmoduler blev ikke fundet"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:892
 #, c-format
 msgid "Failed to load"
 msgstr "Kunne ikke indlæse"
@@ -93,19 +94,36 @@ msgstr ""
 "Hvis du deaktiverer \"%s\", vil \"%s\" også blive\n"
 "deaktiveret."
 
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "_Annullér"
+
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
 msgstr "Deaktiver udvidelsesmoduler"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
 msgid "There was an error displaying the help."
 msgstr "En fejl opstod under visning af hjælpen."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "_Luk"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "_Hjælp"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "Ind_stillinger"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_About"
 msgstr "_Om"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
 msgid "_Preferences"
 msgstr "_Indstillinger"
 
@@ -121,15 +139,15 @@ msgstr "A_ktiver alle"
 msgid "_Disable All"
 msgstr "_Deaktiver alle"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
 msgid "Enabled"
 msgstr "Aktiveret"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
 msgid "Plugin"
 msgstr "Udvidelsesmodul"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
@@ -138,11 +156,16 @@ msgstr ""
 "<b>Udvidelsesmodulet \"%s\" kunne ikke indlæses</b>\n"
 "Der opstod en fejl: %s"
 
-#: ../peas-demo/peas-demo.c:40
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Kør fra kompileringsmappe"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "_Afslut"
+
+#: ../peas-demo/peas-demo.c:99
 msgid "- libpeas demo application"
 msgstr "- libpeas' demoprogram"
 
