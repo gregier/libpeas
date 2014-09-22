@@ -1,3 +1,8 @@
+Overview of Changes in libpeas 1.12.1
+====================================
+
+* Dist the GResources XML of the Python plugin loaders
+
 Overview of Changes in libpeas 1.12.0
 ====================================
 
