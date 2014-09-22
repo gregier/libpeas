@@ -1,3 +1,48 @@
+Overview of Changes in libpeas 1.12.0
+====================================
+
+* Add easy python profiling support
+* Disable GLib diagnostics in tests
+* Fix various deprecation warning from GTK+
+* Check return values from Python API
+* [osx] Check for bundle before resource path
+* Improved dependency-less support for OS X
+* Misc bugfixes
+
+* Translation updates:
+  - Assamese
+  - Bengali (India)
+  - Brazilian Portuguese
+  - Catalan
+  - Catalan (Valencian)
+  - Czech
+  - Danish
+  - French
+  - Galicians
+  - German
+  - Greek
+  - Gujarati
+  - Hebrew
+  - Hindi
+  - Hungarian
+  - Indonesian
+  - Kannada
+  - Korean
+  - Lithuanian
+  - Marathis
+  - Norwegian bokmål
+  - Oriya
+  - Polish
+  - Punjabi
+  - Russian
+  - Simplified Chinese
+  - Slovenian
+  - Spanish
+  - Swedish
+  - Tamil
+  - Telugus
+  - Traditional Chinese
+
 Overview of Changes in libpeas 1.10.1
 ====================================
 
