@@ -35,7 +35,10 @@ loader_resources_deps = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) 
 peas-plugin-loader-python3-resources.c: $(srcdir)/peas-plugin-loader-python3.gresource.xml $(loader_resources_deps)
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --internal --target=$@ --sourcedir=$(srcdir) --generate-source $(srcdir)/peas-plugin-loader-python3.gresource.xml
 
-EXTRA_DIST = $(loader_resources_deps)
+EXTRA_DIST = \
+	peas-plugin-loader-python3.gresource.xml		\
+	$(loader_resources_deps)
+
 CLEANFILES = peas-plugin-loader-python3-resources.c
 
 gcov_sources = $(libpython3loader_la_SOURCES)
