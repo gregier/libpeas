@@ -1,11 +1,12 @@
-# Miroslav Nikolić <miroslavnikolic@rocketmail.com>, 2011, 2012.
+# Serbian translations for libpeas.
+# Miroslav Nikolić <miroslavnikolic@rocketmail.com>, 2011—2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpea"
 "s&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-02-17 07:46+0000\n"
-"PO-Revision-Date: 2012-02-19 15:14+0200\n"
+"POT-Creation-Date: 2014-09-23 21:52+0000\n"
+"PO-Revision-Date: 2014-09-24 10:46+0200\n"
 "Last-Translator: Miroslav Nikolić <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -18,61 +19,62 @@ msgstr ""
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
-msgstr "Upravnik dodataka"
+msgstr "Upravnik priključaka"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "View"
 msgstr "Pregled"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
-msgstr "Pregled upravnika dodataka"
+msgstr "Pregled upravnika priključaka"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "Prikaži ugrađene"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
+#: ../data/glade/libpeas-gtk.xml.in.h:7
 msgid "Peas Gtk"
 msgstr "Graško Gtk"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:856
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr "Ne mogu da pronađem zavisnost „%s“"
+msgstr "Nisam našao zavisnost „%s“"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:866
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr "Ne mogu da učitam zavisnost „%s“"
+msgstr "Nisam uspeo da učitam zavisnost „%s“"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:880
 #, c-format
 msgid "Plugin loader '%s' was not found"
-msgstr "Ne mogu da pronađem program za učitavanje dodatka „%s“"
+msgstr "Nisam našao učitavača priključaka „%s“"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:892
 #, c-format
 msgid "Failed to load"
-msgstr "Ne mogu da učitam"
+msgstr "Nisam uspeo da učitam"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
 msgid "Additional plugins must be disabled"
-msgstr "Dodatni dodaci moraju da budu isključeni"
+msgstr "Dodatni priključci moraju biti isključeni"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr "Sledeći dodaci zavise od „%s“ i takođe će biti isključeni:"
+msgstr "Sledeći priključci zavise od „%s“ i takođe će biti isključeni:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
 msgid "Plugins"
-msgstr "Dodaci"
+msgstr "Priključci"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
 msgid "An additional plugin must be disabled"
-msgstr "Dodatni dodatak mora da bude isključen"
+msgstr "Dodatni priključak mora biti isključen"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
 #, c-format
@@ -80,22 +82,40 @@ msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
-"Dodatak „%s“ zavisi od dodatka „%s“.\n"
+"Priključak „%s“ zavisi od priključka „%s“.\n"
 "Ako isključite „%s“, „%s“ će takođe biti isključen."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "_Otkaži"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
 msgid "Disable Plugins"
-msgstr "Isključi dodatke"
+msgstr "Isključi priključke"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
 msgid "There was an error displaying the help."
-msgstr "Došlo je do greške prilikom prikazivanja pomoći."
+msgstr "Došlo je do greške prikazivanja pomoći."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "_Zatvori"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "Po_moć"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+#| msgid "_Preferences"
+msgid "Pr_eferences"
+msgstr "_Postavke"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
 msgid "_About"
 msgstr "_O programu"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
 msgid "_Preferences"
 msgstr "_Postavke"
 
@@ -111,28 +131,33 @@ msgstr "U_ključi sve"
 msgid "_Disable All"
 msgstr "I_sključi sve"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
 msgid "Enabled"
 msgstr "Uključen"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
 msgid "Plugin"
-msgstr "Dodatak"
+msgstr "Priključak"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
 #, c-format
 msgid ""
 "<b>The plugin '%s' could not be loaded</b>\n"
 "An error occurred: %s"
 msgstr ""
-"<b>Ne mogu da učitam dodatak „%s“</b>\n"
+"<b>Ne mogu da učitam priključak „%s“</b>\n"
 "Došlo je do greške: %s"
 
-#: ../peas-demo/peas-demo.c:40
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Pokreni iz direktorijuma izgradnje"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "_Izađi"
+
+#: ../peas-demo/peas-demo.c:99
 msgid "- libpeas demo application"
 msgstr "— demo program biblgraška (libpeas)"
 
