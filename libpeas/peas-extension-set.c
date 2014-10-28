@@ -28,7 +28,7 @@
 #include "peas-extension-set.h"
 #include "peas-plugin-info.h"
 #include "peas-marshal.h"
-#include "peas-helpers.h"
+#include "peas-utils.h"
 #include "peas-introspection.h"
 
 /**
@@ -663,8 +663,9 @@ peas_extension_set_new_valist (PeasEngine  *engine,
   g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
 
-  if (!_valist_to_parameter_list (exten_type, first_property,
-                                  var_args, &parameters, &n_parameters))
+  if (!peas_utils_valist_to_parameter_list (exten_type, first_property,
+                                            var_args, &parameters,
+                                            &n_parameters))
     {
       /* Already warned */
       return NULL;

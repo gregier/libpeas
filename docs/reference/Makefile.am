@@ -50,13 +50,13 @@ IGNORE_HFILES=		\
 	peas-engine-priv.h			\
 	peas-gtk-disable-plugins-dialog.h       \
 	peas-gtk-plugin-manager-store.h		\
-	peas-helpers.h				\
 	peas-i18n.h				\
 	peas-introspection.h			\
 	peas-marshal.h				\
 	peas-plugin-info-priv.h			\
 	peas-plugin-loader.h			\
-	peas-plugin-loader-c.h
+	peas-plugin-loader-c.h			\
+	peas-utils.h
 
 # Images to copy into HTML directory.
 HTML_IMAGES = \

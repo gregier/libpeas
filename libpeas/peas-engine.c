@@ -36,7 +36,7 @@
 #include "peas-extension.h"
 #include "peas-dirs.h"
 #include "peas-debug.h"
-#include "peas-helpers.h"
+#include "peas-utils.h"
 
 /**
  * SECTION:peas-engine
@@ -1116,8 +1116,9 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
-  if (!_valist_to_parameter_list (extension_type, first_property,
-                                  var_args, &parameters, &n_parameters))
+  if (!peas_utils_valist_to_parameter_list (extension_type, first_property,
+                                            var_args, &parameters,
+                                            &n_parameters))
     {
       /* Already warned */
       return NULL;

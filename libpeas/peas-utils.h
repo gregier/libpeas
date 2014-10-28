@@ -1,5 +1,5 @@
 /*
- * peas-helpers.h
+ * peas-utils.h
  * This file is part of libpeas
  *
  * Copyright (C) 2010 Steve Frécinaux
@@ -19,15 +19,15 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef __PEAS_HELPERS_H__
-#define __PEAS_HELPERS_H__
+#ifndef __PEAS_UTILS_H__
+#define __PEAS_UTILS_H__
 
 #include <glib-object.h>
 
-gboolean  _valist_to_parameter_list (GType         iface_type,
-                                     const gchar  *first_property_name,
-                                     va_list       var_args,
-                                     GParameter  **params,
-                                     guint        *n_params);
+gboolean  peas_utils_valist_to_parameter_list (GType         iface_type,
+                                               const gchar  *first_property,
+                                               va_list       var_args,
+                                               GParameter  **params,
+                                               guint        *n_params);
 
-#endif /* __PEAS_HELPERS_H__ */
+#endif /* __PEAS_UTILS_H__ */

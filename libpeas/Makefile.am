@@ -37,12 +37,12 @@ NOINST_H_FILES =			\
 	peas-debug.h			\
 	peas-dirs.h			\
 	peas-engine-priv.h		\
-	peas-helpers.h			\
 	peas-i18n.h			\
 	peas-introspection.h		\
 	peas-plugin-info-priv.h		\
 	peas-plugin-loader.h		\
-	peas-plugin-loader-c.h
+	peas-plugin-loader-c.h		\
+	peas-utils.h
 
 C_FILES =				\
 	peas-activatable.c		\
@@ -52,13 +52,13 @@ C_FILES =				\
 	peas-extension.c		\
 	peas-extension-base.c		\
 	peas-extension-set.c		\
-	peas-helpers.c			\
 	peas-i18n.c			\
 	peas-introspection.c		\
 	peas-object-module.c		\
 	peas-plugin-info.c		\
 	peas-plugin-loader.c		\
-	peas-plugin-loader-c.c
+	peas-plugin-loader-c.c		\
+	peas-utils.c
 
 BUILT_SOURCES = \
 	peas-marshal.c			\

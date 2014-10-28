@@ -1,5 +1,5 @@
 /*
- * peas-helpers.c
+ * peas-utils.c
  * This file is part of libpeas
  *
  * Copyright (C) 2010 Steve Frécinaux
@@ -27,7 +27,7 @@
 
 #include <gobject/gvaluecollector.h>
 
-#include "peas-helpers.h"
+#include "peas-utils.h"
 
 static void
 add_all_interfaces (GType      iface_type,
@@ -72,11 +72,11 @@ find_param_spec_in_interfaces (GPtrArray   *type_structs,
 }
 
 gboolean
-_valist_to_parameter_list (GType         iface_type,
-                           const gchar  *first_property_name,
-                           va_list       args,
-                           GParameter  **params,
-                           guint        *n_params)
+peas_utils_valist_to_parameter_list (GType         iface_type,
+                                     const gchar  *first_property,
+                                     va_list       args,
+                                     GParameter  **params,
+                                     guint        *n_params)
 {
   GPtrArray *type_structs;
   const gchar *name;
@@ -93,7 +93,7 @@ _valist_to_parameter_list (GType         iface_type,
   n_allocated_params = 16;
   *params = g_new0 (GParameter, n_allocated_params);
 
-  name = first_property_name;
+  name = first_property;
   while (name)
     {
       gchar *error_msg = NULL;
