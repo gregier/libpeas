@@ -1,0 +1,162 @@
+# Kazakh translation for libpeas.
+# Copyright (C) 2014 libpeas's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libpeas package.
+# Baurzhan Muftakhidinov <baurthefirst@gmail.com>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-10-27 22:46+0000\n"
+"PO-Revision-Date: 2014-10-28 12:09+0600\n"
+"Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
+"Language-Team: Kazakh <kk@li.org>\n"
+"Language: kk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.9\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Плагиндер басқарушысы"
+
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "View"
+msgstr "Көрініс"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Plugin Manager View"
+msgstr "Плагиндер басқарушысы көрінісі"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Show Builtin"
+msgstr "Құрамындағыны көрсету"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:7
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:856
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "'%s' тәуелділігі табылмады"
+
+#: ../libpeas/peas-engine.c:866
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "'%s' тәуелділігінің жүктелуі сәтсіз"
+
+#: ../libpeas/peas-engine.c:880
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "'%s' плагиндер жүктеушісі табылмады"
+
+#: ../libpeas/peas-engine.c:892
+#, c-format
+msgid "Failed to load"
+msgstr "Жүктелу сәтсіз"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr "Қосымша плагиндер сөндірілуі керек"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Келесі плагиндер '%s' плагиніне тәуелді, сондықтан сөндіріледі:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "Плагиндер"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr "Қосымша плагин сөндірілуі керек"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"'%s' плагині '%s' плагине тәуелді.\n"
+"Егері сіз '%s' сөндірсеңіз, '%s' плагині да сөндіріледі."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "Ба_с тарту"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "Плагиндерді сөндіру"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
+msgid "There was an error displaying the help."
+msgstr "Көмекті көрсету кезінде қате кетті."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "_Жабу"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "Кө_мек"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "Ба_птаулар"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
+msgid "_About"
+msgstr "О_сы туралы"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
+msgid "_Preferences"
+msgstr "_Баптаулар"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "Іске қ_осулы"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "Барлығын іске қ_осу"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "Барлығын сөн_діру"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
+msgid "Enabled"
+msgstr "Іске қосулы"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
+msgid "Plugin"
+msgstr "Плагин"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>'%s' плагинін жүктеу мүмкін емес</b>\n"
+"Қате орын алды: %s"
+
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
+msgid "Run from build directory"
+msgstr "Жинау бумасынан жөнелту"
+
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "_Шығу"
+
+#: ../peas-demo/peas-demo.c:99
+msgid "- libpeas demo application"
+msgstr "- libpeas демо қолданбасы"
