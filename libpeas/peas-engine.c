@@ -717,7 +717,7 @@ get_plugin_loader (PeasEngine     *engine,
  *
  * Enable a loader, enables a loader for plugins.
  * The C plugin loader is always enabled. The other plugin
- * loaders are: python, python3 and seed.
+ * loaders are: python and python3.
  *
  * For instance, the following code will enable python plugins
  * to be loaded:
@@ -725,8 +725,8 @@ get_plugin_loader (PeasEngine     *engine,
  * peas_engine_enable_loader (engine, "python");
  * ]|
  *
- * Due to the use of toggle references in the python, python3 and
- * seed bindings only one of them should be enabled. Otherwise vast
+ * Due to the use of toggle references in the python and python3
+ * bindings only one of them should be enabled. Otherwise vast
  * memory leaks are to be expected and as such it is an error to
  * enable more than one of them.
  *
@@ -746,7 +746,7 @@ peas_engine_enable_loader (PeasEngine  *engine,
   /* The demo and some tests need to load multiple loaders */
   if (g_getenv ("PEAS_ALLOW_ALL_LOADERS") == NULL)
     {
-      static const gchar *plugin_loader_ids[] = {"python", "python3", "seed"};
+      static const gchar *plugin_loader_ids[] = {"python", "python3"};
       gint i;
 
       for (i = 0; i < G_N_ELEMENTS (plugin_loader_ids); ++i)

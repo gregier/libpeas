@@ -80,7 +80,6 @@ Makefile.in
 /tests/libpeas/extension-c
 /tests/libpeas/extension-python
 /tests/libpeas/extension-python3
-/tests/libpeas/extension-seed
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
 /tests/libpeas/plugins/extension-python/extension-python.gschema.xml

@@ -1,8 +1,0 @@
-[Plugin]
-Module=seedhello
-Loader=seed
-Name=Seed Says Hello Too
-Description=Inserts a box containing "Seed Says Hello Too" in every windows.
-Authors=Steve Frécinaux <code@istique.net>
-Copyright=Copyright © 2009 Steve Frécinaux
-Website=http://code.istique.net/

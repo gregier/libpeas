@@ -129,7 +129,6 @@ main (int    argc,
   /* We don't care about leaking memory */
   g_setenv ("PEAS_ALLOW_ALL_LOADERS", "1", TRUE);
   peas_engine_enable_loader (engine, "python3");
-  peas_engine_enable_loader (engine, "seed");
 
   if (run_from_build_dir)
     peas_engine_add_search_path (engine, PEAS_BUILDDIR "/peas-demo/plugins", NULL);

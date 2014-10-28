@@ -8,10 +8,6 @@ if ENABLE_PYTHON3
 SUBDIRS += python3
 endif
 
-if ENABLE_SEED
-SUBDIRS += seed
-endif
-
 gcov:
 	@for dir in $(SUBDIRS); do \
 	   (cd $$dir && $(MAKE) $(AM_MAKEFLAGS) $(@)); \

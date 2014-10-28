@@ -10,16 +10,11 @@ SUBDIRS += extension-python
 endif
 endif
 
-if ENABLE_SEED
-SUBDIRS += extension-seed
-endif
-
 noinst_PLUGIN = \
 	disabled-loader.plugin			\
 	extension-c-nonexistent.plugin		\
 	extension-python-nonexistent.plugin	\
 	extension-python3-nonexistent.plugin	\
-	extension-seed-nonexistent.plugin	\
 	info-missing-module.plugin		\
 	info-missing-name.plugin		\
 	invalid.plugin				\

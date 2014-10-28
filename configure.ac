@@ -231,43 +231,6 @@ fi
 AM_CONDITIONAL([ENABLE_GLADE_CATALOG],[test "x$found_glade_catalog" = "xyes"])
 
 dnl ================================================================
-dnl Seed Javascript Engine
-dnl ================================================================
-
-SEED_REQUIRED=2.91.91
-
-AC_ARG_ENABLE(seed,
-	      AS_HELP_STRING([--enable-seed],[Enable Seed support]),
-	      [enable_seed=$enableval],
-	      [enable_seed=auto])
-
-AC_MSG_CHECKING([for Seed JS availability.])
-
-if test "x$enable_seed" = "xno"; then
-	found_seed="no (disabled, use --enable-seed to enable)"
-else
-	PKG_CHECK_EXISTS([seed >= $SEED_REQUIRED],
-			 [found_seed=yes],
-			 [found_seed=no])
-fi
-
-if test "$enable_seed" = "yes" -a "$found_seed" = "no"; then
-	AC_MSG_ERROR([You need to have seed >= $SEED_REQUIRED installed to build libpeas])
-fi
-AC_MSG_RESULT([$found_seed])
-
-if test "$found_seed" = "yes"; then
-	SEED_CFLAGS=`$PKG_CONFIG --cflags seed`
-	SEED_LIBS=`$PKG_CONFIG --libs seed`
-	AC_SUBST(SEED_CFLAGS)
-	AC_SUBST(SEED_LIBS)
-
-	AC_DEFINE(ENABLE_SEED,1,[Define to compile with Seed support])
-fi
-
-AM_CONDITIONAL([ENABLE_SEED],[test "x$found_seed" = "xyes"])
-
-dnl ================================================================
 dnl Python
 dnl ================================================================
 
@@ -440,7 +403,6 @@ libpeas-gtk/Makefile
 loaders/Makefile
 loaders/python/Makefile
 loaders/python3/Makefile
-loaders/seed/Makefile
 data/Makefile
 data/glade/Makefile
 data/icons/Makefile
@@ -451,14 +413,12 @@ peas-demo/plugins/Makefile
 peas-demo/plugins/helloworld/Makefile
 peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
-peas-demo/plugins/seedhello/Makefile
 po/Makefile.in
 tests/Makefile
 tests/libpeas/Makefile
 tests/libpeas/plugins/Makefile
 tests/libpeas/plugins/extension-c/Makefile
 tests/libpeas/plugins/extension-python/Makefile
-tests/libpeas/plugins/extension-seed/Makefile
 tests/libpeas/introspection/Makefile
 tests/libpeas/testing/Makefile
 tests/libpeas-gtk/Makefile
@@ -493,5 +453,4 @@ Languages support:
 
         Python 2 support              : ${found_python2}
         Python 3 support              : ${found_python3}
-        Seed Javascript support       : ${found_seed}
 "

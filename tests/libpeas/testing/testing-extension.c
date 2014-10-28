@@ -173,8 +173,7 @@ test_extension_create_invalid (PeasEngine     *engine,
   /* This cannot be tested in PyGI and Seed's log handler messes this up */
   if (g_strcmp0 (extension_plugin, "extension-c") != 0 &&
       g_strcmp0 (extension_plugin, "extension-python") != 0 &&
-      g_strcmp0 (extension_plugin, "extension-python3") != 0 &&
-      g_strcmp0 (extension_plugin, "extension-seed") != 0)
+      g_strcmp0 (extension_plugin, "extension-python3") != 0)
     {
       testing_util_push_log_hook ("*cannot add *IntrospectionHasMissingPrerequisite* "
                                   "which does not conform to *IntrospectionCallable*");

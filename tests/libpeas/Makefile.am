@@ -38,9 +38,3 @@ extension_python3_SOURCES  = extension-py.c
 extension_python3_CFLAGS   = $(PYGOBJECT_CFLAGS) $(PYTHON3_CFLAGS)
 extension_python3_LDADD    = $(LDADD) $(PYGOBJECT_LIBS) $(PYTHON3_LIBS)
 endif
-
-if ENABLE_SEED
-TEST_PROGS             += extension-seed
-extension_seed_CFLAGS   = $(SEED_CFLAGS)
-extension_seed_LDADD    = $(LDADD) $(SEED_LIBS)
-endif

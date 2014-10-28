@@ -37,8 +37,8 @@
  * access the related #PeasPluginInfo, and especially the location where all
  * the data of your plugin lives.
  *
- * Non-C extensions will usually not inherit from this class: Python and
- * Seed plugins automatically get a "plugin_info" attribute that serves
+ * Non-C extensions will usually not inherit from this class: Python
+ * plugins automatically get a "plugin_info" attribute that serves
  * the same purpose.
  **/
 
