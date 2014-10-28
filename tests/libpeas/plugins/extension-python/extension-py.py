@@ -5,17 +5,9 @@ from gi.repository import GObject, Introspection, Peas
 
 class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
                             Introspection.Base, Introspection.Callable,
-                            Introspection.PropertiesPrerequisite,
-                            Introspection.Properties,
                             Introspection.HasPrerequisite):
 
     object = GObject.property(type=GObject.Object)
-
-    construct_only = GObject.property(type=str)
-    read_only = GObject.property(type=str, default="read-only")
-    write_only = GObject.property(type=str)
-    readwrite = GObject.property(type=str, default="readwrite")
-    prerequisite = GObject.property(type=str)
 
     def do_activate(self):
         pass

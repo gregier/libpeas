@@ -37,8 +37,6 @@ NOINST_H_FILES =			\
 	peas-debug.h			\
 	peas-dirs.h			\
 	peas-engine-priv.h		\
-	peas-extension-wrapper.h	\
-	peas-extension-subclasses.h	\
 	peas-helpers.h			\
 	peas-i18n.h			\
 	peas-introspection.h		\
@@ -54,8 +52,6 @@ C_FILES =				\
 	peas-extension.c		\
 	peas-extension-base.c		\
 	peas-extension-set.c		\
-	peas-extension-wrapper.c	\
-	peas-extension-subclasses.c	\
 	peas-helpers.c			\
 	peas-i18n.c			\
 	peas-introspection.c		\

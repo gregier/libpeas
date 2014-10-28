@@ -21,10 +21,6 @@ libintrospection_1_0_la_SOURCES = \
 	introspection-has-missing-prerequisite.h	\
 	introspection-has-prerequisite.c		\
 	introspection-has-prerequisite.h		\
-	introspection-properties.c			\
-	introspection-properties.h			\
-	introspection-properties-prerequisite.c		\
-	introspection-properties-prerequisite.h		\
 	introspection-unimplemented.c			\
 	introspection-unimplemented.h
 

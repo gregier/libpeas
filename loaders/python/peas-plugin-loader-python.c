@@ -188,12 +188,11 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   if (!object)
     goto out;
 
-  /* As we do not instantiate a PeasExtensionWrapper, we have to remember
-   * somehow which interface we are instantiating, to make it possible to use
-   * the deprecated peas_extension_get_extension_type() method.
+  /* We have to remember which interface we are instantiating
+   * for the deprecated peas_extension_get_extension_type().
    */
   g_object_set_data (object, "peas-extension-type",
-                     GUINT_TO_POINTER (exten_type));
+                     GSIZE_TO_POINTER (exten_type));
 
   pyobject = pygobject_new (object);
   pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);

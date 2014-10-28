@@ -37,7 +37,6 @@
 #include "introspection-callable.h"
 #include "introspection-has-missing-prerequisite.h"
 #include "introspection-has-prerequisite.h"
-#include "introspection-properties.h"
 #include "introspection-unimplemented.h"
 
 typedef struct _TestFixture TestFixture;
@@ -373,101 +372,6 @@ test_extension_call_multi_args (PeasEngine     *engine,
   g_object_unref (extension);
 }
 
-static void
-test_extension_properties_construct_only (PeasEngine     *engine,
-                                          PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-  gchar *construct_only;
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_PROPERTIES,
-                                            "construct-only", "my-construct-only",
-                                            NULL);
-
-  g_object_get (extension, "construct-only", &construct_only, NULL);
-  g_assert_cmpstr (construct_only, ==, "my-construct-only");
-  g_free (construct_only);
-
-  g_object_unref (extension);
-}
-
-static void
-test_extension_properties_read_only (PeasEngine     *engine,
-                                     PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-  gchar *read_only;
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_PROPERTIES,
-                                            NULL);
-
-  g_object_get (extension, "read-only", &read_only, NULL);
-  g_assert_cmpstr (read_only, ==, "read-only");
-  g_free (read_only);
-
-  g_object_unref (extension);
-}
-
-static void
-test_extension_properties_write_only (PeasEngine     *engine,
-                                      PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_PROPERTIES,
-                                            NULL);
-
-  g_object_set (extension, "write-only", "my-write-only", NULL);
-
-  g_object_unref (extension);
-}
-
-static void
-test_extension_properties_readwrite (PeasEngine     *engine,
-                                     PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-  gchar *readwrite;
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_PROPERTIES,
-                                            NULL);
-
-  g_object_get (extension, "readwrite", &readwrite, NULL);
-  g_assert_cmpstr (readwrite, ==, "readwrite");
-  g_free (readwrite);
-
-  g_object_set (extension, "readwrite", "my-readwrite", NULL);
-
-  g_object_get (extension, "readwrite", &readwrite, NULL);
-  g_assert_cmpstr (readwrite, ==, "my-readwrite");
-  g_free (readwrite);
-
-  g_object_unref (extension);
-}
-
-static void
-test_extension_properties_prerequisite (PeasEngine     *engine,
-                                        PeasPluginInfo *info)
-{
-  PeasExtension *extension;
-  gchar *prerequisite;
-
-  extension = peas_engine_create_extension (engine, info,
-                                            INTROSPECTION_TYPE_PROPERTIES,
-                                            "prerequisite", "prerequisite",
-                                            NULL);
-
-  g_object_get (extension, "prerequisite", &prerequisite, NULL);
-  g_assert_cmpstr (prerequisite, ==, "prerequisite");
-  g_free (prerequisite);
-
-  g_object_unref (extension);
-}
-
 #define _EXTENSION_TEST(loader, path, ftest) \
   G_STMT_START { \
     gchar *full_path = g_strdup_printf (EXTENSION_TEST_NAME (%s, "%s"), \
@@ -518,16 +422,6 @@ testing_extension_callable (const gchar *loader)
   _EXTENSION_TEST (loader, "call-with-return", call_with_return);
   _EXTENSION_TEST (loader, "call-single-arg", call_single_arg);
   _EXTENSION_TEST (loader, "call-multi-args", call_multi_args);
-}
-
-void
-testing_extension_properties (const gchar *loader)
-{
-  _EXTENSION_TEST (loader, "properties-construct-only", properties_construct_only);
-  _EXTENSION_TEST (loader, "properties-read-only", properties_read_only);
-  _EXTENSION_TEST (loader, "properties-write-only", properties_write_only);
-  _EXTENSION_TEST (loader, "properties-readwrite", properties_readwrite);
-  _EXTENSION_TEST (loader, "properties-prerequisite", properties_prerequisite);
 }
 
 void

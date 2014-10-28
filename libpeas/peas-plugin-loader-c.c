@@ -135,11 +135,11 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   g_return_val_if_fail (G_IS_OBJECT (instance), NULL);
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, exten_type), NULL);
 
-  /* As we do not instantiate a PeasExtensionWrapper, we have to remember
-   * somehow which interface we are instantiating, to make it possible to use
-   * the deprecated peas_extension_get_extension_type() method.
+  /* We have to remember which interface we are instantiating
+   * for the deprecated peas_extension_get_extension_type().
    */
-  g_object_set_data (instance, "peas-extension-type", GUINT_TO_POINTER (exten_type));
+  g_object_set_data (instance, "peas-extension-type",
+                     GSIZE_TO_POINTER (exten_type));
 
   return instance;
 }
