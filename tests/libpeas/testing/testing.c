@@ -59,7 +59,7 @@ testing_engine_new (void)
 {
   PeasEngine *engine;
 
-  testing_util_push_log_hook ("*Bad plugin file: *invalid.plugin*");
+  testing_util_push_log_hook ("*Bad plugin file *invalid.plugin*");
   testing_util_push_log_hook ("*Error loading *invalid.plugin*");
 
   testing_util_push_log_hook ("*Could not find 'Module' in *info-missing-module.plugin*");
