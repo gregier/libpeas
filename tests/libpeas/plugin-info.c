@@ -82,10 +82,10 @@ test_plugin_info_verify_full_info (PeasEngine *engine)
   g_assert_cmpstr (peas_plugin_info_get_name (info), ==, "Full Info");
   g_assert_cmpstr (peas_plugin_info_get_description (info), ==, "Has full info.");
   g_assert_cmpstr (peas_plugin_info_get_icon_name (info), ==, "gtk-ok");
-  g_assert_cmpstr (peas_plugin_info_get_website (info), ==, "http://live.gnome.org/Libpeas");
+  g_assert_cmpstr (peas_plugin_info_get_website (info), ==, "https://wiki.gnome.org/Projects/Libpeas");
   g_assert_cmpstr (peas_plugin_info_get_copyright (info), ==, "Copyright © 2010 Garrett Regier");
   g_assert_cmpstr (peas_plugin_info_get_version (info), ==, "1.0");
-  g_assert_cmpstr (peas_plugin_info_get_help_uri (info), ==, "http://git.gnome.org/browse/libpeas");
+  g_assert_cmpstr (peas_plugin_info_get_help_uri (info), ==, "Help Me!");
 
   authors = peas_plugin_info_get_authors (info);
   g_assert (authors != NULL && authors[1] == NULL);

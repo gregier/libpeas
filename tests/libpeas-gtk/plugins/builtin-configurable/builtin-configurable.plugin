@@ -4,5 +4,4 @@ Name=Builtin Configurable
 Description=A plugin that can be loaded, is builtin and configurable.
 Authors=Garrett Regier
 Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas
 Builtin=true

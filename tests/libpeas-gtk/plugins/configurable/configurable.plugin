@@ -4,5 +4,4 @@ Name=Configurable
 Description=A plugin that can be loaded and configured.
 Authors=Garrett Regier
 Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas
-Help=http://git.gnome.org/browse/libpeas
+Help=This is required to test that the Help button is enabled.

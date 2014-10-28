@@ -5,4 +5,3 @@ Name=Extension PY_LOADER
 Description=This plugin is for the PY_LOADER PeasExtension tests.
 Authors=Garrett Regier
 Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas

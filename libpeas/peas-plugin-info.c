@@ -54,8 +54,8 @@
  * Description=Displays "Hello World"
  * Authors=Steve Frécinaux &lt;code@istique.net&gt;
  * Copyright=Copyright © 2009-10 Steve Frécinaux
- * Website=http://live.gnome.org/Libpeas
- * Help=http://library.gnome.org/devel/libpeas/unstable/
+ * Website=https://wiki.gnome.org/Projects/Libpeas
+ * Help=http://library.gnome.org/devel/libpeas/stable/
  * ]|
  **/
 

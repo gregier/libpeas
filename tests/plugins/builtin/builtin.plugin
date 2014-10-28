@@ -4,5 +4,4 @@ Name=Builtin
 Description=A plugin that can be loaded and is builtin.
 Authors=Garrett Regier
 Copyright=Copyright © 2010 Garrett Regier
-Website=http://live.gnome.org/Libpeas
 Builtin=true
