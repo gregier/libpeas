@@ -1,7 +1,0 @@
-[Plugin]
-Module=nonexistent-loader
-Loader=does-not-exist
-Name=Nonexistent Loader
-Description=This plugin has a nonexistent loader.
-Authors=Garrett Regier
-Copyright=Copyright © 2011 Garrett Regier

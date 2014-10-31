@@ -1,0 +1,7 @@
+[Plugin]
+Module=unkown-loader
+Loader=does-not-exist
+Name=Unkown Loader
+Description=This plugin has an unkown loader.
+Authors=Garrett Regier
+Copyright=Copyright © 2011 Garrett Regier

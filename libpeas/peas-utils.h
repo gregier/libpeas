@@ -24,10 +24,16 @@
 
 #include <glib-object.h>
 
+#define PEAS_UTILS_N_LOADERS 3
+
 gboolean  peas_utils_valist_to_parameter_list (GType         iface_type,
                                                const gchar  *first_property,
                                                va_list       var_args,
                                                GParameter  **params,
                                                guint        *n_params);
+
+gint     peas_utils_get_loader_id             (const gchar  *loader) G_GNUC_CONST;
+const gchar *
+         peas_utils_get_loader_from_id        (gint          loader_id) G_GNUC_CONST;
 
 #endif /* __PEAS_UTILS_H__ */

@@ -11,17 +11,15 @@ endif
 endif
 
 noinst_PLUGIN = \
-	disabled-loader.plugin			\
 	extension-c-nonexistent.plugin		\
 	extension-python-nonexistent.plugin	\
 	extension-python3-nonexistent.plugin	\
 	info-missing-module.plugin		\
 	info-missing-name.plugin		\
 	invalid.plugin				\
-	invalid-loader.plugin			\
 	nonexistent-dep.plugin			\
-	nonexistent-loader.plugin		\
 	not-loadable.plugin			\
-	os-dependant-help.plugin
+	os-dependant-help.plugin		\
+	unkown-loader.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)

@@ -1,7 +1,0 @@
-[Plugin]
-Module=invalid-loader
-Loader=invalid
-Name=Invalid Loader
-Description=This plugin has an invalid loader.
-Authors=Garrett Regier
-Copyright=Copyright © 2011 Garrett Regier

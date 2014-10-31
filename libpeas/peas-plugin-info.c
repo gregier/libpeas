@@ -29,6 +29,7 @@
 
 #include "peas-i18n.h"
 #include "peas-plugin-info-priv.h"
+#include "peas-utils.h"
 
 #ifdef G_OS_WIN32
 #define OS_HELP_KEY "Help-Windows"
@@ -88,7 +89,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info->icon_name);
   g_free (info->website);
   g_free (info->copyright);
-  g_free (info->loader);
   g_free (info->version);
   g_free (info->help_uri);
   g_strfreev (info->authors);
@@ -134,6 +134,7 @@ _peas_plugin_info_new (const gchar *filename,
                        const gchar *data_dir)
 {
   gsize i;
+  gchar *loader = NULL;
   gchar **strv, **keys;
   PeasPluginInfo *info;
   GKeyFile *plugin_file;
@@ -173,23 +174,31 @@ _peas_plugin_info_new (const gchar *filename,
       goto error;
     }
 
+  /* Get the loader for this plugin */
+  loader = g_key_file_get_string (plugin_file, "Plugin", "Loader", NULL);
+  if (loader == NULL || *loader == '\0')
+    {
+      /* Default to the C loader */
+      info->loader_id = peas_utils_get_loader_id ("C");
+    }
+  else
+    {
+      info->loader_id = peas_utils_get_loader_id (loader);
+
+      if (info->loader_id == -1)
+        {
+          g_warning ("Unkown 'Loader' in '[Plugin]' section in '%s': %s",
+                     filename, loader);
+          goto error;
+        }
+    }
+
   /* Get the dependency list */
   info->dependencies = g_key_file_get_string_list (plugin_file,
                                                    "Plugin",
                                                    "Depends", NULL, NULL);
   if (info->dependencies == NULL)
     info->dependencies = g_new0 (gchar *, 1);
-
-  /* Get the loader for this plugin */
-  info->loader = g_key_file_get_string (plugin_file, "Plugin",
-                                        "Loader", NULL);
-  if (info->loader == NULL || *info->loader == '\0')
-    {
-      g_free (info->loader);
-
-      /* default to the C loader */
-      info->loader = g_strdup ("C");
-    }
 
   /* Get Description */
   info->desc = g_key_file_get_locale_string (plugin_file, "Plugin",
@@ -271,6 +280,7 @@ _peas_plugin_info_new (const gchar *filename,
 
 error:
 
+  g_free (loader);
   g_free (info->module_name);
   g_free (info->name);
   g_free (info);

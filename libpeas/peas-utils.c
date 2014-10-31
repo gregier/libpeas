@@ -29,6 +29,9 @@
 
 #include "peas-utils.h"
 
+static const gchar *all_plugin_loaders[] = {"c", "python", "python3"};
+G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loaders) == PEAS_UTILS_N_LOADERS);
+
 static void
 add_all_interfaces (GType      iface_type,
                     GPtrArray *type_structs)
@@ -144,3 +147,40 @@ error:
 
   return FALSE;
 }
+
+gint
+peas_utils_get_loader_id (const gchar *loader)
+{
+  gint i;
+  gsize len;
+  gchar lowercase[32];
+
+  len = strlen (loader);
+
+  /* No loader has a name that long */
+  if (len >= G_N_ELEMENTS (lowercase))
+    return -1;
+
+  for (i = 0; i < len; ++i)
+    lowercase[i] = g_ascii_tolower (loader[i]);
+
+  lowercase[len] = '\0';
+
+  for (i = 0; i < G_N_ELEMENTS (all_plugin_loaders); ++i)
+    {
+      if (g_strcmp0 (lowercase, all_plugin_loaders[i]) == 0)
+        return i;
+    }
+
+  return -1;
+}
+
+const gchar *
+peas_utils_get_loader_from_id (gint loader_id)
+{
+  g_return_val_if_fail (loader_id >= 0, NULL);
+  g_return_val_if_fail (loader_id < G_N_ELEMENTS (all_plugin_loaders), NULL);
+
+  return all_plugin_loaders[loader_id];
+}
+

@@ -59,10 +59,6 @@
  **/
 G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT)
 
-static PeasEngine *default_engine = NULL;
-static gboolean shutdown = FALSE;
-static GHashTable *loaders = NULL;
-
 /* Signals */
 enum {
   LOAD_PLUGIN,
@@ -84,6 +80,9 @@ static GParamSpec *properties[N_PROPERTIES] = { NULL };
 typedef struct _LoaderInfo {
   PeasPluginLoader *loader;
   PeasObjectModule *module;
+
+  guint enabled : 1;
+  guint failed : 1;
 } LoaderInfo;
 
 typedef struct _SearchPath {
@@ -98,6 +97,10 @@ struct _PeasEnginePrivate {
 
   guint in_dispose : 1;
 };
+
+static PeasEngine *default_engine = NULL;
+static gboolean shutdown = FALSE;
+static LoaderInfo loaders[PEAS_UTILS_N_LOADERS];
 
 static void peas_engine_load_plugin_real   (PeasEngine     *engine,
                                             PeasPluginInfo *info);
@@ -290,44 +293,6 @@ peas_engine_prepend_search_path (PeasEngine  *engine,
   peas_engine_insert_search_path (engine, 0, module_dir, data_dir);
 }
 
-static guint
-hash_lowercase (gconstpointer data)
-{
-  gchar *lowercase;
-  guint ret;
-
-  lowercase = g_ascii_strdown ((const gchar *) data, -1);
-  ret = g_str_hash (lowercase);
-  g_free (lowercase);
-
-  return ret;
-}
-
-static gboolean
-equal_lowercase (const gchar *a,
-                 const gchar *b)
-{
-  return g_ascii_strcasecmp (a, b) == 0;
-}
-
-static void
-loader_destroy (LoaderInfo *info)
-{
-  if (!info)
-    return;
-
-  if (info->loader)
-    {
-      g_object_add_weak_pointer (G_OBJECT (info->loader),
-                                 (gpointer *) &info->loader);
-
-      g_object_unref (info->loader);
-      g_assert (info->loader == NULL);
-    }
-
-  g_free (info);
-}
-
 static void
 peas_engine_init (PeasEngine *engine)
 {
@@ -348,15 +313,6 @@ peas_engine_init (PeasEngine *engine)
 
   engine->priv->in_dispose = FALSE;
 }
-
-static void
-loader_garbage_collect (const gchar *id,
-                        LoaderInfo  *info)
-{
-  if (info != NULL && info->loader != NULL)
-    peas_plugin_loader_garbage_collect (info->loader);
-}
-
 /**
  * peas_engine_garbage_collect:
  * @engine: A #PeasEngine.
@@ -369,11 +325,15 @@ loader_garbage_collect (const gchar *id,
 void
 peas_engine_garbage_collect (PeasEngine *engine)
 {
+  gint i;
+
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  g_hash_table_foreach (loaders,
-                        (GHFunc) loader_garbage_collect,
-                        NULL);
+  for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
+    {
+      if (loaders[i].loader != NULL)
+        peas_plugin_loader_garbage_collect (loaders[i].loader);
+    }
 }
 
 static GObject *
@@ -604,14 +564,8 @@ peas_engine_class_init (PeasEngineClass *klass)
    * global init function for libpeas. */
   peas_debug_init ();
 
-  /* mapping from loadername -> loader object */
-  loaders = g_hash_table_new_full (hash_lowercase,
-                                   (GEqualFunc) equal_lowercase,
-                                   (GDestroyNotify) g_free,
-                                   (GDestroyNotify) loader_destroy);
-
   /* The C plugin loader is always enabled */
-  g_hash_table_insert (loaders, g_strdup ("C"), g_new0 (LoaderInfo, 1));
+  loaders[peas_utils_get_loader_id ("C")].enabled = TRUE;
 }
 
 static PeasObjectModule *
@@ -632,35 +586,33 @@ load_module (const gchar *module_name,
 }
 
 static PeasPluginLoader *
-get_plugin_loader (PeasEngine     *engine,
-                   PeasPluginInfo *info)
+get_plugin_loader (PeasEngine *engine,
+                   gint        loader_id)
 {
   LoaderInfo *loader_info;
-  gchar *loader_id, *module_name, *module_dir;
+  const gchar *loader_name;
+  gchar *module_name, *module_dir;
 
-  loader_info = (LoaderInfo *) g_hash_table_lookup (loaders, info->loader);
+  loader_info = &loaders[loader_id];
 
-  /* The loader has not been enabled. */
-  if (loader_info == NULL)
+  if (!loader_info->enabled)
     {
       g_warning ("The '%s' plugin loader has not been enabled",
-                 info->loader);
+                 peas_utils_get_loader_from_id (loader_id));
       return NULL;
     }
 
-  /* The loader has already been loaded. */
-  if (loader_info->loader != NULL)
+  if (loader_info->loader != NULL || loader_info->failed)
     return loader_info->loader;
 
-  /* Create the default C plugin loader. */
-  if (g_ascii_strcasecmp (info->loader, "C") == 0)
+  if (peas_utils_get_loader_id ("C") == loader_id)
     {
       loader_info->loader = peas_plugin_loader_c_new ();
       return loader_info->loader;
     }
 
-  loader_id = g_ascii_strdown (info->loader, -1);
-  module_name = g_strconcat (loader_id, "loader", NULL);
+  loader_name = peas_utils_get_loader_from_id (loader_id);
+  module_name = g_strconcat (loader_name, "loader", NULL);
   module_dir = peas_dirs_get_plugin_loaders_dir ();
 
   loader_info->module = load_module (module_name, module_dir);
@@ -669,21 +621,20 @@ get_plugin_loader (PeasEngine     *engine,
     {
       gchar *tmp = module_dir;
 
-      module_dir = g_build_filename (module_dir, loader_id, NULL);
+      module_dir = g_build_filename (module_dir, loader_name, NULL);
       loader_info->module = load_module (module_name, module_dir);
 
       g_free (tmp);
+    }
 
-      if (loader_info->module == NULL)
-        {
-          g_warning ("Could not load plugin loader '%s'", info->loader);
+  g_free (module_dir);
+  g_free (module_name);
 
-          g_free (module_dir);
-          g_free (module_name);
-          g_free (loader_id);
-          g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
-          return NULL;
-        }
+  if (loader_info->module == NULL)
+    {
+      g_warning ("Could not load plugin loader '%s'", loader_name);
+      loader_info->failed = TRUE;
+      return NULL;
     }
 
   loader_info->loader = PEAS_PLUGIN_LOADER (
@@ -691,19 +642,18 @@ get_plugin_loader (PeasEngine     *engine,
                                           PEAS_TYPE_PLUGIN_LOADER,
                                           0, NULL));
 
-  g_type_module_unuse (G_TYPE_MODULE (loader_info->module));
-  g_free (module_dir);
-  g_free (module_name);
-  g_free (loader_id);
+  /* Don't bother unloading the loader's
+   * GTypeModule as it is always resident
+   */
 
   if (loader_info->loader == NULL ||
       !peas_plugin_loader_initialize (loader_info->loader))
     {
       g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
-                 info->loader);
+                 loader_name);
 
-      /* This will cause the loader to be unreffed if it exists */
-      g_hash_table_insert (loaders, g_strdup (info->loader), NULL);
+      loader_info->failed = TRUE;
+      g_clear_object (&loader_info->loader);
       return NULL;
     }
 
@@ -713,7 +663,7 @@ get_plugin_loader (PeasEngine     *engine,
 /**
  * peas_engine_enable_loader:
  * @engine: A #PeasEngine.
- * @loader_id: The id of the loader to enable.
+ * @loader_name: The name of the loader to enable.
  *
  * Enable a loader, enables a loader for plugins.
  * The C plugin loader is always enabled. The other plugin
@@ -735,31 +685,38 @@ get_plugin_loader (PeasEngine     *engine,
  **/
 void
 peas_engine_enable_loader (PeasEngine  *engine,
-                           const gchar *loader_id)
+                           const gchar *loader_name)
 {
-  g_return_if_fail (PEAS_IS_ENGINE (engine));
-  g_return_if_fail (loader_id != NULL && *loader_id != '\0');
+  gint loader_id;
 
-  if (g_hash_table_lookup_extended (loaders, loader_id, NULL, NULL))
+  g_return_if_fail (PEAS_IS_ENGINE (engine));
+  g_return_if_fail (loader_name != NULL && *loader_name != '\0');
+
+  loader_id = peas_utils_get_loader_id (loader_name);
+
+  if (loader_id == -1)
+    {
+      g_warning ("Failed to enable unknown plugin loader '%s'", loader_name);
+      return;
+    }
+
+  if (loaders[loader_id].enabled)
     return;
 
   /* The demo and some tests need to load multiple loaders */
   if (g_getenv ("PEAS_ALLOW_ALL_LOADERS") == NULL)
     {
-      static const gchar *plugin_loader_ids[] = {"python", "python3"};
       gint i;
+      static const gchar *other_loaders[] = {"python", "python3"};
 
-      for (i = 0; i < G_N_ELEMENTS (plugin_loader_ids); ++i)
+      for (i = 0; i < G_N_ELEMENTS (other_loaders); ++i)
         {
-          if (g_ascii_strcasecmp (loader_id, plugin_loader_ids[i]) == 0)
-            continue;
-
-          if (g_hash_table_lookup_extended (loaders, plugin_loader_ids[i],
-                                            NULL, NULL))
+          if (loaders[peas_utils_get_loader_id (other_loaders[i])].enabled)
             {
               g_warning ("Cannot enable plugin loader '%s' as the "
                          "'%s' plugin loader has already been enabled.",
-                         loader_id, plugin_loader_ids[i]);
+                         loader_name, other_loaders[i]);
+              loaders[loader_id].failed = TRUE;
               return;
             }
         }
@@ -768,7 +725,7 @@ peas_engine_enable_loader (PeasEngine  *engine,
   /* We do not load the plugin loader immediately and instead
    * load it in get_plugin_loader() so that it is loaded lazily.
    */
-  g_hash_table_insert (loaders, g_strdup (loader_id), g_new0 (LoaderInfo, 1));
+  loaders[loader_id].enabled = TRUE;
 }
 
 /**
@@ -869,7 +826,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
         }
     }
 
-  loader = get_plugin_loader (engine, info);
+  loader = get_plugin_loader (engine, info->loader_id);
 
   if (loader == NULL)
     {
@@ -878,7 +835,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
                    PEAS_PLUGIN_INFO_ERROR,
                    PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
                    _("Plugin loader '%s' was not found"),
-                   info->loader);
+                   peas_utils_get_loader_from_id (info->loader_id));
       goto error;
     }
 
@@ -964,7 +921,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
     }
 
   /* find the loader and tell it to gc and unload the plugin */
-  loader = get_plugin_loader (engine, info);
+  loader = get_plugin_loader (engine, info->loader_id);
 
   peas_plugin_loader_garbage_collect (loader);
   peas_plugin_loader_unload (loader, info);
@@ -1030,7 +987,7 @@ peas_engine_provides_extension (PeasEngine     *engine,
   if (!peas_plugin_info_is_loaded (info))
     return FALSE;
 
-  loader = get_plugin_loader (engine, info);
+  loader = get_plugin_loader (engine, info->loader_id);
   return peas_plugin_loader_provides_extension (loader, info, extension_type);
 }
 
@@ -1067,7 +1024,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
-  loader = get_plugin_loader (engine, info);
+  loader = get_plugin_loader (engine, info->loader_id);
   extension = peas_plugin_loader_create_extension (loader, info, extension_type,
                                                    n_parameters, parameters);
 
@@ -1312,7 +1269,7 @@ peas_engine_get_default (void)
   return default_engine;
 }
 
-/*
+/* < private >
  * peas_engine_shutdown:
  *
  * Frees memory shared by PeasEngines.
@@ -1321,14 +1278,28 @@ peas_engine_get_default (void)
 void
 peas_engine_shutdown (void)
 {
+  gint i;
+
   if (shutdown)
     return;
 
   shutdown = TRUE;
 
-  if (loaders != NULL)
+  for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
     {
-      g_hash_table_destroy (loaders);
-      loaders = NULL;
+      LoaderInfo *loader_info = &loaders[i];
+
+      if (loader_info->loader != NULL)
+        {
+          g_object_add_weak_pointer (G_OBJECT (loader_info->loader),
+                                     (gpointer *) &loader_info->loader);
+
+          g_object_unref (loader_info->loader);
+          g_assert (loader_info->loader == NULL);
+        }
+
+      loader_info->module = NULL;
+      loader_info->enabled = FALSE;
+      loader_info->failed = TRUE;
     }
 }

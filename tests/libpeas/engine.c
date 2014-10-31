@@ -381,43 +381,12 @@ test_engine_loaded_plugins (PeasEngine *engine)
 }
 
 static void
-test_engine_nonexistent_loader (PeasEngine *engine)
+test_engine_enable_unkown_loader (PeasEngine *engine)
 {
-  GError *error = NULL;
-  PeasPluginInfo *info;
+  testing_util_push_log_hook ("Failed to enable unknown "
+                              "plugin loader 'does-not-exist'");
 
-  testing_util_push_log_hook ("Could not load plugin loader 'does-not-exist'*");
-
-  info = peas_engine_get_plugin_info (engine, "nonexistent-loader");
   peas_engine_enable_loader (engine, "does-not-exist");
-
-  g_assert (!peas_engine_load_plugin (engine, info));
-  g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info, &error));
-  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
-                  PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND);
-
-  g_error_free (error);
-}
-
-static void
-test_engine_disabled_loader (PeasEngine *engine)
-{
-  PeasPluginInfo *info;
-  GError *error = NULL;
-
-  testing_util_push_log_hook ("The 'disabled' plugin "
-                              "loader has not been enabled*");
-
-  info = peas_engine_get_plugin_info (engine, "disabled-loader");
-
-  g_assert (!peas_engine_load_plugin (engine, info));
-  g_assert (!peas_plugin_info_is_loaded (info));
-  g_assert (!peas_plugin_info_is_available (info, &error));
-  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
-                  PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND);
-
-  g_error_free (error);
 }
 
 static void
@@ -490,8 +459,7 @@ main (int    argc,
 
   TEST ("loaded-plugins", loaded_plugins);
 
-  TEST ("nonexistent-loader", nonexistent_loader);
-  TEST ("disabled-loader", disabled_loader);
+  TEST ("enable-unkown-loader", enable_unkown_loader);
   TEST ("enable-loader-multiple-times", enable_loader_multiple_times);
 
   TEST ("nonexistent-search-path", nonexistent_search_path);

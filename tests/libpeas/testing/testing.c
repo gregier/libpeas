@@ -62,11 +62,17 @@ testing_engine_new (void)
   testing_util_push_log_hook ("*Bad plugin file *invalid.plugin*");
   testing_util_push_log_hook ("*Error loading *invalid.plugin*");
 
-  testing_util_push_log_hook ("*Could not find 'Module' in *info-missing-module.plugin*");
+  testing_util_push_log_hook ("*Could not find 'Module' in "
+                              "*info-missing-module.plugin*");
   testing_util_push_log_hook ("*Error loading *info-missing-module.plugin*");
 
-  testing_util_push_log_hook ("*Could not find 'Name' in *info-missing-name.plugin*");
+  testing_util_push_log_hook ("*Could not find 'Name' in "
+                              "*info-missing-name.plugin*");
   testing_util_push_log_hook ("*Error loading *info-missing-name.plugin*");
+
+  testing_util_push_log_hook ("*Unkown 'Loader' in "
+                              "*unkown-loader.plugin* does-not-exist");
+  testing_util_push_log_hook ("*Error loading *unkown-loader.plugin*");
 
   /* Must be after pushing log hooks */
   engine = testing_util_engine_new ();
