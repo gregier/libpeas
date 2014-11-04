@@ -1,8 +1,8 @@
 /*
- * peas-utils.h
+ * peas-plugin-loader-lua-utils.h
  * This file is part of libpeas
  *
- * Copyright (C) 2010 Steve Frécinaux
+ * Copyright (C) 2014 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -19,21 +19,24 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef __PEAS_UTILS_H__
-#define __PEAS_UTILS_H__
+#ifndef __PEAS_PLUGIN_LOADER_LUA_UTILS_H__
+#define __PEAS_PLUGIN_LOADER_LUA_UTILS_H__
 
-#include <glib-object.h>
+#include <glib.h>
+#include <lua.h>
 
-#define PEAS_UTILS_N_LOADERS 4
+G_BEGIN_DECLS
 
-gboolean  peas_utils_valist_to_parameter_list (GType         iface_type,
-                                               const gchar  *first_property,
-                                               va_list       var_args,
-                                               GParameter  **params,
-                                               guint        *n_params);
 
-gint     peas_utils_get_loader_id             (const gchar  *loader) G_GNUC_CONST;
-const gchar *
-         peas_utils_get_loader_from_id        (gint          loader_id) G_GNUC_CONST;
+gboolean peas_lua_utils_require       (lua_State   *L,
+                                       const gchar *name);
 
-#endif /* __PEAS_UTILS_H__ */
+gboolean peas_lua_utils_check_version (lua_State   *L,
+                                       guint        req_major,
+                                       guint        req_minor,
+                                       guint        req_micro);
+
+G_END_DECLS
+
+#endif /* __PEAS_PLUGIN_LOADER_LUA_UTILS_H__ */
+

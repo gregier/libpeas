@@ -589,6 +589,7 @@ static PeasPluginLoader *
 get_plugin_loader (PeasEngine *engine,
                    gint        loader_id)
 {
+  gint i, j;
   LoaderInfo *loader_info;
   const gchar *loader_name;
   gchar *module_name, *module_dir;
@@ -614,6 +615,15 @@ get_plugin_loader (PeasEngine *engine,
   loader_name = peas_utils_get_loader_from_id (loader_id);
   module_name = g_strconcat (loader_name, "loader", NULL);
   module_dir = peas_dirs_get_plugin_loaders_dir ();
+
+  /* Remove '.'s from the module name */
+  for (i = 0, j = 0; module_name[i] != '\0'; ++i)
+    {
+      if (module_name[i] != '.')
+        module_name[j++] = module_name[i];
+    }
+
+  module_name[j] = '\0';
 
   loader_info->module = load_module (module_name, module_dir);
 
@@ -667,7 +677,7 @@ get_plugin_loader (PeasEngine *engine,
  *
  * Enable a loader, enables a loader for plugins.
  * The C plugin loader is always enabled. The other plugin
- * loaders are: python and python3.
+ * loaders are: lua5.1 and python and python3.
  *
  * For instance, the following code will enable python plugins
  * to be loaded:

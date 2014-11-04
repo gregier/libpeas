@@ -171,6 +171,7 @@ test_extension_create_invalid (PeasEngine     *engine,
 
   /* This cannot be tested in PyGI and Seed's log handler messes this up */
   if (g_strcmp0 (extension_plugin, "extension-c") != 0 &&
+      g_strcmp0 (extension_plugin, "extension-lua51") != 0 &&
       g_strcmp0 (extension_plugin, "extension-python") != 0 &&
       g_strcmp0 (extension_plugin, "extension-python3") != 0)
     {
@@ -387,9 +388,19 @@ test_extension_call_multi_args (PeasEngine     *engine,
 void
 testing_extension_basic (const gchar *loader)
 {
+  gint i, j;
+  gchar *loader_name;
   PeasEngine *engine;
 
-  extension_plugin = g_strdup_printf ("extension-%s", loader);
+  loader_name = g_new0 (gchar, strlen (loader));
+  for (i = 0, j = 0; loader[i] != '\0'; ++i)
+    {
+      if (loader[i] != '.')
+        loader_name[j++] = loader[i];
+    }
+
+  extension_plugin = g_strdup_printf ("extension-%s", loader_name);
+  g_free (loader_name);
 
   engine = testing_engine_new ();
   peas_engine_enable_loader (engine, loader);

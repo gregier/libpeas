@@ -1,0 +1,7 @@
+[Plugin]
+Module=luahello
+Loader=lua5.1
+Name=Lua Says Hello
+Description=Inserts a box containing "Lua Says Hello" in every windows.
+Authors=Garrett Regier <garrettregier@gmail.com>
+Copyright=Copyright © 2014 Garrett Regier

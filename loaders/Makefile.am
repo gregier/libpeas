@@ -1,5 +1,9 @@
 SUBDIRS =
 
+if ENABLE_LUA51
+SUBDIRS += lua5.1
+endif
+
 if ENABLE_PYTHON2
 SUBDIRS += python
 endif

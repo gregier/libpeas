@@ -1,0 +1,9 @@
+<schemalist>
+  <schema id="extension-lua51" path="/org/gnome/libpeas/tests/extension-lua51/">
+    <key name="a-setting" type="s">
+      <default>'Blah'</default>
+      <summary>Just a setting.</summary>
+      <description>Just a setting.</description>
+    </key>
+  </schema>
+</schemalist>

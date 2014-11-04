@@ -1,0 +1,7 @@
+[Plugin]
+Module=extension-lua51-nonexistent
+Loader=lua5.1
+Name=Extension lua5.1 Nonexistent
+Description=This plugin is nonexistent.
+Authors=Garrett Regier
+Copyright=Copyright © 2014 Garrett Regier

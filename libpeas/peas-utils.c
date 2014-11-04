@@ -29,7 +29,8 @@
 
 #include "peas-utils.h"
 
-static const gchar *all_plugin_loaders[] = {"c", "python", "python3"};
+static const gchar *all_plugin_loaders[] = {"c", "lua5.1",
+                                            "python", "python3"};
 G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loaders) == PEAS_UTILS_N_LOADERS);
 
 static void

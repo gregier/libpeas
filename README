@@ -20,11 +20,11 @@ GInterfaces the plugin writer will be able to implement as his plugin requires.
 On-demand programming language support
 --------------------------------------
 
-libpeas comes with a set of supported languages (currently, C, Python 2 and
-Python 3). Those languages are supported through “loaders” which are loaded
-on demand. What it means is that you only pay for what you use: if you have no
-Python plugin, the Python interpreter won't be loaded in memory. Of course, the
-same goes for the C loader.
+libpeas comes with a set of supported languages (currently, C, Lua 5.1,
+Python 2 and Python 3). Those languages are supported through “loaders” which
+are loaded on demand. What it means is that you only pay for what you use: if
+you have no Python plugin, the Python interpreter won't be loaded in memory.
+Of course, the same goes for the C loader.
 
 Damn simple to use (or at least we try hard)
 --------------------------------------------
@@ -82,7 +82,7 @@ Sample code
 -----------
 
 The libpeas package contains a sample application called peas-demo, and sample
-plugins written in C and Python.
+plugins written in C, Lua and Python.
 
 The global idea is this one: you create a new PeasEngine instance and give it
 the information needed for it to find your plugins. Then you load some plugins

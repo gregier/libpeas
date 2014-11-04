@@ -25,6 +25,13 @@ TEST_PROGS += \
 	extension-set	\
 	plugin-info
 
+if ENABLE_LUA51
+TEST_PROGS               += extension-lua51
+extension_lua51_SOURCES   = extension-lua.c
+extension_lua51_CFLAGS    = $(LUA51_CFLAGS)
+extension_lua51_LDADD     = $(LDADD) $(LUA51_LIBS)
+endif
+
 if ENABLE_PYTHON2
 TEST_PROGS               += extension-python
 extension_python_SOURCES  = extension-py.c

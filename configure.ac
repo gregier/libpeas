@@ -232,6 +232,130 @@ fi
 AM_CONDITIONAL([ENABLE_GLADE_CATALOG],[test "x$found_glade_catalog" = "xyes"])
 
 dnl ================================================================
+dnl Lua
+dnl ================================================================
+
+LUA51_REQUIRED=5.1.0
+LUAJIT_REQUIRED=2.0
+
+LGI_MAJOR_VERSION=0
+LGI_MINOR_VERSION=8
+LGI_MICRO_VERSION=0
+LGI_REQUIRED=$LGI_MAJOR_VERSION.$LGI_MINOR_VERSION.$LGI_MICRO_VERSION
+AC_DEFINE_UNQUOTED(LGI_MAJOR_VERSION, [$LGI_MAJOR_VERSION], [LGI major version.])
+AC_DEFINE_UNQUOTED(LGI_MINOR_VERSION, [$LGI_MINOR_VERSION], [LGI minor version.])
+AC_DEFINE_UNQUOTED(LGI_MICRO_VERSION, [$LGI_MICRO_VERSION], [LGI micro version.])
+
+dnl
+dnl Test program for LGI version
+dnl
+m4_define([peas_lgi_version_test], [
+#include <lauxlib.h>
+#include <lualib.h>
+
+#include "peas-plugin-loader-lua-utils.c"
+
+int main(int argc, char **argv)
+{
+  lua_State *L;
+  gboolean success;
+
+  L = luaL_newstate ();
+  luaL_openlibs (L);
+
+  success = (peas_lua_utils_require (L, "lgi") &&
+             peas_lua_utils_check_version (L,
+                                           LGI_MAJOR_VERSION,
+                                           LGI_MINOR_VERSION,
+                                           LGI_MICRO_VERSION));
+
+  lua_close (L);
+  return success ? 0 : 1;
+}])
+
+AC_ARG_ENABLE(lua5.1,
+              AS_HELP_STRING([--enable-lua5.1],[Enable Lua 5.1 support]),
+              [enable_lua51=$enableval],
+              [enable_lua51=auto])
+
+AC_ARG_ENABLE(luajit,
+              AS_HELP_STRING([--enable-luajit],[Enable LuaJIT for Lua 5.1 support]),
+              [enable_luajit=$enableval],
+              [enable_luajit=auto])
+
+AC_MSG_CHECKING([for Lua 5.1 availability.])
+
+if test "x$enable_lua51" = "xno"; then
+    found_lua51="no (disabled, use --enable-lua5.1 to enable)"
+    AC_MSG_RESULT([$found_lua51])
+else
+    if test "x$enable_luajit" != "xno"; then
+        PKG_CHECK_EXISTS([luajit >= $LUAJIT_REQUIRED], [
+            found_lua51=yes
+            with_lua51=luajit
+        ], [
+            found_lua51=no
+        ])
+
+        if test "x$enable_luajit" = "xyes" -a "x$found_lua51" = "xno"; then
+            AC_MSG_ERROR([You need to have LuaJIT >= $LUAJIT_REQUIRED
+                          installed to build libpeas])
+        fi
+    fi
+
+    if test "x$found_lua51" != "xyes"; then
+        PKG_CHECK_EXISTS([lua5.1 >= $LUA51_REQUIRED], [
+            found_lua51=yes
+            with_lua51=lua5.1
+        ], [
+            found_lua51=no
+        ])
+
+        if test "x$enable_lua51" = "xyes" -a "x$found_lua51" = "xno"; then
+            AC_MSG_ERROR([You need to have Lua 5.1 >= $LUA51_REQUIRED
+                          installed to build libpeas])
+        fi
+    fi
+
+    if test "x$found_lua51" != "xyes"; then
+        AC_MSG_RESULT([$found_lua51])
+    else
+        AC_MSG_RESULT([$found_lua51 ($with_lua51)])
+
+        LUA51_CFLAGS=`$PKG_CONFIG --cflags $with_lua51`
+        LUA51_LIBS=`$PKG_CONFIG --libs $with_lua51`
+        AC_SUBST(LUA51_CFLAGS)
+        AC_SUBST(LUA51_LIBS)
+
+        AC_MSG_CHECKING(for LGI availability in Lua 5.1.)
+
+        peas_save_CFLAGS="$CFLAGS"
+        peas_save_LIBS="$LIBS"
+        CFLAGS="$PEAS_CFLAGS $LUA51_CFLAGS -Iloaders/lua5.1"
+        LIBS="$PEAS_LIBS $LUA51_LIBS"
+        AC_TRY_RUN(peas_lgi_version_test(0),
+                   found_lua51=yes,
+                   found_lua51=no,
+                   found_lua51=yes)
+        CFLAGS="$peas_save_CFLAGS"
+        LIBS="$peas_save_LIBS"
+
+        if test "x$enable_lua51" = "xyes" -a "x$found_lua51" = "xno"; then
+            AC_MSG_ERROR([You need to have LGI >= $LGI_REQUIRED
+                          installed to build libpeas])
+        fi
+
+        if test "x$found_lua51" = "xyes"; then
+            AC_DEFINE(ENABLE_LUA51, 1, [Define to compile with Lua support])
+        fi
+
+        AC_MSG_RESULT([$found_lua51])
+    fi
+fi
+
+AM_CONDITIONAL([ENABLE_LUA51], [test "x$found_lua51" = "xyes"])
+
+dnl ================================================================
 dnl Python
 dnl ================================================================
 
@@ -290,7 +414,7 @@ else
 fi
 
 if test "x$enable_python2" = "xyes" -a "x$found_python2" != "xyes"; then
-    AC_MSG_ERROR([You need to have Python 2 and PyGobject installed to build libpeas])
+    AC_MSG_ERROR([You need to have Python 2 and PyGObject installed to build libpeas])
 fi
 AC_MSG_RESULT([$found_python2])
 
@@ -393,6 +517,7 @@ docs/reference/version.xml
 libpeas/Makefile
 libpeas-gtk/Makefile
 loaders/Makefile
+loaders/lua5.1/Makefile
 loaders/python/Makefile
 loaders/python3/Makefile
 data/Makefile
@@ -403,6 +528,7 @@ data/libpeas-gtk-1.0.pc
 peas-demo/Makefile
 peas-demo/plugins/Makefile
 peas-demo/plugins/helloworld/Makefile
+peas-demo/plugins/luahello/Makefile
 peas-demo/plugins/pythonhello/Makefile
 peas-demo/plugins/secondtime/Makefile
 po/Makefile.in
@@ -410,6 +536,7 @@ tests/Makefile
 tests/libpeas/Makefile
 tests/libpeas/plugins/Makefile
 tests/libpeas/plugins/extension-c/Makefile
+tests/libpeas/plugins/extension-lua/Makefile
 tests/libpeas/plugins/extension-python/Makefile
 tests/libpeas/introspection/Makefile
 tests/libpeas/testing/Makefile
@@ -443,6 +570,7 @@ Configuration:
 
 Languages support:
 
+        Lua 5.1 support               : ${found_lua51}
         Python 2 support              : ${found_python2}
         Python 3 support              : ${found_python3}
 "

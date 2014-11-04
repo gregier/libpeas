@@ -78,6 +78,7 @@ Makefile.in
 /tests/*/vgdump-*
 /tests/libpeas/engine
 /tests/libpeas/extension-c
+/tests/libpeas/extension-lua51
 /tests/libpeas/extension-python
 /tests/libpeas/extension-python3
 /tests/libpeas/extension-set
