@@ -84,7 +84,7 @@ dnl ================================================================
 
 PKG_PROG_PKG_CONFIG
 
-GLIB_REQUIRED=2.30.0
+GLIB_REQUIRED=2.36.0
 GIO_REQUIRED=2.32.0
 INTROSPECTION_REQUIRED=1.39.0
 
@@ -102,7 +102,7 @@ AC_SUBST(GLIB_REQUIRED)
 AC_SUBST(GIO_REQUIRED)
 AC_SUBST(INTROSPECTION_REQUIRED)
 
-AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_32, [minimum glib version])
+AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_36, [minimum glib version])
 AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_38, [maximum glib version])
 
 dnl ================================================================

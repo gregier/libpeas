@@ -37,9 +37,16 @@ typedef struct {
   gboolean hit;
 } LogHook;
 
-static PeasEngine *engine = NULL;
-static GPtrArray *log_hooks = NULL;
+static void engine_private_notify (gpointer value);
+static void log_hooks_private_notify (gpointer value);
+
 static gboolean initialized = FALSE;
+
+static gpointer dead_engine = NULL;
+#define DEAD_ENGINE ((gpointer) &dead_engine)
+
+static GPrivate engine_key = G_PRIVATE_INIT (engine_private_notify);
+static GPrivate log_hooks_key = G_PRIVATE_INIT (log_hooks_private_notify);
 
 /* These are warnings and criticals that just have to happen
  * for testing purposes and as such we don't want to abort on them.
@@ -55,11 +62,47 @@ static const gchar *allowed_patterns[] = {
 };
 
 static void
+engine_private_notify (gpointer value)
+{
+  if (value != NULL)
+    g_error ("A PeasEngine was not freed!");
+}
+
+static void
+log_hooks_private_notify (gpointer value)
+{
+  GPtrArray *log_hooks = value;
+
+  if (log_hooks != NULL)
+    {
+      g_assert_cmpuint (log_hooks->len, ==, 0);
+      g_ptr_array_unref (log_hooks);
+    }
+}
+
+static GPtrArray *
+get_log_hooks (void)
+{
+  GPtrArray *log_hooks = g_private_get (&log_hooks_key);
+
+  if (log_hooks != NULL)
+    return log_hooks;
+
+  g_assert (initialized);
+
+  log_hooks = g_ptr_array_new_with_free_func (g_free);
+  g_private_set (&log_hooks_key, log_hooks);
+
+  return log_hooks;
+}
+
+static void
 log_handler (const gchar    *log_domain,
              GLogLevelFlags  log_level,
              const gchar    *message,
              gpointer        user_data)
 {
+  GPtrArray *log_hooks = get_log_hooks ();
   guint i;
 
   /* We always want to log debug, info and message logs */
@@ -148,25 +191,36 @@ testing_util_init (void)
   g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
   g_assert_no_error (error);
 
-  log_hooks = g_ptr_array_new_with_free_func (g_free);
-
   initialized = TRUE;
+}
+
+static void
+engine_weak_notify (gpointer    unused,
+                    PeasEngine *engine)
+{
+  /* Cannot use NULL because testing_util_engine_free() must be called */
+  g_private_set (&engine_key, DEAD_ENGINE);
 }
 
 PeasEngine *
 testing_util_engine_new (void)
 {
+  PeasEngine *engine;
+
   g_assert (initialized);
 
   /* testing_util_engine_free() checks that the
    * engine is freed so only one engine can be created
    */
-  g_assert (engine == NULL);
+  g_assert (g_private_get (&engine_key) == NULL);
 
   /* Must be after requiring typelibs */
   engine = peas_engine_new ();
+  g_private_set (&engine_key, engine);
 
-  g_object_add_weak_pointer (G_OBJECT (engine), (gpointer *) &engine);
+  g_object_weak_ref (G_OBJECT (engine),
+                     (GWeakNotify) engine_weak_notify,
+                     NULL);
 
   peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins",
                                        SRCDIR   "/tests/plugins");
@@ -175,16 +229,18 @@ testing_util_engine_new (void)
 }
 
 void
-testing_util_engine_free (PeasEngine *engine_)
+testing_util_engine_free (PeasEngine *engine)
 {
   /* In case a test needs to free the engine */
-  if (engine != NULL)
+  if (g_private_get (&engine_key) != DEAD_ENGINE)
     {
-      g_object_unref (engine_);
+      g_object_unref (engine);
 
       /* Make sure that at the end of every test the engine is freed */
-      g_assert (engine == NULL);
+      g_assert (g_private_get (&engine_key) == DEAD_ENGINE);
     }
+
+  g_private_set (&engine_key, NULL);
 
   /* Pop the log hooks so the test cases don't have to */
   testing_util_pop_log_hooks ();
@@ -199,15 +255,6 @@ testing_util_run_tests (void)
 
   retval = g_test_run ();
 
-  /* Make sure all the engines have been freed */
-  g_assert (engine == NULL);
-
-  if (log_hooks != NULL)
-    {
-      g_assert_cmpuint (log_hooks->len, ==, 0);
-      g_ptr_array_unref (log_hooks);
-    }
-
   /* Cannot call this with atexit() because
    * gcov does not register that it was called.
    */
@@ -219,9 +266,9 @@ testing_util_run_tests (void)
 void
 testing_util_push_log_hook (const gchar *pattern)
 {
+  GPtrArray *log_hooks = get_log_hooks ();
   LogHook *hook;
 
-  g_return_if_fail (log_hooks != NULL);
   g_return_if_fail (pattern != NULL && *pattern != '\0');
 
   hook = g_new (LogHook, 1);
@@ -235,9 +282,9 @@ testing_util_push_log_hook (const gchar *pattern)
 void
 testing_util_pop_log_hook (void)
 {
+  GPtrArray *log_hooks = get_log_hooks ();
   LogHook *hook;
 
-  g_return_if_fail (log_hooks != NULL);
   g_return_if_fail (log_hooks->len > 0);
 
   hook = g_ptr_array_index (log_hooks, log_hooks->len - 1);
@@ -251,11 +298,10 @@ testing_util_pop_log_hook (void)
 void
 testing_util_pop_log_hooks (void)
 {
+  GPtrArray *log_hooks = get_log_hooks ();
   guint i;
   LogHook *hook;
   GPtrArray *unhit_hooks;
-
-  g_return_if_fail (log_hooks != NULL);
 
   if (log_hooks->len == 0)
     return;

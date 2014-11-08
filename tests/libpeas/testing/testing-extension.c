@@ -270,6 +270,64 @@ test_extension_get_settings (PeasEngine     *engine,
 }
 
 static void
+multiple_threads_in_thread (guint nth_thread)
+{
+  gint i, j;
+  PeasEngine *engine;
+  PeasPluginInfo *info;
+  GObject *extension;
+  const gboolean is_slow = strstr (loader, "python") != NULL;
+
+  engine = testing_engine_new ();
+  peas_engine_enable_loader (engine, loader);
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+  g_assert (info != NULL);
+
+  for (i = 0; i < (is_slow ? 5 : 20); ++i)
+    {
+      g_assert (peas_engine_load_plugin (engine, info));
+
+      for (j = 0; j < 5; ++j)
+        {
+          extension = peas_engine_create_extension (engine, info,
+                                                    INTROSPECTION_TYPE_BASE,
+                                                    NULL);
+
+          g_assert (extension != NULL);
+          g_object_unref (extension);
+        }
+
+      g_assert (peas_engine_unload_plugin (engine, info));
+    }
+
+  testing_engine_free (engine);
+}
+
+static void
+test_extension_multiple_threads (PeasEngine     *engine,
+                                 PeasPluginInfo *info)
+{
+  gint i;
+  GThreadPool *pool;
+  GError *error = NULL;
+  const gboolean is_slow = strstr (loader, "python") != NULL;
+
+  pool = g_thread_pool_new ((GFunc) multiple_threads_in_thread,
+                            NULL, g_get_num_processors (), TRUE, &error);
+  g_assert_no_error (error);
+
+  for (i = 0; i < (is_slow ? 20 : 100); ++i)
+    {
+      /* Cannot supply NULL as the data... */
+      g_thread_pool_push (pool, GUINT_TO_POINTER (i + 1), &error);
+      g_assert_no_error (error);
+    }
+
+  g_thread_pool_free (pool, FALSE, TRUE);
+}
+
+static void
 test_extension_call_no_args (PeasEngine     *engine,
                              PeasPluginInfo *info)
 {
@@ -428,6 +486,10 @@ testing_extension_basic (const gchar *loader_)
 
   _EXTENSION_TEST (loader, "plugin-info", plugin_info);
   _EXTENSION_TEST (loader, "get-settings", get_settings);
+
+  /* See peas_engine_enable_loader() */
+  if (g_strcmp0 (loader, "lua5.1") != 0)
+    _EXTENSION_TEST (loader, "multiple-threads", multiple_threads);
 }
 
 void
