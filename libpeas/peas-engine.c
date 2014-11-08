@@ -685,6 +685,10 @@ get_plugin_loader (PeasEngine *engine,
  * peas_engine_enable_loader (engine, "python");
  * ]|
  *
+ * Unlike the C, python and python3 plugin loaders the lua5.1 plugin
+ * loader can only be used from a single thread. Should this happen
+ * a deadlock will occur.
+ *
  * Due to the use of toggle references in the python and python3
  * bindings only one of them should be enabled. Otherwise vast
  * memory leaks are to be expected and as such it is an error to

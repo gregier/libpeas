@@ -335,6 +335,10 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
   lua_State *L;
 
+  /* Add locking to support global plugin loaders.
+   * Blocked by: https://github.com/pavouk/lgi/issues/92
+   */
+
   L = luaL_newstate ();
   if (L == NULL)
     {
