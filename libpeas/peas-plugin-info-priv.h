@@ -29,6 +29,10 @@ struct _PeasPluginInfo {
   /*< private >*/
   gint refcount;
 
+  /* Used and managed by PeasPluginLoader */
+  gpointer loader_data;
+
+  gchar *filename;
   gchar *module_dir;
   gchar *data_dir;
 

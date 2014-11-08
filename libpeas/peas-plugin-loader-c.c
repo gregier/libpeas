@@ -29,8 +29,11 @@
 
 #include "peas-extension-base.h"
 #include "peas-object-module.h"
+#include "peas-plugin-info-priv.h"
 
 struct _PeasPluginLoaderCPrivate {
+  GMutex lock;
+
   GHashTable *loaded_plugins;
 };
 
@@ -41,34 +44,43 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
                            PeasPluginInfo   *info)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
-  PeasObjectModule *module;
-  const gchar *module_name;
 
-  module_name = peas_plugin_info_get_module_name (info);
-  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     module_name);
+  g_mutex_lock (&cloader->priv->lock);
 
-  if (module == NULL)
+  if (!g_hash_table_lookup_extended (cloader->priv->loaded_plugins,
+                                     info->filename,
+                                     NULL, (gpointer *) &info->loader_data))
     {
+      const gchar *module_name, *module_dir;
+
+      module_name = peas_plugin_info_get_module_name (info);
+      module_dir = peas_plugin_info_get_module_dir (info);
+
       /* Force all C modules to be resident in case they
        * use libraries that do not deal well with reloading
        */
-      module = peas_object_module_new (module_name,
-                                       peas_plugin_info_get_module_dir (info),
-                                       TRUE);
+      info->loader_data = peas_object_module_new (module_name,
+                                                  module_dir, TRUE);
+
+      if (!g_type_module_use (G_TYPE_MODULE (info->loader_data)))
+        g_clear_object (&info->loader_data);
 
       g_hash_table_insert (cloader->priv->loaded_plugins,
-                           g_strdup (module_name), module);
+                           g_strdup (info->filename), info->loader_data);
     }
 
-  if (!g_type_module_use (G_TYPE_MODULE (module)))
-    {
-      g_object_unref (module);
-      g_hash_table_remove (cloader->priv->loaded_plugins, module_name);
-      return FALSE;
-    }
+  g_mutex_unlock (&cloader->priv->lock);
+  return info->loader_data != NULL;
+}
 
-  return TRUE;
+static void
+peas_plugin_loader_c_unload (PeasPluginLoader *loader,
+                             PeasPluginInfo   *info)
+{
+  /* Don't bother unloading the plugin's
+   * GTypeModule as it is always resident
+   */
+  info->loader_data = NULL;
 }
 
 static gboolean
@@ -76,15 +88,7 @@ peas_plugin_loader_c_provides_extension  (PeasPluginLoader *loader,
                                           PeasPluginInfo   *info,
                                           GType             exten_type)
 {
-  PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
-  PeasObjectModule *module;
-  const gchar *module_name;
-
-  module_name = peas_plugin_info_get_module_name (info);
-  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     module_name);
-
-  return peas_object_module_provides_object (module, exten_type);
+  return peas_object_module_provides_object (info->loader_data, exten_type);
 }
 
 static PeasExtension *
@@ -94,15 +98,8 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
                                        guint             n_parameters,
                                        GParameter       *parameters)
 {
-  PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
-  PeasObjectModule *module;
   GParameter *exten_parameters;
   gpointer instance;
-  const gchar *module_name;
-
-  module_name = peas_plugin_info_get_module_name (info);
-  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     module_name);
 
   /* We want to add a "plugin-info" property so we can pass it to
    * the extension if it inherits from PeasExtensionBase. No need to
@@ -121,7 +118,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   g_value_init (&exten_parameters[n_parameters].value, PEAS_TYPE_PLUGIN_INFO);
   g_value_set_boxed (&exten_parameters[n_parameters].value, info);
 
-  instance = peas_object_module_create_object (module,
+  instance = peas_object_module_create_object (info->loader_data,
                                                exten_type,
                                                n_parameters + 1,
                                                exten_parameters);
@@ -145,38 +142,27 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
 }
 
 static void
-peas_plugin_loader_c_unload (PeasPluginLoader *loader,
-                             PeasPluginInfo   *info)
+peas_plugin_loader_c_init (PeasPluginLoaderC *loader)
 {
-  PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (loader);
-  PeasObjectModule *module;
-  const gchar *module_name;
+  loader->priv = G_TYPE_INSTANCE_GET_PRIVATE (loader,
+                                              PEAS_TYPE_PLUGIN_LOADER_C,
+                                              PeasPluginLoaderCPrivate);
 
-  module_name = peas_plugin_info_get_module_name (info);
-  module = (PeasObjectModule *) g_hash_table_lookup (cloader->priv->loaded_plugins,
-                                                     module_name);
+  g_mutex_init (&loader->priv->lock);
 
-  g_type_module_unuse (G_TYPE_MODULE (module));
-}
-
-static void
-peas_plugin_loader_c_init (PeasPluginLoaderC *self)
-{
-  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
-                                            PEAS_TYPE_PLUGIN_LOADER_C,
-                                            PeasPluginLoaderCPrivate);
-
-  /* loaded_plugins maps PeasPluginInfo:module-name to a PeasObjectModule */
-  self->priv->loaded_plugins = g_hash_table_new_full (g_str_hash,
-                                                      g_str_equal,
-                                                      g_free,
-                                                      NULL);
+  /* loaded_plugins maps PeasPluginInfo:filename to a PeasObjectModule */
+  loader->priv->loaded_plugins = g_hash_table_new_full (g_str_hash,
+                                                        g_str_equal,
+                                                        g_free,
+                                                        NULL);
 }
 
 static void
 peas_plugin_loader_c_finalize (GObject *object)
 {
   PeasPluginLoaderC *cloader = PEAS_PLUGIN_LOADER_C (object);
+
+  g_mutex_clear (&cloader->priv->lock);
 
   g_hash_table_destroy (cloader->priv->loaded_plugins);
 

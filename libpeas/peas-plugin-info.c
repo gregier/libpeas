@@ -80,6 +80,7 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   if (!g_atomic_int_dec_and_test (&info->refcount))
     return;
 
+  g_free (info->filename);
   g_free (info->module_dir);
   g_free (info->data_dir);
   g_free (info->module_name);
@@ -269,6 +270,7 @@ _peas_plugin_info_new (const gchar *filename,
 
   g_key_file_free (plugin_file);
 
+  info->filename = g_strdup (filename);
   info->module_dir = g_strdup (module_dir);
   info->data_dir = g_build_filename (data_dir, info->module_name, NULL);
 
