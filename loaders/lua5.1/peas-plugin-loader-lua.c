@@ -228,12 +228,11 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
   if (object == NULL)
     return NULL;
 
-  /* As we do not instantiate a PeasExtensionWrapper, we have to remember
-   * somehow which interface we are instantiating, to make it possible to use
-   * the deprecated peas_extension_get_extension_type() method.
+  /* We have to remember which interface we are instantiating
+   * for the deprecated peas_extension_get_extension_type().
    */
   g_object_set_data (object, "peas-extension-type",
-                     GUINT_TO_POINTER (exten_type));
+                     GSIZE_TO_POINTER (exten_type));
 
   luaL_checkstack (L, 3, "");
 
