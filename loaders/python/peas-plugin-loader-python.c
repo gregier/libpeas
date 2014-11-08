@@ -25,6 +25,7 @@
 #endif
 
 #include "peas-plugin-loader-python.h"
+#include "libpeas/peas-plugin-info-priv.h"
 
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
  * glib-object.h, so we unset it here to avoid a warning. Yep, that's bad.
@@ -42,19 +43,13 @@ typedef int Py_ssize_t;
 
 struct _PeasPluginLoaderPythonPrivate {
   GHashTable *loaded_plugins;
+  guint n_loaded_plugins;
   guint idle_gc;
   guint init_failed : 1;
   guint must_finalize_python : 1;
   PyThreadState *py_thread_state;
   PyObject *hooks;
 };
-
-typedef struct {
-  PyObject *module;
-} PythonInfo;
-
-static gboolean   peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
-                                                             const gchar            *module_path);
 
 G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER)
 
@@ -66,12 +61,11 @@ peas_register_types (PeasObjectModule *module)
                                               PEAS_TYPE_PLUGIN_LOADER_PYTHON);
 }
 
-/* NOTE: This must not be called with the GIL held */
+/* NOTE: This must be called with the GIL held */
 static void
 internal_python_hook (PeasPluginLoaderPython *pyloader,
                       const gchar            *name)
 {
-  PyGILState_STATE state = PyGILState_Ensure ();
   PyObject *result;
 
   result = PyObject_CallMethod (pyloader->priv->hooks, (gchar *) name, NULL);
@@ -79,15 +73,12 @@ internal_python_hook (PeasPluginLoaderPython *pyloader,
 
   if (PyErr_Occurred ())
     PyErr_Print ();
-
-  PyGILState_Release (state);
 }
 
 /* NOTE: This must be called with the GIL held */
 static PyTypeObject *
-find_python_extension_type (PeasPluginInfo *info,
-                            GType           exten_type,
-                            PyObject       *pymodule)
+find_python_extension_type (GType     exten_type,
+                            PyObject *pymodule)
 {
   PyObject *pygtype, *pytype;
   PyObject *locals, *key, *value;
@@ -128,22 +119,72 @@ find_python_extension_type (PeasPluginInfo *info,
   return NULL;
 }
 
+/* C equivalent of
+ *    import sys
+ *    sys.path.insert(0, module_path)
+ */
+/* NOTE: This must be called with the GIL held */
+static gboolean
+add_module_path (PeasPluginLoaderPython *pyloader,
+                 const gchar            *module_path)
+{
+  PyObject *pathlist, *pathstring;
+  gboolean success = TRUE;
+
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (pyloader), FALSE);
+  g_return_val_if_fail (module_path != NULL, FALSE);
+
+  pathlist = PySys_GetObject ((char *) "path");
+  if (pathlist == NULL)
+    return FALSE;
+
+#if PY_VERSION_HEX < 0x03000000
+  pathstring = PyString_FromString (module_path);
+#else
+  pathstring = PyUnicode_FromString (module_path);
+#endif
+
+  if (pathstring == NULL)
+    return FALSE;
+
+  switch (PySequence_Contains (pathlist, pathstring))
+    {
+    case 0:
+      success = PyList_Insert (pathlist, 0, pathstring) >= 0;
+      break;
+    case 1:
+      break;
+    case -1:
+    default:
+      success = FALSE;
+      break;
+    }
+
+  Py_DECREF (pathstring);
+  return success;
+}
+
+/* NOTE: This must be called with the GIL held */
+static void
+destroy_python_info (gpointer data)
+{
+  PyObject *pymodule = data;
+
+  Py_XDECREF (pymodule);
+}
+
 static gboolean
 peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
                                               PeasPluginInfo   *info,
                                               GType             exten_type)
 {
-  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PythonInfo *pyinfo;
+  PyObject *pymodule = info->loader_data;
   PyTypeObject *extension_type;
-  PyGILState_STATE state;
+  PyGILState_STATE state = PyGILState_Ensure ();
 
-  pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
+  extension_type = find_python_extension_type (exten_type, pymodule);
 
-  state = PyGILState_Ensure ();
-  extension_type = find_python_extension_type (info, exten_type, pyinfo->module);
   PyGILState_Release (state);
-
   return extension_type != NULL;
 }
 
@@ -154,20 +195,15 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
                                             guint             n_parameters,
                                             GParameter       *parameters)
 {
-  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PythonInfo *pyinfo;
+  PyObject *pymodule = info->loader_data;
   PyTypeObject *pytype;
   GType the_type;
   GObject *object = NULL;
   PyObject *pyobject;
   PyObject *pyplinfo;
-  PyGILState_STATE state;
+  PyGILState_STATE state = PyGILState_Ensure ();
 
-  pyinfo = (PythonInfo *) g_hash_table_lookup (pyloader->priv->loaded_plugins, info);
-
-  state = PyGILState_Ensure ();
-
-  pytype = find_python_extension_type (info, exten_type, pyinfo->module);
+  pytype = find_python_extension_type (exten_type, pymodule);
 
   if (pytype == NULL)
     goto out;
@@ -215,23 +251,7 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
 out:
 
   PyGILState_Release (state);
-
   return object;
-}
-
-/* NOTE: This must be called with the GIL held */
-static void
-add_python_info (PeasPluginLoaderPython *loader,
-                 PeasPluginInfo         *info,
-                 PyObject               *module)
-{
-  PythonInfo *pyinfo;
-
-  pyinfo = g_new (PythonInfo, 1);
-  pyinfo->module = module;
-  Py_INCREF (pyinfo->module);
-
-  g_hash_table_insert (loader->priv->loaded_plugins, info, pyinfo);
 }
 
 static gboolean
@@ -239,54 +259,60 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  const gchar *module_dir, *module_name;
-  PyObject *pymodule, *fromlist;
-  PyGILState_STATE state;
+  PyGILState_STATE state = PyGILState_Ensure ();
+  PyObject *pymodule = NULL;
 
-  /* See if python definition for the plugin is already loaded */
-  if (g_hash_table_lookup (pyloader->priv->loaded_plugins, info))
-    return TRUE;
-
-  module_dir = peas_plugin_info_get_module_dir (info);
-  module_name = peas_plugin_info_get_module_name (info);
-
-  state = PyGILState_Ensure ();
-
-  /* If we have a special path, we register it */
-  if (!peas_plugin_loader_python_add_module_path (pyloader, module_dir))
+  if (!g_hash_table_lookup_extended (pyloader->priv->loaded_plugins,
+                                     info->filename,
+                                     NULL, (gpointer *) &pymodule))
     {
-      g_warning ("Error loading plugin '%s': failed to add module path '%s'",
-                 module_name, module_dir);
+      const gchar *module_dir, *module_name;
+
+      module_dir = peas_plugin_info_get_module_dir (info);
+      module_name = peas_plugin_info_get_module_name (info);
+
+      /* We don't support multiple Python interpreter states */
+      if (PyDict_GetItemString (PyImport_GetModuleDict (), module_name))
+        {
+          g_warning ("Error loading plugin '%s': "
+                     "module name '%s' has already been used",
+                     info->filename, module_name);
+        }
+      else if (!add_module_path (pyloader, module_dir))
+        {
+          g_warning ("Error loading plugin '%s': "
+                     "failed to add module path '%s'",
+                     module_name, module_dir);
+        }
+      else
+        {
+          PyObject *fromlist;
+
+          /* We need a fromlist to be able to
+           * import modules with a '.' in the name
+           */
+          fromlist = PyTuple_New (0);
+
+          pymodule = PyImport_ImportModuleEx ((gchar *) module_name,
+                                              NULL, NULL, fromlist);
+          Py_DECREF (fromlist);
+        }
 
       if (PyErr_Occurred ())
         PyErr_Print ();
 
-      PyGILState_Release (state);
-
-      return FALSE;
+      g_hash_table_insert (pyloader->priv->loaded_plugins,
+                           g_strdup (info->filename), pymodule);
     }
 
-  /* We need a fromlist to be able to import modules with a '.' in the name */
-  fromlist = PyTuple_New (0);
-
-  pymodule = PyImport_ImportModuleEx ((gchar *) module_name,
-                                      NULL, NULL, fromlist);
-  Py_DECREF (fromlist);
-
-  if (!pymodule)
+  if (pymodule != NULL)
     {
-      PyErr_Print ();
-      PyGILState_Release (state);
-
-      return FALSE;
+      info->loader_data = pymodule;
+      pyloader->priv->n_loaded_plugins += 1;
     }
-
-  add_python_info (pyloader, info, pymodule);
-  Py_DECREF (pymodule);
 
   PyGILState_Release (state);
-
-  return TRUE;
+  return pymodule != NULL;
 }
 
 static void
@@ -294,33 +320,33 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
                                   PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PyGILState_STATE state = PyGILState_Ensure ();
 
-  g_hash_table_remove (pyloader->priv->loaded_plugins, info);
+  /* Only unref the Python module when the
+   * loader is finalized as Python keeps a ref anyways
+   */
 
   /* We have to use this as a hook as the
    * loader will not be finalized by applications
    */
-  if (g_hash_table_size (pyloader->priv->loaded_plugins) == 0)
+  if (--pyloader->priv->n_loaded_plugins == 0)
     internal_python_hook (pyloader, "all_plugins_unloaded");
-}
 
-static void
-run_gc_protected (void)
-{
-  PyGILState_STATE state = PyGILState_Ensure ();
-
-  while (PyGC_Collect ())
-    ;
-
+  info->loader_data = NULL;
   PyGILState_Release (state);
 }
 
 static gboolean
 run_gc (PeasPluginLoaderPython *loader)
 {
-  run_gc_protected ();
+  PyGILState_STATE state = PyGILState_Ensure ();
+
+  while (PyGC_Collect ())
+    ;
 
   loader->priv->idle_gc = 0;
+
+  PyGILState_Release (state);
   return FALSE;
 }
 
@@ -328,62 +354,21 @@ static void
 peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PyGILState_STATE state = PyGILState_Ensure ();
 
   /* We both run the GC right now and we schedule
    * a further collection in the main loop.
    */
-  run_gc_protected ();
+  while (PyGC_Collect ())
+    ;
 
   if (pyloader->priv->idle_gc == 0)
     {
       pyloader->priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
       g_source_set_name_by_id (pyloader->priv->idle_gc, "[libpeas] run_gc");
     }
-}
 
-/* C equivalent of
- *    import sys
- *    sys.path.insert(0, module_path)
- */
-/* NOTE: This must be called with the GIL held */
-static gboolean
-peas_plugin_loader_python_add_module_path (PeasPluginLoaderPython *pyloader,
-                                           const gchar            *module_path)
-{
-  PyObject *pathlist, *pathstring;
-  gboolean success = TRUE;
-
-  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER_PYTHON (pyloader), FALSE);
-  g_return_val_if_fail (module_path != NULL, FALSE);
-
-  pathlist = PySys_GetObject ((char *) "path");
-  if (pathlist == NULL)
-    return FALSE;
-
-#if PY_VERSION_HEX < 0x03000000
-  pathstring = PyString_FromString (module_path);
-#else
-  pathstring = PyUnicode_FromString (module_path);
-#endif
-
-  if (pathstring == NULL)
-    return FALSE;
-
-  switch (PySequence_Contains (pathlist, pathstring))
-    {
-    case 0:
-      success = PyList_Insert (pathlist, 0, pathstring) >= 0;
-      break;
-    case 1:
-      break;
-    case -1:
-    default:
-      success = FALSE;
-      break;
-    }
-
-  Py_DECREF (pathstring);
-  return success;
+  PyGILState_Release (state);
 }
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -443,6 +428,10 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 #else
   wchar_t *argv[] = { NULL, NULL };
 #endif
+
+  /* We can't support multiple Python interpreter states:
+   * https://bugzilla.gnome.org/show_bug.cgi?id=677091
+   */
 
   /* We are trying to initialize Python for the first time,
      set init_failed to FALSE only if the entire initialization process
@@ -518,7 +507,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   g_free (argv[0]);
 #endif
 
-  if (!peas_plugin_loader_python_add_module_path (pyloader, PEAS_PYEXECDIR))
+  if (!add_module_path (pyloader, PEAS_PYEXECDIR))
     {
       g_warning ("Error initializing Python Plugin Loader: "
                  "failed to add the module path");
@@ -661,6 +650,12 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   else
     pyloader->priv->py_thread_state = PyEval_SaveThread ();
 
+  /* loaded_plugins maps PeasPluginInfo:filename to a PyObject */
+  pyloader->priv->loaded_plugins = g_hash_table_new_full (g_str_hash,
+                                                          g_str_equal,
+                                                          g_free,
+                                                          destroy_python_info);
+
   return TRUE;
 
 python_init_error:
@@ -678,71 +673,59 @@ python_init_error:
 }
 
 static void
-destroy_python_info (PythonInfo *info)
-{
-  PyGILState_STATE state = PyGILState_Ensure ();
-
-  Py_DECREF (info->module);
-
-  PyGILState_Release (state);
-
-  g_free (info);
-}
-
-static void
 peas_plugin_loader_python_init (PeasPluginLoaderPython *pyloader)
 {
   pyloader->priv = G_TYPE_INSTANCE_GET_PRIVATE (pyloader,
                                                 PEAS_TYPE_PLUGIN_LOADER_PYTHON,
                                                 PeasPluginLoaderPythonPrivate);
-
-  /* loaded_plugins maps PeasPluginInfo to a PythonInfo */
-  pyloader->priv->loaded_plugins = g_hash_table_new_full (g_direct_hash,
-                                                          g_direct_equal,
-                                                          NULL,
-                                                          (GDestroyNotify) destroy_python_info);
 }
 
 static void
 peas_plugin_loader_python_finalize (GObject *object)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (object);
+  PyGILState_STATE state;
 
-  g_hash_table_destroy (pyloader->priv->loaded_plugins);
+  if (!Py_IsInitialized ())
+    goto out;
 
-  if (Py_IsInitialized ())
+  g_warn_if_fail (pyloader->priv->n_loaded_plugins == 0);
+
+  if (pyloader->priv->loaded_plugins != NULL)
     {
-      if (pyloader->priv->hooks != NULL)
-        {
-          internal_python_hook (pyloader, "exit");
-
-          /* Borrowed Reference */
-          pyloader->priv->hooks = NULL;
-        }
-
-      if (pyloader->priv->py_thread_state)
-        {
-          PyEval_RestoreThread (pyloader->priv->py_thread_state);
-          pyloader->priv->py_thread_state = NULL;
-        }
-
-      if (pyloader->priv->idle_gc != 0)
-        {
-          g_source_remove (pyloader->priv->idle_gc);
-          pyloader->priv->idle_gc = 0;
-        }
-
-      if (!pyloader->priv->init_failed)
-        run_gc_protected ();
-
-      if (pyloader->priv->must_finalize_python)
-        {
-          if (!pyloader->priv->init_failed)
-            PyGILState_Ensure ();
-
-          Py_Finalize ();
-        }
+      state = PyGILState_Ensure ();
+      g_hash_table_destroy (pyloader->priv->loaded_plugins);
+      PyGILState_Release (state);
     }
+
+  if (pyloader->priv->hooks != NULL && !pyloader->priv->init_failed)
+    {
+      state = PyGILState_Ensure ();
+      internal_python_hook (pyloader, "exit");
+      PyGILState_Release (state);
+
+      /* Borrowed Reference */
+      pyloader->priv->hooks = NULL;
+    }
+
+  if (pyloader->priv->py_thread_state)
+    PyEval_RestoreThread (pyloader->priv->py_thread_state);
+
+  if (pyloader->priv->idle_gc != 0)
+    g_source_remove (pyloader->priv->idle_gc);
+
+  if (!pyloader->priv->init_failed)
+    run_gc (pyloader);
+
+  if (pyloader->priv->must_finalize_python)
+    {
+      if (!pyloader->priv->init_failed)
+        PyGILState_Ensure ();
+
+      Py_Finalize ();
+    }
+
+out:
 
   G_OBJECT_CLASS (peas_plugin_loader_python_parent_class)->finalize (object);
 }
