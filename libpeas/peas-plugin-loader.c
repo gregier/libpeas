@@ -57,6 +57,12 @@ peas_plugin_loader_initialize (PeasPluginLoader *loader)
 
   klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
 
+  /* Do this here instead of each time */
+  g_return_val_if_fail (klass->load != NULL, FALSE);
+  g_return_val_if_fail (klass->unload != NULL, FALSE);
+  g_return_val_if_fail (klass->provides_extension != NULL, FALSE);
+  g_return_val_if_fail (klass->create_extension != NULL, FALSE);
+
   if (klass->initialize != NULL)
     return klass->initialize (loader);
 
@@ -67,28 +73,19 @@ gboolean
 peas_plugin_loader_load (PeasPluginLoader *loader,
                          PeasPluginInfo   *info)
 {
-  PeasPluginLoaderClass *klass;
 
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
 
-  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_val_if_fail (klass->load != NULL, FALSE);
-
-  return klass->load (loader, info);
+  return PEAS_PLUGIN_LOADER_GET_CLASS (loader)->load (loader, info);
 }
 
 void
 peas_plugin_loader_unload (PeasPluginLoader *loader,
                            PeasPluginInfo   *info)
 {
-  PeasPluginLoaderClass *klass;
-
   g_return_if_fail (PEAS_IS_PLUGIN_LOADER (loader));
 
-  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_if_fail (klass->unload != NULL);
-
-  klass->unload (loader, info);
+  PEAS_PLUGIN_LOADER_GET_CLASS (loader)->unload (loader, info);
 }
 
 gboolean
@@ -101,8 +98,6 @@ peas_plugin_loader_provides_extension (PeasPluginLoader *loader,
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
 
   klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_val_if_fail (klass->provides_extension != NULL, FALSE);
-
   return klass->provides_extension (loader, info, ext_type);
 }
 
@@ -118,9 +113,8 @@ peas_plugin_loader_create_extension (PeasPluginLoader *loader,
   g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), NULL);
 
   klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
-  g_return_val_if_fail (klass->create_extension != NULL, NULL);
-
-  return klass->create_extension (loader, info, ext_type, n_parameters, parameters);
+  return klass->create_extension (loader, info, ext_type,
+                                  n_parameters, parameters);
 }
 
 void
