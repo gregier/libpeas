@@ -79,7 +79,6 @@ static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 typedef struct _LoaderInfo {
   PeasPluginLoader *loader;
-  PeasObjectModule *module;
 
   guint enabled : 1;
   guint failed : 1;
@@ -91,15 +90,18 @@ typedef struct _SearchPath {
 } SearchPath;
 
 struct _PeasEnginePrivate {
-  GList *search_paths;
+  LoaderInfo loaders[PEAS_UTILS_N_LOADERS];
 
+  GList *search_paths;
   GList *plugin_list;
 
   guint in_dispose : 1;
 };
 
-static PeasEngine *default_engine = NULL;
 static gboolean shutdown = FALSE;
+static PeasEngine *default_engine = NULL;
+
+static GMutex loaders_lock;
 static LoaderInfo loaders[PEAS_UTILS_N_LOADERS];
 
 static void peas_engine_load_plugin_real   (PeasEngine     *engine,
@@ -294,17 +296,29 @@ peas_engine_prepend_search_path (PeasEngine  *engine,
 }
 
 static void
+default_engine_weak_notify (gpointer    unused,
+                            PeasEngine *engine)
+{
+  g_warn_if_fail (g_atomic_pointer_compare_and_exchange (&default_engine,
+                                                         engine, NULL));
+}
+
+static void
 peas_engine_init (PeasEngine *engine)
 {
   /* Set the default engine here and not in constructor() to make sure
    * that if a plugin is loaded and calls peas_engine_get_default()
    * that this engine is returned and not another.
+   *
+   * While peas_engine_get_default() is not thread-safe
+   * we are using atomics here to try and prevent bad
+   * things from happening.
    */
-  if (default_engine == NULL)
+  if (g_atomic_pointer_compare_and_exchange (&default_engine, NULL, engine))
     {
-      default_engine = engine;
-      g_object_add_weak_pointer (G_OBJECT (engine),
-                                 (gpointer *) &default_engine);
+      g_object_weak_ref (G_OBJECT (engine),
+                         (GWeakNotify) default_engine_weak_notify,
+                         NULL);
     }
 
   engine->priv = G_TYPE_INSTANCE_GET_PRIVATE (engine,
@@ -312,7 +326,11 @@ peas_engine_init (PeasEngine *engine)
                                               PeasEnginePrivate);
 
   engine->priv->in_dispose = FALSE;
+
+  /* The C plugin loader is always enabled */
+  engine->priv->loaders[peas_utils_get_loader_id ("C")].enabled = TRUE;
 }
+
 /**
  * peas_engine_garbage_collect:
  * @engine: A #PeasEngine.
@@ -331,8 +349,10 @@ peas_engine_garbage_collect (PeasEngine *engine)
 
   for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
     {
-      if (loaders[i].loader != NULL)
-        peas_plugin_loader_garbage_collect (loaders[i].loader);
+      LoaderInfo *loader_info = &engine->priv->loaders[i];
+
+      if (loader_info->loader != NULL)
+        peas_plugin_loader_garbage_collect (loader_info->loader);
     }
 }
 
@@ -348,6 +368,9 @@ peas_engine_constructor (GType                  type,
                "plugins engine as modules are not supported.");
     }
 
+  /* Don't need to use atomics as peas_engine_shutdown()
+   * is private API and as such is not multithread-safe
+   */
   if (shutdown)
     {
       g_error ("libpeas cannot create a plugin engine "
@@ -408,7 +431,9 @@ peas_engine_dispose (GObject *object)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
   GList *item;
+  gint i;
 
+  /* See peas_engine_unload_plugin_real() */
   engine->priv->in_dispose = TRUE;
 
   /* First unload all the plugins */
@@ -418,6 +443,14 @@ peas_engine_dispose (GObject *object)
 
       if (peas_plugin_info_is_loaded (info))
         peas_engine_unload_plugin (engine, info);
+    }
+
+  /* Then destroy the plugin loaders */
+  for (i = 0; i < G_N_ELEMENTS (engine->priv->loaders); ++i)
+    {
+      LoaderInfo *loader_info = &engine->priv->loaders[i];
+
+      g_clear_object (&loader_info->loader);
     }
 
   G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
@@ -577,40 +610,18 @@ load_module (const gchar *module_name,
   module = peas_object_module_new (module_name, module_dir, TRUE);
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
-    {
-      g_object_unref (module);
-      return NULL;
-    }
+    g_clear_object (&module);
 
   return module;
 }
 
-static PeasPluginLoader *
-get_plugin_loader (PeasEngine *engine,
-                   gint        loader_id)
+static PeasObjectModule *
+get_plugin_loader_module (gint loader_id)
 {
   gint i, j;
-  LoaderInfo *loader_info;
+  PeasObjectModule *module;
   const gchar *loader_name;
   gchar *module_name, *module_dir;
-
-  loader_info = &loaders[loader_id];
-
-  if (!loader_info->enabled)
-    {
-      g_warning ("The '%s' plugin loader has not been enabled",
-                 peas_utils_get_loader_from_id (loader_id));
-      return NULL;
-    }
-
-  if (loader_info->loader != NULL || loader_info->failed)
-    return loader_info->loader;
-
-  if (peas_utils_get_loader_id ("C") == loader_id)
-    {
-      loader_info->loader = peas_plugin_loader_c_new ();
-      return loader_info->loader;
-    }
 
   loader_name = peas_utils_get_loader_from_id (loader_id);
   module_name = g_strconcat (loader_name, "loader", NULL);
@@ -625,14 +636,14 @@ get_plugin_loader (PeasEngine *engine,
 
   module_name[j] = '\0';
 
-  loader_info->module = load_module (module_name, module_dir);
+  module = load_module (module_name, module_dir);
 
-  if (loader_info->module == NULL)
+  if (module == NULL)
     {
       gchar *tmp = module_dir;
 
       module_dir = g_build_filename (module_dir, loader_name, NULL);
-      loader_info->module = load_module (module_name, module_dir);
+      module = load_module (module_name, module_dir);
 
       g_free (tmp);
     }
@@ -640,33 +651,110 @@ get_plugin_loader (PeasEngine *engine,
   g_free (module_dir);
   g_free (module_name);
 
-  if (loader_info->module == NULL)
-    {
-      g_warning ("Could not load plugin loader '%s'", loader_name);
-      loader_info->failed = TRUE;
-      return NULL;
-    }
+  if (module == NULL)
+    g_warning ("Could not load plugin loader '%s'", loader_name);
 
-  loader_info->loader = PEAS_PLUGIN_LOADER (
-        peas_object_module_create_object (loader_info->module,
+  return module;
+}
+
+static PeasPluginLoader *
+create_plugin_loader (gint loader_id)
+{
+  PeasObjectModule *module;
+  PeasPluginLoader *loader;
+
+  module = get_plugin_loader_module (loader_id);
+  if (module == NULL)
+    return NULL;
+
+  loader = PEAS_PLUGIN_LOADER (
+        peas_object_module_create_object (module,
                                           PEAS_TYPE_PLUGIN_LOADER,
                                           0, NULL));
 
-  /* Don't bother unloading the loader's
-   * GTypeModule as it is always resident
-   */
-
-  if (loader_info->loader == NULL ||
-      !peas_plugin_loader_initialize (loader_info->loader))
+  if (loader == NULL || !peas_plugin_loader_initialize (loader))
     {
       g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
-                 loader_name);
+                 peas_utils_get_loader_from_id (loader_id));
+      g_clear_object (&loader);
+    }
 
-      loader_info->failed = TRUE;
-      g_clear_object (&loader_info->loader);
+  /* Don't bother unloading the
+   * module as it is always resident
+   */
+  return loader;
+}
+
+static PeasPluginLoader *
+get_local_plugin_loader (gint loader_id)
+{
+  LoaderInfo *global_loader_info = &loaders[loader_id];
+
+  if (global_loader_info->failed)
+    return NULL;
+
+  if (global_loader_info->loader != NULL)
+    return g_object_ref (global_loader_info->loader);
+
+  if (peas_utils_get_loader_id ("C") == loader_id)
+    {
+      global_loader_info->loader = peas_plugin_loader_c_new ();
+      return g_object_ref (global_loader_info->loader);
+    }
+
+  global_loader_info->loader = create_plugin_loader (loader_id);
+
+  if (global_loader_info->loader == NULL)
+    {
+      global_loader_info->failed = TRUE;
       return NULL;
     }
 
+  return g_object_ref (global_loader_info->loader);
+}
+
+static PeasPluginLoader *
+get_plugin_loader (PeasEngine *engine,
+                   gint        loader_id)
+{
+  LoaderInfo *loader_info = &engine->priv->loaders[loader_id];
+  LoaderInfo *global_loader_info = &loaders[loader_id];
+
+  if (loader_info->loader != NULL || loader_info->failed)
+    return loader_info->loader;
+
+  g_mutex_lock (&loaders_lock);
+
+  if (!loader_info->enabled)
+    {
+      if (!global_loader_info->enabled)
+        {
+          g_warning ("The '%s' plugin loader has not been enabled",
+                     peas_utils_get_loader_from_id (loader_id));
+
+          g_mutex_unlock (&loaders_lock);
+          return NULL;
+        }
+
+      g_warning ("The '%s' plugin loader was not enabled "
+                 "for this engine. This will no longer be "
+                 "supported at some point in the future!",
+                 peas_utils_get_loader_from_id (loader_id));
+
+      g_mutex_unlock (&loaders_lock);
+
+      /* Avoid bypassing logic in peas_engine_enable_loader() */
+      peas_engine_enable_loader (engine,
+                                 peas_utils_get_loader_from_id (loader_id));
+      return get_plugin_loader (engine, loader_id);
+    }
+
+  loader_info->loader = get_local_plugin_loader (loader_id);
+
+  if (loader_info->loader == NULL)
+    loader_info->failed = TRUE;
+
+  g_mutex_unlock (&loaders_lock);
   return loader_info->loader;
 }
 
@@ -689,18 +777,16 @@ get_plugin_loader (PeasEngine *engine,
  * loader can only be used from a single thread. Should this happen
  * a deadlock will occur.
  *
- * Due to the use of toggle references in the python and python3
- * bindings only one of them should be enabled. Otherwise vast
- * memory leaks are to be expected and as such it is an error to
- * enable more than one of them.
- *
- * Note: plugin loaders are shared across #PeasEngines so enabling
- *       a loader on one #PeasEngine will enable it on all #PeasEngines.
+ * Note: plugin loaders used to be shared across #PeasEngines so enabling
+ *       a loader on one #PeasEngine would enable it on all #PeasEngines.
+ *       This behavior has been kept to avoid breaking applications,
+ *       however a warning has been added to help applications transition.
  **/
 void
 peas_engine_enable_loader (PeasEngine  *engine,
                            const gchar *loader_name)
 {
+  LoaderInfo *loader_info;
   gint loader_id;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
@@ -714,32 +800,52 @@ peas_engine_enable_loader (PeasEngine  *engine,
       return;
     }
 
-  if (loaders[loader_id].enabled)
+  loader_info = &engine->priv->loaders[loader_id];
+  if (loader_info->enabled || loader_info->failed)
     return;
 
-  /* The demo and some tests need to load multiple loaders */
-  if (g_getenv ("PEAS_ALLOW_ALL_LOADERS") == NULL)
+  g_mutex_lock (&loaders_lock);
+
+  if (loaders[loader_id].enabled)
+    {
+      loader_info->enabled = TRUE;
+      g_mutex_unlock (&loaders_lock);
+      return;
+    }
+
+  /* Some tests check for mixed versions this way */
+  if (g_getenv ("PEAS_ALLOW_CONFLICTING_LOADERS") == NULL)
     {
       gint i;
-      static const gchar *other_loaders[] = {"python", "python3"};
+      const gint *loader_ids;
 
-      for (i = 0; i < G_N_ELEMENTS (other_loaders); ++i)
+      loader_ids = peas_utils_get_conflicting_loaders_from_id (loader_id);
+
+      /* Some loaders conflict with each other
+       * and cannot be used in the same process
+       */
+      for (i = 0; loader_ids[i] != -1; ++i)
         {
-          if (loaders[peas_utils_get_loader_id (other_loaders[i])].enabled)
-            {
-              g_warning ("Cannot enable plugin loader '%s' as the "
-                         "'%s' plugin loader has already been enabled.",
-                         loader_name, other_loaders[i]);
-              loaders[loader_id].failed = TRUE;
-              return;
-            }
+          if (!loaders[loader_ids[i]].enabled)
+            continue;
+
+          g_warning ("Cannot enable plugin loader '%s' as the "
+                     "'%s' plugin loader is already enabled.", loader_name,
+                     peas_utils_get_loader_from_id (loader_ids[i]));
+
+          loader_info->failed = TRUE;
+          g_mutex_unlock (&loaders_lock);
+          return;
         }
     }
 
   /* We do not load the plugin loader immediately and instead
    * load it in get_plugin_loader() so that it is loaded lazily.
    */
+  loader_info->enabled = TRUE;
   loaders[loader_id].enabled = TRUE;
+
+  g_mutex_unlock (&loaders_lock);
 }
 
 /**
@@ -1271,6 +1377,9 @@ peas_engine_new (void)
  * If no #PeasEngine subclass has been instantiated yet, the first call
  * of this function will return a new instance of #PeasEngine.
  *
+ * Note: this function should never be used when multiple threads are
+ *       using libpeas API as it is not thread-safe.
+ *
  * Returns: (transfer none): the existing instance of #PeasEngine.
  */
 PeasEngine *
@@ -1278,7 +1387,16 @@ peas_engine_get_default (void)
 {
   /* peas_engine_new() will cause the default to be set for us */
   if (default_engine == NULL)
-    return peas_engine_new ();
+    {
+      PeasEngine *engine = peas_engine_new ();
+
+      if (engine != default_engine)
+        {
+          g_warning ("peas_engine_get_default() must not be called when "
+                     "multiple threads are using libpeas API");
+          g_object_unref (engine);
+        }
+    }
 
   return default_engine;
 }
@@ -1288,6 +1406,8 @@ peas_engine_get_default (void)
  *
  * Frees memory shared by PeasEngines.
  * No libpeas API should be called after calling this.
+ *
+ * Note: this is private API and as such is not thread-safe.
  */
 void
 peas_engine_shutdown (void)
@@ -1298,6 +1418,8 @@ peas_engine_shutdown (void)
     return;
 
   shutdown = TRUE;
+
+  g_mutex_lock (&loaders_lock);
 
   for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
     {
@@ -1312,8 +1434,8 @@ peas_engine_shutdown (void)
           g_assert (loader_info->loader == NULL);
         }
 
-      loader_info->module = NULL;
-      loader_info->enabled = FALSE;
       loader_info->failed = TRUE;
     }
+
+  g_mutex_unlock (&loaders_lock);
 }

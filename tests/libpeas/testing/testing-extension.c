@@ -46,6 +46,7 @@ struct _TestFixture {
   PeasPluginInfo *info;
 };
 
+static gchar *loader = NULL;
 static gchar *extension_plugin = NULL;
 
 static void
@@ -53,6 +54,7 @@ test_setup (TestFixture    *fixture,
             gconstpointer  data)
 {
   fixture->engine = testing_engine_new ();
+  peas_engine_enable_loader (fixture->engine, loader);
   fixture->info = peas_engine_get_plugin_info (fixture->engine,
                                                extension_plugin);
 }
@@ -386,13 +388,15 @@ test_extension_call_multi_args (PeasEngine     *engine,
   } G_STMT_END
 
 void
-testing_extension_basic (const gchar *loader)
+testing_extension_basic (const gchar *loader_)
 {
   gint i, j;
   gchar *loader_name;
   PeasEngine *engine;
 
-  loader_name = g_new0 (gchar, strlen (loader));
+  loader = g_strdup (loader_);
+
+  loader_name = g_new0 (gchar, strlen (loader) + 1);
   for (i = 0, j = 0; loader[i] != '\0'; ++i)
     {
       if (loader[i] != '.')
@@ -451,6 +455,7 @@ testing_extension_run_tests (void)
   retval = testing_run_tests ();
 
   g_free (extension_plugin);
+  g_free (loader);
 
   return retval;
 }

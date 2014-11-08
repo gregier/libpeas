@@ -31,7 +31,15 @@
 
 static const gchar *all_plugin_loaders[] = {"c", "lua5.1",
                                             "python", "python3"};
+static const gint conflicting_plugin_loaders[PEAS_UTILS_N_LOADERS][2] = {
+  { -1, -1 }, /* c       => {}          */
+  { -1, -1 }, /* lua5.1  => {}          */
+  {  3, -1 }, /* python  => { python3 } */
+  {  2, -1 }  /* python3 => { python  } */
+};
+
 G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loaders) == PEAS_UTILS_N_LOADERS);
+G_STATIC_ASSERT (G_N_ELEMENTS (conflicting_plugin_loaders) == PEAS_UTILS_N_LOADERS);
 
 static void
 add_all_interfaces (GType      iface_type,
@@ -180,8 +188,17 @@ const gchar *
 peas_utils_get_loader_from_id (gint loader_id)
 {
   g_return_val_if_fail (loader_id >= 0, NULL);
-  g_return_val_if_fail (loader_id < G_N_ELEMENTS (all_plugin_loaders), NULL);
+  g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
 
   return all_plugin_loaders[loader_id];
+}
+
+const gint *
+peas_utils_get_conflicting_loaders_from_id (gint loader_id)
+{
+  g_return_val_if_fail (loader_id >= 0, NULL);
+  g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
+
+  return conflicting_plugin_loaders[loader_id];
 }
 
