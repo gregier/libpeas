@@ -1,8 +1,8 @@
 /*
- * testing-extensin.c
+ * testing-extension.c
  * This file is part of libpeas
  *
- * Copyright (C) 2011 - Garrett Regier
+ * Copyright (C) 2011-2014 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -270,25 +270,25 @@ test_extension_get_settings (PeasEngine     *engine,
 }
 
 static void
-multiple_threads_in_thread (guint nth_thread)
+multiple_threads_in_thread (guint    nth_thread,
+                            gboolean use_nonglobal_loaders)
 {
   gint i, j;
   PeasEngine *engine;
   PeasPluginInfo *info;
   GObject *extension;
-  const gboolean is_slow = strstr (loader, "python") != NULL;
 
-  engine = testing_engine_new ();
+  engine = testing_engine_new_full (use_nonglobal_loaders);
   peas_engine_enable_loader (engine, loader);
 
   info = peas_engine_get_plugin_info (engine, extension_plugin);
   g_assert (info != NULL);
 
-  for (i = 0; i < (is_slow ? 5 : 20); ++i)
+  for (i = 0; i < 10; ++i)
     {
       g_assert (peas_engine_load_plugin (engine, info));
 
-      for (j = 0; j < 5; ++j)
+      for (j = 0; j < 50; ++j)
         {
           extension = peas_engine_create_extension (engine, info,
                                                     INTROSPECTION_TYPE_BASE,
@@ -306,18 +306,22 @@ multiple_threads_in_thread (guint nth_thread)
 
 static void
 test_extension_multiple_threads (PeasEngine     *engine,
-                                 PeasPluginInfo *info)
+                                 PeasPluginInfo *info,
+                                 gboolean        use_nonglobal_loaders)
 {
-  gint i;
+  gint i, n_threads;
   GThreadPool *pool;
   GError *error = NULL;
-  const gboolean is_slow = strstr (loader, "python") != NULL;
+
+  /* Avoid too many threads, but try to get some good contention */
+  n_threads = g_get_num_processors () + 2;
 
   pool = g_thread_pool_new ((GFunc) multiple_threads_in_thread,
-                            NULL, g_get_num_processors (), TRUE, &error);
+                            GINT_TO_POINTER (use_nonglobal_loaders),
+                            n_threads, TRUE, &error);
   g_assert_no_error (error);
 
-  for (i = 0; i < (is_slow ? 20 : 100); ++i)
+  for (i = 0; i < g_thread_pool_get_max_threads (pool); ++i)
     {
       /* Cannot supply NULL as the data... */
       g_thread_pool_push (pool, GUINT_TO_POINTER (i + 1), &error);
@@ -325,6 +329,20 @@ test_extension_multiple_threads (PeasEngine     *engine,
     }
 
   g_thread_pool_free (pool, FALSE, TRUE);
+}
+
+static void
+test_extension_multiple_threads_global_loaders (PeasEngine     *engine,
+                                                PeasPluginInfo *info)
+{
+  test_extension_multiple_threads (engine, info, FALSE);
+}
+
+static void
+test_extension_multiple_threads_nonglobal_loaders (PeasEngine     *engine,
+                                                   PeasPluginInfo *info)
+{
+  test_extension_multiple_threads (engine, info, TRUE);
 }
 
 static void
@@ -489,7 +507,13 @@ testing_extension_basic (const gchar *loader_)
 
   /* See peas_engine_enable_loader() */
   if (g_strcmp0 (loader, "lua5.1") != 0)
-    _EXTENSION_TEST (loader, "multiple-threads", multiple_threads);
+    {
+      _EXTENSION_TEST (loader, "multiple-threads/global-loaders",
+                       multiple_threads_global_loaders);
+    }
+
+  _EXTENSION_TEST (loader, "multiple-threads/nonglobal-loaders",
+                   multiple_threads_nonglobal_loaders);
 }
 
 void

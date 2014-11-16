@@ -203,7 +203,7 @@ engine_weak_notify (gpointer    unused,
 }
 
 PeasEngine *
-testing_util_engine_new (void)
+testing_util_engine_new_full (gboolean nonglobal_loaders)
 {
   PeasEngine *engine;
 
@@ -215,7 +215,11 @@ testing_util_engine_new (void)
   g_assert (g_private_get (&engine_key) == NULL);
 
   /* Must be after requiring typelibs */
-  engine = peas_engine_new ();
+  if (!nonglobal_loaders)
+    engine = peas_engine_new ();
+  else
+    engine = peas_engine_new_with_nonglobal_loaders ();
+
   g_private_set (&engine_key, engine);
 
   g_object_weak_ref (G_OBJECT (engine),

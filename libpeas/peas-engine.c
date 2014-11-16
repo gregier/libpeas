@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2002-2005 Paolo Maggi
  * Copyright (C) 2009 Steve Frécinaux
+ * Copyright (C) 2010-2014 Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -71,11 +72,20 @@ enum {
   PROP_0,
   PROP_PLUGIN_LIST,
   PROP_LOADED_PLUGINS,
+  PROP_NONGLOBAL_LOADERS,
   N_PROPERTIES
 };
 
 static guint signals[LAST_SIGNAL];
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
+
+typedef struct _GlobalLoaderInfo {
+  PeasPluginLoader *loader;
+  PeasObjectModule *module;
+
+  guint enabled : 1;
+  guint failed : 1;
+} GlobalLoaderInfo;
 
 typedef struct _LoaderInfo {
   PeasPluginLoader *loader;
@@ -96,13 +106,14 @@ struct _PeasEnginePrivate {
   GList *plugin_list;
 
   guint in_dispose : 1;
+  guint use_nonglobal_loaders : 1;
 };
 
 static gboolean shutdown = FALSE;
 static PeasEngine *default_engine = NULL;
 
 static GMutex loaders_lock;
-static LoaderInfo loaders[PEAS_UTILS_N_LOADERS];
+static GlobalLoaderInfo loaders[PEAS_UTILS_N_LOADERS];
 
 static void peas_engine_load_plugin_real   (PeasEngine     *engine,
                                             PeasPluginInfo *info);
@@ -396,6 +407,9 @@ peas_engine_set_property (GObject      *object,
       peas_engine_set_loaded_plugins (engine,
                                       (const gchar **) g_value_get_boxed (value));
       break;
+    case PROP_NONGLOBAL_LOADERS:
+      engine->priv->use_nonglobal_loaders = g_value_get_boolean (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -419,6 +433,9 @@ peas_engine_get_property (GObject    *object,
     case PROP_LOADED_PLUGINS:
       g_value_take_boxed (value,
                           (gconstpointer) peas_engine_get_loaded_plugins (engine));
+      break;
+    case PROP_NONGLOBAL_LOADERS:
+      g_value_set_boolean (value, engine->priv->use_nonglobal_loaders);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -542,6 +559,22 @@ peas_engine_class_init (PeasEngineClass *klass)
                         G_PARAM_STATIC_STRINGS);
 
   /**
+   * PeasEngine:nonglobal-loaders:
+   *
+   * If non-global plugin loaders should be used.
+   *
+   * See peas_engine_new_with_nonglobal_loaders() for more information.
+   */
+  properties[PROP_NONGLOBAL_LOADERS] =
+    g_param_spec_boolean ("nonglobal-loaders",
+                          "Non-global Loaders",
+                          "Use non-global plugin loaders",
+                          FALSE,
+                          G_PARAM_READWRITE |
+                          G_PARAM_CONSTRUCT_ONLY |
+                          G_PARAM_STATIC_STRINGS);
+
+  /**
    * PeasEngine::load-plugin:
    * @engine: A #PeasEngine.
    * @info: A #PeasPluginInfo.
@@ -618,10 +651,13 @@ load_module (const gchar *module_name,
 static PeasObjectModule *
 get_plugin_loader_module (gint loader_id)
 {
+  GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
   gint i, j;
-  PeasObjectModule *module;
   const gchar *loader_name;
   gchar *module_name, *module_dir;
+
+  if (global_loader_info->module != NULL)
+    return global_loader_info->module;
 
   loader_name = peas_utils_get_loader_from_id (loader_id);
   module_name = g_strconcat (loader_name, "loader", NULL);
@@ -636,14 +672,14 @@ get_plugin_loader_module (gint loader_id)
 
   module_name[j] = '\0';
 
-  module = load_module (module_name, module_dir);
+  global_loader_info->module = load_module (module_name, module_dir);
 
-  if (module == NULL)
+  if (global_loader_info->module == NULL)
     {
       gchar *tmp = module_dir;
 
       module_dir = g_build_filename (module_dir, loader_name, NULL);
-      module = load_module (module_name, module_dir);
+      global_loader_info->module = load_module (module_name, module_dir);
 
       g_free (tmp);
     }
@@ -651,26 +687,34 @@ get_plugin_loader_module (gint loader_id)
   g_free (module_dir);
   g_free (module_name);
 
-  if (module == NULL)
+  if (global_loader_info->module == NULL)
     g_warning ("Could not load plugin loader '%s'", loader_name);
 
-  return module;
+  return global_loader_info->module;
 }
 
 static PeasPluginLoader *
 create_plugin_loader (gint loader_id)
 {
-  PeasObjectModule *module;
   PeasPluginLoader *loader;
 
-  module = get_plugin_loader_module (loader_id);
-  if (module == NULL)
-    return NULL;
+  if (peas_utils_get_loader_id ("C") == loader_id)
+    {
+      loader = peas_plugin_loader_c_new ();
+    }
+  else
+    {
+      PeasObjectModule *module;
 
-  loader = PEAS_PLUGIN_LOADER (
-        peas_object_module_create_object (module,
-                                          PEAS_TYPE_PLUGIN_LOADER,
-                                          0, NULL));
+      module = get_plugin_loader_module (loader_id);
+      if (module == NULL)
+        return NULL;
+
+      loader = PEAS_PLUGIN_LOADER (
+            peas_object_module_create_object (module,
+                                              PEAS_TYPE_PLUGIN_LOADER,
+                                              0, NULL));
+    }
 
   if (loader == NULL || !peas_plugin_loader_initialize (loader))
     {
@@ -679,38 +723,41 @@ create_plugin_loader (gint loader_id)
       g_clear_object (&loader);
     }
 
-  /* Don't bother unloading the
-   * module as it is always resident
-   */
   return loader;
 }
 
 static PeasPluginLoader *
-get_local_plugin_loader (gint loader_id)
+get_local_plugin_loader (PeasEngine *engine,
+                         gint        loader_id)
 {
-  LoaderInfo *global_loader_info = &loaders[loader_id];
+  GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
+  PeasPluginLoader *loader;
 
   if (global_loader_info->failed)
     return NULL;
 
-  if (global_loader_info->loader != NULL)
-    return g_object_ref (global_loader_info->loader);
-
-  if (peas_utils_get_loader_id ("C") == loader_id)
+  if (global_loader_info->loader != NULL &&
+      (!engine->priv->use_nonglobal_loaders ||
+       peas_plugin_loader_is_global (global_loader_info->loader)))
     {
-      global_loader_info->loader = peas_plugin_loader_c_new ();
       return g_object_ref (global_loader_info->loader);
     }
 
-  global_loader_info->loader = create_plugin_loader (loader_id);
+  loader = create_plugin_loader (loader_id);
 
-  if (global_loader_info->loader == NULL)
+  if (loader == NULL)
     {
       global_loader_info->failed = TRUE;
       return NULL;
     }
 
-  return g_object_ref (global_loader_info->loader);
+  if (!engine->priv->use_nonglobal_loaders ||
+      peas_plugin_loader_is_global (loader))
+    {
+      global_loader_info->loader = g_object_ref (loader);
+    }
+
+  return loader;
 }
 
 static PeasPluginLoader *
@@ -718,7 +765,7 @@ get_plugin_loader (PeasEngine *engine,
                    gint        loader_id)
 {
   LoaderInfo *loader_info = &engine->priv->loaders[loader_id];
-  LoaderInfo *global_loader_info = &loaders[loader_id];
+  GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
 
   if (loader_info->loader != NULL || loader_info->failed)
     return loader_info->loader;
@@ -749,7 +796,7 @@ get_plugin_loader (PeasEngine *engine,
       return get_plugin_loader (engine, loader_id);
     }
 
-  loader_info->loader = get_local_plugin_loader (loader_id);
+  loader_info->loader = get_local_plugin_loader (engine, loader_id);
 
   if (loader_info->loader == NULL)
     loader_info->failed = TRUE;
@@ -775,7 +822,8 @@ get_plugin_loader (PeasEngine *engine,
  *
  * Unlike the C, python and python3 plugin loaders the lua5.1 plugin
  * loader can only be used from a single thread. Should this happen
- * a deadlock will occur.
+ * a deadlock will occur. This can be be avoided by using
+ * peas_engine_new_with_nonglobal_loaders().
  *
  * Note: plugin loaders used to be shared across #PeasEngines so enabling
  *       a loader on one #PeasEngine would enable it on all #PeasEngines.
@@ -1371,6 +1419,27 @@ peas_engine_new (void)
 }
 
 /**
+ * peas_engine_new_with_nonglobal_loaders:
+ *
+ * Return a new instance of #PeasEngine which will use non-global
+ * plugin loaders instead of the default global ones. This allows
+ * multiple threads to each have a #PeasEngine and be used without
+ * internal locking.
+ *
+ * Note: due to CPython's GIL the python and python3
+ *       plugin loaders are always global.
+ *
+ * Returns: a new instance of #PeasEngine that uses nonglobal loaders.
+ */
+PeasEngine *
+peas_engine_new_with_nonglobal_loaders (void)
+{
+  return PEAS_ENGINE (g_object_new (PEAS_TYPE_ENGINE,
+                                    "nonglobal-loaders", TRUE,
+                                    NULL));
+}
+
+/**
  * peas_engine_get_default:
  *
  * Return the existing instance of #PeasEngine or a subclass of it.
@@ -1423,7 +1492,7 @@ peas_engine_shutdown (void)
 
   for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
     {
-      LoaderInfo *loader_info = &loaders[i];
+      GlobalLoaderInfo *loader_info = &loaders[i];
 
       if (loader_info->loader != NULL)
         {
@@ -1434,6 +1503,9 @@ peas_engine_shutdown (void)
           g_assert (loader_info->loader == NULL);
         }
 
+      /* Don't bother unloading the
+       * module as it is always resident
+       */
       loader_info->failed = TRUE;
     }
 

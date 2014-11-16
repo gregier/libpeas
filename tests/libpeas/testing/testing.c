@@ -55,7 +55,7 @@ testing_init (gint    *argc,
 }
 
 PeasEngine *
-testing_engine_new (void)
+testing_engine_new_full (gboolean nonglobal_loaders)
 {
   PeasEngine *engine;
 
@@ -75,7 +75,7 @@ testing_engine_new (void)
   testing_util_push_log_hook ("*Error loading *unkown-loader.plugin*");
 
   /* Must be after pushing log hooks */
-  engine = testing_util_engine_new ();
+  engine = testing_util_engine_new_full (nonglobal_loaders);
   peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas/plugins",
                                        SRCDIR   "/tests/libpeas/plugins");
 

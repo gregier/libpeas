@@ -27,10 +27,12 @@
 
 G_BEGIN_DECLS
 
-void        testing_init        (gint    *argc,
-                                 gchar ***argv);
+void        testing_init             (gint    *argc,
+                                      gchar ***argv);
 
-PeasEngine *testing_engine_new  (void);
+PeasEngine *testing_engine_new_full  (gboolean nonglobal_loaders);
+
+#define testing_engine_new() (testing_engine_new_full (FALSE))
 
 /* libtesting-util functions which do not need to be overridden */
 #define testing_engine_free testing_util_engine_free

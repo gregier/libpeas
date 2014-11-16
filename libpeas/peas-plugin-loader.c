@@ -70,6 +70,21 @@ peas_plugin_loader_initialize (PeasPluginLoader *loader)
 }
 
 gboolean
+peas_plugin_loader_is_global (PeasPluginLoader *loader)
+{
+  PeasPluginLoaderClass *klass;
+
+  g_return_val_if_fail (PEAS_IS_PLUGIN_LOADER (loader), FALSE);
+
+  klass = PEAS_PLUGIN_LOADER_GET_CLASS (loader);
+
+  if (klass->is_global != NULL)
+    return klass->is_global (loader);
+
+  return TRUE;
+}
+
+gboolean
 peas_plugin_loader_load (PeasPluginLoader *loader,
                          PeasPluginInfo   *info)
 {

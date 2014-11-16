@@ -370,6 +370,12 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
   return TRUE;
 }
 
+static gboolean
+peas_plugin_loader_lua_is_global (PeasPluginLoader *loader)
+{
+  return FALSE;
+}
+
 static void
 peas_plugin_loader_lua_init (PeasPluginLoaderLua *lua_loader)
 {
@@ -397,6 +403,7 @@ peas_plugin_loader_lua_class_init (PeasPluginLoaderLuaClass *klass)
   object_class->finalize = peas_plugin_loader_lua_finalize;
 
   loader_class->initialize = peas_plugin_loader_lua_initialize;
+  loader_class->is_global = peas_plugin_loader_lua_is_global;
   loader_class->load = peas_plugin_loader_lua_load;
   loader_class->unload = peas_plugin_loader_lua_unload;
   loader_class->create_extension = peas_plugin_loader_lua_create_extension;
