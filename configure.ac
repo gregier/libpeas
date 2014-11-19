@@ -331,7 +331,7 @@ else
 
         peas_save_CFLAGS="$CFLAGS"
         peas_save_LIBS="$LIBS"
-        CFLAGS="$PEAS_CFLAGS $LUA51_CFLAGS -Iloaders/lua5.1"
+        CFLAGS="$PEAS_CFLAGS $LUA51_CFLAGS -I${srcdir}/loaders/lua5.1"
         LIBS="$PEAS_LIBS $LUA51_LIBS"
         AC_TRY_RUN(peas_lgi_version_test(0),
                    found_lua51=yes,
