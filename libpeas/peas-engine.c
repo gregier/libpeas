@@ -1430,6 +1430,8 @@ peas_engine_new (void)
  *       plugin loaders are always global.
  *
  * Returns: a new instance of #PeasEngine that uses nonglobal loaders.
+ *
+ * Since: 1.14
  */
 PeasEngine *
 peas_engine_new_with_nonglobal_loaders (void)
