@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas.master.ne\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-09-18 09:50+0000\n"
+"PO-Revision-Date: 2014-12-13 05:38+0400\n"
+"Last-Translator: Pawan Chitrakar <chautari@gmail.com>\n"
+"Language-Team: Nepali Translation Team <chautari@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ne\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "प्लगइन प्रबन्धक"
+
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "View"
+msgstr "दृश्य"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Plugin Manager View"
+msgstr "प्लगइन प्रबन्धक दृश्य"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+#, fuzzy
+msgid "Show Builtin"
+msgstr "ब्युल्टइन वस्तु"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:7
+#, fuzzy
+msgid "Peas Gtk"
+msgstr "gtk-doc"
+
+#: ../libpeas/peas-engine.c:856
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:866
+#, fuzzy, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "लोड असफल"
+
+#: ../libpeas/peas-engine.c:880
+#, fuzzy, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "GIF लोडर (%s) मा आन्तरिक त्रुटि"
+
+#: ../libpeas/peas-engine.c:892
+#, c-format
+msgid "Failed to load"
+msgstr "लोड गर्न असफल"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "प्लगइनहरू"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+msgid "_Cancel"
+msgstr "रद्द गर्नुहोस्"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "प्लगइनहरू अक्षम गर"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
+msgid "There was an error displaying the help."
+msgstr "मद्दत प्रदर्शन गर्दा त्यहाँ एउटा त्रुटि"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+msgid "_Close"
+msgstr "बन्द गर्नुहोस्"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+msgid "_Help"
+msgstr "मद्दत"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "प्राथमिकता"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
+msgid "_About"
+msgstr "बारेमा"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
+msgid "_Preferences"
+msgstr "प्राथमिकता"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "सक्षम"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "सबै सक्षम पार्नुहोस्"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "सबै अक्षम पार्नुहोस्"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
+msgid "Enabled"
+msgstr "सक्षम"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
+msgid "Plugin"
+msgstr "प्लगइन"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
+#, fuzzy
+msgid "Run from build directory"
+msgstr "%s बाट स्क्रिप्टहरू चलाउनुहोस् वा प्रबन्ध गर्नुहोस्"
+
+#: ../peas-demo/peas-demo.c:83
+msgid "_Quit"
+msgstr "अन्त्य गर्नुहोस्"
+
+#: ../peas-demo/peas-demo.c:99
+#, fuzzy
+msgid "- libpeas demo application"
+msgstr "यो 'खोल्नुहोस्' प्रतिमा भएको प्रदर्शन बटन हो"
