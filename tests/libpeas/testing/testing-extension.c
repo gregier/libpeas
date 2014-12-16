@@ -505,13 +505,8 @@ testing_extension_basic (const gchar *loader_)
   _EXTENSION_TEST (loader, "plugin-info", plugin_info);
   _EXTENSION_TEST (loader, "get-settings", get_settings);
 
-  /* See peas_engine_enable_loader() */
-  if (g_strcmp0 (loader, "lua5.1") != 0)
-    {
-      _EXTENSION_TEST (loader, "multiple-threads/global-loaders",
-                       multiple_threads_global_loaders);
-    }
-
+  _EXTENSION_TEST (loader, "multiple-threads/global-loaders",
+                   multiple_threads_global_loaders);
   _EXTENSION_TEST (loader, "multiple-threads/nonglobal-loaders",
                    multiple_threads_nonglobal_loaders);
 }

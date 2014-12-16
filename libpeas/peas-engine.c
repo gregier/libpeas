@@ -822,11 +822,6 @@ get_plugin_loader (PeasEngine *engine,
  * peas_engine_enable_loader (engine, "python");
  * ]|
  *
- * Unlike the C, python and python3 plugin loaders the lua5.1 plugin
- * loader can only be used from a single thread. Should this happen
- * a deadlock will occur. This can be be avoided by using
- * peas_engine_new_with_nonglobal_loaders().
- *
  * Note: plugin loaders used to be shared across #PeasEngines so enabling
  *       a loader on one #PeasEngine would enable it on all #PeasEngines.
  *       This behavior has been kept to avoid breaking applications,
@@ -1431,7 +1426,7 @@ peas_engine_new (void)
  * Note: due to CPython's GIL the python and python3
  *       plugin loaders are always global.
  *
- * Returns: a new instance of #PeasEngine that uses nonglobal loaders.
+ * Returns: a new instance of #PeasEngine that uses non-global loaders.
  *
  * Since: 1.14
  */

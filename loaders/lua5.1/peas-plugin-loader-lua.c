@@ -34,8 +34,15 @@
 #include "peas-plugin-loader-lua-utils.h"
 
 
+typedef void (* LgiLockFunc) (gpointer lgi_lock);
+
+
 struct _PeasPluginLoaderLuaPrivate {
   lua_State *L;
+
+  gpointer lgi_lock;
+  LgiLockFunc lgi_enter_func;
+  LgiLockFunc lgi_leave_func;
 };
 
 G_DEFINE_TYPE (PeasPluginLoaderLua, peas_plugin_loader_lua, PEAS_TYPE_PLUGIN_LOADER)
@@ -197,7 +204,9 @@ peas_plugin_loader_lua_provides_extension (PeasPluginLoader *loader,
   lua_State *L = lua_loader->priv->L;
   GType extension_type;
 
+  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
   extension_type = _lua_find_extension_type (L, info, exten_type);
+  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
 
   return extension_type != G_TYPE_INVALID;
 }
@@ -212,21 +221,23 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
   lua_State *L = lua_loader->priv->L;
   GType the_type;
-  GObject *object;
+  GObject *object = NULL;
+
+  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
 
   the_type = _lua_find_extension_type (L, info, exten_type);
   if (the_type == G_TYPE_INVALID)
-    return NULL;
+    goto out;
 
   if (!g_type_is_a (the_type, exten_type))
     {
       g_warn_if_fail (g_type_is_a (the_type, exten_type));
-      return NULL;
+      goto out;
     }
 
   object = g_object_newv (the_type, n_parameters, parameters);
   if (object == NULL)
-    return NULL;
+    goto out;
 
   /* We have to remember which interface we are instantiating
    * for the deprecated peas_extension_get_extension_type().
@@ -239,7 +250,7 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
   if (!_lua_pushinstance (L, "GObject", "Object", the_type, object))
     {
       g_clear_object (&object);
-      return NULL;
+      goto out;
     }
 
   lua_getfield (L, -1, "priv");
@@ -258,6 +269,9 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
   /* Pop priv and object */
   lua_pop (L, 2);
 
+out:
+
+  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
   return object;
 }
 
@@ -268,6 +282,8 @@ peas_plugin_loader_lua_load (PeasPluginLoader *loader,
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
   lua_State *L = lua_loader->priv->L;
   gboolean success;
+
+  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
 
   luaL_checkstack (L, 2, "");
 
@@ -303,6 +319,7 @@ peas_plugin_loader_lua_load (PeasPluginLoader *loader,
   /* Pop the module's table */
   lua_pop (L, 1);
 
+  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
   return success;
 }
 
@@ -318,7 +335,9 @@ peas_plugin_loader_lua_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
 
+  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
   lua_gc (lua_loader->priv->L, LUA_GCCOLLECT, 0);
+  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
 }
 
 static int
@@ -333,10 +352,6 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
   lua_State *L;
-
-  /* Add locking to support global plugin loaders.
-   * Blocked by: https://github.com/pavouk/lgi/issues/92
-   */
 
   L = luaL_newstate ();
   if (L == NULL)
@@ -358,6 +373,27 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
       return FALSE;
     }
 
+  lua_getfield (L, -1, "lock");
+  lua_loader->priv->lgi_lock = lua_touserdata (L, -1);
+  lua_pop (L, 1);
+
+  lua_getfield (L, -1, "enter");
+  lua_loader->priv->lgi_enter_func = lua_touserdata (L, -1);
+  lua_pop (L, 1);
+
+  lua_getfield (L, -1, "leave");
+  lua_loader->priv->lgi_leave_func = lua_touserdata (L, -1);
+  lua_pop (L, 1);
+
+  if (lua_loader->priv->lgi_lock == NULL ||
+      lua_loader->priv->lgi_enter_func == NULL ||
+      lua_loader->priv->lgi_leave_func == NULL)
+    {
+      g_warning ("Failed to find 'lgi.lock', 'lgi.enter' and 'lgi.leave'");
+      lua_close (L);
+      return FALSE;
+    }
+
   /* Pop lgi's module table */
   lua_pop (L, 1);
 
@@ -365,6 +401,11 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
     {
       lua_atpanic (L, atpanic_handler);
     }
+
+  /* Initially the lock is taken by LGI,
+   * release as we are not running Lua code
+   */
+  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
 
   lua_loader->priv->L = L;
   return TRUE;
@@ -388,6 +429,11 @@ static void
 peas_plugin_loader_lua_finalize (GObject *object)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (object);
+
+  /* Must take the lock as Lua code will run on lua_close
+   * and another thread might be running Lua code already
+   */
+  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
 
   g_clear_pointer (&lua_loader->priv->L, (GDestroyNotify) lua_close);
 
