@@ -18,6 +18,15 @@ ExtensionLuaPlugin._property.object =
                             { GObject.ParamFlags.READABLE,
                               GObject.ParamFlags.WRITABLE })
 
+ExtensionLuaPlugin._property.update_count =
+    GObject.ParamSpecInt('update-count', 'update-count', 'update-count',
+                         0, 1000000, 0,
+                         { GObject.ParamFlags.READABLE })
+
+function ExtensionLuaPlugin:_init()
+    self.priv.update_count = 0
+end
+
 function ExtensionLuaPlugin:do_activate()
     collectgarbage('restart')
 end
@@ -27,6 +36,7 @@ function ExtensionLuaPlugin:do_deactivate()
 end
 
 function ExtensionLuaPlugin:do_update_state()
+    self.priv.update_count = self.priv.update_count + 1
 end
 
 function ExtensionLuaPlugin:do_get_plugin_info()

@@ -269,9 +269,35 @@ test_extension_get_settings (PeasEngine     *engine,
   g_object_unref (extension);
 }
 
+static gint
+run_in_multiple_threads (GFunc    func,
+                         gpointer user_data)
+{
+  gint i, n_threads;
+  GThreadPool *pool;
+  GError *error = NULL;
+
+  /* Avoid too many threads, but try to get some good contention */
+  n_threads = g_get_num_processors () + 2;
+
+  pool = g_thread_pool_new (func, user_data, n_threads, TRUE, &error);
+  g_assert_no_error (error);
+
+  for (i = 0; i < n_threads; ++i)
+    {
+      /* Cannot supply NULL as the data... */
+      g_thread_pool_push (pool, GUINT_TO_POINTER (i + 1), &error);
+      g_assert_no_error (error);
+    }
+
+  g_thread_pool_free (pool, FALSE, TRUE);
+
+  return n_threads;
+}
+
 static void
-multiple_threads_in_thread (guint    nth_thread,
-                            gboolean use_nonglobal_loaders)
+multiple_threads_loaders_in_thread (guint    nth_thread,
+                                    gboolean use_nonglobal_loaders)
 {
   gint i, j;
   PeasEngine *engine;
@@ -305,44 +331,49 @@ multiple_threads_in_thread (guint    nth_thread,
 }
 
 static void
-test_extension_multiple_threads (PeasEngine     *engine,
-                                 PeasPluginInfo *info,
-                                 gboolean        use_nonglobal_loaders)
-{
-  gint i, n_threads;
-  GThreadPool *pool;
-  GError *error = NULL;
-
-  /* Avoid too many threads, but try to get some good contention */
-  n_threads = g_get_num_processors () + 2;
-
-  pool = g_thread_pool_new ((GFunc) multiple_threads_in_thread,
-                            GINT_TO_POINTER (use_nonglobal_loaders),
-                            n_threads, TRUE, &error);
-  g_assert_no_error (error);
-
-  for (i = 0; i < g_thread_pool_get_max_threads (pool); ++i)
-    {
-      /* Cannot supply NULL as the data... */
-      g_thread_pool_push (pool, GUINT_TO_POINTER (i + 1), &error);
-      g_assert_no_error (error);
-    }
-
-  g_thread_pool_free (pool, FALSE, TRUE);
-}
-
-static void
 test_extension_multiple_threads_global_loaders (PeasEngine     *engine,
                                                 PeasPluginInfo *info)
 {
-  test_extension_multiple_threads (engine, info, FALSE);
+  run_in_multiple_threads ((GFunc) multiple_threads_loaders_in_thread,
+                           GINT_TO_POINTER (FALSE));
 }
 
 static void
 test_extension_multiple_threads_nonglobal_loaders (PeasEngine     *engine,
                                                    PeasPluginInfo *info)
 {
-  test_extension_multiple_threads (engine, info, TRUE);
+  run_in_multiple_threads ((GFunc) multiple_threads_loaders_in_thread,
+                           GINT_TO_POINTER (TRUE));
+}
+
+static void
+multiple_threads_callbacks_in_thread (guint            nth_thread,
+                                      PeasActivatable *activatable)
+{
+  gint i;
+
+  for (i = 0; i < 100; ++i)
+    peas_activatable_update_state (activatable);
+}
+
+static void
+test_extension_multiple_threads_callbacks (PeasEngine     *engine,
+                                           PeasPluginInfo *info)
+{
+  PeasExtension *extension;
+  gint n_threads, update_count;
+
+  extension = peas_engine_create_extension (engine, info,
+                                            PEAS_TYPE_ACTIVATABLE,
+                                            NULL);
+
+  n_threads = run_in_multiple_threads ((GFunc) multiple_threads_callbacks_in_thread,
+                                       extension);
+
+  g_object_get (extension, "update-count", &update_count, NULL);
+  g_assert_cmpint (update_count, ==, n_threads * 100);
+
+  g_object_unref (extension);
 }
 
 static void
@@ -509,6 +540,13 @@ testing_extension_basic (const gchar *loader_)
                    multiple_threads_global_loaders);
   _EXTENSION_TEST (loader, "multiple-threads/nonglobal-loaders",
                    multiple_threads_nonglobal_loaders);
+
+  /* Not needed for C plugins as they are independent of libpeas */
+  if (g_strcmp0 (loader, "c") != 0)
+    {
+      _EXTENSION_TEST (loader, "multiple-threads/callbacks",
+                       multiple_threads_callbacks);
+    }
 }
 
 void

@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
 # ex:set ts=4 et sw=4 ai:
 
+import threading
+
 from gi.repository import GObject, Introspection, Peas
+
 
 class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
                             Introspection.Base, Introspection.Callable,
                             Introspection.HasPrerequisite):
 
     object = GObject.property(type=GObject.Object)
+
+    @GObject.property(type=int)
+    def update_count(self):
+        return self.__update_count
+
+    def __init__(self):
+        self.__lock = threading.Lock()
+        self.__update_count = 0
 
     def do_activate(self):
         pass
@@ -16,7 +27,8 @@ class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
         pass
 
     def do_update_state(self):
-        pass
+        with self.__lock:
+            self.__update_count += 1
 
     def do_get_plugin_info(self):
         return self.plugin_info
@@ -35,3 +47,4 @@ class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
 
     def do_call_multi_args(self, in_, inout):
         return (inout, in_)
+
