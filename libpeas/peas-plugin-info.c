@@ -457,6 +457,8 @@ peas_plugin_info_get_data_dir (const PeasPluginInfo *info)
  * will be made to create it.
  *
  * Returns: (transfer full): a new #GSettings, or %NULL.
+ *
+ * Since: 1.4
  */
 GSettings *
 peas_plugin_info_get_settings (const PeasPluginInfo *info,
@@ -747,6 +749,8 @@ peas_plugin_info_get_help_uri (const PeasPluginInfo *info)
  * but not when specifying the value in the file.
  *
  * Returns: the external data, or %NULL if the external data could not be found.
+ *
+ * Since: 1.6
  */
 const gchar *
 peas_plugin_info_get_external_data (const PeasPluginInfo *info,
