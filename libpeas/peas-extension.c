@@ -151,7 +151,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2: Use the dynamically implemented interface instead.
+ * Deprecated: 1.2: Use the interface directly instead.
  */
 gboolean
 peas_extension_call (PeasExtension *exten,
@@ -183,7 +183,7 @@ peas_extension_call (PeasExtension *exten,
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2: Use the dynamically implemented interface instead.
+ * Deprecated: 1.2: Use the interface directly instead.
  */
 gboolean
 peas_extension_call_valist (PeasExtension *exten,
@@ -238,7 +238,7 @@ peas_extension_call_valist (PeasExtension *exten,
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2: Use the dynamically implemented interface instead.
+ * Deprecated: 1.2: Use the interface directly instead.
  */
 gboolean
 peas_extension_callv (PeasExtension *exten,
