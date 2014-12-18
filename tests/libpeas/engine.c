@@ -248,8 +248,7 @@ test_engine_not_loadable_plugin (PeasEngine *engine)
   GError *error = NULL;
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("*libnot-loadable.so: cannot open shared "
-                              "object file: No such file or directory");
+  testing_util_push_log_hook ("Failed to load module 'not-loadable'*");
   testing_util_push_log_hook ("Error loading plugin 'not-loadable'");
 
   info = peas_engine_get_plugin_info (engine, "not-loadable");

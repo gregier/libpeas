@@ -90,11 +90,12 @@ peas_object_module_load (GTypeModule *gmodule)
   path = g_module_build_path (module->priv->path, module->priv->module_name);
   g_return_val_if_fail (path != NULL, FALSE);
 
-  /* g_module_build_path() will add G_MODULE_SUFFIX to the path, but otoh
-   * g_module_open() will only try to load the libtool archive if there is no
-   * suffix specified. So we remove G_MODULE_SUFFIX here (this allows
-   * uninstalled builds to load plugins as well, as there is only the .la file
-   * in the build directory) */
+  /* g_module_build_path() will add G_MODULE_SUFFIX to the path,
+   * however g_module_open() will only try to load the libtool archive
+   * if there is no suffix specified. So we remove G_MODULE_SUFFIX here
+   * which allows uninstalled builds to load plugins as well, as there
+   * is only the .la file in the build directory.
+   */
   if (G_MODULE_SUFFIX[0] != '\0' && g_str_has_suffix (path, "." G_MODULE_SUFFIX))
     path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
 
@@ -104,27 +105,30 @@ peas_object_module_load (GTypeModule *gmodule)
 
   if (module->priv->library == NULL)
     {
-      g_warning ("%s: %s", module->priv->module_name, g_module_error ());
+      g_warning ("Failed to load module '%s': %s",
+                 module->priv->module_name, g_module_error ());
 
       return FALSE;
     }
 
-  /* extract symbols from the lib */
+  /* Extract the required symbol from the library */
   if (!g_module_symbol (module->priv->library,
                         "peas_register_types",
-                        (void *) &module->priv->register_func))
+                        (gpointer) &module->priv->register_func))
     {
-      g_warning ("%s: %s", module->priv->module_name, g_module_error ());
+      g_warning ("Failed to get 'peas_register_types' for module '%s': %s",
+                 module->priv->module_name, g_module_error ());
       g_module_close (module->priv->library);
 
       return FALSE;
     }
 
-  /* symbol can still be NULL even though g_module_symbol
-   * returned TRUE */
+  /* The symbol can still be NULL even
+   * though g_module_symbol() returned TRUE
+   */
   if (module->priv->register_func == NULL)
     {
-      g_warning ("%s: Symbol 'peas_register_types' is not defined",
+      g_warning ("Invalid 'peas_register_types' in module '%s'",
                  module->priv->module_name);
       g_module_close (module->priv->library);
 

@@ -58,7 +58,7 @@ static GPrivate log_hooks_key = G_PRIVATE_INIT (log_hooks_private_notify);
  * Don't bother putting errors in here as GLib always aborts on errors.
  */
 static const gchar *allowed_patterns[] = {
-  "*lib*loader.so*cannot open shared object file: No such file or directory*"
+  "Failed to load module '*loader'*"
 };
 
 static void
