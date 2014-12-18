@@ -63,6 +63,8 @@
  * ]|
  **/
 
+G_DEFINE_QUARK (peas-plugin-info-error, peas_plugin_info_error)
+
 G_DEFINE_BOXED_TYPE (PeasPluginInfo, peas_plugin_info,
                      _peas_plugin_info_ref,
                      _peas_plugin_info_unref)
@@ -104,19 +106,6 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
     g_error_free (info->error);
 
   g_free (info);
-}
-
-
-GQuark
-peas_plugin_info_error_quark (void)
-{
-  static volatile gsize quark = 0;
-
-	if (g_once_init_enter (&quark))
-		g_once_init_leave (&quark,
-		                   g_quark_from_static_string ("peas-plugin-info-error"));
-
-	return quark;
 }
 
 /*
