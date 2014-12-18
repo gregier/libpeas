@@ -24,6 +24,7 @@
 #endif
 
 #include "peas-plugin-loader-lua.h"
+#include "libpeas/peas-plugin-info-priv.h"
 
 #include <string.h>
 
@@ -102,6 +103,25 @@ _lua_add_package_path (lua_State   *L,
 }
 
 static gboolean
+_lua_has_package (lua_State   *L,
+                  const gchar *package_name)
+{
+  gboolean has_package;
+
+  luaL_checkstack (L, 3, "");
+
+  lua_getglobal (L, "package");
+  lua_getfield (L, -1, "loaded");
+  lua_getfield (L, -1, package_name);
+
+  has_package = !lua_isnil (L, -1);
+
+  /* Pop package, loaded and package's table */
+  lua_pop (L, 3);
+  return has_package;
+}
+
+static gboolean
 _lua_pushinstance (lua_State   *L,
                    const gchar *namespace_,
                    const gchar *name,
@@ -171,7 +191,7 @@ _lua_find_extension_type (lua_State      *L,
   luaL_checkstack (L, 3, "");
 
   /* Get the module's table */
-  lua_pushlightuserdata (L, info);
+  lua_pushstring (L, info->filename);
   lua_rawget (L, LUA_REGISTRYINDEX);
 
   /* Must always have a valid key */
@@ -291,7 +311,7 @@ peas_plugin_loader_lua_load (PeasPluginLoader *loader,
   luaL_checkstack (L, 2, "");
 
   /* Get the module's table */
-  lua_pushlightuserdata (L, info);
+  lua_pushstring (L, info->filename);
   lua_rawget (L, LUA_REGISTRYINDEX);
 
   if (!lua_isnil (L, -1))
@@ -306,13 +326,22 @@ peas_plugin_loader_lua_load (PeasPluginLoader *loader,
       module_name = peas_plugin_info_get_module_name (info);
 
       /* Must push the key back onto the stack */
-      lua_pushlightuserdata (L, info);
+      lua_pushstring (L, info->filename);
 
-      if (!_lua_add_package_path (L, module_dir) ||
-          !peas_lua_utils_require (L, module_name))
+      /* Push something that isn't a table */
+      lua_pushboolean (L, FALSE);
+
+      if (_lua_has_package (L, module_name))
         {
-          /* Push something that isn't a table */
-          lua_pushboolean (L, FALSE);
+          g_warning ("Error loading plugin '%s': "
+                     "module name '%s' has already been used",
+                     info->filename, module_name);
+        }
+      else if (_lua_add_package_path (L, module_dir) &&
+               peas_lua_utils_require (L, module_name))
+        {
+          /* Remove the boolean */
+          lua_replace (L, -2);
         }
 
       success = lua_istable (L, -1);
