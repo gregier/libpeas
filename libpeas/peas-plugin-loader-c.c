@@ -39,6 +39,9 @@ struct _PeasPluginLoaderCPrivate {
 
 G_DEFINE_TYPE (PeasPluginLoaderC, peas_plugin_loader_c, PEAS_TYPE_PLUGIN_LOADER)
 
+static
+G_DEFINE_QUARK (peas-extension-type, extension_type)
+
 static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader *loader,
                            PeasPluginInfo   *info)
@@ -135,8 +138,8 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   /* We have to remember which interface we are instantiating
    * for the deprecated peas_extension_get_extension_type().
    */
-  g_object_set_data (instance, "peas-extension-type",
-                     GSIZE_TO_POINTER (exten_type));
+  g_object_set_qdata (instance, extension_type_quark (),
+                      GSIZE_TO_POINTER (exten_type));
 
   return instance;
 }

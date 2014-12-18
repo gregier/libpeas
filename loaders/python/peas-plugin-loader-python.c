@@ -53,6 +53,9 @@ struct _PeasPluginLoaderPythonPrivate {
 
 G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER)
 
+static
+G_DEFINE_QUARK (peas-extension-type, extension_type)
+
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
@@ -227,8 +230,8 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   /* We have to remember which interface we are instantiating
    * for the deprecated peas_extension_get_extension_type().
    */
-  g_object_set_data (object, "peas-extension-type",
-                     GSIZE_TO_POINTER (exten_type));
+  g_object_set_qdata (object, extension_type_quark (),
+                      GSIZE_TO_POINTER (exten_type));
 
   pyobject = pygobject_new (object);
   pyplinfo = pyg_boxed_new (PEAS_TYPE_PLUGIN_INFO, info, TRUE, TRUE);

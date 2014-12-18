@@ -66,6 +66,9 @@ peas_extension_get_type (void)
   return G_TYPE_OBJECT;
 }
 
+static
+G_DEFINE_QUARK (peas-extension-type, extension_type)
+
 static GICallableInfo *
 get_method_info (PeasExtension *exten,
                  const gchar   *method_name,
@@ -123,8 +126,8 @@ get_method_info (PeasExtension *exten,
 GType
 peas_extension_get_extension_type (PeasExtension *exten)
 {
-  return GPOINTER_TO_SIZE (g_object_get_data (G_OBJECT (exten),
-                                              "peas-extension-type"));
+  return GPOINTER_TO_SIZE (g_object_get_qdata (G_OBJECT (exten),
+                                               extension_type_quark ()));
 }
 
 /**
