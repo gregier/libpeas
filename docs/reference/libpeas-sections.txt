@@ -60,6 +60,7 @@ PeasGtkPluginManagerViewPrivate
 PeasEngine
 PeasEngineClass
 peas_engine_new
+peas_engine_new_with_nonglobal_loaders
 peas_engine_get_default
 peas_engine_add_search_path
 peas_engine_prepend_search_path
