@@ -50,6 +50,9 @@ struct _TestingLoadablePluginClass {
   PeasExtensionBaseClass parent_class;
 };
 
+/* Used by the local linkage test */
+G_MODULE_EXPORT gpointer global_symbol_clash;
+
 GType                 testing_loadable_plugin_get_type (void) G_GNUC_CONST;
 G_MODULE_EXPORT void  peas_register_types              (PeasObjectModule *module);
 

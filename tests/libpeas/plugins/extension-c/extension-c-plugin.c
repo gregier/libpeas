@@ -35,6 +35,9 @@
 
 #include "extension-c-plugin.h"
 
+/* Used by the local linkage test */
+G_MODULE_EXPORT gpointer global_symbol_clash;
+
 static void introspection_base_iface_init (IntrospectionBaseInterface *iface);
 static void introspection_extension_c_iface_init (IntrospectionCallableInterface *iface);
 static void introspection_has_prerequisite_iface_init (IntrospectionHasPrerequisiteInterface *iface);
@@ -49,6 +52,15 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingExtensionCPlugin,
                                                                introspection_extension_c_iface_init)
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (INTROSPECTION_TYPE_HAS_PREREQUISITE,
                                                                introspection_has_prerequisite_iface_init))
+
+/* Properties */
+enum {
+  PROP_0,
+  PROP_GLOBAL_SYMBOL_CLASH,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 static void
 testing_extension_c_plugin_init (TestingExtensionCPlugin *plugin)
@@ -100,8 +112,37 @@ testing_extension_c_plugin_call_multi_args (IntrospectionCallable *callable,
 }
 
 static void
+testing_extension_c_get_property (GObject    *object,
+                                  guint       prop_id,
+                                  GValue     *value,
+                                  GParamSpec *pspec)
+{
+  switch (prop_id)
+    {
+    case PROP_GLOBAL_SYMBOL_CLASH:
+      g_value_set_pointer (value, &global_symbol_clash);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
 testing_extension_c_plugin_class_init (TestingExtensionCPluginClass *klass)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->get_property = testing_extension_c_get_property;
+
+  properties[PROP_GLOBAL_SYMBOL_CLASH] =
+    g_param_spec_pointer ("global-symbol-clash",
+                          "Global symbol clash",
+                          "A global symbol that clashes",
+                          G_PARAM_READABLE |
+                          G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 static void

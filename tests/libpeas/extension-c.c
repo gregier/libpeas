@@ -61,6 +61,44 @@ test_extension_c_nonexistent (PeasEngine *engine)
   g_assert (!peas_engine_load_plugin (engine, info));
 }
 
+static void
+test_extension_c_local_linkage (PeasEngine     *engine,
+                                PeasPluginInfo *info)
+{
+  PeasPluginInfo *loadable_info;
+  PeasExtension *c_extension, *loadable_extension;
+  gpointer c_global_symbol, loadable_global_symbol;
+
+  loadable_info = peas_engine_get_plugin_info (engine, "loadable");
+  g_assert (peas_engine_load_plugin (engine, loadable_info));
+
+  c_extension = peas_engine_create_extension (engine, info,
+                                              INTROSPECTION_TYPE_BASE,
+                                              NULL);
+  loadable_extension = peas_engine_create_extension (engine, loadable_info,
+                                                     PEAS_TYPE_ACTIVATABLE,
+                                                     NULL);
+
+  g_assert (PEAS_IS_EXTENSION (c_extension));
+  g_assert (PEAS_IS_EXTENSION (loadable_extension));
+  g_assert (c_extension != loadable_extension);
+
+  g_object_get (c_extension,
+                "global-symbol-clash", &c_global_symbol,
+                NULL);
+  g_object_get (loadable_extension,
+                "global-symbol-clash", &loadable_global_symbol,
+                NULL);
+
+  /* Both plugins export the same global variable,
+   * check that they are not the same global reference
+   */
+  g_assert (c_global_symbol != loadable_global_symbol);
+
+  g_object_unref (loadable_extension);
+  g_object_unref (c_extension);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -77,6 +115,7 @@ main (int   argc,
 
   EXTENSION_TEST (c, "instance-refcount", instance_refcount);
   EXTENSION_TEST (c, "nonexistent", nonexistent);
+  EXTENSION_TEST (c, "local-linkage", local_linkage);
 
   return testing_extension_run_tests ();
 }

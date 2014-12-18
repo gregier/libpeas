@@ -35,6 +35,9 @@ struct _TestingLoadablePluginPrivate {
   GObject *object;
 };
 
+/* Used by the local linkage test */
+G_MODULE_EXPORT gpointer global_symbol_clash;
+
 static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingLoadablePlugin,
@@ -46,8 +49,14 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingLoadablePlugin,
 
 enum {
   PROP_0,
-  PROP_OBJECT
+  PROP_GLOBAL_SYMBOL_CLASH,
+
+  /* PeasActivatable */
+  PROP_OBJECT,
+  N_PROPERTIES = PROP_OBJECT
 };
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 static void
 testing_loadable_plugin_set_property (GObject      *object,
@@ -79,6 +88,10 @@ testing_loadable_plugin_get_property (GObject    *object,
 
   switch (prop_id)
     {
+    case PROP_GLOBAL_SYMBOL_CLASH:
+      g_value_set_pointer (value, &global_symbol_clash);
+      break;
+
     case PROP_OBJECT:
       g_value_set_object (value, plugin->priv->object);
       break;
@@ -116,6 +129,15 @@ testing_loadable_plugin_class_init (TestingLoadablePluginClass *klass)
   object_class->get_property = testing_loadable_plugin_get_property;
 
   g_object_class_override_property (object_class, PROP_OBJECT, "object");
+
+  properties[PROP_GLOBAL_SYMBOL_CLASH] =
+    g_param_spec_pointer ("global-symbol-clash",
+                          "Global symbol clash",
+                          "A global symbol that clashes",
+                          G_PARAM_READABLE |
+                          G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 
   g_type_class_add_private (klass, sizeof (TestingLoadablePluginPrivate));
 }
