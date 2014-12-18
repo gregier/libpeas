@@ -87,6 +87,10 @@ GType               peas_object_module_get_type               (void) G_GNUC_CONS
 PeasObjectModule   *peas_object_module_new                    (const gchar      *module_name,
                                                                const gchar      *path,
                                                                gboolean          resident);
+PeasObjectModule   *peas_object_module_new_full               (const gchar      *module_name,
+                                                               const gchar      *path,
+                                                               gboolean          resident,
+                                                               gboolean          local_linkage);
 
 GObject            *peas_object_module_create_object          (PeasObjectModule *module,
                                                                GType             interface,

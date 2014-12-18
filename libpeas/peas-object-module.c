@@ -51,6 +51,7 @@ enum {
   PROP_MODULE_NAME,
   PROP_PATH,
   PROP_RESIDENT,
+  PROP_LOCAL_LINKAGE,
   N_PROPERTIES
 };
 
@@ -73,13 +74,18 @@ struct _PeasObjectModulePrivate {
   gchar *module_name;
 
   guint resident : 1;
+  guint local_linkage : 1;
 };
 
 static gboolean
 peas_object_module_load (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
+  GModuleFlags flags = 0;
   gchar *path;
+
+  if (module->priv->local_linkage)
+    flags = G_MODULE_BIND_LOCAL;
 
   path = g_module_build_path (module->priv->path, module->priv->module_name);
   g_return_val_if_fail (path != NULL, FALSE);
@@ -92,10 +98,8 @@ peas_object_module_load (GTypeModule *gmodule)
   if (G_MODULE_SUFFIX[0] != '\0' && g_str_has_suffix (path, "." G_MODULE_SUFFIX))
     path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
 
-  /* Bind symbols globally and immediately,
-   * binding locally broke the Python plugin loader.
-   */
-  module->priv->library = g_module_open (path, 0);
+  /* Bind symbols immediately to avoid errors long after loading */
+  module->priv->library = g_module_open (path, flags);
   g_free (path);
 
   if (module->priv->library == NULL)
@@ -195,6 +199,9 @@ peas_object_module_get_property (GObject    *object,
     case PROP_RESIDENT:
       g_value_set_boolean (value, module->priv->resident);
       break;
+    case PROP_LOCAL_LINKAGE:
+      g_value_set_boolean (value, module->priv->local_linkage);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -221,6 +228,9 @@ peas_object_module_set_property (GObject      *object,
       break;
     case PROP_RESIDENT:
       module->priv->resident = g_value_get_boolean (value);
+      break;
+    case PROP_LOCAL_LINKAGE:
+      module->priv->local_linkage = g_value_get_boolean (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -268,6 +278,23 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                           G_PARAM_CONSTRUCT_ONLY |
                           G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PeasObjectModule:local-linkage
+   *
+   * This property indicates whether the module is loaded with
+   * local linkage, i.e. #G_MODULE_BIND_LOCAL.
+   *
+   * Since 1.14
+   */
+  properties[PROP_LOCAL_LINKAGE] =
+    g_param_spec_boolean ("local-linkage",
+                          "Local linkage",
+                          "Whether the module loaded with local linkage",
+                          FALSE,
+                          G_PARAM_READWRITE |
+                          G_PARAM_CONSTRUCT_ONLY |
+                          G_PARAM_STATIC_STRINGS);
+
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
   g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
 }
@@ -291,6 +318,33 @@ peas_object_module_new (const gchar *module_name,
                                            "module-name", module_name,
                                            "path", path,
                                            "resident", resident,
+                                           NULL));
+}
+
+/**
+ * peas_object_module_new_full: (skip)
+ * @module_name: The module name.
+ * @path: The path.
+ * @resident: If the module should be resident.
+ * @local_linkage: Whether to load the module with local linkage.
+ *
+ * Creates a new #PeasObjectModule with local linkage.
+ *
+ * Return value: a new #PeasObjectModule.
+ *
+ * Since 1.14
+ */
+PeasObjectModule *
+peas_object_module_new_full (const gchar *module_name,
+                             const gchar *path,
+                             gboolean     resident,
+                             gboolean     local_linkage)
+{
+  return PEAS_OBJECT_MODULE (g_object_new (PEAS_TYPE_OBJECT_MODULE,
+                                           "module-name", module_name,
+                                           "path", path,
+                                           "resident", resident,
+                                           "local-linkage", local_linkage,
                                            NULL));
 }
 

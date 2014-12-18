@@ -151,6 +151,7 @@ PEAS_OBJECT_MODULE_GET_CLASS
 <SUBSECTION Private>
 PeasObjectModulePrivate
 peas_object_module_new
+peas_object_module_new_full
 peas_object_module_create_object
 peas_object_module_get_library
 peas_object_module_get_module_name

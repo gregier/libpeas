@@ -60,10 +60,12 @@ peas_plugin_loader_c_load (PeasPluginLoader *loader,
       module_dir = peas_plugin_info_get_module_dir (info);
 
       /* Force all C modules to be resident in case they
-       * use libraries that do not deal well with reloading
+       * use libraries that do not deal well with reloading.
+       * Furthermore, we use local linkage to improve module isolation.
        */
-      info->loader_data = peas_object_module_new (module_name,
-                                                  module_dir, TRUE);
+      info->loader_data = peas_object_module_new_full (module_name,
+                                                       module_dir,
+                                                       TRUE, TRUE);
 
       if (!g_type_module_use (G_TYPE_MODULE (info->loader_data)))
         g_clear_object (&info->loader_data);

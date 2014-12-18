@@ -642,7 +642,11 @@ load_module (const gchar *module_name,
 {
   PeasObjectModule *module;
 
-  module = peas_object_module_new (module_name, module_dir, TRUE);
+  /* Bind loaders globally, binding
+   * locally can break the plugin loaders
+   */
+  module = peas_object_module_new_full (module_name, module_dir,
+                                        TRUE, FALSE);
 
   if (!g_type_module_use (G_TYPE_MODULE (module)))
     g_clear_object (&module);
