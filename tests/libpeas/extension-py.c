@@ -106,7 +106,6 @@ test_extension_py_activatable_subject_refcount (PeasEngine     *engine,
   g_object_unref (object);
 }
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
 static void
 test_extension_py_nonexistent (void)
 {
@@ -219,7 +218,6 @@ test_extension_py_mixed_python_subprocess (void)
   testing_engine_free (engine);
 }
 #endif
-#endif
 
 int
 main (int   argc,
@@ -250,7 +248,6 @@ main (int   argc,
   EXTENSION_TEST (PY_LOADER, "activatable-subject-refcount",
                   activatable_subject_refcount);
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
   EXTENSION_TEST_FUNC (PY_LOADER, "nonexistent", nonexistent);
   EXTENSION_TEST (PY_LOADER, "nonexistent/subprocess",
                   nonexistent_subprocess);
@@ -263,7 +260,6 @@ main (int   argc,
   EXTENSION_TEST_FUNC (PY_LOADER, "mixed-python", mixed_python);
   EXTENSION_TEST_FUNC (PY_LOADER, "mixed-python/subprocess",
                        mixed_python_subprocess);
-#endif
 #endif
 
   return testing_extension_run_tests ();

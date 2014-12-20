@@ -401,7 +401,6 @@ test_engine_nonexistent_search_path (PeasEngine *engine)
   peas_engine_add_search_path (engine, "/nowhere", NULL);
 }
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
 static void
 test_engine_shutdown (void)
 {
@@ -424,7 +423,6 @@ test_engine_shutdown_subprocess (PeasEngine *engine)
     engine = peas_engine_new ();
     g_assert (engine == NULL);
 }
-#endif
 
 int
 main (int    argc,
@@ -463,10 +461,8 @@ main (int    argc,
 
   TEST ("nonexistent-search-path", nonexistent_search_path);
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
   TEST_FUNC ("shutdown", shutdown);
   TEST ("shutdown/subprocess", shutdown_subprocess);
-#endif
 
 #undef TEST
 

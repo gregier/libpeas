@@ -148,7 +148,6 @@ test_extension_lua_activatable_subject_refcount (PeasEngine     *engine,
   set_garbage_collector_state (engine, info, TRUE);
 }
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
 static void
 test_extension_lua_nonexistent (void)
 {
@@ -173,7 +172,6 @@ test_extension_lua_nonexistent_subprocess (PeasEngine *engine)
 
   g_assert (!peas_engine_load_plugin (engine, info));
 }
-#endif
 
 int
 main (int   argc,
@@ -204,10 +202,8 @@ main (int   argc,
   EXTENSION_TEST (lua5.1, "activatable-subject-refcount",
                   activatable_subject_refcount);
 
-#if GLIB_CHECK_VERSION (2, 38, 0)
   EXTENSION_TEST_FUNC (lua5.1, "nonexistent", nonexistent);
   EXTENSION_TEST (lua5.1, "nonexistent/subprocess", nonexistent_subprocess);
-#endif
 
   return testing_extension_run_tests ();
 }
