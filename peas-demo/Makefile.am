@@ -29,4 +29,4 @@ peas_demo_CFLAGS = \
 
 .PHONY: demo
 demo: $(bin_PROGRAMS)
-	./peas-demo --run-from-build-dir
+	@./peas-demo --run-from-build-dir
