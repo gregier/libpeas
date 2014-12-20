@@ -127,7 +127,7 @@ update_plugin (PeasGtkPluginManagerStore *store,
           icon_theme = gtk_icon_theme_get_default ();
           names = g_themed_icon_get_names (G_THEMED_ICON (icon_gicon));
 
-          for (i = 0; !found_icon && i < g_strv_length ((gchar **) names); ++i)
+          for (i = 0; !found_icon && names[i] != NULL; ++i)
             found_icon = gtk_icon_theme_has_icon (icon_theme, names[i]);
 
           if (!found_icon)
