@@ -55,13 +55,9 @@ typedef enum {
 
 typedef struct _PeasGtkPluginManagerStore         PeasGtkPluginManagerStore;
 typedef struct _PeasGtkPluginManagerStoreClass    PeasGtkPluginManagerStoreClass;
-typedef struct _PeasGtkPluginManagerStorePrivate  PeasGtkPluginManagerStorePrivate;
 
 struct _PeasGtkPluginManagerStore {
   GtkListStore parent;
-
-  /*< private > */
-  PeasGtkPluginManagerStorePrivate *priv;
 };
 
 struct _PeasGtkPluginManagerStoreClass {

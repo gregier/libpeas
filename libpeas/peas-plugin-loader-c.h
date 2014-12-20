@@ -35,12 +35,9 @@ G_BEGIN_DECLS
 
 typedef struct _PeasPluginLoaderC         PeasPluginLoaderC;
 typedef struct _PeasPluginLoaderCClass    PeasPluginLoaderCClass;
-typedef struct _PeasPluginLoaderCPrivate  PeasPluginLoaderCPrivate;
 
 struct _PeasPluginLoaderC {
   PeasPluginLoader parent;
-
-  PeasPluginLoaderCPrivate *priv;
 };
 
 struct _PeasPluginLoaderCClass {

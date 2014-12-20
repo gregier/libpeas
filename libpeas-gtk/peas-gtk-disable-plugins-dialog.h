@@ -39,13 +39,9 @@ G_BEGIN_DECLS
 
 typedef struct _PeasGtkDisablePluginsDialog         PeasGtkDisablePluginsDialog;
 typedef struct _PeasGtkDisablePluginsDialogClass    PeasGtkDisablePluginsDialogClass;
-typedef struct _PeasGtkDisablePluginsDialogPrivate  PeasGtkDisablePluginsDialogPrivate;
 
 struct _PeasGtkDisablePluginsDialog {
   GtkMessageDialog parent;
-
-  /*< private > */
-  PeasGtkDisablePluginsDialogPrivate *priv;
 };
 
 struct _PeasGtkDisablePluginsDialogClass {

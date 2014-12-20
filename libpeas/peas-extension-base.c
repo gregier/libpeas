@@ -42,8 +42,6 @@
  * the same purpose.
  **/
 
-G_DEFINE_ABSTRACT_TYPE (PeasExtensionBase, peas_extension_base, G_TYPE_OBJECT)
-
 struct _PeasExtensionBasePrivate {
   PeasPluginInfo *info;
 };
@@ -57,6 +55,13 @@ enum {
 };
 
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
+
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (PeasExtensionBase,
+                                     peas_extension_base,
+                                     G_TYPE_OBJECT)
+
+#define GET_PRIV(o) \
+  (peas_extension_base_get_instance_private (o))
 
 static void
 peas_extension_base_get_property (GObject    *object,
@@ -87,11 +92,12 @@ peas_extension_base_set_property (GObject      *object,
                                   GParamSpec   *pspec)
 {
   PeasExtensionBase *extbase = PEAS_EXTENSION_BASE (object);
+  PeasExtensionBasePrivate *priv = GET_PRIV (extbase);
 
   switch (prop_id)
     {
     case PROP_PLUGIN_INFO:
-      extbase->priv->info = g_value_get_boxed (value);
+      priv->info = g_value_get_boxed (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -102,9 +108,6 @@ peas_extension_base_set_property (GObject      *object,
 static void
 peas_extension_base_init (PeasExtensionBase *extbase)
 {
-  extbase->priv = G_TYPE_INSTANCE_GET_PRIVATE (extbase,
-                                               PEAS_TYPE_EXTENSION_BASE,
-                                               PeasExtensionBasePrivate);
 }
 
 static void
@@ -134,7 +137,6 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
                          G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
-  g_type_class_add_private (klass, sizeof (PeasExtensionBasePrivate));
 }
 
 /**
@@ -149,9 +151,11 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
 PeasPluginInfo *
 peas_extension_base_get_plugin_info (PeasExtensionBase *extbase)
 {
+  PeasExtensionBasePrivate *priv = GET_PRIV (extbase);
+
   g_return_val_if_fail (PEAS_IS_EXTENSION_BASE (extbase), NULL);
 
-  return extbase->priv->info;
+  return priv->info;
 }
 
 /**
@@ -167,7 +171,9 @@ peas_extension_base_get_plugin_info (PeasExtensionBase *extbase)
 gchar *
 peas_extension_base_get_data_dir (PeasExtensionBase *extbase)
 {
+  PeasExtensionBasePrivate *priv = GET_PRIV (extbase);
+
   g_return_val_if_fail (PEAS_IS_EXTENSION_BASE (extbase), NULL);
 
-  return g_strdup (peas_plugin_info_get_data_dir (extbase->priv->info));
+  return g_strdup (peas_plugin_info_get_data_dir (priv->info));
 }

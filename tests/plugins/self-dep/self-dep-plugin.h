@@ -35,12 +35,9 @@ G_BEGIN_DECLS
 
 typedef struct _TestingSelfDepPlugin         TestingSelfDepPlugin;
 typedef struct _TestingSelfDepPluginClass    TestingSelfDepPluginClass;
-typedef struct _TestingSelfDepPluginPrivate  TestingSelfDepPluginPrivate;
 
 struct _TestingSelfDepPlugin {
   PeasExtensionBase parent_instance;
-
-  TestingSelfDepPluginPrivate *priv;
 };
 
 struct _TestingSelfDepPluginClass {

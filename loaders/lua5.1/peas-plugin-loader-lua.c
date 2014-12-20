@@ -38,15 +38,20 @@
 typedef void (* LgiLockFunc) (gpointer lgi_lock);
 
 
-struct _PeasPluginLoaderLuaPrivate {
+typedef struct {
   lua_State *L;
 
   gpointer lgi_lock;
   LgiLockFunc lgi_enter_func;
   LgiLockFunc lgi_leave_func;
-};
+} PeasPluginLoaderLuaPrivate;
 
-G_DEFINE_TYPE (PeasPluginLoaderLua, peas_plugin_loader_lua, PEAS_TYPE_PLUGIN_LOADER)
+G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderLua,
+                            peas_plugin_loader_lua,
+                            PEAS_TYPE_PLUGIN_LOADER)
+
+#define GET_PRIV(o) \
+  (peas_plugin_loader_lua_get_instance_private (o))
 
 static
 G_DEFINE_QUARK (peas-extension-type, extension_type)
@@ -224,12 +229,13 @@ peas_plugin_loader_lua_provides_extension (PeasPluginLoader *loader,
                                            GType             exten_type)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
-  lua_State *L = lua_loader->priv->L;
+  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
+  lua_State *L = priv->L;
   GType extension_type;
 
-  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
+  priv->lgi_enter_func (priv->lgi_lock);
   extension_type = _lua_find_extension_type (L, info, exten_type);
-  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
+  priv->lgi_leave_func (priv->lgi_lock);
 
   return extension_type != G_TYPE_INVALID;
 }
@@ -242,11 +248,12 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
                                          GParameter       *parameters)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
-  lua_State *L = lua_loader->priv->L;
+  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
+  lua_State *L = priv->L;
   GType the_type;
   GObject *object = NULL;
 
-  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
+  priv->lgi_enter_func (priv->lgi_lock);
 
   the_type = _lua_find_extension_type (L, info, exten_type);
   if (the_type == G_TYPE_INVALID)
@@ -294,7 +301,7 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
 
 out:
 
-  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
+  priv->lgi_leave_func (priv->lgi_lock);
   return object;
 }
 
@@ -303,10 +310,11 @@ peas_plugin_loader_lua_load (PeasPluginLoader *loader,
                              PeasPluginInfo   *info)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
-  lua_State *L = lua_loader->priv->L;
+  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
+  lua_State *L = priv->L;
   gboolean success;
 
-  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
+  priv->lgi_enter_func (priv->lgi_lock);
 
   luaL_checkstack (L, 2, "");
 
@@ -351,7 +359,7 @@ peas_plugin_loader_lua_load (PeasPluginLoader *loader,
   /* Pop the module's table */
   lua_pop (L, 1);
 
-  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
+  priv->lgi_leave_func (priv->lgi_lock);
   return success;
 }
 
@@ -366,10 +374,11 @@ static void
 peas_plugin_loader_lua_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
+  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
 
-  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
-  lua_gc (lua_loader->priv->L, LUA_GCCOLLECT, 0);
-  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
+  priv->lgi_enter_func (priv->lgi_lock);
+  lua_gc (priv->L, LUA_GCCOLLECT, 0);
+  priv->lgi_leave_func (priv->lgi_lock);
 }
 
 static int
@@ -383,6 +392,7 @@ static gboolean
 peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
+  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
   lua_State *L;
 
   L = luaL_newstate ();
@@ -406,20 +416,20 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
     }
 
   lua_getfield (L, -1, "lock");
-  lua_loader->priv->lgi_lock = lua_touserdata (L, -1);
+  priv->lgi_lock = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
   lua_getfield (L, -1, "enter");
-  lua_loader->priv->lgi_enter_func = lua_touserdata (L, -1);
+  priv->lgi_enter_func = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
   lua_getfield (L, -1, "leave");
-  lua_loader->priv->lgi_leave_func = lua_touserdata (L, -1);
+  priv->lgi_leave_func = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
-  if (lua_loader->priv->lgi_lock == NULL ||
-      lua_loader->priv->lgi_enter_func == NULL ||
-      lua_loader->priv->lgi_leave_func == NULL)
+  if (priv->lgi_lock == NULL ||
+      priv->lgi_enter_func == NULL ||
+      priv->lgi_leave_func == NULL)
     {
       g_warning ("Failed to find 'lgi.lock', 'lgi.enter' and 'lgi.leave'");
       lua_close (L);
@@ -437,9 +447,9 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
   /* Initially the lock is taken by LGI,
    * release as we are not running Lua code
    */
-  lua_loader->priv->lgi_leave_func (lua_loader->priv->lgi_lock);
+  priv->lgi_leave_func (priv->lgi_lock);
 
-  lua_loader->priv->L = L;
+  priv->L = L;
   return TRUE;
 }
 
@@ -452,22 +462,20 @@ peas_plugin_loader_lua_is_global (PeasPluginLoader *loader)
 static void
 peas_plugin_loader_lua_init (PeasPluginLoaderLua *lua_loader)
 {
-  lua_loader->priv = G_TYPE_INSTANCE_GET_PRIVATE (lua_loader,
-                                                  PEAS_TYPE_PLUGIN_LOADER_LUA,
-                                                  PeasPluginLoaderLuaPrivate);
 }
 
 static void
 peas_plugin_loader_lua_finalize (GObject *object)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (object);
+  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
 
   /* Must take the lock as Lua code will run on lua_close
    * and another thread might be running Lua code already
    */
-  lua_loader->priv->lgi_enter_func (lua_loader->priv->lgi_lock);
+  priv->lgi_enter_func (priv->lgi_lock);
 
-  g_clear_pointer (&lua_loader->priv->L, (GDestroyNotify) lua_close);
+  g_clear_pointer (&priv->L, (GDestroyNotify) lua_close);
 
   G_OBJECT_CLASS (peas_plugin_loader_lua_parent_class)->finalize (object);
 }
@@ -487,6 +495,4 @@ peas_plugin_loader_lua_class_init (PeasPluginLoaderLuaClass *klass)
   loader_class->create_extension = peas_plugin_loader_lua_create_extension;
   loader_class->provides_extension = peas_plugin_loader_lua_provides_extension;
   loader_class->garbage_collect = peas_plugin_loader_lua_garbage_collect;
-
-  g_type_class_add_private (object_class, sizeof (PeasPluginLoaderLuaPrivate));
 }

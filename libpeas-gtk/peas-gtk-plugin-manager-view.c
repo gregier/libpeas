@@ -79,13 +79,20 @@ enum {
 static guint signals[LAST_SIGNAL];
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
-G_DEFINE_TYPE (PeasGtkPluginManagerView, peas_gtk_plugin_manager_view, GTK_TYPE_TREE_VIEW)
+G_DEFINE_TYPE_WITH_PRIVATE (PeasGtkPluginManagerView,
+                            peas_gtk_plugin_manager_view,
+                            GTK_TYPE_TREE_VIEW)
+
+#define GET_PRIV(o) \
+  (peas_gtk_plugin_manager_view_get_instance_private (o))
 
 static void
 convert_iter_to_child_iter (PeasGtkPluginManagerView *view,
                             GtkTreeIter              *iter)
 {
-  if (!view->priv->show_builtin)
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
+
+  if (!priv->show_builtin)
     {
       GtkTreeModel *model;
       GtkTreeIter child_iter;
@@ -103,9 +110,10 @@ static gboolean
 convert_child_iter_to_iter (PeasGtkPluginManagerView *view,
                             GtkTreeIter              *child_iter)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   gboolean success = TRUE;
 
-  if (!view->priv->show_builtin)
+  if (!priv->show_builtin)
     {
       GtkTreeModel *model;
       GtkTreeIter iter;
@@ -126,12 +134,13 @@ static GList *
 get_dependant_plugins (PeasGtkPluginManagerView *view,
                        PeasPluginInfo           *info)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   const gchar *module_name;
   const GList *plugins;
   GList *dep_plugins = NULL;
 
   module_name = peas_plugin_info_get_module_name (info);
-  plugins = peas_engine_get_plugin_list (view->priv->engine);
+  plugins = peas_engine_get_plugin_list (priv->engine);
 
   for (; plugins != NULL; plugins = plugins->next)
     {
@@ -142,7 +151,7 @@ get_dependant_plugins (PeasGtkPluginManagerView *view,
         continue;
 
       /* Don't add builtin plugins if they are not shown */
-      if (!view->priv->show_builtin && peas_plugin_info_is_builtin (plugin))
+      if (!priv->show_builtin && peas_plugin_info_is_builtin (plugin))
         continue;
 
       if (peas_plugin_info_has_dependency (plugin, module_name))
@@ -156,9 +165,10 @@ static void
 toggle_enabled (PeasGtkPluginManagerView *view,
                 GtkTreeIter              *iter)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   PeasPluginInfo *info;
 
-  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, iter);
+  info = peas_gtk_plugin_manager_store_get_plugin (priv->store, iter);
 
   if (peas_plugin_info_is_loaded (info))
     {
@@ -187,7 +197,7 @@ toggle_enabled (PeasGtkPluginManagerView *view,
         }
     }
 
-  peas_gtk_plugin_manager_store_toggle_enabled (view->priv->store, iter);
+  peas_gtk_plugin_manager_store_toggle_enabled (priv->store, iter);
 }
 
 static void
@@ -195,11 +205,12 @@ plugin_list_changed_cb (PeasEngine               *engine,
                         GParamSpec               *pspec,
                         PeasGtkPluginManagerView *view)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   PeasPluginInfo *info;
 
   info = peas_gtk_plugin_manager_view_get_selected_plugin (view);
 
-  peas_gtk_plugin_manager_store_reload (view->priv->store);
+  peas_gtk_plugin_manager_store_reload (priv->store);
 
   if (info != NULL)
     peas_gtk_plugin_manager_view_set_selected_plugin (view, info);
@@ -210,10 +221,11 @@ filter_builtins_visible (PeasGtkPluginManagerStore *store,
                          GtkTreeIter               *iter,
                          PeasGtkPluginManagerView  *view)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   PeasPluginInfo *info;
 
   /* We never filter showing builtins */
-  g_assert (view->priv->show_builtin == FALSE);
+  g_assert (priv->show_builtin == FALSE);
 
   info = peas_gtk_plugin_manager_store_get_plugin (store, iter);
 
@@ -252,6 +264,7 @@ name_search_cb (GtkTreeModel             *model,
                 GtkTreeIter              *iter,
                 PeasGtkPluginManagerView *view)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   GtkTreeIter child_iter = *iter;
   PeasPluginInfo *info;
   gchar *normalized_string;
@@ -262,7 +275,7 @@ name_search_cb (GtkTreeModel             *model,
   gboolean retval;
 
   convert_iter_to_child_iter (view, &child_iter);
-  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &child_iter);
+  info = peas_gtk_plugin_manager_store_get_plugin (priv->store, &child_iter);
 
   if (info == NULL)
     return FALSE;
@@ -307,14 +320,18 @@ static void
 enable_all_menu_cb (GtkMenu                  *menu,
                     PeasGtkPluginManagerView *view)
 {
-  peas_gtk_plugin_manager_store_set_all_enabled (view->priv->store, TRUE);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
+
+  peas_gtk_plugin_manager_store_set_all_enabled (priv->store, TRUE);
 }
 
 static void
 disable_all_menu_cb (GtkMenu                  *menu,
                      PeasGtkPluginManagerView *view)
 {
-  peas_gtk_plugin_manager_store_set_all_enabled (view->priv->store, FALSE);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
+
+  peas_gtk_plugin_manager_store_set_all_enabled (priv->store, FALSE);
 }
 
 static GtkWidget *
@@ -361,7 +378,9 @@ static void
 popup_menu_detach (PeasGtkPluginManagerView *view,
                    GtkMenu                  *menu)
 {
-  view->priv->popup_menu = NULL;
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
+
+  priv->popup_menu = NULL;
 }
 
 static void
@@ -433,30 +452,32 @@ show_popup_menu (GtkTreeView              *tree_view,
                  PeasGtkPluginManagerView *view,
                  GdkEventButton           *event)
 {
-  if (view->priv->popup_menu)
-    gtk_widget_destroy (view->priv->popup_menu);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
 
-  view->priv->popup_menu = create_popup_menu (view);
+  if (priv->popup_menu)
+    gtk_widget_destroy (priv->popup_menu);
 
-  if (view->priv->popup_menu == NULL)
+  priv->popup_menu = create_popup_menu (view);
+
+  if (priv->popup_menu == NULL)
     return FALSE;
 
-  gtk_menu_attach_to_widget (GTK_MENU (view->priv->popup_menu),
+  gtk_menu_attach_to_widget (GTK_MENU (priv->popup_menu),
                              GTK_WIDGET (view),
                              (GtkMenuDetachFunc) popup_menu_detach);
 
   if (event != NULL)
     {
-      gtk_menu_popup (GTK_MENU (view->priv->popup_menu), NULL, NULL,
+      gtk_menu_popup (GTK_MENU (priv->popup_menu), NULL, NULL,
                       NULL, NULL, event->button, event->time);
     }
   else
     {
-      gtk_menu_popup (GTK_MENU (view->priv->popup_menu), NULL, NULL,
+      gtk_menu_popup (GTK_MENU (priv->popup_menu), NULL, NULL,
                       (GtkMenuPositionFunc) menu_position_under_tree_view,
                       view, 0, gtk_get_current_event_time ());
 
-      gtk_menu_shell_select_first (GTK_MENU_SHELL (view->priv->popup_menu),
+      gtk_menu_shell_select_first (GTK_MENU_SHELL (priv->popup_menu),
                                    FALSE);
     }
 
@@ -495,10 +516,6 @@ peas_gtk_plugin_manager_view_init (PeasGtkPluginManagerView *view)
 {
   GtkTreeViewColumn *column;
   GtkCellRenderer *cell;
-
-  view->priv = G_TYPE_INSTANCE_GET_PRIVATE (view,
-                                            PEAS_GTK_TYPE_PLUGIN_MANAGER_VIEW,
-                                            PeasGtkPluginManagerViewPrivate);
 
   gtk_widget_set_has_tooltip (GTK_WIDGET (view), TRUE);
 
@@ -592,6 +609,7 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
                                             GtkTooltip *tooltip)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (widget);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   gboolean is_row;
   GtkTreeIter iter;
   PeasPluginInfo *info;
@@ -607,7 +625,7 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
 
   convert_iter_to_child_iter (view, &iter);
 
-  info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
+  info = peas_gtk_plugin_manager_store_get_plugin (priv->store, &iter);
 
   if (peas_plugin_info_is_available (info, &error))
     return FALSE;
@@ -636,6 +654,7 @@ peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
                                             GtkTreeViewColumn *column)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   GtkTreeIter iter;
 
   if (!gtk_tree_model_get_iter (gtk_tree_view_get_model (tree_view), &iter, path))
@@ -643,7 +662,7 @@ peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
 
   convert_iter_to_child_iter (view, &iter);
 
-  if (peas_gtk_plugin_manager_store_can_enable (view->priv->store, &iter))
+  if (peas_gtk_plugin_manager_store_can_enable (priv->store, &iter))
     toggle_enabled (view, &iter);
 }
 
@@ -654,11 +673,12 @@ peas_gtk_plugin_manager_view_set_property (GObject      *object,
                                            GParamSpec   *pspec)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
 
   switch (prop_id)
     {
     case PROP_ENGINE:
-      view->priv->engine = g_value_get_object (value);
+      priv->engine = g_value_get_object (value);
       break;
     case PROP_SHOW_BUILTIN:
       peas_gtk_plugin_manager_view_set_show_builtin (view,
@@ -677,11 +697,12 @@ peas_gtk_plugin_manager_view_get_property (GObject    *object,
                                            GParamSpec *pspec)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
 
   switch (prop_id)
     {
     case PROP_ENGINE:
-      g_value_set_object (value, view->priv->engine);
+      g_value_set_object (value, priv->engine);
       break;
     case PROP_SHOW_BUILTIN:
       g_value_set_boolean (value,
@@ -697,19 +718,20 @@ static void
 peas_gtk_plugin_manager_view_constructed (GObject *object)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
 
-  if (view->priv->engine == NULL)
-    view->priv->engine = peas_engine_get_default ();
+  if (priv->engine == NULL)
+    priv->engine = peas_engine_get_default ();
 
-  g_object_ref (view->priv->engine);
+  g_object_ref (priv->engine);
 
-  view->priv->store = peas_gtk_plugin_manager_store_new (view->priv->engine);
+  priv->store = peas_gtk_plugin_manager_store_new (priv->engine);
 
   /* Properly set the model */
-  view->priv->show_builtin = TRUE;
+  priv->show_builtin = TRUE;
   peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
 
-  g_signal_connect_object (view->priv->engine,
+  g_signal_connect_object (priv->engine,
                            "notify::plugin-list",
                            G_CALLBACK (plugin_list_changed_cb),
                            view,
@@ -722,12 +744,13 @@ static void
 peas_gtk_plugin_manager_view_dispose (GObject *object)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
 
-  g_clear_pointer (&view->priv->popup_menu,
+  g_clear_pointer (&priv->popup_menu,
                    (GDestroyNotify) gtk_widget_destroy);
 
-  g_clear_object (&view->priv->engine);
-  g_clear_object (&view->priv->store);
+  g_clear_object (&priv->engine);
+  g_clear_object (&priv->store);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->dispose (object);
 }
@@ -802,7 +825,6 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
                   GTK_TYPE_MENU);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
-  g_type_class_add_private (object_class, sizeof (PeasGtkPluginManagerViewPrivate));
 }
 
 /**
@@ -838,6 +860,7 @@ void
 peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
                                                gboolean                  show_builtin)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   GtkTreeSelection *selection;
   GtkTreeIter iter;
   gboolean iter_set;
@@ -846,7 +869,7 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
 
   show_builtin = (show_builtin != FALSE);
 
-  if (view->priv->show_builtin == show_builtin)
+  if (priv->show_builtin == show_builtin)
     return;
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
@@ -858,18 +881,18 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
   if (iter_set)
     convert_iter_to_child_iter (view, &iter);
 
-  view->priv->show_builtin = show_builtin;
+  priv->show_builtin = show_builtin;
 
   if (show_builtin)
     {
       gtk_tree_view_set_model (GTK_TREE_VIEW (view),
-                               GTK_TREE_MODEL (view->priv->store));
+                               GTK_TREE_MODEL (priv->store));
     }
   else
     {
       GtkTreeModel *model;
 
-      model = gtk_tree_model_filter_new (GTK_TREE_MODEL (view->priv->store), NULL);
+      model = gtk_tree_model_filter_new (GTK_TREE_MODEL (priv->store), NULL);
       gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (model),
                                               (GtkTreeModelFilterVisibleFunc) filter_builtins_visible,
                                               view,
@@ -900,9 +923,11 @@ peas_gtk_plugin_manager_view_set_show_builtin (PeasGtkPluginManagerView *view,
 gboolean
 peas_gtk_plugin_manager_view_get_show_builtin (PeasGtkPluginManagerView *view)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
+
   g_return_val_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_VIEW (view), FALSE);
 
-  return view->priv->show_builtin;
+  return priv->show_builtin;
 }
 
 /**
@@ -916,13 +941,14 @@ void
 peas_gtk_plugin_manager_view_set_selected_plugin (PeasGtkPluginManagerView *view,
                                                   PeasPluginInfo           *info)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   GtkTreeIter iter;
   GtkTreeSelection *selection;
 
   g_return_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_VIEW (view));
   g_return_if_fail (info != NULL);
 
-  g_return_if_fail (peas_gtk_plugin_manager_store_get_iter_from_plugin (view->priv->store,
+  g_return_if_fail (peas_gtk_plugin_manager_store_get_iter_from_plugin (priv->store,
                                                                         &iter, info));
 
   if (!convert_child_iter_to_iter (view, &iter))
@@ -943,6 +969,7 @@ peas_gtk_plugin_manager_view_set_selected_plugin (PeasGtkPluginManagerView *view
 PeasPluginInfo *
 peas_gtk_plugin_manager_view_get_selected_plugin (PeasGtkPluginManagerView *view)
 {
+  PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   GtkTreeSelection *selection;
   GtkTreeIter iter;
   PeasPluginInfo *info = NULL;
@@ -958,7 +985,7 @@ peas_gtk_plugin_manager_view_get_selected_plugin (PeasGtkPluginManagerView *view
   if (selection != NULL && gtk_tree_selection_get_selected (selection, NULL, &iter))
     {
       convert_iter_to_child_iter (view, &iter);
-      info = peas_gtk_plugin_manager_store_get_plugin (view->priv->store, &iter);
+      info = peas_gtk_plugin_manager_store_get_plugin (priv->store, &iter);
     }
 
   return info;

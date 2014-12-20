@@ -31,9 +31,9 @@
 
 #include "self-dep-plugin.h"
 
-struct _TestingSelfDepPluginPrivate {
+typedef struct {
   GObject *object;
-};
+} TestingSelfDepPluginPrivate;
 
 static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
@@ -41,8 +41,12 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingSelfDepPlugin,
                                 testing_self_dep_plugin,
                                 PEAS_TYPE_EXTENSION_BASE,
                                 0,
+                                G_ADD_PRIVATE_DYNAMIC (TestingSelfDepPlugin)
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
+
+#define GET_PRIV(o) \
+  (testing_self_dep_plugin_get_instance_private (o))
 
 enum {
   PROP_0,
@@ -56,11 +60,12 @@ testing_self_dep_plugin_set_property (GObject      *object,
                                       GParamSpec   *pspec)
 {
   TestingSelfDepPlugin *plugin = TESTING_SELF_DEP_PLUGIN (object);
+  TestingSelfDepPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      plugin->priv->object = g_value_get_object (value);
+      priv->object = g_value_get_object (value);
       break;
 
     default:
@@ -76,11 +81,12 @@ testing_self_dep_plugin_get_property (GObject    *object,
                                       GParamSpec *pspec)
 {
   TestingSelfDepPlugin *plugin = TESTING_SELF_DEP_PLUGIN (object);
+  TestingSelfDepPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      g_value_set_object (value, plugin->priv->object);
+      g_value_set_object (value, priv->object);
       break;
 
     default:
@@ -92,9 +98,6 @@ testing_self_dep_plugin_get_property (GObject    *object,
 static void
 testing_self_dep_plugin_init (TestingSelfDepPlugin *plugin)
 {
-  plugin->priv = G_TYPE_INSTANCE_GET_PRIVATE (plugin,
-                                              TESTING_TYPE_SELF_DEP_PLUGIN,
-                                              TestingSelfDepPluginPrivate);
 }
 
 static void
@@ -116,8 +119,6 @@ testing_self_dep_plugin_class_init (TestingSelfDepPluginClass *klass)
   object_class->get_property = testing_self_dep_plugin_get_property;
 
   g_object_class_override_property (object_class, PROP_OBJECT, "object");
-
-  g_type_class_add_private (klass, sizeof (TestingSelfDepPluginPrivate));
 }
 
 static void

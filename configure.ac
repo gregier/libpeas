@@ -85,12 +85,13 @@ dnl ================================================================
 PKG_PROG_PKG_CONFIG
 
 GLIB_REQUIRED=2.36.0
+GOBJECT_REQUIRED=2.38.0
 GIO_REQUIRED=2.32.0
 INTROSPECTION_REQUIRED=1.39.0
 
 PKG_CHECK_MODULES(PEAS, [
 	glib-2.0 >= $GLIB_REQUIRED
-	gobject-2.0 >= $GLIB_REQUIRED
+	gobject-2.0 >= $GOBJECT_REQUIRED
 	gmodule-2.0 >= $GLIB_REQUIRED
 	gio-2.0 >= $GIO_REQUIRED
 	gobject-introspection-1.0 >= $INTROSPECTION_REQUIRED

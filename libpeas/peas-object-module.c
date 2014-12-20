@@ -42,9 +42,7 @@
  * function.
  **/
 
-G_DEFINE_TYPE (PeasObjectModule, peas_object_module, G_TYPE_TYPE_MODULE)
-
-typedef void     (*PeasObjectModuleRegisterFunc) (PeasObjectModule *);
+typedef void (*PeasObjectModuleRegisterFunc) (PeasObjectModule *module);
 
 enum {
   PROP_0,
@@ -77,17 +75,25 @@ struct _PeasObjectModulePrivate {
   guint local_linkage : 1;
 };
 
+G_DEFINE_TYPE_WITH_PRIVATE (PeasObjectModule,
+                            peas_object_module,
+                            G_TYPE_TYPE_MODULE)
+
+#define GET_PRIV(o) \
+  (peas_object_module_get_instance_private (o))
+
 static gboolean
 peas_object_module_load (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
   GModuleFlags flags = 0;
   gchar *path;
 
-  if (module->priv->local_linkage)
+  if (priv->local_linkage)
     flags = G_MODULE_BIND_LOCAL;
 
-  path = g_module_build_path (module->priv->path, module->priv->module_name);
+  path = g_module_build_path (priv->path, priv->module_name);
   g_return_val_if_fail (path != NULL, FALSE);
 
   /* g_module_build_path() will add G_MODULE_SUFFIX to the path,
@@ -100,25 +106,25 @@ peas_object_module_load (GTypeModule *gmodule)
     path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
 
   /* Bind symbols immediately to avoid errors long after loading */
-  module->priv->library = g_module_open (path, flags);
+  priv->library = g_module_open (path, flags);
   g_free (path);
 
-  if (module->priv->library == NULL)
+  if (priv->library == NULL)
     {
       g_warning ("Failed to load module '%s': %s",
-                 module->priv->module_name, g_module_error ());
+                 priv->module_name, g_module_error ());
 
       return FALSE;
     }
 
   /* Extract the required symbol from the library */
-  if (!g_module_symbol (module->priv->library,
+  if (!g_module_symbol (priv->library,
                         "peas_register_types",
-                        (gpointer) &module->priv->register_func))
+                        (gpointer) &priv->register_func))
     {
       g_warning ("Failed to get 'peas_register_types' for module '%s': %s",
-                 module->priv->module_name, g_module_error ());
-      g_module_close (module->priv->library);
+                 priv->module_name, g_module_error ());
+      g_module_close (priv->library);
 
       return FALSE;
     }
@@ -126,19 +132,19 @@ peas_object_module_load (GTypeModule *gmodule)
   /* The symbol can still be NULL even
    * though g_module_symbol() returned TRUE
    */
-  if (module->priv->register_func == NULL)
+  if (priv->register_func == NULL)
     {
       g_warning ("Invalid 'peas_register_types' in module '%s'",
-                 module->priv->module_name);
-      g_module_close (module->priv->library);
+                 priv->module_name);
+      g_module_close (priv->library);
 
       return FALSE;
     }
 
-  if (module->priv->resident)
-    g_module_make_resident (module->priv->library);
+  if (priv->resident)
+    g_module_make_resident (priv->library);
 
-  module->priv->register_func (module);
+  priv->register_func (module);
 
   return TRUE;
 }
@@ -147,43 +153,44 @@ static void
 peas_object_module_unload (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
   InterfaceImplementation *impls;
   guint i;
 
-  g_module_close (module->priv->library);
+  g_module_close (priv->library);
 
-  module->priv->library = NULL;
-  module->priv->register_func = NULL;
+  priv->library = NULL;
+  priv->register_func = NULL;
 
-  impls = (InterfaceImplementation *) module->priv->implementations->data;
-  for (i = 0; i < module->priv->implementations->len; ++i)
+  impls = (InterfaceImplementation *) priv->implementations->data;
+  for (i = 0; i < priv->implementations->len; ++i)
     {
       if (impls[i].destroy_func != NULL)
         impls[i].destroy_func (impls[i].user_data);
     }
 
-  g_array_remove_range (module->priv->implementations, 0,
-                        module->priv->implementations->len);
+  g_array_remove_range (priv->implementations, 0,
+                        priv->implementations->len);
 }
 
 static void
 peas_object_module_init (PeasObjectModule *module)
 {
-  module->priv = G_TYPE_INSTANCE_GET_PRIVATE (module,
-                                              PEAS_TYPE_OBJECT_MODULE,
-                                              PeasObjectModulePrivate);
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
 
-  module->priv->implementations = g_array_new (FALSE, FALSE, sizeof (InterfaceImplementation));
+  priv->implementations = g_array_new (FALSE, FALSE,
+                                       sizeof (InterfaceImplementation));
 }
 
 static void
 peas_object_module_finalize (GObject *object)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
 
-  g_free (module->priv->path);
-  g_free (module->priv->module_name);
-  g_array_unref (module->priv->implementations);
+  g_free (priv->path);
+  g_free (priv->module_name);
+  g_array_unref (priv->implementations);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
 }
@@ -195,20 +202,21 @@ peas_object_module_get_property (GObject    *object,
                                  GParamSpec *pspec)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
 
   switch (prop_id)
     {
     case PROP_MODULE_NAME:
-      g_value_set_string (value, module->priv->module_name);
+      g_value_set_string (value, priv->module_name);
       break;
     case PROP_PATH:
-      g_value_set_string (value, module->priv->path);
+      g_value_set_string (value, priv->path);
       break;
     case PROP_RESIDENT:
-      g_value_set_boolean (value, module->priv->resident);
+      g_value_set_boolean (value, priv->resident);
       break;
     case PROP_LOCAL_LINKAGE:
-      g_value_set_boolean (value, module->priv->local_linkage);
+      g_value_set_boolean (value, priv->local_linkage);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -223,22 +231,23 @@ peas_object_module_set_property (GObject      *object,
                                  GParamSpec   *pspec)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (object);
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
 
   switch (prop_id)
     {
     case PROP_MODULE_NAME:
-      module->priv->module_name = g_value_dup_string (value);
+      priv->module_name = g_value_dup_string (value);
       g_type_module_set_name (G_TYPE_MODULE (object),
-                              module->priv->module_name);
+                              priv->module_name);
       break;
     case PROP_PATH:
-      module->priv->path = g_value_dup_string (value);
+      priv->path = g_value_dup_string (value);
       break;
     case PROP_RESIDENT:
-      module->priv->resident = g_value_get_boolean (value);
+      priv->resident = g_value_get_boolean (value);
       break;
     case PROP_LOCAL_LINKAGE:
-      module->priv->local_linkage = g_value_get_boolean (value);
+      priv->local_linkage = g_value_get_boolean (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -304,7 +313,6 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                           G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
-  g_type_class_add_private (klass, sizeof (PeasObjectModulePrivate));
 }
 
 /**
@@ -376,13 +384,14 @@ peas_object_module_create_object (PeasObjectModule *module,
                                   guint             n_parameters,
                                   GParameter       *parameters)
 {
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
   guint i;
   InterfaceImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-  impls = (InterfaceImplementation *) module->priv->implementations->data;
-  for (i = 0; i < module->priv->implementations->len; ++i)
+  impls = (InterfaceImplementation *) priv->implementations->data;
+  for (i = 0; i < priv->implementations->len; ++i)
     if (impls[i].iface_type == interface)
       return impls[i].func (n_parameters, parameters, impls[i].user_data);
 
@@ -402,13 +411,14 @@ gboolean
 peas_object_module_provides_object (PeasObjectModule *module,
                                     GType             interface)
 {
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
   guint i;
   InterfaceImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), FALSE);
 
-  impls = (InterfaceImplementation *) module->priv->implementations->data;
-  for (i = 0; i < module->priv->implementations->len; ++i)
+  impls = (InterfaceImplementation *) priv->implementations->data;
+  for (i = 0; i < priv->implementations->len; ++i)
     if (impls[i].iface_type == interface)
       return TRUE;
 
@@ -426,9 +436,11 @@ peas_object_module_provides_object (PeasObjectModule *module,
 const gchar *
 peas_object_module_get_path (PeasObjectModule *module)
 {
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
+
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-  return module->priv->path;
+  return priv->path;
 }
 
 /**
@@ -442,9 +454,11 @@ peas_object_module_get_path (PeasObjectModule *module)
 const gchar *
 peas_object_module_get_module_name (PeasObjectModule *module)
 {
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
+
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-  return module->priv->module_name;
+  return priv->module_name;
 }
 
 /**
@@ -458,9 +472,11 @@ peas_object_module_get_module_name (PeasObjectModule *module)
 GModule *
 peas_object_module_get_library (PeasObjectModule *module)
 {
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
+
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
-  return module->priv->library;
+  return priv->library;
 }
 
 /**
@@ -488,6 +504,7 @@ peas_object_module_register_extension_factory (PeasObjectModule *module,
                                                gpointer          user_data,
                                                GDestroyNotify    destroy_func)
 {
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
   InterfaceImplementation impl = { iface_type, factory_func, user_data, destroy_func };
 
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
@@ -497,7 +514,7 @@ peas_object_module_register_extension_factory (PeasObjectModule *module,
   if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
     g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
 
-  g_array_append_val (module->priv->implementations, impl);
+  g_array_append_val (priv->implementations, impl);
 
   g_debug ("Registered extension for type '%s'", g_type_name (iface_type));
 }

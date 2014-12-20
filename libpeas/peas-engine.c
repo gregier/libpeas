@@ -58,7 +58,6 @@
  *   </listitem>
  * </itemizedlist>
  **/
-G_DEFINE_TYPE (PeasEngine, peas_engine, G_TYPE_OBJECT)
 
 /* Signals */
 enum {
@@ -109,6 +108,11 @@ struct _PeasEnginePrivate {
   guint use_nonglobal_loaders : 1;
 };
 
+G_DEFINE_TYPE_WITH_PRIVATE (PeasEngine, peas_engine, G_TYPE_OBJECT)
+
+#define GET_PRIV(o) \
+  (peas_engine_get_instance_private (o))
+
 static gboolean shutdown = FALSE;
 static PeasEngine *default_engine = NULL;
 
@@ -126,6 +130,7 @@ load_plugin_info (PeasEngine  *engine,
                   const gchar *module_dir,
                   const gchar *data_dir)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   PeasPluginInfo *info;
   const gchar *module_name;
 
@@ -143,11 +148,12 @@ load_plugin_info (PeasEngine  *engine,
    * drop this one (user plugins override system plugins) */
   module_name = peas_plugin_info_get_module_name (info);
   if (peas_engine_get_plugin_info (engine, module_name) != NULL)
-    _peas_plugin_info_unref (info);
+    {
+      _peas_plugin_info_unref (info);
+    }
   else
     {
-      engine->priv->plugin_list = g_list_prepend (engine->priv->plugin_list,
-                                                  info);
+      priv->plugin_list = g_list_prepend (priv->plugin_list, info);
 
       g_object_notify_by_pspec (G_OBJECT (engine),
                                 properties[PROP_PLUGIN_LIST]);
@@ -208,11 +214,12 @@ load_dir_real (PeasEngine  *engine,
 void
 peas_engine_rescan_plugins (PeasEngine *engine)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *item;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  if (engine->priv->search_paths == NULL)
+  if (priv->search_paths == NULL)
     {
       g_debug ("No search paths where provided");
       return;
@@ -221,7 +228,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
   g_object_freeze_notify (G_OBJECT (engine));
 
   /* Go and read everything from the provided search paths */
-  for (item = engine->priv->search_paths; item != NULL; item = item->next)
+  for (item = priv->search_paths; item != NULL; item = item->next)
     {
       SearchPath *sp = (SearchPath *) item->data;
       load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
@@ -236,6 +243,7 @@ peas_engine_insert_search_path (PeasEngine  *engine,
                                 const gchar *module_dir,
                                 const gchar *data_dir)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   SearchPath *sp;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
@@ -245,9 +253,7 @@ peas_engine_insert_search_path (PeasEngine  *engine,
   sp->module_dir = g_strdup (module_dir);
   sp->data_dir = g_strdup (data_dir ? data_dir : module_dir);
 
-  engine->priv->search_paths = g_list_insert (engine->priv->search_paths,
-                                              sp,
-                                              position);
+  priv->search_paths = g_list_insert (priv->search_paths, sp, position);
 
   g_object_freeze_notify (G_OBJECT (engine));
   load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
@@ -317,6 +323,8 @@ default_engine_weak_notify (gpointer    unused,
 static void
 peas_engine_init (PeasEngine *engine)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
+
   /* Set the default engine here and not in constructor() to make sure
    * that if a plugin is loaded and calls peas_engine_get_default()
    * that this engine is returned and not another.
@@ -332,14 +340,10 @@ peas_engine_init (PeasEngine *engine)
                          NULL);
     }
 
-  engine->priv = G_TYPE_INSTANCE_GET_PRIVATE (engine,
-                                              PEAS_TYPE_ENGINE,
-                                              PeasEnginePrivate);
-
-  engine->priv->in_dispose = FALSE;
+  priv->in_dispose = FALSE;
 
   /* The C plugin loader is always enabled */
-  engine->priv->loaders[peas_utils_get_loader_id ("C")].enabled = TRUE;
+  priv->loaders[peas_utils_get_loader_id ("C")].enabled = TRUE;
 }
 
 /**
@@ -354,13 +358,14 @@ peas_engine_init (PeasEngine *engine)
 void
 peas_engine_garbage_collect (PeasEngine *engine)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   gint i;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
   for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
     {
-      LoaderInfo *loader_info = &engine->priv->loaders[i];
+      LoaderInfo *loader_info = &priv->loaders[i];
 
       if (loader_info->loader != NULL)
         peas_plugin_loader_garbage_collect (loader_info->loader);
@@ -400,6 +405,7 @@ peas_engine_set_property (GObject      *object,
                           GParamSpec   *pspec)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
+  PeasEnginePrivate *priv = GET_PRIV (engine);
 
   switch (prop_id)
     {
@@ -408,7 +414,7 @@ peas_engine_set_property (GObject      *object,
                                       (const gchar **) g_value_get_boxed (value));
       break;
     case PROP_NONGLOBAL_LOADERS:
-      engine->priv->use_nonglobal_loaders = g_value_get_boolean (value);
+      priv->use_nonglobal_loaders = g_value_get_boolean (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -423,6 +429,7 @@ peas_engine_get_property (GObject    *object,
                           GParamSpec *pspec)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
+  PeasEnginePrivate *priv = GET_PRIV (engine);
 
   switch (prop_id)
     {
@@ -435,7 +442,7 @@ peas_engine_get_property (GObject    *object,
                           (gconstpointer) peas_engine_get_loaded_plugins (engine));
       break;
     case PROP_NONGLOBAL_LOADERS:
-      g_value_set_boolean (value, engine->priv->use_nonglobal_loaders);
+      g_value_set_boolean (value, priv->use_nonglobal_loaders);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -447,14 +454,15 @@ static void
 peas_engine_dispose (GObject *object)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *item;
   gint i;
 
   /* See peas_engine_unload_plugin_real() */
-  engine->priv->in_dispose = TRUE;
+  priv->in_dispose = TRUE;
 
   /* First unload all the plugins */
-  for (item = engine->priv->plugin_list; item; item = item->next)
+  for (item = priv->plugin_list; item; item = item->next)
     {
       PeasPluginInfo *info = PEAS_PLUGIN_INFO (item->data);
 
@@ -463,9 +471,9 @@ peas_engine_dispose (GObject *object)
     }
 
   /* Then destroy the plugin loaders */
-  for (i = 0; i < G_N_ELEMENTS (engine->priv->loaders); ++i)
+  for (i = 0; i < G_N_ELEMENTS (priv->loaders); ++i)
     {
-      LoaderInfo *loader_info = &engine->priv->loaders[i];
+      LoaderInfo *loader_info = &priv->loaders[i];
 
       g_clear_object (&loader_info->loader);
     }
@@ -477,14 +485,15 @@ static void
 peas_engine_finalize (GObject *object)
 {
   PeasEngine *engine = PEAS_ENGINE (object);
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *item;
 
   /* free the infos */
-  g_list_free_full (engine->priv->plugin_list,
+  g_list_free_full (priv->plugin_list,
                     (GDestroyNotify) _peas_plugin_info_unref);
 
   /* free the search path list */
-  for (item = engine->priv->search_paths; item; item = item->next)
+  for (item = priv->search_paths; item; item = item->next)
     {
       SearchPath *sp = (SearchPath *) item->data;
 
@@ -493,7 +502,7 @@ peas_engine_finalize (GObject *object)
       g_slice_free (SearchPath, sp);
     }
 
-  g_list_free (engine->priv->search_paths);
+  g_list_free (priv->search_paths);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);
 }
@@ -626,7 +635,6 @@ peas_engine_class_init (PeasEngineClass *klass)
                   G_SIGNAL_TYPE_STATIC_SCOPE);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
-  g_type_class_add_private (klass, sizeof (PeasEnginePrivate));
 
   /* We are doing some global initialization here as there is currently no
    * global init function for libpeas. */
@@ -736,6 +744,7 @@ static PeasPluginLoader *
 get_local_plugin_loader (PeasEngine *engine,
                          gint        loader_id)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
   PeasPluginLoader *loader;
 
@@ -743,7 +752,7 @@ get_local_plugin_loader (PeasEngine *engine,
     return NULL;
 
   if (global_loader_info->loader != NULL &&
-      (!engine->priv->use_nonglobal_loaders ||
+      (!priv->use_nonglobal_loaders ||
        peas_plugin_loader_is_global (global_loader_info->loader)))
     {
       return g_object_ref (global_loader_info->loader);
@@ -757,7 +766,7 @@ get_local_plugin_loader (PeasEngine *engine,
       return NULL;
     }
 
-  if (!engine->priv->use_nonglobal_loaders ||
+  if (!priv->use_nonglobal_loaders ||
       peas_plugin_loader_is_global (loader))
     {
       global_loader_info->loader = g_object_ref (loader);
@@ -770,7 +779,8 @@ static PeasPluginLoader *
 get_plugin_loader (PeasEngine *engine,
                    gint        loader_id)
 {
-  LoaderInfo *loader_info = &engine->priv->loaders[loader_id];
+  PeasEnginePrivate *priv = GET_PRIV (engine);
+  LoaderInfo *loader_info = &priv->loaders[loader_id];
   GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
 
   if (loader_info->loader != NULL || loader_info->failed)
@@ -835,6 +845,7 @@ void
 peas_engine_enable_loader (PeasEngine  *engine,
                            const gchar *loader_name)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   LoaderInfo *loader_info;
   gint loader_id;
 
@@ -849,7 +860,7 @@ peas_engine_enable_loader (PeasEngine  *engine,
       return;
     }
 
-  loader_info = &engine->priv->loaders[loader_id];
+  loader_info = &priv->loaders[loader_id];
   if (loader_info->enabled || loader_info->failed)
     return;
 
@@ -910,9 +921,11 @@ peas_engine_enable_loader (PeasEngine  *engine,
 const GList *
 peas_engine_get_plugin_list (PeasEngine *engine)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
+
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
 
-  return engine->priv->plugin_list;
+  return priv->plugin_list;
 }
 
 static gint
@@ -937,12 +950,13 @@ PeasPluginInfo *
 peas_engine_get_plugin_info (PeasEngine  *engine,
                              const gchar *plugin_name)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *l;
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (plugin_name != NULL, NULL);
 
-  l = g_list_find_custom (engine->priv->plugin_list,
+  l = g_list_find_custom (priv->plugin_list,
                           plugin_name,
                           (GCompareFunc) compare_plugin_info_and_name);
 
@@ -1065,6 +1079,7 @@ static void
 peas_engine_unload_plugin_real (PeasEngine     *engine,
                                 PeasPluginInfo *info)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *item;
   const gchar *module_name;
   PeasPluginLoader *loader;
@@ -1078,7 +1093,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
 
   /* First unload all the dependant plugins */
   module_name = peas_plugin_info_get_module_name (info);
-  for (item = engine->priv->plugin_list; item; item = item->next)
+  for (item = priv->plugin_list; item; item = item->next)
     {
       PeasPluginInfo *other_info = PEAS_PLUGIN_INFO (item->data);
 
@@ -1100,7 +1115,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
   /* Don't notify while in dispose so the
    * loaded plugins can easily be kept in GSettings
    */
-  if (!engine->priv->in_dispose)
+  if (!priv->in_dispose)
     g_object_notify_by_pspec (G_OBJECT (engine),
                               properties[PROP_LOADED_PLUGINS]);
 }
@@ -1324,6 +1339,7 @@ peas_engine_create_extension (PeasEngine     *engine,
 gchar **
 peas_engine_get_loaded_plugins (PeasEngine *engine)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GArray *array;
   GList *pl;
 
@@ -1331,7 +1347,7 @@ peas_engine_get_loaded_plugins (PeasEngine *engine)
 
   array = g_array_new (TRUE, FALSE, sizeof (gchar *));
 
-  for (pl = engine->priv->plugin_list; pl; pl = pl->next)
+  for (pl = priv->plugin_list; pl; pl = pl->next)
     {
       PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
       gchar *module_name;
@@ -1377,11 +1393,12 @@ void
 peas_engine_set_loaded_plugins (PeasEngine   *engine,
                                 const gchar **plugin_names)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *pl;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  for (pl = engine->priv->plugin_list; pl; pl = pl->next)
+  for (pl = priv->plugin_list; pl; pl = pl->next)
     {
       PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
       const gchar *module_name;

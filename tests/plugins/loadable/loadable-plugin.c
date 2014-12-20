@@ -31,9 +31,9 @@
 
 #include "loadable-plugin.h"
 
-struct _TestingLoadablePluginPrivate {
+typedef struct {
   GObject *object;
-};
+} TestingLoadablePluginPrivate;
 
 /* Used by the local linkage test */
 G_MODULE_EXPORT gpointer global_symbol_clash;
@@ -44,8 +44,12 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingLoadablePlugin,
                                 testing_loadable_plugin,
                                 G_TYPE_OBJECT,
                                 0,
+                                G_ADD_PRIVATE_DYNAMIC (TestingLoadablePlugin)
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
+
+#define GET_PRIV(o) \
+  (testing_loadable_plugin_get_instance_private (o))
 
 enum {
   PROP_0,
@@ -65,11 +69,12 @@ testing_loadable_plugin_set_property (GObject      *object,
                                       GParamSpec   *pspec)
 {
   TestingLoadablePlugin *plugin = TESTING_LOADABLE_PLUGIN (object);
+  TestingLoadablePluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      plugin->priv->object = g_value_get_object (value);
+      priv->object = g_value_get_object (value);
       break;
 
     default:
@@ -85,6 +90,7 @@ testing_loadable_plugin_get_property (GObject    *object,
                                       GParamSpec *pspec)
 {
   TestingLoadablePlugin *plugin = TESTING_LOADABLE_PLUGIN (object);
+  TestingLoadablePluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
@@ -93,7 +99,7 @@ testing_loadable_plugin_get_property (GObject    *object,
       break;
 
     case PROP_OBJECT:
-      g_value_set_object (value, plugin->priv->object);
+      g_value_set_object (value, priv->object);
       break;
 
     default:
@@ -105,9 +111,6 @@ testing_loadable_plugin_get_property (GObject    *object,
 static void
 testing_loadable_plugin_init (TestingLoadablePlugin *plugin)
 {
-  plugin->priv = G_TYPE_INSTANCE_GET_PRIVATE (plugin,
-                                              TESTING_TYPE_LOADABLE_PLUGIN,
-                                              TestingLoadablePluginPrivate);
 }
 
 static void
@@ -138,8 +141,6 @@ testing_loadable_plugin_class_init (TestingLoadablePluginClass *klass)
                           G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
-
-  g_type_class_add_private (klass, sizeof (TestingLoadablePluginPrivate));
 }
 
 static void

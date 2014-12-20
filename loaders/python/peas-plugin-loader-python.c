@@ -41,7 +41,7 @@ typedef int Py_ssize_t;
 #define PY_SSIZE_T_MIN INT_MIN
 #endif
 
-struct _PeasPluginLoaderPythonPrivate {
+typedef struct {
   GHashTable *loaded_plugins;
   guint n_loaded_plugins;
   guint idle_gc;
@@ -49,9 +49,14 @@ struct _PeasPluginLoaderPythonPrivate {
   guint must_finalize_python : 1;
   PyThreadState *py_thread_state;
   PyObject *hooks;
-};
+} PeasPluginLoaderPythonPrivate;
 
-G_DEFINE_TYPE (PeasPluginLoaderPython, peas_plugin_loader_python, PEAS_TYPE_PLUGIN_LOADER)
+G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderPython,
+                            peas_plugin_loader_python,
+                            PEAS_TYPE_PLUGIN_LOADER)
+
+#define GET_PRIV(o) \
+  (peas_plugin_loader_python_get_instance_private (o))
 
 static
 G_DEFINE_QUARK (peas-extension-type, extension_type)
@@ -69,9 +74,10 @@ static void
 internal_python_hook (PeasPluginLoaderPython *pyloader,
                       const gchar            *name)
 {
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyObject *result;
 
-  result = PyObject_CallMethod (pyloader->priv->hooks, (gchar *) name, NULL);
+  result = PyObject_CallMethod (priv->hooks, (gchar *) name, NULL);
   Py_XDECREF (result);
 
   if (PyErr_Occurred ())
@@ -262,10 +268,11 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
                                 PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = PyGILState_Ensure ();
   PyObject *pymodule = NULL;
 
-  if (!g_hash_table_lookup_extended (pyloader->priv->loaded_plugins,
+  if (!g_hash_table_lookup_extended (priv->loaded_plugins,
                                      info->filename,
                                      NULL, (gpointer *) &pymodule))
     {
@@ -304,14 +311,14 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
       if (PyErr_Occurred ())
         PyErr_Print ();
 
-      g_hash_table_insert (pyloader->priv->loaded_plugins,
+      g_hash_table_insert (priv->loaded_plugins,
                            g_strdup (info->filename), pymodule);
     }
 
   if (pymodule != NULL)
     {
       info->loader_data = pymodule;
-      pyloader->priv->n_loaded_plugins += 1;
+      priv->n_loaded_plugins += 1;
     }
 
   PyGILState_Release (state);
@@ -323,6 +330,7 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
                                   PeasPluginInfo   *info)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = PyGILState_Ensure ();
 
   /* Only unref the Python module when the
@@ -332,7 +340,7 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
   /* We have to use this as a hook as the
    * loader will not be finalized by applications
    */
-  if (--pyloader->priv->n_loaded_plugins == 0)
+  if (--priv->n_loaded_plugins == 0)
     internal_python_hook (pyloader, "all_plugins_unloaded");
 
   info->loader_data = NULL;
@@ -340,14 +348,15 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
 }
 
 static gboolean
-run_gc (PeasPluginLoaderPython *loader)
+run_gc (PeasPluginLoaderPython *pyloader)
 {
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = PyGILState_Ensure ();
 
   while (PyGC_Collect ())
     ;
 
-  loader->priv->idle_gc = 0;
+  priv->idle_gc = 0;
 
   PyGILState_Release (state);
   return FALSE;
@@ -357,6 +366,7 @@ static void
 peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = PyGILState_Ensure ();
 
   /* We both run the GC right now and we schedule
@@ -365,10 +375,10 @@ peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
   while (PyGC_Collect ())
     ;
 
-  if (pyloader->priv->idle_gc == 0)
+  if (priv->idle_gc == 0)
     {
-      pyloader->priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
-      g_source_set_name_by_id (pyloader->priv->idle_gc, "[libpeas] run_gc");
+      priv->idle_gc = g_idle_add ((GSourceFunc) run_gc, pyloader);
+      g_source_set_name_by_id (priv->idle_gc, "[libpeas] run_gc");
     }
 
   PyGILState_Release (state);
@@ -421,6 +431,7 @@ static gboolean
 peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = 0;
   long hexversion;
   GBytes *internal_python;
@@ -439,7 +450,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   /* We are trying to initialize Python for the first time,
      set init_failed to FALSE only if the entire initialization process
      ends with success */
-  pyloader->priv->init_failed = TRUE;
+  priv->init_failed = TRUE;
 
   /* Python initialization */
   if (Py_IsInitialized ())
@@ -470,7 +481,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 #endif
 
       Py_InitializeEx (FALSE);
-      pyloader->priv->must_finalize_python = TRUE;
+      priv->must_finalize_python = TRUE;
     }
 
   hexversion = PyLong_AsLong (PySys_GetObject ((char *) "hexversion"));
@@ -536,7 +547,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   PyEval_InitThreads ();
 
   /* Only redirect warnings when python was not already initialized */
-  if (!pyloader->priv->must_finalize_python)
+  if (!priv->must_finalize_python)
     pyg_disable_warning_redirections ();
 
   /* i18n support */
@@ -632,12 +643,12 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
       goto python_init_error;
     }
 
-  pyloader->priv->hooks = PyDict_GetItemString (globals, "hooks");
-  Py_XINCREF (pyloader->priv->hooks);
+  priv->hooks = PyDict_GetItemString (globals, "hooks");
+  Py_XINCREF (priv->hooks);
 
   Py_DECREF (globals);
 
-  if (pyloader->priv->hooks == NULL)
+  if (priv->hooks == NULL)
     {
       g_warning ("Error initializing Python Plugin Loader: "
                  "failed to find internal python hooks");
@@ -646,18 +657,16 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
     }
 
   /* Python has been successfully initialized */
-  pyloader->priv->init_failed = FALSE;
+  priv->init_failed = FALSE;
 
-  if (!pyloader->priv->must_finalize_python)
+  if (!priv->must_finalize_python)
     PyGILState_Release (state);
   else
-    pyloader->priv->py_thread_state = PyEval_SaveThread ();
+    priv->py_thread_state = PyEval_SaveThread ();
 
   /* loaded_plugins maps PeasPluginInfo:filename to a PyObject */
-  pyloader->priv->loaded_plugins = g_hash_table_new_full (g_str_hash,
-                                                          g_str_equal,
-                                                          g_free,
-                                                          destroy_python_info);
+  priv->loaded_plugins = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                g_free, destroy_python_info);
 
   return TRUE;
 
@@ -669,7 +678,7 @@ python_init_error:
   g_warning ("Please check the installation of all the Python "
              "related packages required by libpeas and try again");
 
-  if (!pyloader->priv->must_finalize_python)
+  if (!priv->must_finalize_python)
     PyGILState_Release (state);
 
   return FALSE;
@@ -678,51 +687,49 @@ python_init_error:
 static void
 peas_plugin_loader_python_init (PeasPluginLoaderPython *pyloader)
 {
-  pyloader->priv = G_TYPE_INSTANCE_GET_PRIVATE (pyloader,
-                                                PEAS_TYPE_PLUGIN_LOADER_PYTHON,
-                                                PeasPluginLoaderPythonPrivate);
 }
 
 static void
 peas_plugin_loader_python_finalize (GObject *object)
 {
   PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (object);
+  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state;
 
   if (!Py_IsInitialized ())
     goto out;
 
-  g_warn_if_fail (pyloader->priv->n_loaded_plugins == 0);
+  g_warn_if_fail (priv->n_loaded_plugins == 0);
 
-  if (pyloader->priv->loaded_plugins != NULL)
+  if (priv->loaded_plugins != NULL)
     {
       state = PyGILState_Ensure ();
-      g_hash_table_destroy (pyloader->priv->loaded_plugins);
+      g_hash_table_destroy (priv->loaded_plugins);
       PyGILState_Release (state);
     }
 
-  if (pyloader->priv->hooks != NULL && !pyloader->priv->init_failed)
+  if (priv->hooks != NULL && !priv->init_failed)
     {
       state = PyGILState_Ensure ();
       internal_python_hook (pyloader, "exit");
       PyGILState_Release (state);
 
       /* Borrowed Reference */
-      pyloader->priv->hooks = NULL;
+      priv->hooks = NULL;
     }
 
-  if (pyloader->priv->py_thread_state)
-    PyEval_RestoreThread (pyloader->priv->py_thread_state);
+  if (priv->py_thread_state)
+    PyEval_RestoreThread (priv->py_thread_state);
 
-  if (pyloader->priv->idle_gc != 0)
-    g_source_remove (pyloader->priv->idle_gc);
+  if (priv->idle_gc != 0)
+    g_source_remove (priv->idle_gc);
 
-  if (!pyloader->priv->init_failed)
+  if (!priv->init_failed)
     run_gc (pyloader);
 
-  if (pyloader->priv->must_finalize_python)
+  if (priv->must_finalize_python)
     {
-      if (!pyloader->priv->init_failed)
+      if (!priv->init_failed)
         PyGILState_Ensure ();
 
       Py_Finalize ();
@@ -747,6 +754,4 @@ peas_plugin_loader_python_class_init (PeasPluginLoaderPythonClass *klass)
   loader_class->create_extension = peas_plugin_loader_python_create_extension;
   loader_class->provides_extension = peas_plugin_loader_python_provides_extension;
   loader_class->garbage_collect = peas_plugin_loader_python_garbage_collect;
-
-  g_type_class_add_private (object_class, sizeof (PeasPluginLoaderPythonPrivate));
 }

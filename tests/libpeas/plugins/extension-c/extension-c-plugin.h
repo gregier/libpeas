@@ -35,7 +35,6 @@ G_BEGIN_DECLS
 
 typedef struct _TestingExtensionCPlugin         TestingExtensionCPlugin;
 typedef struct _TestingExtensionCPluginClass    TestingExtensionCPluginClass;
-typedef struct _TestingExtensionCPluginPrivate  TestingExtensionCPluginPrivate;
 
 struct _TestingExtensionCPlugin {
   PeasExtensionBase parent_instance;
