@@ -76,8 +76,8 @@ Makefile.in
 /stamp-h1
 /tests/*-report.html
 /tests/*-report.xml
-/tests/*/cgdump-*
-/tests/*/vgdump-*
+/tests/*/callgrind-*.log
+/tests/*/valgrind-*.log
 /tests/libpeas/engine
 /tests/libpeas/extension-c
 /tests/libpeas/extension-lua51

@@ -30,24 +30,24 @@ if VALGRIND_ENABLED
 test-valgrind: all
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
-	   if test -e vgdump-$$test_prog; then \
-	     unlink vgdump-$$test_prog; \
+	   if test -e valgrind-$${test_prog}.log; then \
+	     unlink valgrind-$${test_prog}.log; \
 	   fi ; \
 	   G_SLICE=always-malloc G_DEBUG=gc-friendly,resident-modules \
 	     libtool --mode=execute valgrind --leak-check=full \
 	     --leak-resolution=high --num-callers=20 \
 	     --suppressions=$(top_srcdir)/tests/valgrind.suppressions \
-	     --log-file=vgdump-$$test_prog $$test_prog || exit 1 ; \
+	     --log-file=valgrind-$${test_prog}.log $$test_prog || exit 1 ; \
 	 done
 
 test-callgrind: all
 	@test -z "$(TEST_PROGS)" || \
 	 for test_prog in $(TEST_PROGS) ; do \
-	   if test -e cgdump-$$test_prog; then \
-	     unlink cgdump-$$test_prog; \
+	   if test -e callgrind-$${test_prog}.log; then \
+	     unlink callgrind-$${test_prog}.log; \
 	   fi ; \
 	   libtool --mode=execute valgrind --tool=callgrind \
-	     --callgrind-out-file=cgdump-$$test_prog \
+	     --callgrind-out-file=callgrind-$${test_prog}.log \
 	     --log-file=/dev/null $$test_prog || exit 1 ; \
 	 done
 
@@ -62,6 +62,6 @@ generate-report: all
 	@test -z "$(TEST_PROGS)" || \
 	 G_SLICE=debug-blocks $(GTESTER) $(GTESTER_ARGS) $(TEST_PROGS)
 
-CLEANFILES = cgdump-* vgdump-*
+CLEANFILES = callgrind-*.log valgrind-*.log
 
 .PHONY: test test-gdb test-valgrind test-callgrind generate-report
