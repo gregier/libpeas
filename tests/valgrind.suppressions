@@ -1,6 +1,12 @@
 # valgrind suppressions file
 
 {
+   gobject_init_ctor
+   Memcheck:Leak
+   ...
+   fun:gobject_init_ctor
+}
+{
    g_type_init
    Memcheck:Leak
    ...
@@ -77,6 +83,13 @@
    Memcheck:Leak
    ...
    fun:g_set_prgname
+}
+{
+   g_get_worker_context:
+   Memcheck:Leak
+   ...
+   fun:g_thread_new
+   fun:g_get_worker_context
 }
 {
    g_intern_string
