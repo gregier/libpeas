@@ -469,6 +469,21 @@ dnl ================================================================
 
 GTK_DOC_CHECK([1.11],[--flavour no-tmpl])
 
+AC_ARG_ENABLE(doc-cross-references,
+              AS_HELP_STRING([--disable-doc-cross-references],
+                             [cross reference symbols from other libraries @<:@default=yes@:>@]),
+              enable_doc_cross_references=$enableval,
+              enable_doc_cross_references=yes)
+
+AM_CONDITIONAL(ENABLE_DOC_CROSS_REFERENCES, test x$enable_doc_cross_references != xno)
+
+# Used to fix doc cross references
+GLIB_PREFIX="`$PKG_CONFIG --variable=prefix glib-2.0`"
+GTK_PREFIX="`$PKG_CONFIG --variable=prefix gtk+-3.0`"
+
+AC_SUBST(GLIB_PREFIX)
+AC_SUBST(GTK_PREFIX)
+
 dnl ================================================================
 dnl Libtool
 dnl ================================================================

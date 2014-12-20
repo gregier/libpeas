@@ -30,9 +30,16 @@ MKDB_OPTIONS=--sgml-mode --output-format=xml
 # e.g. MKTMPL_OPTIONS=--only-section-tmpl
 MKTMPL_OPTIONS=
 
+if ENABLE_DOC_CROSS_REFERENCES
 # Extra options to supply to gtkdoc-fixref. Not normally needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=
+FIXXREF_OPTIONS = \
+	--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/glib	\
+	--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/gmodule	\
+	--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/gobject	\
+	--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/gio	\
+	--extra-dir=$(GTK_PREFIX)/share/gtk-doc/html/gtk
+endif
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 HFILE_GLOB = \
@@ -44,7 +51,7 @@ CFILE_GLOB = \
 	$(top_srcdir)/libpeas-gtk/*.c
 
 # Header files to ignore when scanning (These are internal to libpeas).
-IGNORE_HFILES=		\
+IGNORE_HFILES = \
 	peas-debug.h				\
 	peas-dirs.h				\
 	peas-engine-priv.h			\
