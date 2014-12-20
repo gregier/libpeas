@@ -595,7 +595,7 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
   gboolean is_row;
   GtkTreeIter iter;
   PeasPluginInfo *info;
-  gchar *message;
+  gchar *to_bold, *message;
   GError *error = NULL;
 
   is_row = gtk_tree_view_get_tooltip_context (GTK_TREE_VIEW (widget),
@@ -612,15 +612,19 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
   if (peas_plugin_info_is_available (info, &error))
     return FALSE;
 
-  message = g_markup_printf_escaped (_("<b>The plugin '%s' could not be "
-                                       "loaded</b>\nAn error occurred: %s"),
-                                     peas_plugin_info_get_name (info),
+  /* Avoid having markup in a translated string */
+  to_bold = g_strdup_printf (_("The plugin '%s' could not be loaded"),
+                             peas_plugin_info_get_name (info));
+  message = g_markup_printf_escaped ("<b>%s</b>\n%s%s",
+                                     to_bold,
+                                     _("An error occurred: "),
                                      error->message);
-  g_error_free (error);
 
   gtk_tooltip_set_markup (tooltip, message);
 
   g_free (message);
+  g_free (to_bold);
+  g_error_free (error);
 
   return TRUE;
 }
