@@ -93,3 +93,13 @@ include $(top_srcdir)/gtk-doc.make
 # Other files to distribute
 EXTRA_DIST += \
 	version.xml.in
+
+TESTS_ENVIRONMENT = \
+	SRCDIR=$(abs_srcdir)				\
+	BUILDDIR=$(abs_builddir)			\
+	DOC_MODULE=$(DOC_MODULE)			\
+	DOC_MAIN_SGML_FILE=$(DOC_MAIN_SGML_FILE)
+
+check-local: $(GTKDOC_CHECK)
+	@$(TESTS_ENVIRONMENT) $(GTKDOC_CHECK)
+
