@@ -63,6 +63,7 @@ Makefile.in
 /po/*.sed
 /po/*.sin
 /po/.intltool-merge-cache
+/po/libpeas.pot
 /po/Makefile
 /po/Makefile.in
 /po/Makefile.in.in
