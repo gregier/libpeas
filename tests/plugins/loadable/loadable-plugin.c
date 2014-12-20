@@ -42,7 +42,7 @@ static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingLoadablePlugin,
                                 testing_loadable_plugin,
-                                PEAS_TYPE_EXTENSION_BASE,
+                                G_TYPE_OBJECT,
                                 0,
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
