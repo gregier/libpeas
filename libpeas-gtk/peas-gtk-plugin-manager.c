@@ -511,13 +511,8 @@ peas_gtk_plugin_manager_dispose (GObject *object)
 {
   PeasGtkPluginManager *pm = PEAS_GTK_PLUGIN_MANAGER (object);
 
-  if (pm->priv->engine != NULL)
-    {
-      g_signal_handlers_disconnect_by_func (pm->priv->engine,
-                                            plugin_loaded_toggled_cb,
-                                            pm);
-      g_clear_object (&pm->priv->engine);
-    }
+  g_clear_object (&pm->priv->engine);
+  g_clear_pointer (&pm->priv->about, (GDestroyNotify) gtk_widget_destroy);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_parent_class)->dispose (object);
 }

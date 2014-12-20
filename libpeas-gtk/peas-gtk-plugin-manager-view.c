@@ -722,20 +722,10 @@ peas_gtk_plugin_manager_view_dispose (GObject *object)
 {
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (object);
 
-  if (view->priv->popup_menu != NULL)
-    {
-      gtk_widget_destroy (view->priv->popup_menu);
-      view->priv->popup_menu = NULL;
-    }
+  g_clear_pointer (&view->priv->popup_menu,
+                   (GDestroyNotify) gtk_widget_destroy);
 
-  if (view->priv->engine != NULL)
-    {
-      g_signal_handlers_disconnect_by_func (view->priv->engine,
-                                            plugin_list_changed_cb,
-                                            view);
-      g_clear_object (&view->priv->engine);
-    }
-
+  g_clear_object (&view->priv->engine);
   g_clear_object (&view->priv->store);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->dispose (object);
