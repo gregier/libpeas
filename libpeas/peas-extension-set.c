@@ -95,9 +95,6 @@ struct _PeasExtensionSetPrivate {
   GParameter *parameters;
 
   GList *extensions;
-
-  gulong load_handler_id;
-  gulong unload_handler_id;
 };
 
 typedef struct {
@@ -270,14 +267,12 @@ peas_extension_set_constructed (GObject *object)
   for (l = plugins; l; l = l->next)
     add_extension (set, (PeasPluginInfo *) l->data);
 
-  set->priv->load_handler_id =
-          g_signal_connect_data (set->priv->engine, "load-plugin",
-                                 G_CALLBACK (add_extension), set,
-                                 NULL, G_CONNECT_AFTER | G_CONNECT_SWAPPED);
-  set->priv->unload_handler_id =
-          g_signal_connect_data (set->priv->engine, "unload-plugin",
-                                 G_CALLBACK (remove_extension), set,
-                                 NULL, G_CONNECT_SWAPPED);
+  g_signal_connect_object (set->priv->engine, "load-plugin",
+                           G_CALLBACK (add_extension), set,
+                           G_CONNECT_AFTER | G_CONNECT_SWAPPED);
+  g_signal_connect_object (set->priv->engine, "unload-plugin",
+                           G_CALLBACK (remove_extension), set,
+                           G_CONNECT_SWAPPED);
 
   G_OBJECT_CLASS (peas_extension_set_parent_class)->constructed (object);
 }
@@ -287,18 +282,6 @@ peas_extension_set_dispose (GObject *object)
 {
   PeasExtensionSet *set = PEAS_EXTENSION_SET (object);
   GList *l;
-
-  if (set->priv->load_handler_id != 0)
-    {
-      g_signal_handler_disconnect (set->priv->engine, set->priv->load_handler_id);
-      set->priv->load_handler_id = 0;
-    }
-
-  if (set->priv->unload_handler_id != 0)
-    {
-      g_signal_handler_disconnect (set->priv->engine, set->priv->unload_handler_id);
-      set->priv->unload_handler_id = 0;
-    }
 
   if (set->priv->extensions != NULL)
     {

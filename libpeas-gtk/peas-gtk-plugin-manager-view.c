@@ -709,10 +709,11 @@ peas_gtk_plugin_manager_view_constructed (GObject *object)
   view->priv->show_builtin = TRUE;
   peas_gtk_plugin_manager_view_set_show_builtin (view, FALSE);
 
-  g_signal_connect (view->priv->engine,
-                    "notify::plugin-list",
-                    G_CALLBACK (plugin_list_changed_cb),
-                    view);
+  g_signal_connect_object (view->priv->engine,
+                           "notify::plugin-list",
+                           G_CALLBACK (plugin_list_changed_cb),
+                           view,
+                           0);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_view_parent_class)->constructed (object);
 }

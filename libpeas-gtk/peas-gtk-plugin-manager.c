@@ -479,26 +479,31 @@ peas_gtk_plugin_manager_constructed (GObject *object)
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->view));
 
-  g_signal_connect_swapped (selection,
-                            "changed",
-                            G_CALLBACK (selection_changed_cb),
-                            pm);
-  g_signal_connect_swapped (pm->priv->view,
-                            "cursor-changed",
-                            G_CALLBACK (selection_changed_cb),
-                            pm);
-  g_signal_connect (pm->priv->view,
-                    "populate-popup",
-                    G_CALLBACK (populate_popup_cb),
-                    pm);
-  g_signal_connect_after (pm->priv->engine,
-                          "load-plugin",
-                          G_CALLBACK (plugin_loaded_toggled_cb),
-                          pm);
-  g_signal_connect_after (pm->priv->engine,
-                          "unload-plugin",
-                          G_CALLBACK (plugin_loaded_toggled_cb),
-                          pm);
+  g_signal_connect_object (selection,
+                           "changed",
+                           G_CALLBACK (selection_changed_cb),
+                           pm,
+                           G_CONNECT_SWAPPED);
+  g_signal_connect_object (pm->priv->view,
+                           "cursor-changed",
+                           G_CALLBACK (selection_changed_cb),
+                           pm,
+                           G_CONNECT_SWAPPED);
+  g_signal_connect_object (pm->priv->view,
+                           "populate-popup",
+                           G_CALLBACK (populate_popup_cb),
+                           pm,
+                           0);
+  g_signal_connect_object (pm->priv->engine,
+                           "load-plugin",
+                           G_CALLBACK (plugin_loaded_toggled_cb),
+                           pm,
+                           G_CONNECT_AFTER);
+  g_signal_connect_object (pm->priv->engine,
+                           "unload-plugin",
+                           G_CALLBACK (plugin_loaded_toggled_cb),
+                           pm,
+                           G_CONNECT_AFTER);
 
   /* Update the button sensitivity */
   selection_changed_cb (pm);

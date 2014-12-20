@@ -262,14 +262,16 @@ peas_gtk_plugin_manager_store_constructed (GObject *object)
 
   g_object_ref (store->priv->engine);
 
-  g_signal_connect_after (store->priv->engine,
-                          "load-plugin",
-                          G_CALLBACK (plugin_loaded_toggled_cb),
-                          store);
-  g_signal_connect_after (store->priv->engine,
-                          "unload-plugin",
-                          G_CALLBACK (plugin_loaded_toggled_cb),
-                          store);
+  g_signal_connect_object (store->priv->engine,
+                           "load-plugin",
+                           G_CALLBACK (plugin_loaded_toggled_cb),
+                           store,
+                           G_CONNECT_AFTER);
+  g_signal_connect_object (store->priv->engine,
+                           "unload-plugin",
+                           G_CALLBACK (plugin_loaded_toggled_cb),
+                           store,
+                           G_CONNECT_AFTER);
 
   peas_gtk_plugin_manager_store_reload (store);
 
