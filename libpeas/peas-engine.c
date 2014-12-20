@@ -565,7 +565,7 @@ peas_engine_class_init (PeasEngineClass *klass)
    *
    * See peas_engine_new_with_nonglobal_loaders() for more information.
    *
-   * Since: 2.14
+   * Since: 1.14
    */
   properties[PROP_NONGLOBAL_LOADERS] =
     g_param_spec_boolean ("nonglobal-loaders",
