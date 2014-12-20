@@ -68,8 +68,12 @@ testing_builtin_configurable_class_finalize (TestingBuiltinConfigurableClass *kl
 {
 }
 
-void
-testing_builtin_configurable_register (GTypeModule *module)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-  testing_builtin_configurable_register_type (module);
+  testing_builtin_configurable_register_type (G_TYPE_MODULE (module));
+
+  peas_object_module_register_extension_type (module,
+                                              PEAS_GTK_TYPE_CONFIGURABLE,
+                                              TESTING_TYPE_BUILTIN_CONFIGURABLE);
 }

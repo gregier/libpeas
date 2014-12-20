@@ -44,8 +44,8 @@ struct _TestingBuiltinConfigurableClass {
   PeasExtensionBaseClass parent_class;
 };
 
-GType testing_builtin_configurable_get_type (void) G_GNUC_CONST;
-void  testing_builtin_configurable_register (GTypeModule *module);
+GType                 testing_builtin_configurable_get_type (void) G_GNUC_CONST;
+G_MODULE_EXPORT void  peas_register_types                   (PeasObjectModule *module);
 
 G_END_DECLS
 

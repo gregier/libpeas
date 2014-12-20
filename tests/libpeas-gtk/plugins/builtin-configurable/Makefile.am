@@ -10,8 +10,6 @@ AM_CPPFLAGS = \
 noinst_LTLIBRARIES = libbuiltin-configurable.la
 
 libbuiltin_configurable_la_SOURCES = \
-	builtin-plugin.c	\
-	builtin-plugin.h	\
 	builtin-configurable.c	\
 	builtin-configurable.h
 
