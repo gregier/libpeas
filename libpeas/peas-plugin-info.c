@@ -183,6 +183,8 @@ _peas_plugin_info_new (const gchar *filename,
         }
     }
 
+  g_free (loader);
+
   /* Get the dependency list */
   info->dependencies = g_key_file_get_string_list (plugin_file,
                                                    "Plugin",

@@ -184,6 +184,8 @@ verify_model (TestFixture    *fixture,
         {
           g_assert_not_reached ();
         }
+
+      g_object_unref (model_icon_gicon);
     }
 
   g_free (model_icon_stock_id);
