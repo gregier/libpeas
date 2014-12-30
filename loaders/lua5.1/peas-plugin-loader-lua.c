@@ -201,16 +201,24 @@ _lua_find_extension_type (lua_State      *L,
 
   /* Must always have a valid key */
   lua_pushnil (L);
-  while (lua_next (L, -2) != 0 && found_type == G_TYPE_INVALID)
+  while (lua_next (L, -2) != 0)
     {
       if (lua_istable (L, -1))
         {
           found_type = _lua_get_gtype (L, -1);
 
-          if (found_type != G_TYPE_INVALID &&
-              !g_type_is_a (found_type, exten_type))
+          if (found_type != G_TYPE_INVALID)
             {
-              found_type = G_TYPE_INVALID;
+              if (!g_type_is_a (found_type, exten_type))
+                {
+                  found_type = G_TYPE_INVALID;
+                }
+              else
+                {
+                  /* Pop value and key */
+                  lua_pop (L, 2);
+                  break;
+                }
             }
         }
 
