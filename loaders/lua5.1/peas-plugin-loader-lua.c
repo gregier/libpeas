@@ -486,15 +486,18 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
       return FALSE;
     }
 
-  lua_getfield (L, -1, "lock");
+  lua_pushliteral (L, "lock");
+  lua_rawget (L, -2);
   priv->lgi_lock = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
-  lua_getfield (L, -1, "enter");
+  lua_pushliteral (L, "enter");
+  lua_rawget (L, -2);
   priv->lgi_enter_func = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
-  lua_getfield (L, -1, "leave");
+  lua_pushliteral (L, "leave");
+  lua_rawget (L, -2);
   priv->lgi_leave_func = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
