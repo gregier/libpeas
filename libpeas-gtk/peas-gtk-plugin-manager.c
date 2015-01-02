@@ -369,7 +369,7 @@ peas_gtk_plugin_manager_init (PeasGtkPluginManager *pm)
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar), toolitem, -1);
 
   /* this box is needed to get the items at the end of the toolbar */
-  toolbar_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  toolbar_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_container_add (GTK_CONTAINER (toolitem), toolbar_box);
 
   /* we need another box to disable css grouping */
