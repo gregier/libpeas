@@ -473,6 +473,10 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
       return FALSE;
     }
 
+  /* Set before any other code is run */
+  if (g_getenv ("PEAS_LUA_DEBUG") != NULL)
+    lua_atpanic (L, atpanic_handler);
+
   luaL_openlibs (L);
 
   if (!peas_lua_utils_require (L, "lgi") ||
@@ -512,11 +516,6 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
 
   /* Pop lgi's module table */
   lua_pop (L, 1);
-
-  if (g_getenv ("PEAS_LUA_DEBUG") != NULL)
-    {
-      lua_atpanic (L, atpanic_handler);
-    }
 
   /* Initially the lock is taken by LGI,
    * release as we are not running Lua code
