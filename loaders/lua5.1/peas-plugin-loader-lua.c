@@ -515,6 +515,9 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
   /* Pop lgi's module table */
   lua_pop (L, 1);
 
+  /* Assert that no values were leaked to the stack */
+  g_assert_cmpint (lua_gettop (L), ==, 0);
+
   /* Initially the lock is taken by LGI,
    * release as we are not running Lua code
    */
