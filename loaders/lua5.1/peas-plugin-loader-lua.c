@@ -547,7 +547,8 @@ peas_plugin_loader_lua_finalize (GObject *object)
   /* Must take the lock as Lua code will run on lua_close
    * and another thread might be running Lua code already
    */
-  priv->lgi_enter_func (priv->lgi_lock);
+  if (priv->lgi_enter_func != NULL)
+    priv->lgi_enter_func (priv->lgi_lock);
 
   g_clear_pointer (&priv->L, (GDestroyNotify) lua_close);
 
