@@ -393,10 +393,12 @@ else
             if test -n "${PYTHON2_CONFIG}"; then
                 PKG_CHECK_MODULES(PYGOBJECT, pygobject-3.0 >= $PYGOBJECT_REQUIRED, [
                     found_python2=yes
+                    PYTHON2_BIN="$PYTHON2"
                     PYTHON2_CFLAGS=`${PYTHON2_CONFIG} --includes`
                     PYTHON2_LIBS=`${PYTHON2_CONFIG} --libs`
                     PYTHON2_LDFLAGS=`${PYTHON2_CONFIG} --ldflags`
                     PYTHON2_PYEXECDIR=`$PYTHON2 -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1, 0, prefix='\\$' '{exec_prefix}'))"`
+                    AC_SUBST(PYTHON2_BIN)
                     AC_SUBST(PYTHON2_CFLAGS)
                     AC_SUBST(PYTHON2_LIBS)
                     AC_SUBST(PYTHON2_LDFLAGS)
@@ -437,10 +439,12 @@ else
         if test -n "${PYTHON3_CONFIG}"; then
             PKG_CHECK_MODULES(PYGOBJECT, pygobject-3.0 >= $PYGOBJECT_REQUIRED, [
                 found_python3=yes
+                PYTHON3_BIN="$PYTHON"
                 PYTHON3_CFLAGS=`${PYTHON3_CONFIG} --includes`
                 PYTHON3_LIBS=`${PYTHON3_CONFIG} --libs`
                 PYTHON3_LDFLAGS=`${PYTHON3_CONFIG} --ldflags`
                 PYTHON3_PYEXECDIR="${pyexecdir}"
+                AC_SUBST(PYTHON3_BIN)
                 AC_SUBST(PYTHON3_CFLAGS)
                 AC_SUBST(PYTHON3_LIBS)
                 AC_SUBST(PYTHON3_LDFLAGS)

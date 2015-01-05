@@ -581,6 +581,13 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   if (builtins_module == NULL)
     goto python_init_error;
 
+  /* We don't use the byte-compiled Python source
+   * because glib-compile-resources cannot output
+   * depends for generated files.
+   *
+   * https://bugzilla.gnome.org/show_bug.cgi?id=673101
+   */
+
   internal_python = g_resources_lookup_data ("/org/gnome/libpeas/loaders/"
 #if PY_VERSION_HEX < 0x03000000
                                              "python/"
