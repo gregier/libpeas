@@ -49,13 +49,7 @@ peas_python_internal_new (void)
   builtins_module = PyImport_ImportModule ("builtins");
 #endif
 
-  if (builtins_module == NULL)
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to get builtins module");
-
-      return NULL;
-    }
+  g_return_val_if_fail (builtins_module != NULL, NULL);
 
   /* We don't use the byte-compiled Python source
    * because glib-compile-resources cannot output
@@ -74,34 +68,21 @@ peas_python_internal_new (void)
                                              G_RESOURCE_LOOKUP_FLAGS_NONE,
                                              NULL);
 
-  if (internal_python == NULL)
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to locate internal Python code");
-
-      return NULL;
-    }
+  g_return_val_if_fail (internal_python != NULL, NULL);
 
   /* Compile it manually so the filename is available */
   code = Py_CompileString (g_bytes_get_data (internal_python, NULL),
                            "peas-python-internal.py",
                            Py_file_input);
-
   g_bytes_unref (internal_python);
 
-  if (code == NULL)
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to compile internal Python code");
-
-      return NULL;
-    }
+  g_return_val_if_fail (code != NULL, NULL);
 
   globals = PyDict_New ();
   if (globals == NULL)
     {
       Py_DECREF (code);
-      return NULL;
+      g_return_val_if_fail (globals != NULL, NULL);
     }
 
   if (PyDict_SetItemString (globals, "__builtins__",
@@ -114,31 +95,19 @@ peas_python_internal_new (void)
 
   result = PyEval_EvalCode ((gpointer) code, globals, globals);
   Py_XDECREF (result);
-
   Py_DECREF (code);
 
   if (PyErr_Occurred ())
     {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to run internal Python code");
-
       Py_DECREF (globals);
       return NULL;
     }
 
   internal = PyDict_GetItemString (globals, "hooks");
   Py_XINCREF (internal);
-
   Py_DECREF (globals);
 
-  if (internal == NULL)
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to find internal Python hooks");
-
-      return NULL;
-    }
-
+  g_return_val_if_fail (internal != NULL, NULL);
   return (PeasPythonInternal *) internal;
 }
 
