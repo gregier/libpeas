@@ -107,20 +107,12 @@ test_extension_py_activatable_subject_refcount (PeasEngine     *engine,
 }
 
 static void
-test_extension_py_nonexistent (void)
-{
-  g_test_trap_subprocess (EXTENSION_TEST_NAME (PY_LOADER,
-                                               "nonexistent/subprocess"),
-                          0, 0);
-  g_test_trap_assert_passed ();
-  g_test_trap_assert_stderr ("*ImportError*");
-}
-
-static void
-test_extension_py_nonexistent_subprocess (PeasEngine *engine)
+test_extension_py_nonexistent (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
+  testing_util_push_log_hook ("Error importing plugin 'extension-"
+                              PY_LOADER_STR "-nonexistent'*");
   testing_util_push_log_hook ("Error loading plugin 'extension-"
                               PY_LOADER_STR "-nonexistent'");
 
@@ -248,9 +240,7 @@ main (int   argc,
   EXTENSION_TEST (PY_LOADER, "activatable-subject-refcount",
                   activatable_subject_refcount);
 
-  EXTENSION_TEST_FUNC (PY_LOADER, "nonexistent", nonexistent);
-  EXTENSION_TEST (PY_LOADER, "nonexistent/subprocess",
-                  nonexistent_subprocess);
+  EXTENSION_TEST (PY_LOADER, "nonexistent", nonexistent);
 
   EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized", already_initialized);
   EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized/subprocess",

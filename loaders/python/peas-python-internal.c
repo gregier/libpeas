@@ -27,21 +27,54 @@
 
 #include <gio/gio.h>
 
-/* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
- * glib-object.h, so we unset it here to avoid a warning. Yep, that's bad.
- */
-#undef _POSIX_C_SOURCE
-#include <Python.h>
-
 
 typedef PyObject _PeasPythonInternal;
 
+static PyObject *FailedError = NULL;
+
+
+static PyObject *
+failed_fn (PyObject *self,
+           PyObject *args)
+{
+  const char *msg;
+
+  if (!PyArg_ParseTuple (args, "s:Hooks.failed", &msg))
+    return NULL;
+
+  g_warning ("%s", msg);
+
+  /* peas_python_internal_call() knows to check for this exception */
+  PyErr_SetObject (FailedError, NULL);
+  return NULL;
+}
+
+static PyMethodDef failed_method_def = {
+  "failed", (PyCFunction) failed_fn, METH_VARARGS | METH_STATIC,
+  "Prints warning and raises an Exception"
+};
 
 PeasPythonInternal *
-peas_python_internal_new (void)
+peas_python_internal_new (gboolean already_initialized)
 {
   GBytes *internal_python;
-  PyObject *builtins_module, *code, *globals, *result, *internal;
+  const gchar *prgname;
+  PeasPythonInternal *internal = NULL;
+  PyObject *builtins_module, *globals;
+  PyObject *code = NULL, *module = NULL;
+  PyObject *result = NULL, *failed_method = NULL;
+
+#define goto_error_if_failed(cond) \
+  G_STMT_START { \
+    if (G_UNLIKELY (!(cond))) \
+      { \
+        g_warn_if_fail (cond); \
+        goto error; \
+      } \
+  } G_STMT_END
+
+  prgname = g_get_prgname ();
+  prgname = prgname == NULL ? "" : prgname;
 
 #if PY_MAJOR_VERSION < 3
   builtins_module = PyImport_ImportModule ("__builtin__");
@@ -49,7 +82,7 @@ peas_python_internal_new (void)
   builtins_module = PyImport_ImportModule ("builtins");
 #endif
 
-  g_return_val_if_fail (builtins_module != NULL, NULL);
+  goto_error_if_failed (builtins_module != NULL);
 
   /* We don't use the byte-compiled Python source
    * because glib-compile-resources cannot output
@@ -57,7 +90,6 @@ peas_python_internal_new (void)
    *
    * https://bugzilla.gnome.org/show_bug.cgi?id=673101
    */
-
   internal_python = g_resources_lookup_data ("/org/gnome/libpeas/loaders/"
 #if PY_MAJOR_VERSION < 3
                                              "python/"
@@ -67,72 +99,138 @@ peas_python_internal_new (void)
                                              "internal.py",
                                              G_RESOURCE_LOOKUP_FLAGS_NONE,
                                              NULL);
-
-  g_return_val_if_fail (internal_python != NULL, NULL);
+  goto_error_if_failed (internal_python != NULL);
 
   /* Compile it manually so the filename is available */
   code = Py_CompileString (g_bytes_get_data (internal_python, NULL),
                            "peas-python-internal.py",
                            Py_file_input);
-  g_bytes_unref (internal_python);
+  goto_error_if_failed (code != NULL);
 
-  g_return_val_if_fail (code != NULL, NULL);
+  module = PyModule_New ("libpeas-internal");
+  goto_error_if_failed (module != NULL);
 
-  globals = PyDict_New ();
-  if (globals == NULL)
-    {
-      Py_DECREF (code);
-      g_return_val_if_fail (globals != NULL, NULL);
-    }
+  goto_error_if_failed (PyModule_AddObject (module, "__builtins__",
+                                            builtins_module) == 0);
+  goto_error_if_failed (PyModule_AddObject (module, "ALREADY_INITIALIZED",
+                                            already_initialized ?
+                                            Py_True : Py_False) == 0);
+  goto_error_if_failed (PyModule_AddStringConstant (module, "PRGNAME",
+                                                    prgname) == 0);
+  goto_error_if_failed (PyModule_AddStringMacro (module,
+                                                 PEAS_PYEXECDIR) == 0);
+  goto_error_if_failed (PyModule_AddStringMacro (module,
+                                                 GETTEXT_PACKAGE) == 0);
+  goto_error_if_failed (PyModule_AddStringMacro (module,
+                                                 PEAS_LOCALEDIR) == 0);
 
-  if (PyDict_SetItemString (globals, "__builtins__",
-                            PyModule_GetDict (builtins_module)) != 0)
-    {
-      Py_DECREF (globals);
-      Py_DECREF (code);
-      return NULL;
-    }
-
+  globals = PyModule_GetDict (module);
   result = PyEval_EvalCode ((gpointer) code, globals, globals);
   Py_XDECREF (result);
-  Py_DECREF (code);
 
   if (PyErr_Occurred ())
     {
-      Py_DECREF (globals);
-      return NULL;
+      g_warning ("Failed to run internal Python code");
+      goto error;
     }
 
-  internal = PyDict_GetItemString (globals, "hooks");
-  Py_XINCREF (internal);
-  Py_DECREF (globals);
+  result = PyDict_GetItemString (globals, "hooks");
+  goto_error_if_failed (result != NULL);
 
-  g_return_val_if_fail (internal != NULL, NULL);
-  return (PeasPythonInternal *) internal;
+  goto_error_if_failed (PyObject_SetAttrString (result,
+                                                "__internal_module__",
+                                                module) == 0);
+
+  FailedError = PyDict_GetItemString (globals, "FailedError");
+  goto_error_if_failed (FailedError != NULL);
+
+  failed_method = PyCFunction_NewEx (&failed_method_def, NULL, module);
+  goto_error_if_failed (failed_method != NULL);
+  goto_error_if_failed (PyObject_SetAttrString (result, "failed",
+                                                failed_method) == 0);
+
+  internal = (PeasPythonInternal *) result;
+
+#undef goto_error_if_failed
+
+error:
+
+  if (internal == NULL)
+    Py_XDECREF (result);
+
+  Py_XDECREF (failed_method);
+  Py_XDECREF (module);
+  Py_XDECREF (code);
+  g_clear_pointer (&internal_python, g_bytes_unref);
+
+  return internal;
 }
 
-/* NOTE: This must be called with the GIL held */
 void
 peas_python_internal_free (PeasPythonInternal *internal)
 {
   PyObject *internal_ = (PyObject *) internal;
 
-  peas_python_internal_call (internal, "exit");
+  peas_python_internal_call (internal, "exit", NULL, NULL);
   Py_DECREF (internal_);
 }
 
-/* NOTE: This must be called with the GIL held */
-void
+PyObject *
 peas_python_internal_call (PeasPythonInternal *internal,
-                           const gchar        *name)
+                           const gchar        *name,
+                           PyTypeObject       *return_type,
+                           const gchar        *format,
+                           ...)
 {
   PyObject *internal_ = (PyObject *) internal;
-  PyObject *result;
+  PyObject *callable, *args;
+  PyObject *result = NULL;
+  va_list var_args;
 
-  result = PyObject_CallMethod (internal_, (gchar *) name, NULL);
-  Py_XDECREF (result);
+  /* The PyTypeObject for Py_None is not exposed directly */
+  if (return_type == NULL)
+    return_type = Py_None->ob_type;
+
+  callable = PyObject_GetAttrString (internal_, name);
+  g_return_val_if_fail (callable != NULL, NULL);
+
+  va_start (var_args, format);
+  args = Py_VaBuildValue (format == NULL ? "()" : format, var_args);
+  va_end (var_args);
+
+  if (args != NULL)
+    {
+      result = PyObject_CallObject (callable, args);
+      Py_DECREF (args);
+    }
 
   if (PyErr_Occurred ())
-    PyErr_Print ();
-}
+    {
+      /* Raised by failed_fn() to prevent printing the exception */
+      if (PyErr_ExceptionMatches (FailedError))
+        {
+          PyErr_Clear ();
+        }
+      else
+        {
+          g_warning ("Failed to run internal Python hook '%s'", name);
+          PyErr_Print ();
+        }
 
+      return NULL;
+    }
+
+  /* We always allow a None result */
+  if (result == Py_None)
+    {
+      Py_CLEAR (result);
+    }
+  else if (!PyObject_TypeCheck (result, return_type))
+    {
+      g_warning ("Failed to run internal Python hook '%s': ", name);
+
+      Py_CLEAR (result);
+    }
+
+  return result;
+}
