@@ -608,7 +608,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
 
   /* Compile it manually so the filename is available */
   code = Py_CompileString (g_bytes_get_data (internal_python, NULL),
-                           "peas-plugin-loader-python-internal.py",
+                           "peas-python-internal.py",
                            Py_file_input);
 
   g_bytes_unref (internal_python);

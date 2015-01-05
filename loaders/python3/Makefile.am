@@ -18,7 +18,7 @@ loader_LTLIBRARIES = libpython3loader.la
 libpython3loader_la_SOURCES = \
 	$(top_srcdir)/loaders/python/peas-plugin-loader-python.c	\
 	$(top_srcdir)/loaders/python/peas-plugin-loader-python.h	\
-	peas-plugin-loader-python3-resources.c
+	peas-python3-resources.c
 
 libpython3loader_la_LDFLAGS = \
 	$(LOADER_LIBTOOL_FLAGS)		\
@@ -31,22 +31,22 @@ libpython3loader_la_LIBADD = \
 	$(PYGOBJECT_LIBS)			\
 	$(PYTHON3_LIBS)
 
-peas-plugin-loader-python3-internal.pyc: $(srcdir)/../python/peas-plugin-loader-python-internal.py
+peas-python3-internal.pyc: $(srcdir)/../python/peas-python-internal.py
 	$(AM_V_GEN) $(PYTHON3_BIN) $(srcdir)/../python/peas-python-compile.py $< $@
 
-all-local: peas-plugin-loader-python3-internal.pyc
+all-local: peas-python3-internal.pyc
 
-loader_resources_deps = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/peas-plugin-loader-python3.gresource.xml)
-peas-plugin-loader-python3-resources.c: $(srcdir)/peas-plugin-loader-python3.gresource.xml $(loader_resources_deps)
-	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --internal --target=$@ --sourcedir=$(srcdir) --generate-source $(srcdir)/peas-plugin-loader-python3.gresource.xml
+loader_resources_deps = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/peas-python3.gresource.xml)
+peas-python3-resources.c: $(srcdir)/peas-python3.gresource.xml $(loader_resources_deps)
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --internal --target=$@ --sourcedir=$(srcdir) --generate-source $(srcdir)/peas-python3.gresource.xml
 
 EXTRA_DIST = \
-	peas-plugin-loader-python3.gresource.xml	\
+	peas-python3.gresource.xml	\
 	$(loader_resources_deps)
 
 CLEANFILES = \
-	peas-plugin-loader-python3-internal.pyc		\
-	peas-plugin-loader-python3-resources.c
+	peas-python3-internal.pyc	\
+	peas-python3-resources.c
 
 gcov_sources = $(libpython3loader_la_SOURCES)
 include $(top_srcdir)/Makefile.gcov

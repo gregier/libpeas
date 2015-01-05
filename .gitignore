@@ -51,8 +51,8 @@ Makefile.in
 /intltool-update.in
 /libtool
 /ltmain.sh
-/loaders/python/peas-plugin-loader-python-resources.c
-/loaders/python3/peas-plugin-loader-python3-resources.c
+/loaders/python/peas-python-resources.c
+/loaders/python3/peas-python3-resources.c
 /m4
 /missing
 /mkinstalldirs
