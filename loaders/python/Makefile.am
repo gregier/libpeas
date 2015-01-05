@@ -18,6 +18,8 @@ loader_LTLIBRARIES = libpythonloader.la
 libpythonloader_la_SOURCES = \
 	peas-plugin-loader-python.c 	\
 	peas-plugin-loader-python.h	\
+	peas-python-internal.c 		\
+	peas-python-internal.h 		\
 	peas-python-resources.c
 
 libpythonloader_la_LDFLAGS = \

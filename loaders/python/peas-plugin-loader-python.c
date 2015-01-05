@@ -25,6 +25,7 @@
 #endif
 
 #include "peas-plugin-loader-python.h"
+#include "peas-python-internal.h"
 #include "libpeas/peas-plugin-info-priv.h"
 
 /* _POSIX_C_SOURCE is defined in Python.h and in limits.h included by
@@ -48,7 +49,7 @@ typedef struct {
   guint init_failed : 1;
   guint must_finalize_python : 1;
   PyThreadState *py_thread_state;
-  PyObject *hooks;
+  PeasPythonInternal *internal;
 } PeasPluginLoaderPythonPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderPython,
@@ -67,21 +68,6 @@ peas_register_types (PeasObjectModule *module)
   peas_object_module_register_extension_type (module,
                                               PEAS_TYPE_PLUGIN_LOADER,
                                               PEAS_TYPE_PLUGIN_LOADER_PYTHON);
-}
-
-/* NOTE: This must be called with the GIL held */
-static void
-internal_python_hook (PeasPluginLoaderPython *pyloader,
-                      const gchar            *name)
-{
-  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
-  PyObject *result;
-
-  result = PyObject_CallMethod (priv->hooks, (gchar *) name, NULL);
-  Py_XDECREF (result);
-
-  if (PyErr_Occurred ())
-    PyErr_Print ();
 }
 
 /* NOTE: This must be called with the GIL held */
@@ -341,7 +327,7 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
    * loader will not be finalized by applications
    */
   if (--priv->n_loaded_plugins == 0)
-    internal_python_hook (pyloader, "all_plugins_unloaded");
+    peas_python_internal_call (priv->internal, "all_plugins_unloaded");
 
   info->loader_data = NULL;
   PyGILState_Release (state);
@@ -434,8 +420,7 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = 0;
   long hexversion;
-  GBytes *internal_python;
-  PyObject *gettext, *result, *builtins_module, *code, *globals;
+  PyObject *gettext, *result;
   const gchar *prgname;
 #if PY_VERSION_HEX < 0x03000000
   const char *argv[] = { NULL, NULL };
@@ -572,94 +557,10 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
       goto python_init_error;
     }
 
-#if PY_VERSION_HEX < 0x03000000
-  builtins_module = PyImport_ImportModule ("__builtin__");
-#else
-  builtins_module = PyImport_ImportModule ("builtins");
-#endif
-
-  if (builtins_module == NULL)
-    goto python_init_error;
-
-  /* We don't use the byte-compiled Python source
-   * because glib-compile-resources cannot output
-   * depends for generated files.
-   *
-   * https://bugzilla.gnome.org/show_bug.cgi?id=673101
-   */
-
-  internal_python = g_resources_lookup_data ("/org/gnome/libpeas/loaders/"
-#if PY_VERSION_HEX < 0x03000000
-                                             "python/"
-#else
-                                             "python3/"
-#endif
-                                             "internal.py",
-                                             G_RESOURCE_LOOKUP_FLAGS_NONE,
-                                             NULL);
-
-  if (internal_python == NULL)
+  priv->internal = peas_python_internal_new ();
+  if (priv->internal == NULL)
     {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to locate internal python code");
-
-      goto python_init_error;
-    }
-
-  /* Compile it manually so the filename is available */
-  code = Py_CompileString (g_bytes_get_data (internal_python, NULL),
-                           "peas-python-internal.py",
-                           Py_file_input);
-
-  g_bytes_unref (internal_python);
-
-  if (code == NULL)
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to compile internal python code");
-
-      goto python_init_error;
-    }
-
-  globals = PyDict_New ();
-  if (globals == NULL)
-    {
-      Py_DECREF (code);
-      goto python_init_error;
-    }
-
-  if (PyDict_SetItemString (globals, "__builtins__",
-                            PyModule_GetDict (builtins_module)) != 0)
-    {
-      Py_DECREF (globals);
-      Py_DECREF (code);
-      goto python_init_error;
-    }
-
-  result = PyEval_EvalCode ((gpointer) code, globals, globals);
-  Py_XDECREF (result);
-
-  Py_DECREF (code);
-
-  if (PyErr_Occurred ())
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to run internal python code");
-
-      Py_DECREF (globals);
-      goto python_init_error;
-    }
-
-  priv->hooks = PyDict_GetItemString (globals, "hooks");
-  Py_XINCREF (priv->hooks);
-
-  Py_DECREF (globals);
-
-  if (priv->hooks == NULL)
-    {
-      g_warning ("Error initializing Python Plugin Loader: "
-                 "failed to find internal python hooks");
-
+      /* Already warned */
       goto python_init_error;
     }
 
@@ -715,14 +616,11 @@ peas_plugin_loader_python_finalize (GObject *object)
       PyGILState_Release (state);
     }
 
-  if (priv->hooks != NULL && !priv->init_failed)
+  if (priv->internal != NULL && !priv->init_failed)
     {
       state = PyGILState_Ensure ();
-      internal_python_hook (pyloader, "exit");
+      peas_python_internal_free (priv->internal);
       PyGILState_Release (state);
-
-      /* Borrowed Reference */
-      priv->hooks = NULL;
     }
 
   if (priv->py_thread_state)
