@@ -466,7 +466,7 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
   PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
   lua_State *L;
 
-  L = luaL_newstate ();
+  priv->L = L = luaL_newstate ();
   if (L == NULL)
     {
       g_critical ("Failed to allocate lua_State");
@@ -486,7 +486,6 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
                                      LGI_MICRO_VERSION))
     {
       /* Already warned */
-      lua_close (L);
       return FALSE;
     }
 
@@ -510,7 +509,6 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
       priv->lgi_leave_func == NULL)
     {
       g_warning ("Failed to find 'lgi.lock', 'lgi.enter' and 'lgi.leave'");
-      lua_close (L);
       return FALSE;
     }
 
@@ -521,8 +519,6 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
    * release as we are not running Lua code
    */
   priv->lgi_leave_func (priv->lgi_lock);
-
-  priv->L = L;
   return TRUE;
 }
 
