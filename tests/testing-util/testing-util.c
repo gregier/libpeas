@@ -188,10 +188,9 @@ testing_util_init (void)
 
   g_log_set_default_handler (log_handler, NULL);
 
-
-  g_irepository_prepend_search_path (BUILDDIR "/libpeas");
-
-  g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error);
+  g_irepository_require_private (g_irepository_get_default (),
+                                 BUILDDIR "/libpeas",
+                                 "Peas", "1.0", 0, &error);
   g_assert_no_error (error);
 
   initialized = TRUE;
