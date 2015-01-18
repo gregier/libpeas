@@ -37,6 +37,11 @@ typedef struct {
   gboolean hit;
 } LogHook;
 
+typedef struct {
+  GPtrArray *hooks;
+  GPtrArray *hits;
+} LogHooks;
+
 static void engine_private_notify (gpointer value);
 static void log_hooks_private_notify (gpointer value);
 
@@ -71,26 +76,33 @@ engine_private_notify (gpointer value)
 static void
 log_hooks_private_notify (gpointer value)
 {
-  GPtrArray *log_hooks = value;
+  LogHooks *log_hooks = value;
 
   if (log_hooks != NULL)
     {
-      g_assert_cmpuint (log_hooks->len, ==, 0);
-      g_ptr_array_unref (log_hooks);
+      g_assert_cmpuint (log_hooks->hooks->len, ==, 0);
+      g_ptr_array_unref (log_hooks->hooks);
+
+      g_assert_cmpuint (log_hooks->hits->len, ==, 0);
+      g_ptr_array_unref (log_hooks->hits);
+
+      g_free (log_hooks);
     }
 }
 
-static GPtrArray *
+static LogHooks *
 get_log_hooks (void)
 {
-  GPtrArray *log_hooks = g_private_get (&log_hooks_key);
+  LogHooks *log_hooks = g_private_get (&log_hooks_key);
 
   if (log_hooks != NULL)
     return log_hooks;
 
   g_assert (initialized);
 
-  log_hooks = g_ptr_array_new_with_free_func (g_free);
+  log_hooks = g_new (LogHooks, 1);
+  log_hooks->hooks = g_ptr_array_new_with_free_func (g_free);
+  log_hooks->hits = g_ptr_array_new_with_free_func (g_free);
   g_private_set (&log_hooks_key, log_hooks);
 
   return log_hooks;
@@ -102,7 +114,9 @@ log_handler (const gchar    *log_domain,
              const gchar    *message,
              gpointer        user_data)
 {
-  GPtrArray *log_hooks = get_log_hooks ();
+  LogHooks *log_hooks = get_log_hooks ();
+  GPtrArray *hooks = log_hooks->hooks;
+  gboolean found = FALSE;
   guint i;
 
   /* We always want to log debug, info and message logs */
@@ -123,24 +137,38 @@ log_handler (const gchar    *log_domain,
       abort ();
     }
 
-  for (i = 0; i < log_hooks->len; ++i)
+  for (i = 0; i < hooks->len; ++i)
     {
-      LogHook *hook = g_ptr_array_index (log_hooks, i);
+      LogHook *hook = g_ptr_array_index (hooks, i);
 
       if (g_pattern_match_simple (hook->pattern, message))
         {
           hook->hit = TRUE;
-          return;
+          found = TRUE;
+          break;
         }
     }
 
   /* Check the allowed_patterns after the log hooks to
    * avoid issues when an allowed_pattern would match a hook
    */
-  for (i = 0; i < G_N_ELEMENTS (allowed_patterns); ++i)
+  for (i = 0; i < G_N_ELEMENTS (allowed_patterns) && !found; ++i)
     {
       if (g_pattern_match_simple (allowed_patterns[i], message))
-        return;
+        found = TRUE;
+    }
+
+  if (found)
+    {
+      gchar *msg;
+
+      msg = g_strdup_printf ("%s-%s: %s", log_domain,
+                             (log_level & G_LOG_LEVEL_WARNING) != 0 ?
+                             "WARNING" : "CRITICAL",
+                             message);
+
+      g_ptr_array_add (log_hooks->hits, msg);
+      return;
     }
 
   /* Warnings and criticals are not allowed to be unhandled */
@@ -275,7 +303,7 @@ testing_util_run_tests (void)
 void
 testing_util_push_log_hook (const gchar *pattern)
 {
-  GPtrArray *log_hooks = get_log_hooks ();
+  LogHooks *log_hooks = get_log_hooks ();
   LogHook *hook;
 
   g_return_if_fail (pattern != NULL && *pattern != '\0');
@@ -284,78 +312,95 @@ testing_util_push_log_hook (const gchar *pattern)
   hook->pattern = pattern;
   hook->hit = FALSE;
 
-  g_ptr_array_add (log_hooks, hook);
+  g_ptr_array_add (log_hooks->hooks, hook);
 }
 
 /* Optional - see testing_util_engine_free() */
 void
 testing_util_pop_log_hook (void)
 {
-  GPtrArray *log_hooks = get_log_hooks ();
+  LogHooks *log_hooks = get_log_hooks ();
+  GPtrArray *hooks = log_hooks->hooks;
   LogHook *hook;
 
-  g_return_if_fail (log_hooks->len > 0);
+  g_return_if_fail (hooks->len > 0);
 
-  hook = g_ptr_array_index (log_hooks, log_hooks->len - 1);
+  hook = g_ptr_array_index (hooks, hooks->len - 1);
 
   if (!hook->hit)
     testing_util_pop_log_hooks ();
 
-  g_ptr_array_remove_index (log_hooks, log_hooks->len - 1);
+  g_ptr_array_remove_index (hooks, hooks->len - 1);
 }
 
 void
 testing_util_pop_log_hooks (void)
 {
-  GPtrArray *log_hooks = get_log_hooks ();
+  LogHooks *log_hooks = get_log_hooks ();
+  GPtrArray *hooks = log_hooks->hooks;
+  GPtrArray *hits = log_hooks->hits;
   guint i;
   LogHook *hook;
   GPtrArray *unhit_hooks;
+  GString *msg;
 
-  if (log_hooks->len == 0)
+  if (hooks->len == 0)
     return;
 
   unhit_hooks = g_ptr_array_new ();
 
-  for (i = 0; i < log_hooks->len; ++i)
+  for (i = 0; i < hooks->len; ++i)
     {
-      hook = g_ptr_array_index (log_hooks, i);
+      hook = g_ptr_array_index (hooks, i);
 
       if (!hook->hit)
         g_ptr_array_add (unhit_hooks, hook);
     }
 
+  if (unhit_hooks->len == 0)
+    {
+      g_ptr_array_unref (unhit_hooks);
+      g_ptr_array_set_size (hooks, 0);
+      g_ptr_array_set_size (hits, 0);
+      return;
+    }
+
+  msg = g_string_new ("");
+
+  if (unhit_hooks->len != 0)
+    g_string_append (msg, "Log hooks were not triggered:");
+
   if (unhit_hooks->len == 1)
     {
-      gchar *msg;
-
       hook = g_ptr_array_index (unhit_hooks, 0);
-      msg = g_strdup_printf ("Log hook was not triggered: '%s'",
-                             hook->pattern);
-
-      /* Use the default log handler directly to avoid recurse complaints */
-      g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, msg, NULL);
-      abort ();
+      g_string_append_printf (msg, " '%s'", hook->pattern);
     }
   else if (unhit_hooks->len > 1)
     {
-      GString *msg;
-
-      msg = g_string_new ("Log hooks were not triggered:");
-
       for (i = 0; i < unhit_hooks->len; ++i)
         {
           hook = g_ptr_array_index (unhit_hooks, i);
 
           g_string_append_printf (msg, "\n\t'%s'", hook->pattern);
         }
-
-      /* Use the default log handler directly to avoid recurse complaints */
-      g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, msg->str, NULL);
-      abort ();
     }
 
-  g_ptr_array_unref (unhit_hooks);
+  if (hits->len != 0)
+    {
+      if (unhit_hooks->len != 0)
+        g_string_append (msg, "\n\n");
 
-  g_ptr_array_set_size (log_hooks, 0);
+      g_string_append (msg, "Log messages filtered:");
+
+      for (i = 0; i < hits->len; ++i)
+        {
+          const gchar *hit = g_ptr_array_index (hits, i);
+
+          g_string_append_printf (msg, "\n\t%s", hit);
+        }
+    }
+
+  /* Use the default log handler directly to avoid recurse complaints */
+  g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, msg->str, NULL);
+  abort ();
 }
