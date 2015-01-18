@@ -55,19 +55,6 @@ static GPrivate engine_key = G_PRIVATE_INIT (engine_private_notify);
 static GPrivate unhandled_key = G_PRIVATE_INIT (unhandled_private_notify);
 static GPrivate log_hooks_key = G_PRIVATE_INIT (log_hooks_private_notify);
 
-/* These are warnings and criticals that just have to happen
- * for testing purposes and as such we don't want to abort on them.
- *
- * If the warnings are for specific tests use
- * testing_util_push_log_hook() and testing_util_pop_log_hook() which
- * will assert that the warning or critical actually happened.
- *
- * Don't bother putting errors in here as GLib always aborts on errors.
- */
-static const gchar *allowed_patterns[] = {
-  "Failed to load module '*loader'*"
-};
-
 static void
 engine_private_notify (gpointer value)
 {
@@ -125,7 +112,6 @@ log_handler (const gchar    *log_domain,
 {
   LogHooks *log_hooks = get_log_hooks ();
   GPtrArray *hooks = log_hooks->hooks;
-  gboolean found = FALSE;
   guint i;
 
   /* We always want to log debug, info and message logs */
@@ -149,34 +135,18 @@ log_handler (const gchar    *log_domain,
   for (i = 0; i < hooks->len; ++i)
     {
       LogHook *hook = g_ptr_array_index (hooks, i);
-
-      if (g_pattern_match_simple (hook->pattern, message))
-        {
-          hook->hit = TRUE;
-          found = TRUE;
-          break;
-        }
-    }
-
-  /* Check the allowed_patterns after the log hooks to
-   * avoid issues when an allowed_pattern would match a hook
-   */
-  for (i = 0; i < G_N_ELEMENTS (allowed_patterns) && !found; ++i)
-    {
-      if (g_pattern_match_simple (allowed_patterns[i], message))
-        found = TRUE;
-    }
-
-  if (found)
-    {
       gchar *msg;
+
+      if (!g_pattern_match_simple (hook->pattern, message))
+        continue;
 
       msg = g_strdup_printf ("%s-%s: %s", log_domain,
                              (log_level & G_LOG_LEVEL_WARNING) != 0 ?
                              "WARNING" : "CRITICAL",
                              message);
-
       g_ptr_array_add (log_hooks->hits, msg);
+
+      hook->hit = TRUE;
       return;
     }
 

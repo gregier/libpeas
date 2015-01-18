@@ -27,10 +27,10 @@
 
 G_BEGIN_DECLS
 
-gchar  *peas_dirs_get_data_dir           (void);
-gchar  *peas_dirs_get_lib_dir            (void);
-gchar  *peas_dirs_get_plugin_loaders_dir (void);
-gchar  *peas_dirs_get_locale_dir         (void);
+gchar  *peas_dirs_get_data_dir          (void);
+gchar  *peas_dirs_get_lib_dir           (void);
+gchar  *peas_dirs_get_plugin_loader_dir (const gchar *loader_name);
+gchar  *peas_dirs_get_locale_dir        (void);
 
 G_END_DECLS
 

@@ -645,24 +645,6 @@ peas_engine_class_init (PeasEngineClass *klass)
 }
 
 static PeasObjectModule *
-load_module (const gchar *module_name,
-             const gchar *module_dir)
-{
-  PeasObjectModule *module;
-
-  /* Bind loaders globally, binding
-   * locally can break the plugin loaders
-   */
-  module = peas_object_module_new_full (module_name, module_dir,
-                                        TRUE, FALSE);
-
-  if (!g_type_module_use (G_TYPE_MODULE (module)))
-    g_clear_object (&module);
-
-  return module;
-}
-
-static PeasObjectModule *
 get_plugin_loader_module (gint loader_id)
 {
   GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
@@ -675,7 +657,7 @@ get_plugin_loader_module (gint loader_id)
 
   loader_name = peas_utils_get_loader_from_id (loader_id);
   module_name = g_strconcat (loader_name, "loader", NULL);
-  module_dir = peas_dirs_get_plugin_loaders_dir ();
+  module_dir = peas_dirs_get_plugin_loader_dir (loader_name);
 
   /* Remove '.'s from the module name */
   for (i = 0, j = 0; module_name[i] != '\0'; ++i)
@@ -686,23 +668,21 @@ get_plugin_loader_module (gint loader_id)
 
   module_name[j] = '\0';
 
-  global_loader_info->module = load_module (module_name, module_dir);
+  /* Bind loaders globally, binding
+   * locally can break the plugin loaders
+   */
+  global_loader_info->module = peas_object_module_new_full (module_name,
+                                                            module_dir,
+                                                            TRUE, FALSE);
 
-  if (global_loader_info->module == NULL)
+  if (!g_type_module_use (G_TYPE_MODULE (global_loader_info->module)))
     {
-      gchar *tmp = module_dir;
-
-      module_dir = g_build_filename (module_dir, loader_name, NULL);
-      global_loader_info->module = load_module (module_name, module_dir);
-
-      g_free (tmp);
+      g_warning ("Could not load plugin loader '%s'", loader_name);
+      g_clear_object (&global_loader_info->module);
     }
 
   g_free (module_dir);
   g_free (module_name);
-
-  if (global_loader_info->module == NULL)
-    g_warning ("Could not load plugin loader '%s'", loader_name);
 
   return global_loader_info->module;
 }
