@@ -290,7 +290,7 @@ static void
 test_gtk_plugin_manager_store_valid_stock_icon (TestFixture *fixture)
 {
   GtkIconTheme *icon_theme;
-  GType icon_type = icon_type = G_TYPE_INVALID;
+  GType icon_type = G_TYPE_INVALID;
 
   icon_theme = gtk_icon_theme_get_default ();
 
