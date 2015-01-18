@@ -57,6 +57,7 @@ create_main_window (void)
   GtkWidget *window;
   GtkWidget *box;
   GtkWidget *manager;
+  GtkWidget *scrolled_window;
   GtkWidget *button_box;
   GtkWidget *button;
 
@@ -72,6 +73,12 @@ create_main_window (void)
 
   manager = peas_gtk_plugin_manager_new (peas_engine_get_default ());
   gtk_box_pack_start (GTK_BOX (box), manager, TRUE, TRUE, 0);
+
+  /* Always show all plugins, there are only a few */
+  scrolled_window = gtk_test_find_sibling (manager,
+                                           GTK_TYPE_SCROLLED_WINDOW);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+                                  GTK_POLICY_NEVER, GTK_POLICY_NEVER);
 
   button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_box_set_spacing (GTK_BOX (button_box), 6);
