@@ -43,6 +43,7 @@ typedef struct {
 } LogHooks;
 
 static void engine_private_notify (gpointer value);
+static void unhandled_private_notify (gpointer value);
 static void log_hooks_private_notify (gpointer value);
 
 static gboolean initialized = FALSE;
@@ -51,6 +52,7 @@ static gpointer dead_engine = NULL;
 #define DEAD_ENGINE ((gpointer) &dead_engine)
 
 static GPrivate engine_key = G_PRIVATE_INIT (engine_private_notify);
+static GPrivate unhandled_key = G_PRIVATE_INIT (unhandled_private_notify);
 static GPrivate log_hooks_key = G_PRIVATE_INIT (log_hooks_private_notify);
 
 /* These are warnings and criticals that just have to happen
@@ -71,6 +73,13 @@ engine_private_notify (gpointer value)
 {
   if (value != NULL)
     g_error ("A PeasEngine was not freed!");
+}
+
+static void
+unhandled_private_notify (gpointer value)
+{
+  if (value != NULL)
+    g_error ("Log hooks not popped!");
 }
 
 static void
@@ -171,20 +180,11 @@ log_handler (const gchar    *log_domain,
       return;
     }
 
-  /* Warnings and criticals are not allowed to be unhandled */
-  if ((log_level & G_LOG_LEVEL_WARNING) != 0)
-    message = g_strdup_printf ("Unhandled warning: %s: %s", log_domain, message);
-  else
-    message = g_strdup_printf ("Unhandled critical: %s: %s", log_domain, message);
+  /* Checked in testing_util_pop_log_hooks() */
+  g_private_set (&unhandled_key, (gpointer) TRUE);
 
   /* Use the default log handler directly to avoid recurse complaints */
-  g_log_default_handler (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,
-                         message, user_data);
-
-  testing_util_pop_log_hooks ();
-
-  /* The default handler does not actually abort */
-  abort ();
+  g_log_default_handler (log_domain, log_level, message, user_data);
 }
 
 void
@@ -339,6 +339,7 @@ testing_util_pop_log_hooks (void)
   LogHooks *log_hooks = get_log_hooks ();
   GPtrArray *hooks = log_hooks->hooks;
   GPtrArray *hits = log_hooks->hits;
+  gboolean unhandled = g_private_get (&unhandled_key) != NULL;
   guint i;
   LogHook *hook;
   GPtrArray *unhit_hooks;
@@ -357,7 +358,7 @@ testing_util_pop_log_hooks (void)
         g_ptr_array_add (unhit_hooks, hook);
     }
 
-  if (unhit_hooks->len == 0)
+  if (unhit_hooks->len == 0 && !unhandled)
     {
       g_ptr_array_unref (unhit_hooks);
       g_ptr_array_set_size (hooks, 0);
