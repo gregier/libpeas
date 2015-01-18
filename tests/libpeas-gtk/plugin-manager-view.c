@@ -143,8 +143,7 @@ test_gtk_plugin_manager_view_selection (TestFixture *fixture)
   info = peas_gtk_plugin_manager_view_get_selected_plugin (fixture->view);
   g_assert (info == NULL);
 
-  gtk_tree_model_get_iter_first (fixture->model, &iter);
-
+  g_assert (gtk_tree_model_get_iter_first (fixture->model, &iter));
   gtk_tree_selection_select_iter (fixture->selection, &iter);
 
   info = peas_gtk_plugin_manager_view_get_selected_plugin (fixture->view);
