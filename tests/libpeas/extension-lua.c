@@ -149,17 +149,7 @@ test_extension_lua_activatable_subject_refcount (PeasEngine     *engine,
 }
 
 static void
-test_extension_lua_nonexistent (void)
-{
-  g_test_trap_subprocess (EXTENSION_TEST_NAME (lua5.1,
-                                               "nonexistent/subprocess"),
-                          0, G_TEST_SUBPROCESS_INHERIT_STDERR);
-  g_test_trap_assert_passed ();
-  g_test_trap_assert_stderr ("");
-}
-
-static void
-test_extension_lua_nonexistent_subprocess (PeasEngine *engine)
+test_extension_lua_nonexistent (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
@@ -201,9 +191,7 @@ main (int   argc,
   EXTENSION_TEST (lua5.1, "instance-refcount", instance_refcount);
   EXTENSION_TEST (lua5.1, "activatable-subject-refcount",
                   activatable_subject_refcount);
-
-  EXTENSION_TEST_FUNC (lua5.1, "nonexistent", nonexistent);
-  EXTENSION_TEST (lua5.1, "nonexistent/subprocess", nonexistent_subprocess);
+  EXTENSION_TEST (lua5.1, "nonexistent", nonexistent);
 
   return testing_extension_run_tests ();
 }
