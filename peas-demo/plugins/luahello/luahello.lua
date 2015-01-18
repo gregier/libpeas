@@ -6,7 +6,7 @@ local Peas = lgi.Peas
 local PeasGtk = lgi.PeasGtk
 
 
-LuaHelloPlugin = GObject.Object:derive('LuaHelloPlugin', {
+local LuaHelloPlugin = GObject.Object:derive('LuaHelloPlugin', {
     Peas.Activatable
 })
 
@@ -17,7 +17,7 @@ LuaHelloPlugin._property.object =
                               GObject.ParamFlags.WRITABLE })
 
 function LuaHelloPlugin:do_activate()
-    window = self.priv.object
+    local window = self.priv.object
     print('LuaHelloPlugin:do_activate', tostring(window))
     self.priv.label = Gtk.Label.new('Lua Says Hello!')
     self.priv.label:show()
@@ -25,19 +25,19 @@ function LuaHelloPlugin:do_activate()
 end
 
 function LuaHelloPlugin:do_deactivate()
-    window = self.priv.object
+    local window = self.priv.object
     print('LuaHelloPlugin:do_deactivate', tostring(window))
     window:get_child():remove(self.priv.label)
     self.priv.label:destroy()
 end
 
 function LuaHelloPlugin:do_update_state()
-    window = self.priv.object
+    local window = self.priv.object
     print('LuaHelloPlugin:do_update_state', tostring(window))
 end
 
 
-LuaHelloConfigurable = GObject.Object:derive('LuaHelloConfigurable', {
+local LuaHelloConfigurable = GObject.Object:derive('LuaHelloConfigurable', {
     PeasGtk.Configurable
 })
 
