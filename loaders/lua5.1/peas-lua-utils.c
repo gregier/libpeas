@@ -1,5 +1,5 @@
 /*
- * peas-plugin-loader-lua-utils.c
+ * peas-lua-utils.c
  * This file is part of libpeas
  *
  * Copyright (C) 2014 - Garrett Regier
@@ -23,7 +23,7 @@
 #include <config.h>
 #endif
 
-#include "peas-plugin-loader-lua-utils.h"
+#include "peas-lua-utils.h"
 
 #include <string.h>
 

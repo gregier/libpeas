@@ -15,8 +15,8 @@ loader_LTLIBRARIES = liblua51loader.la
 liblua51loader_la_SOURCES = \
 	peas-plugin-loader-lua.c	\
 	peas-plugin-loader-lua.h	\
-	peas-plugin-loader-lua-utils.c	\
-	peas-plugin-loader-lua-utils.h
+	peas-lua-utils.c		\
+	peas-lua-utils.h
 
 liblua51loader_la_LDFLAGS = \
 	$(LOADER_LIBTOOL_FLAGS)		\

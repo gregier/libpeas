@@ -254,7 +254,7 @@ m4_define([peas_lgi_version_test], [
 #include <lauxlib.h>
 #include <lualib.h>
 
-#include "peas-plugin-loader-lua-utils.c"
+#include "peas-lua-utils.c"
 
 int main(int argc, char **argv)
 {

@@ -32,7 +32,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-#include "peas-plugin-loader-lua-utils.h"
+#include "peas-lua-utils.h"
 
 
 typedef void (* LgiLockFunc) (gpointer lgi_lock);
