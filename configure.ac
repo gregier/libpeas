@@ -323,8 +323,10 @@ else
     else
         AC_MSG_RESULT([$found_lua51 ($with_lua51)])
 
+        LUA51_BIN="$with_lua51"
         LUA51_CFLAGS=`$PKG_CONFIG --cflags $with_lua51`
         LUA51_LIBS=`$PKG_CONFIG --libs $with_lua51`
+        AC_SUBST(LUA51_BIN)
         AC_SUBST(LUA51_CFLAGS)
         AC_SUBST(LUA51_LIBS)
 

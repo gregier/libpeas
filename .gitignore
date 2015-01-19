@@ -1,6 +1,7 @@
 *.bak
 *.lo
 *.la
+*.luac
 *.o
 *.pyc
 *.gir
@@ -51,6 +52,7 @@ Makefile.in
 /intltool-update.in
 /libtool
 /ltmain.sh
+/loaders/lua5.1/peas-lua-resources.c
 /loaders/python/peas-python-resources.c
 /loaders/python3/peas-python3-resources.c
 /m4

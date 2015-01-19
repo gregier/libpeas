@@ -2,7 +2,7 @@
  * peas-lua-utils.c
  * This file is part of libpeas
  *
- * Copyright (C) 2014 - Garrett Regier
+ * Copyright (C) 2014-2015 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -118,5 +118,60 @@ error:
   lua_pop (L, 1);
 
   g_strfreev (version_str_parts);
+  return success;
+}
+
+static gint
+traceback (lua_State *L)
+{
+  /* Always ignore an error that isn't a string */
+  if (!lua_isstring (L, 1))
+    return 1;
+
+  lua_getglobal (L, "debug");
+  if (!lua_istable (L, -1))
+    {
+      lua_pop (L, 1);
+      return 1;
+    }
+
+  lua_getfield (L, -1, "traceback");
+  if (!lua_isfunction (L, -1))
+    {
+      lua_pop (L, 2);
+      return 1;
+    }
+
+  /* Replace debug with traceback */
+  lua_replace (L, -2);
+
+  /* Push the error */
+  lua_pushvalue (L, 1);
+
+  /* Skip this function when generating the traceback */
+  lua_pushinteger (L, 2);
+
+  /* If we fail we have a new error object... */
+  lua_pcall (L, 2, 1, 0);
+  return 1;
+}
+
+gboolean
+peas_lua_utils_call (lua_State *L,
+                     guint      n_args,
+                     guint      n_results)
+{
+  gboolean success;
+
+  /* Push the error function */
+  lua_pushcfunction (L, traceback);
+
+  /* Move traceback to before the arguments */
+  lua_insert (L, -2 - n_args);
+
+  success = lua_pcall (L, n_args, n_results, -2 - n_args) == 0;
+
+  /* Remove traceback */
+  lua_remove (L, -1 - (success ? n_results : 1));
   return success;
 }

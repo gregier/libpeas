@@ -153,10 +153,8 @@ test_extension_lua_nonexistent (PeasEngine *engine)
 {
   PeasPluginInfo *info;
 
-  testing_util_push_log_hook ("Error failed to load Lua module "
-                              "'extension-lua51-nonexistent'*");
   testing_util_push_log_hook ("Error loading plugin "
-                              "'extension-lua51-nonexistent'");
+                              "'extension-lua51-nonexistent'*");
 
   info = peas_engine_get_plugin_info (engine, "extension-lua51-nonexistent");
 

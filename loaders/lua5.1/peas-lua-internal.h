@@ -1,8 +1,8 @@
 /*
- * peas-lua-utils.h
+ * peas-lua-internal.h
  * This file is part of libpeas
  *
- * Copyright (C) 2014-2015 - Garrett Regier
+ * Copyright (C) 2015 - Garrett Regier
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Library General Public License as published by
@@ -19,27 +19,22 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef __PEAS_LUA_UTILS_H__
-#define __PEAS_LUA_UTILS_H__
+#ifndef __PEAS_LUA_INTERNAL_H__
+#define __PEAS_LUA_INTERNAL_H__
 
 #include <glib.h>
 #include <lua.h>
 
 G_BEGIN_DECLS
 
+gboolean  peas_lua_internal_setup    (lua_State   *L);
+void      peas_lua_internal_shutdown (lua_State   *L);
 
-gboolean peas_lua_utils_require       (lua_State   *L,
-                                       const gchar *name);
-
-gboolean peas_lua_utils_check_version (lua_State   *L,
-                                       guint        req_major,
-                                       guint        req_minor,
-                                       guint        req_micro);
-
-gboolean peas_lua_utils_call          (lua_State   *L,
-                                       guint        n_args,
-                                       guint        n_results);
+gboolean  peas_lua_internal_call     (lua_State   *L,
+                                      const gchar *name,
+                                      guint        n_args,
+                                      gint         return_type);
 
 G_END_DECLS
 
-#endif /* __PEAS_LUA_UTILS_H__ */
+#endif /* __PEAS_LUA_INTERNAL_H__ */
