@@ -6,77 +6,77 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-02-17 20:33+0000\n"
-"PO-Revision-Date: 2012-02-18 16:44+0000\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-12-20 18:22+0000\n"
+"PO-Revision-Date: 2014-09-12 18:43+0900\n"
 "Last-Translator: Jiro Matsuzawa <jmatsuzawa@src.gnome.org>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
 msgstr "プラグインマネージャー"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "View"
 msgstr "ビュー"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
 msgstr "プラグインマネージャービュー"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "組み込みプラグインを表示する"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
+#: ../data/glade/libpeas-gtk.xml.in.h:7
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:789
+#: ../libpeas/peas-engine.c:996
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "依存するプラグイン '%s' がみつかりません"
 
-#: ../libpeas/peas-engine.c:799
+#: ../libpeas/peas-engine.c:1006
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "依存するプラグイン '%s' のロードに失敗しました"
 
-#: ../libpeas/peas-engine.c:814
+#: ../libpeas/peas-engine.c:1020
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "プラグインローダー '%s' がみつかりません"
 
-#: ../libpeas/peas-engine.c:826
+#: ../libpeas/peas-engine.c:1032
 #, c-format
 msgid "Failed to load"
 msgstr "ロードに失敗しました"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 msgid "Additional plugins must be disabled"
 msgstr "追加プラグインを無効にする必要があります"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "次のプラグインは '%s' に依存しており、すべて無効になります:"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
 msgid "Plugins"
 msgstr "プラグイン"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:161
 msgid "An additional plugin must be disabled"
 msgstr "追加プラグインを無効にする必要があります"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:168
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
@@ -85,55 +85,95 @@ msgstr ""
 "プラグイン '%s' は '%s' に依存しています。\n"
 "'%s' を無効にする場合、 '%s' も無効になります。"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
+msgid "_Cancel"
+msgstr "キャンセル(_C)"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
 msgid "Disable Plugins"
 msgstr "プラグインを無効にする"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
 msgid "There was an error displaying the help."
 msgstr "ヘルプを表示する時にエラーが発生しました。"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
+msgid "_Close"
+msgstr "閉じる(_C)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
+msgid "_Help"
+msgstr "ヘルプ(_H)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "設定(_E)"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
 msgid "_About"
 msgstr "情報(_A)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:395
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_Preferences"
 msgstr "設定(_P)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
 msgid "_Enabled"
 msgstr "有効(_E)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "E_nable All"
 msgstr "すべて有効(_N)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
 msgid "_Disable All"
 msgstr "すべて無効(_D)"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:508
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
 msgid "Enabled"
 msgstr "有効"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:529
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:547
 msgid "Plugin"
 msgstr "プラグイン"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:619
-#, c-format
-msgid ""
-"<b>The plugin '%s' could not be loaded</b>\n"
-"An error occurred: %s"
+#. Avoid having markup in a translated string
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
+#, fuzzy, c-format
+#| msgid ""
+#| "<b>The plugin '%s' could not be loaded</b>\n"
+#| "An error occurred: %s"
+msgid "The plugin '%s' could not be loaded"
 msgstr ""
 "<b>プラグイン '%s' をロードできません</b>\n"
 "エラー発生: %s"
 
-#: ../peas-demo/peas-demo.c:40
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
+msgid "An error occurred: "
+msgstr ""
+
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "ビルドしたディレクトリから実行"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:85
+msgid "_Quit"
+msgstr "終了(_Q)"
+
+#: ../peas-demo/peas-demo.c:101
 msgid "- libpeas demo application"
 msgstr "- libpeas のデモ用アプリケーション"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:77
+#, fuzzy
+#| msgid "_About"
+msgid "About"
+msgstr "情報(_A)"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:82
+#, fuzzy
+#| msgid "_Preferences"
+msgid "Preferences"
+msgstr "設定(_P)"
