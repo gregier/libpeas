@@ -58,6 +58,25 @@ class Hooks(object):
         # This is implemented by the plugin loader
         raise NotImplementedError('Hooks.failed()')
 
+    def call(self, name, args, return_type):
+        try:
+            result = getattr(self, name)(*args)
+
+        except FailedError:
+            raise
+
+        except:
+            self.failed("Failed to run internal Python hook '%s':\n%s" %
+                        (name, traceback.format_exc()))
+
+        # We always allow None
+        if result is not None and not isinstance(result, return_type):
+            self.failed("Failed to run internal Python hook '%s': "
+                        "expected %s, got %s" %
+                        (name, return_type, result))
+
+        return result
+
     def load(self, filename, module_dir, module_name):
         try:
             return self.__module_cache[filename]

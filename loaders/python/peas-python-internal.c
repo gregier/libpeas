@@ -37,15 +37,21 @@ static PyObject *
 failed_fn (PyObject *self,
            PyObject *args)
 {
-  const char *msg;
+  const gchar *msg;
+  gchar *clean_msg;
 
   if (!PyArg_ParseTuple (args, "s:Hooks.failed", &msg))
     return NULL;
 
-  g_warning ("%s", msg);
+  /* Python tracebacks have a trailing newline */
+  clean_msg = g_strchomp (g_strdup (msg));
+
+  g_warning ("%s", clean_msg);
 
   /* peas_python_internal_call() knows to check for this exception */
   PyErr_SetObject (FailedError, NULL);
+
+  g_free (clean_msg);
   return NULL;
 }
 
@@ -183,7 +189,7 @@ peas_python_internal_call (PeasPythonInternal *internal,
                            ...)
 {
   PyObject *internal_ = (PyObject *) internal;
-  PyObject *callable, *args;
+  PyObject *args;
   PyObject *result = NULL;
   va_list var_args;
 
@@ -191,16 +197,14 @@ peas_python_internal_call (PeasPythonInternal *internal,
   if (return_type == NULL)
     return_type = Py_None->ob_type;
 
-  callable = PyObject_GetAttrString (internal_, name);
-  g_return_val_if_fail (callable != NULL, NULL);
-
   va_start (var_args, format);
   args = Py_VaBuildValue (format == NULL ? "()" : format, var_args);
   va_end (var_args);
 
   if (args != NULL)
     {
-      result = PyObject_CallObject (callable, args);
+      result = PyObject_CallMethod (internal_, "call", "(sOO)",
+                                    name, args, return_type);
       Py_DECREF (args);
     }
 
@@ -220,17 +224,8 @@ peas_python_internal_call (PeasPythonInternal *internal,
       return NULL;
     }
 
-  /* We always allow a None result */
   if (result == Py_None)
-    {
-      Py_CLEAR (result);
-    }
-  else if (!PyObject_TypeCheck (result, return_type))
-    {
-      g_warning ("Failed to run internal Python hook '%s': ", name);
-
-      Py_CLEAR (result);
-    }
+    Py_CLEAR (result);
 
   return result;
 }
