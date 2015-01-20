@@ -116,6 +116,8 @@ peas_python_internal_new (gboolean already_initialized)
   module = PyModule_New ("libpeas-internal");
   goto_error_if_failed (module != NULL);
 
+  goto_error_if_failed (PyModule_AddStringConstant (module, "__file__",
+                                                    "peas-python-internal.py") == 0);
   goto_error_if_failed (PyModule_AddObject (module, "__builtins__",
                                             builtins_module) == 0);
   goto_error_if_failed (PyModule_AddObject (module, "ALREADY_INITIALIZED",

@@ -58,6 +58,19 @@ class Hooks(object):
         # This is implemented by the plugin loader
         raise NotImplementedError('Hooks.failed()')
 
+    @staticmethod
+    def format_plugin_exception():
+        formatted = traceback.format_exception(*sys.exc_info())
+
+        # Remove all mentions of this file
+        for i in range(len(formatted)):
+            if __file__ in formatted[i]:
+                while not formatted[i].startswith('Traceback'):
+                    formatted[i] = ''
+                    i -= 1
+
+        return ''.join(formatted)
+
     def call(self, name, args, return_type):
         try:
             result = getattr(self, name)(*args)
@@ -99,7 +112,7 @@ class Hooks(object):
         except:
             module = None
             self.failed("Error importing plugin '%s':\n%s" %
-                        (module_name, traceback.format_exc()))
+                        (module_name, self.format_plugin_exception()))
 
         else:
             self.__extension_cache[module] = {}
