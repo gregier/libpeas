@@ -35,7 +35,6 @@
 #include <pygobject.h>
 
 typedef struct {
-  PeasPythonInternal *internal;
   PyThreadState *py_thread_state;
 
   guint n_loaded_plugins;
@@ -63,18 +62,15 @@ peas_register_types (PeasObjectModule *module)
 }
 
 static GType
-find_python_extension_type (PeasPluginLoaderPython *pyloader,
-                            GType                   exten_type,
-                            PyObject               *pymodule)
+find_python_extension_type (GType     exten_type,
+                            PyObject *pymodule)
 {
-  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyObject *pyexten_type, *pytype;
   GType the_type = G_TYPE_INVALID;
 
   pyexten_type = pyg_type_wrapper_new (exten_type);
 
-  pytype = peas_python_internal_call (priv->internal,
-                                      "find_extension_type",
+  pytype = peas_python_internal_call ("find_extension_type",
                                       &PyType_Type, "(OO)",
                                       pyexten_type, pymodule);
   Py_DECREF (pyexten_type);
@@ -96,12 +92,11 @@ peas_plugin_loader_python_provides_extension (PeasPluginLoader *loader,
                                               PeasPluginInfo   *info,
                                               GType             exten_type)
 {
-  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *pymodule = info->loader_data;
   GType the_type;
   PyGILState_STATE state = PyGILState_Ensure ();
 
-  the_type = find_python_extension_type (pyloader, exten_type, pymodule);
+  the_type = find_python_extension_type (exten_type, pymodule);
 
   PyGILState_Release (state);
   return the_type != G_TYPE_INVALID;
@@ -114,7 +109,6 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
                                             guint             n_parameters,
                                             GParameter       *parameters)
 {
-  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
   PyObject *pymodule = info->loader_data;
   GType the_type;
   GObject *object = NULL;
@@ -122,7 +116,7 @@ peas_plugin_loader_python_create_extension (PeasPluginLoader *loader,
   PyObject *pyplinfo;
   PyGILState_STATE state = PyGILState_Ensure ();
 
-  the_type = find_python_extension_type (pyloader, exten_type, pymodule);
+  the_type = find_python_extension_type (exten_type, pymodule);
   if (the_type == G_TYPE_INVALID)
     goto out;
 
@@ -173,8 +167,7 @@ peas_plugin_loader_python_load (PeasPluginLoader *loader,
   module_dir = peas_plugin_info_get_module_dir (info);
   module_name = peas_plugin_info_get_module_name (info);
 
-  pymodule = peas_python_internal_call (priv->internal, "load",
-                                        &PyModule_Type, "(sss)",
+  pymodule = peas_python_internal_call ("load", &PyModule_Type, "(sss)",
                                         info->filename,
                                         module_dir, module_name);
 
@@ -200,10 +193,7 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
    * loader will not be finalized by applications
    */
   if (--priv->n_loaded_plugins == 0)
-    {
-      peas_python_internal_call (priv->internal, "all_plugins_unloaded",
-                                 NULL, NULL);
-    }
+    peas_python_internal_call ("all_plugins_unloaded", NULL, NULL);
 
   Py_CLEAR (info->loader_data);
   PyGILState_Release (state);
@@ -212,11 +202,9 @@ peas_plugin_loader_python_unload (PeasPluginLoader *loader,
 static void
 peas_plugin_loader_python_garbage_collect (PeasPluginLoader *loader)
 {
-  PeasPluginLoaderPython *pyloader = PEAS_PLUGIN_LOADER_PYTHON (loader);
-  PeasPluginLoaderPythonPrivate *priv = GET_PRIV (pyloader);
   PyGILState_STATE state = PyGILState_Ensure ();
 
-  peas_python_internal_call (priv->internal, "garbage_collect", NULL, NULL);
+  peas_python_internal_call ("garbage_collect", NULL, NULL);
 
   PyGILState_Release (state);
 }
@@ -278,8 +266,8 @@ peas_plugin_loader_python_initialize (PeasPluginLoader *loader)
   if (!priv->must_finalize_python)
     pyg_disable_warning_redirections ();
 
-  priv->internal = peas_python_internal_new (!priv->must_finalize_python);
-  if (priv->internal == NULL)
+  /* Must be done last, finalize() depends on init_failed */
+  if (!peas_python_internal_setup (!priv->must_finalize_python))
     {
       /* Already warned */
       goto python_init_error;
@@ -324,10 +312,10 @@ peas_plugin_loader_python_finalize (GObject *object)
 
   g_warn_if_fail (priv->n_loaded_plugins == 0);
 
-  if (priv->internal != NULL)
+  if (!priv->init_failed)
     {
       state = PyGILState_Ensure ();
-      peas_python_internal_free (priv->internal);
+      peas_python_internal_shutdown ();
       PyGILState_Release (state);
     }
 

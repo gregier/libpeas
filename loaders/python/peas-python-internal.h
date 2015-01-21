@@ -32,18 +32,13 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PeasPythonInternal PeasPythonInternal;
+gboolean  peas_python_internal_setup    (gboolean     already_initialized);
+void      peas_python_internal_shutdown (void);
 
-PeasPythonInternal *
-        peas_python_internal_new  (gboolean            already_initialized);
-void    peas_python_internal_free (PeasPythonInternal *internal);
-
-PyObject *
-        peas_python_internal_call (PeasPythonInternal *internal,
-                                   const gchar        *name,
-                                   PyTypeObject       *return_type,
-                                   const gchar        *format,
-                                   ...);
+PyObject *peas_python_internal_call     (const gchar  *name,
+                                         PyTypeObject *return_type,
+                                         const gchar  *format,
+                                         ...);
 
 G_END_DECLS
 

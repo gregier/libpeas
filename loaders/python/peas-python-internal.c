@@ -28,8 +28,7 @@
 #include <gio/gio.h>
 
 
-typedef PyObject _PeasPythonInternal;
-
+static PyObject *internal_hooks = NULL;
 static PyObject *FailedError = NULL;
 
 
@@ -60,15 +59,15 @@ static PyMethodDef failed_method_def = {
   "Prints warning and raises an Exception"
 };
 
-PeasPythonInternal *
-peas_python_internal_new (gboolean already_initialized)
+gboolean
+peas_python_internal_setup (gboolean already_initialized)
 {
-  GBytes *internal_python;
   const gchar *prgname;
-  PeasPythonInternal *internal = NULL;
-  PyObject *builtins_module, *globals;
+  GBytes *internal_python = NULL;
+  PyObject *builtins_module, *globals, *result;
   PyObject *code = NULL, *module = NULL;
-  PyObject *result = NULL, *failed_method = NULL;
+  PyObject *failed_method = NULL;
+  gboolean success = FALSE;
 
 #define goto_error_if_failed(cond) \
   G_STMT_START { \
@@ -142,10 +141,11 @@ peas_python_internal_new (gboolean already_initialized)
       goto error;
     }
 
-  result = PyDict_GetItemString (globals, "hooks");
-  goto_error_if_failed (result != NULL);
+  internal_hooks = PyDict_GetItemString (globals, "hooks");
+  goto_error_if_failed (internal_hooks != NULL);
+  Py_INCREF (internal_hooks);
 
-  goto_error_if_failed (PyObject_SetAttrString (result,
+  goto_error_if_failed (PyObject_SetAttrString (internal_hooks,
                                                 "__internal_module__",
                                                 module) == 0);
 
@@ -154,43 +154,39 @@ peas_python_internal_new (gboolean already_initialized)
 
   failed_method = PyCFunction_NewEx (&failed_method_def, NULL, module);
   goto_error_if_failed (failed_method != NULL);
-  goto_error_if_failed (PyObject_SetAttrString (result, "failed",
+  goto_error_if_failed (PyObject_SetAttrString (internal_hooks, "failed",
                                                 failed_method) == 0);
 
-  internal = (PeasPythonInternal *) result;
+  success = TRUE;
 
 #undef goto_error_if_failed
 
 error:
 
-  if (internal == NULL)
-    Py_XDECREF (result);
+  if (!success)
+    Py_CLEAR (internal_hooks);
 
   Py_XDECREF (failed_method);
   Py_XDECREF (module);
   Py_XDECREF (code);
   g_clear_pointer (&internal_python, g_bytes_unref);
 
-  return internal;
+  return success;
 }
 
 void
-peas_python_internal_free (PeasPythonInternal *internal)
+peas_python_internal_shutdown (void)
 {
-  PyObject *internal_ = (PyObject *) internal;
-
-  peas_python_internal_call (internal, "exit", NULL, NULL);
-  Py_DECREF (internal_);
+  peas_python_internal_call ("exit", NULL, NULL);
+  Py_CLEAR (internal_hooks);
 }
 
 PyObject *
-peas_python_internal_call (PeasPythonInternal *internal,
-                           const gchar        *name,
-                           PyTypeObject       *return_type,
-                           const gchar        *format,
+peas_python_internal_call (const gchar  *name,
+                           PyTypeObject *return_type,
+                           const gchar  *format,
                            ...)
 {
-  PyObject *internal_ = (PyObject *) internal;
   PyObject *args;
   PyObject *result = NULL;
   va_list var_args;
@@ -205,7 +201,7 @@ peas_python_internal_call (PeasPythonInternal *internal,
 
   if (args != NULL)
     {
-      result = PyObject_CallMethod (internal_, "call", "(sOO)",
+      result = PyObject_CallMethod (internal_hooks, "call", "(sOO)",
                                     name, args, return_type);
       Py_DECREF (args);
     }
