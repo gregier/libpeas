@@ -215,7 +215,7 @@ peas_python_internal_call (const gchar  *name,
         }
       else
         {
-          g_warning ("Failed to run internal Python hook '%s'", name);
+          g_warning ("Failed to run internal Python hook 'call'");
           PyErr_Print ();
         }
 
