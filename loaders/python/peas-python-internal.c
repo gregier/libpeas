@@ -28,6 +28,7 @@
 #include <gio/gio.h>
 
 
+static PyObject *internal_module = NULL;
 static PyObject *internal_hooks = NULL;
 static PyObject *FailedError = NULL;
 
@@ -65,8 +66,7 @@ peas_python_internal_setup (gboolean already_initialized)
   const gchar *prgname;
   GBytes *internal_python = NULL;
   PyObject *builtins_module, *globals, *result;
-  PyObject *code = NULL, *module = NULL;
-  PyObject *failed_method = NULL;
+  PyObject *code = NULL, *failed_method = NULL;
   gboolean success = FALSE;
 
 #define goto_error_if_failed(cond) \
@@ -112,26 +112,28 @@ peas_python_internal_setup (gboolean already_initialized)
                            Py_file_input);
   goto_error_if_failed (code != NULL);
 
-  module = PyModule_New ("libpeas-internal");
-  goto_error_if_failed (module != NULL);
+  internal_module = PyModule_New ("libpeas-internal");
+  goto_error_if_failed (internal_module != NULL);
 
-  goto_error_if_failed (PyModule_AddStringConstant (module, "__file__",
+  goto_error_if_failed (PyModule_AddStringConstant (internal_module, "__file__",
                                                     "peas-python-internal.py") == 0);
-  goto_error_if_failed (PyModule_AddObject (module, "__builtins__",
+  goto_error_if_failed (PyModule_AddObject (internal_module, "__builtins__",
                                             builtins_module) == 0);
-  goto_error_if_failed (PyModule_AddObject (module, "ALREADY_INITIALIZED",
+  goto_error_if_failed (PyModule_AddObject (internal_module,
+                                            "ALREADY_INITIALIZED",
                                             already_initialized ?
                                             Py_True : Py_False) == 0);
-  goto_error_if_failed (PyModule_AddStringConstant (module, "PRGNAME",
+  goto_error_if_failed (PyModule_AddStringConstant (internal_module,
+                                                    "PRGNAME",
                                                     prgname) == 0);
-  goto_error_if_failed (PyModule_AddStringMacro (module,
+  goto_error_if_failed (PyModule_AddStringMacro (internal_module,
                                                  PEAS_PYEXECDIR) == 0);
-  goto_error_if_failed (PyModule_AddStringMacro (module,
+  goto_error_if_failed (PyModule_AddStringMacro (internal_module,
                                                  GETTEXT_PACKAGE) == 0);
-  goto_error_if_failed (PyModule_AddStringMacro (module,
+  goto_error_if_failed (PyModule_AddStringMacro (internal_module,
                                                  PEAS_LOCALEDIR) == 0);
 
-  globals = PyModule_GetDict (module);
+  globals = PyModule_GetDict (internal_module);
   result = PyEval_EvalCode ((gpointer) code, globals, globals);
   Py_XDECREF (result);
 
@@ -143,16 +145,12 @@ peas_python_internal_setup (gboolean already_initialized)
 
   internal_hooks = PyDict_GetItemString (globals, "hooks");
   goto_error_if_failed (internal_hooks != NULL);
-  Py_INCREF (internal_hooks);
-
-  goto_error_if_failed (PyObject_SetAttrString (internal_hooks,
-                                                "__internal_module__",
-                                                module) == 0);
 
   FailedError = PyDict_GetItemString (globals, "FailedError");
   goto_error_if_failed (FailedError != NULL);
 
-  failed_method = PyCFunction_NewEx (&failed_method_def, NULL, module);
+  failed_method = PyCFunction_NewEx (&failed_method_def,
+                                     NULL, internal_module);
   goto_error_if_failed (failed_method != NULL);
   goto_error_if_failed (PyObject_SetAttrString (internal_hooks, "failed",
                                                 failed_method) == 0);
@@ -163,13 +161,21 @@ peas_python_internal_setup (gboolean already_initialized)
 
 error:
 
-  if (!success)
-    Py_CLEAR (internal_hooks);
-
   Py_XDECREF (failed_method);
-  Py_XDECREF (module);
   Py_XDECREF (code);
   g_clear_pointer (&internal_python, g_bytes_unref);
+
+  if (!success)
+    {
+      FailedError = NULL;
+      internal_hooks = NULL;
+
+      if (internal_module != NULL)
+        {
+          PyDict_Clear (PyModule_GetDict (internal_module));
+          Py_DECREF (internal_module);
+        }
+    }
 
   return success;
 }
@@ -178,7 +184,11 @@ void
 peas_python_internal_shutdown (void)
 {
   peas_python_internal_call ("exit", NULL, NULL);
-  Py_CLEAR (internal_hooks);
+
+  FailedError = NULL;
+  internal_hooks = NULL;
+  PyDict_Clear (PyModule_GetDict (internal_module));
+  Py_DECREF (internal_module);
 }
 
 PyObject *
