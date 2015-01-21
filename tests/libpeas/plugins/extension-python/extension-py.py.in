@@ -6,6 +6,9 @@ import threading
 from gi.repository import GObject, Introspection, Peas
 
 
+__all__ = [ 'ExtensionPythonPlugin' ]
+
+
 class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
                             Introspection.Base, Introspection.Callable,
                             Introspection.HasPrerequisite):
