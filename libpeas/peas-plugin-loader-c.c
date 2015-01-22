@@ -117,7 +117,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
    * actually "duplicate" the GValues, a memcpy is sufficient as the
    * source GValues are longer lived than our local copy.
    */
-  exten_parameters = g_new (GParameter, n_parameters + 1);
+  exten_parameters = g_newa (GParameter, n_parameters + 1);
   memcpy (exten_parameters, parameters, sizeof (GParameter) * n_parameters);
 
   /* Initialize our additional property.
@@ -135,7 +135,6 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
                                                exten_parameters);
 
   g_value_unset (&exten_parameters[n_parameters].value);
-  g_free (exten_parameters);
 
   if (instance == NULL)
     return NULL;
