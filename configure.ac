@@ -473,6 +473,7 @@ dnl Documentation
 dnl ================================================================
 
 GTK_DOC_CHECK([1.11],[--flavour no-tmpl])
+AM_CONDITIONAL(ENABLE_GTK_DOC, test "x$enable_gtk_doc" = "xyes")
 
 AC_ARG_ENABLE(doc-cross-references,
               AS_HELP_STRING([--disable-doc-cross-references],
