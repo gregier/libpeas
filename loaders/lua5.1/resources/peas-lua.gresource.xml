@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/org/gnome/libpeas/loaders/lua5.1">
     <file alias="internal.lua">peas-lua-internal.lua</file>
+    <file alias="strict.lua">peas-lua-strict.lua</file>
   </gresource>
 </gresources>

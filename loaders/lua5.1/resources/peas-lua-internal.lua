@@ -159,4 +159,4 @@ end
 
 return Hooks.new()
 
--- ex:set ts=4 et sw=4 ai:
+-- ex:ts=4:et:

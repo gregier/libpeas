@@ -40,6 +40,11 @@ gboolean peas_lua_utils_call          (lua_State   *L,
                                        guint        n_args,
                                        guint        n_results);
 
+gboolean peas_lua_utils_load_resource (lua_State   *L,
+                                       const gchar *name,
+                                       guint        n_args,
+                                       guint        n_results);
+
 G_END_DECLS
 
 #endif /* __PEAS_LUA_UTILS_H__ */

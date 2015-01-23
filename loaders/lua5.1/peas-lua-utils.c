@@ -25,10 +25,9 @@
 
 #include "peas-lua-utils.h"
 
-#include <string.h>
+#include <gio/gio.h>
 
 #include <lauxlib.h>
-#include <lualib.h>
 
 
 gboolean
@@ -174,4 +173,71 @@ peas_lua_utils_call (lua_State *L,
   /* Remove traceback */
   lua_remove (L, -1 - (success ? n_results : 1));
   return success;
+}
+
+gboolean
+peas_lua_utils_load_resource (lua_State   *L,
+                              const gchar *name,
+                              guint        n_args,
+                              guint        n_results)
+{
+  gchar *resource_path;
+  GBytes *lua_resource;
+  const gchar *code;
+  gsize code_len;
+  gchar *lua_filename;
+
+  /* We don't use the byte-compiled Lua source
+   * because glib-compile-resources cannot output
+   * depends for generated files.
+   *
+   * There are also concerns that the bytecode is
+   * not stable enough between different Lua versions.
+   *
+   * https://bugzilla.gnome.org/show_bug.cgi?id=673101
+   */
+  resource_path = g_strconcat ("/org/gnome/libpeas/loaders/lua5.1/",
+                               name, NULL);
+  lua_resource = g_resources_lookup_data (resource_path,
+                                          G_RESOURCE_LOOKUP_FLAGS_NONE,
+                                          NULL);
+  g_free (resource_path);
+
+  if (lua_resource == NULL)
+    {
+      g_warning ("Failed to find '%s' resource", name);
+      return FALSE;
+    }
+
+  code = g_bytes_get_data (lua_resource, &code_len);
+
+  /* Filenames are prefixed with '@' */
+  lua_filename = g_strconcat ("@peas-lua-", name, NULL);
+
+  if (luaL_loadbuffer (L, code, code_len, lua_filename) != 0)
+    {
+      g_warning ("Failed to load '%s' resource: %s",
+                 name, lua_tostring (L, -1));
+
+      /* Pop error */
+      lua_pop (L, 1);
+      g_free (lua_filename);
+      g_bytes_unref (lua_resource);
+      return FALSE;
+    }
+
+  g_free (lua_filename);
+  g_bytes_unref (lua_resource);
+
+  if (!peas_lua_utils_call (L, n_args, n_results))
+    {
+      g_warning ("Failed to run '%s' resource: %s",
+                 name, lua_tostring (L, -1));
+
+      /* Pop error */
+      lua_pop (L, 1);
+      return FALSE;
+    }
+
+  return TRUE;
 }

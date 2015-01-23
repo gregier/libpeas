@@ -25,10 +25,7 @@
 
 #include "peas-lua-internal.h"
 
-#include <gio/gio.h>
-
 #include <lauxlib.h>
-#include <lualib.h>
 
 #include "peas-lua-utils.h"
 
@@ -60,54 +57,15 @@ failed_fn (lua_State *L)
 gboolean
 peas_lua_internal_setup (lua_State *L)
 {
-  GBytes *internal_lua;
-  const gchar *code;
-  gsize code_len;
-
-  /* We don't use the byte-compiled Lua source
-   * because glib-compile-resources cannot output
-   * depends for generated files.
-   *
-   * There are also concerns that the bytecode is
-   * not stable enough between different Lua versions.
-   *
-   * https://bugzilla.gnome.org/show_bug.cgi?id=673101
-   */
-  internal_lua = g_resources_lookup_data ("/org/gnome/libpeas/loaders/"
-                                          "lua5.1/internal.lua",
-                                          G_RESOURCE_LOOKUP_FLAGS_NONE,
-                                          NULL);
-  g_return_val_if_fail (internal_lua != NULL, FALSE);
-
-  code = g_bytes_get_data (internal_lua, &code_len);
-
-  /* Filenames are prefixed with '@' */
-  if (luaL_loadbuffer (L, code, code_len, "@peas-lua-internal.lua") != 0)
+  if (!peas_lua_utils_load_resource (L, "internal.lua", 0, 1))
     {
-      g_warning ("Failed to load internal Lua code: %s",
-                 lua_tostring (L, -1));
-
-      /* Pop error */
-      lua_pop (L, 1);
-      g_bytes_unref (internal_lua);
-      return FALSE;
-    }
-
-  g_bytes_unref (internal_lua);
-
-  if (!peas_lua_utils_call (L, 0, 1))
-    {
-      g_warning ("Failed to run internal Lua code: %s",
-                 lua_tostring (L, -1));
-
-      /* Pop error */
-      lua_pop (L, 1);
+      /* Already warned */
       return FALSE;
     }
 
   if (!lua_istable (L, -1))
     {
-      g_warning ("Invalid result from internal Lua code: %s",
+      g_warning ("Invalid result from 'internal.lua' resource: %s",
                  lua_tostring (L, -1));
 
       /* Pop result */

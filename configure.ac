@@ -541,6 +541,7 @@ libpeas/Makefile
 libpeas-gtk/Makefile
 loaders/Makefile
 loaders/lua5.1/Makefile
+loaders/lua5.1/resources/Makefile
 loaders/python/Makefile
 loaders/python3/Makefile
 data/Makefile

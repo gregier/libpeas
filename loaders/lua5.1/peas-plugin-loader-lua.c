@@ -285,7 +285,8 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
 
   luaL_openlibs (L);
 
-  if (!peas_lua_utils_require (L, "lgi") ||
+  if (!peas_lua_utils_load_resource (L, "strict.lua", 0, 0) ||
+      !peas_lua_utils_require (L, "lgi") ||
       !peas_lua_utils_check_version (L,
                                      LGI_MAJOR_VERSION,
                                      LGI_MINOR_VERSION,

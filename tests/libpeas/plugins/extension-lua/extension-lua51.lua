@@ -80,6 +80,27 @@ function ExtensionLuaPlugin:do_call_multi_args(in_, inout)
     return inout, in_
 end
 
+-- Test strict mode
+local UNIQUE = {}
+
+local function assert_error(success, result)
+    assert(not success, result)
+end
+
+assert_error(pcall(function() _G[UNIQUE] = true end))
+assert(pcall(function()
+    rawset(_G, UNIQUE, true)
+    assert(_G[UNIQUE] == true)
+    _G[UNIQUE] = nil
+end))
+assert_error(pcall(function() _G[UNIQUE] = true end))
+assert(pcall(function()
+    __STRICT = false
+    _G[UNIQUE] = true
+    _G[UNIQUE] = nil
+    __STRICT = true
+end))
+
 return { ExtensionLuaPlugin }
 
 -- ex:set ts=4 et sw=4 ai:
