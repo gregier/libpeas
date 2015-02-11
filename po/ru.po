@@ -5,16 +5,18 @@
 # Юрий Козлов <yuray@komyakino.ru>, 2011.
 # Yuri Kozlov <yuray@komyakino.ru>, 2011.
 # Yuri Myasoedov <ymyasoedov@yandex.ru>, 2014.
+# vantu5z <vantu5z@mail.ru>, 2015.
+# Stas Solovey <whats_up@tut.by>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-09-07 09:40+0000\n"
-"PO-Revision-Date: 2014-09-07 19:09+0400\n"
-"Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
-"Language-Team: русский <gnome-cyr@gnome.org>\n"
+"POT-Creation-Date: 2015-02-10 10:57+0000\n"
+"PO-Revision-Date: 2015-02-12 00:17+0300\n"
+"Last-Translator: Stas Solovey <whats_up@tut.by>\n"
+"Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,124 +47,132 @@ msgstr "Показывать встроенные модули"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:856
+#: ../libpeas/peas-engine.c:976
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Не найдена зависимость «%s»"
 
-#: ../libpeas/peas-engine.c:866
+#: ../libpeas/peas-engine.c:986
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Не удалось загрузить зависимость «%s»"
 
-#: ../libpeas/peas-engine.c:880
+#: ../libpeas/peas-engine.c:1000
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Не найден загрузчик модулей «%s»"
 
-#: ../libpeas/peas-engine.c:892
+#: ../libpeas/peas-engine.c:1012
 #, c-format
 msgid "Failed to load"
-msgstr "Ошибка загрузки"
+msgstr "Не удалось загрузить"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 msgid "Additional plugins must be disabled"
 msgstr "Дополнительные модули должны быть выключены"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Следующие модули зависят от «%s» и также будут выключены:"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
 msgid "Plugins"
 msgstr "Модули"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:161
 msgid "An additional plugin must be disabled"
 msgstr "Дополнительный модуль должен быть выключен"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:168
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
 "Модуль «%s» зависит от модуля «%s».\n"
-"Если вы выключаете «%s», то «%s» также должен быть выключен."
+"Если отключить «%s», то «%s» также будет выключен."
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
 msgid "_Cancel"
 msgstr "_Отмена"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
 msgid "Disable Plugins"
 msgstr "Выключить модули"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
 msgid "There was an error displaying the help."
 msgstr "Здесь была ошибка, отображающая справку."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
 msgid "_Close"
 msgstr "_Закрыть"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
 msgid "_Help"
 msgstr "_Справка"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
-#| msgid "_Preferences"
 msgid "Pr_eferences"
 msgstr "_Параметры"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
 msgid "_About"
 msgstr "_О приложении"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_Preferences"
 msgstr "_Параметры"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
 msgid "_Enabled"
-msgstr "_Включить"
+msgstr "_Включён"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "E_nable All"
-msgstr "Вкл_ючить всё"
+msgstr "Вкл_ючить все"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
 msgid "_Disable All"
-msgstr "В_ыключить всё"
+msgstr "В_ыключить все"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
 msgid "Enabled"
 msgstr "Включён"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:547
 msgid "Plugin"
 msgstr "Модуль"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
+#. Avoid having markup in a translated string
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-msgid ""
-"<b>The plugin '%s' could not be loaded</b>\n"
-"An error occurred: %s"
-msgstr ""
-"<b>Модуль «%s» не может быть загружен</b>\n"
-"Произошла ошибка: %s"
+msgid "The plugin '%s' could not be loaded"
+msgstr "Модуль «%s» не может быть загружен"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
+msgid "An error occurred: "
+msgstr "Произошла ошибка: "
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Запустить из каталога сборки"
 
-#: ../peas-demo/peas-demo.c:83
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "_Завершить"
 
-#: ../peas-demo/peas-demo.c:99
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "— демонстрационное приложение libpeas"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:77
+msgid "About"
+msgstr "О приложении"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:82
+msgid "Preferences"
+msgstr "Параметры"
