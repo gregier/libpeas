@@ -37,7 +37,6 @@ peas-lua-resources.c: $(srcdir)/resources/peas-lua.gresource.xml $(loader_resour
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --internal --target=$@ --sourcedir=$(srcdir)/resources --generate-source $(srcdir)/resources/peas-lua.gresource.xml
 
 EXTRA_DIST = \
-	peas-lua.gresource.xml		\
 	$(loader_resources_deps)
 
 CLEANFILES = peas-lua-resources.c
