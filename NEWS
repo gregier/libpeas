@@ -1,3 +1,32 @@
+Overview of Changes in libpeas 1.13.0
+====================================
+
+* Removed support for Seed plugins
+* Added support for Lua 5.1 plugins using the LGI bindings
+* PeasEngine is now thread-safe
+* Added support for non-global plugins loaders
+* Load C plugins with local linkage
+* Use Python to implement the plugin loader's logic
+* Support Python plugins that define __all__
+* Use Lua to implement the plugin loader's logic
+* Prevent the accidental escaping of globals with Lua plugins
+* Misc bugfixes
+
+* Translation updates:
+  - Basque
+  - Brazilian Portuguese
+  - Czech
+  - Friulian
+  - Galician
+  - Hebrew
+  - Hungarian
+  - Japanese
+  - Kannada
+  - Nepali
+  - Russian
+  - Spanish
+  - Turkish
+
 Overview of Changes in libpeas 1.12.1
 ====================================
 
