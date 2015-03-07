@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-03-06 22:59+0000\n"
-"PO-Revision-Date: 2015-03-07 16:20+0900\n"
+"POT-Creation-Date: 2015-03-07 11:01+0000\n"
+"PO-Revision-Date: 2015-03-08 03:49+0900\n"
 "Last-Translator: Changwoo Ryu <cwryu@debian.org>\n"
 "Language-Team: Korean <gnome-kr@googlegroups.com>\n"
 "Language: ko\n"
@@ -147,7 +147,7 @@ msgstr "'%s' 플러그인을 읽어들일 수 없습니다"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
 msgid "An error occurred: "
-msgstr ""
+msgstr "오류 발생: "
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
