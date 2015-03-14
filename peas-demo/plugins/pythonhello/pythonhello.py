@@ -29,7 +29,7 @@ LABEL_STRING="Python Says Hello!"
 class PythonHelloPlugin(GObject.Object, Peas.Activatable):
     __gtype_name__ = 'PythonHelloPlugin'
 
-    object = GObject.property(type=GObject.Object)
+    object = GObject.Property(type=GObject.Object)
 
     def do_activate(self):
         window = self.object
