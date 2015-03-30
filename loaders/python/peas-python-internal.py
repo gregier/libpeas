@@ -130,13 +130,7 @@ class Hooks(object):
         except KeyError:
             pass
 
-        try:
-            keys = module.__all__
-
-        except AttributeError:
-            keys = module.__dict__
-
-        for key in keys:
+        for key in getattr(module, '__all__', module.__dict__):
             value = getattr(module, key)
 
             try:
