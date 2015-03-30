@@ -41,7 +41,7 @@ typedef struct {
 enum {
   PROP_0,
   PROP_PLUGIN_INFO,
-  PROP_DEPENDANT_PLUGINS,
+  PROP_DEPENDENT_PLUGINS,
   N_PROPERTIES
 };
 
@@ -80,7 +80,7 @@ model_name_sort_func (GtkListStore *store,
 }
 
 static void
-build_multiple_dependant_plugins (PeasGtkDisablePluginsDialog *dialog)
+build_multiple_dependent_plugins (PeasGtkDisablePluginsDialog *dialog)
 {
   PeasGtkDisablePluginsDialogPrivate *priv = GET_PRIV (dialog);
   gchar *message;
@@ -152,7 +152,7 @@ build_multiple_dependant_plugins (PeasGtkDisablePluginsDialog *dialog)
 }
 
 static void
-build_single_dependant_plugin (PeasGtkDisablePluginsDialog *dialog)
+build_single_dependent_plugin (PeasGtkDisablePluginsDialog *dialog)
 {
   PeasGtkDisablePluginsDialogPrivate *priv = GET_PRIV (dialog);
   gchar *message;
@@ -198,7 +198,7 @@ peas_gtk_disable_plugins_dialog_set_property (GObject      *object,
     case PROP_PLUGIN_INFO:
       priv->plugin_info = g_value_get_pointer (value);
       break;
-    case PROP_DEPENDANT_PLUGINS:
+    case PROP_DEPENDENT_PLUGINS:
       priv->dep_plugins = g_value_get_pointer (value);
       break;
     default:
@@ -221,7 +221,7 @@ peas_gtk_disable_plugins_dialog_get_property (GObject    *object,
     case PROP_PLUGIN_INFO:
       g_value_set_pointer (value, priv->plugin_info);
       break;
-    case PROP_DEPENDANT_PLUGINS:
+    case PROP_DEPENDENT_PLUGINS:
       g_value_set_pointer (value, priv->dep_plugins);
       break;
     default:
@@ -237,9 +237,9 @@ peas_gtk_disable_plugins_dialog_constructed (GObject *object)
   PeasGtkDisablePluginsDialogPrivate *priv = GET_PRIV (dialog);
 
   if (priv->dep_plugins->next == NULL)
-    build_single_dependant_plugin (dialog);
+    build_single_dependent_plugin (dialog);
   else
-    build_multiple_dependant_plugins (dialog);
+    build_multiple_dependent_plugins (dialog);
 
   G_OBJECT_CLASS (peas_gtk_disable_plugins_dialog_parent_class)->constructed (object);
 }
@@ -273,8 +273,8 @@ peas_gtk_disable_plugins_dialog_class_init (PeasGtkDisablePluginsDialogClass *kl
                         G_PARAM_CONSTRUCT_ONLY |
                         G_PARAM_STATIC_STRINGS);
 
-  properties[PROP_DEPENDANT_PLUGINS] =
-    g_param_spec_pointer ("dependant-plugins",
+  properties[PROP_DEPENDENT_PLUGINS] =
+    g_param_spec_pointer ("dependent-plugins",
                           "Dependant plugins",
                           "Dependant plugins",
                           G_PARAM_READWRITE |
@@ -289,7 +289,7 @@ peas_gtk_disable_plugins_dialog_class_init (PeasGtkDisablePluginsDialogClass *kl
  * @parent: transient window.
  * @info: the #PeasPluginInfo being disabled.
  * @dep_plugins: (transfer container) (element-type Peas.PluginInfo):
- *  list of plugins that are dependant on @info.
+ *  list of plugins that are dependent on @info.
  *
  * Creates a new #PeasGtkDisablePluginsDialog.
  *
@@ -303,7 +303,7 @@ peas_gtk_disable_plugins_dialog_new (GtkWindow      *parent,
   return GTK_WIDGET (g_object_new (PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG,
                                    "transient-for", parent,
                                    "plugin-info", info,
-                                   "dependant-plugins", dep_plugins,
+                                   "dependent-plugins", dep_plugins,
                                    "message-type", GTK_MESSAGE_QUESTION,
                                    NULL));
 }
