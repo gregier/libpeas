@@ -1,0 +1,170 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Sveinn í Felli <sv1@fellsnet.is>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-03-25 11:17+0000\n"
+"PO-Revision-Date: 2015-04-21 14:39+0000\n"
+"Last-Translator: Sveinn í Felli <sv1@fellsnet.is>\n"
+"Language-Team: Icelandic <translation-team-is@lists.sourceforge.net>\n"
+"Language: is\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Umsjón viðbóta"
+
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "View"
+msgstr "Skoða"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Plugin Manager View"
+msgstr "Sýn á umsjón viðbóta"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Show Builtin"
+msgstr "Sýna innbyggðar"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:7
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:976
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:986
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:1000
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr ""
+
+#: ../libpeas/peas-engine.c:1012
+#, c-format
+msgid "Failed to load"
+msgstr "Mistókst að hlaða inn"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+msgid "Additional plugins must be disabled"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
+msgid "Plugins"
+msgstr "Viðbætur"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:161
+msgid "An additional plugin must be disabled"
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:168
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
+msgid "_Cancel"
+msgstr "Hæ_tta við"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+msgid "Disable Plugins"
+msgstr "Gera viðbætur óvirkar"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
+msgid "There was an error displaying the help."
+msgstr "Villa kom upp þegar sýna átti hjálpina."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
+msgid "_Close"
+msgstr "_Loka"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
+msgid "_Help"
+msgstr "_Hjálp"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "Kjörstillin_gar"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
+msgid "_About"
+msgstr "_Um hugbúnaðinn"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_Preferences"
+msgstr "_Kjörstillingar"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
+msgid "_Enabled"
+msgstr "_Virkt"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
+msgid "E_nable All"
+msgstr "V_irkja allt"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
+msgid "_Disable All"
+msgstr "Gera _allt óvirkt"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
+msgid "Enabled"
+msgstr "Virkt"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:547
+msgid "Plugin"
+msgstr "Viðbót"
+
+#. Avoid having markup in a translated string
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
+#, c-format
+msgid "The plugin '%s' could not be loaded"
+msgstr "Ekki var hægt að hlaða inn '%s' viðbótinni"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
+msgid "An error occurred: "
+msgstr "Villa kom upp: "
+
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
+msgid "Run from build directory"
+msgstr "Keyra úr byggingarmöppu"
+
+#: ../peas-demo/peas-demo.c:92
+msgid "_Quit"
+msgstr "_Hætta"
+
+#: ../peas-demo/peas-demo.c:108
+msgid "- libpeas demo application"
+msgstr "- libpeas sýniforrit"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:77
+msgid "About"
+msgstr "Um hugbúnaðinn"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:82
+msgid "Preferences"
+msgstr "Kjörstillingar"
+
