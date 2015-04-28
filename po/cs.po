@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-01-06 22:45+0000\n"
-"PO-Revision-Date: 2015-01-07 08:21+0100\n"
+"POT-Creation-Date: 2015-04-27 22:27+0000\n"
+"PO-Revision-Date: 2015-04-28 09:28+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -41,22 +41,22 @@ msgstr "Zobrazit vestavěné"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:996
+#: ../libpeas/peas-engine.c:976
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Závislost „%s“ nebyla nenalezena"
 
-#: ../libpeas/peas-engine.c:1006
+#: ../libpeas/peas-engine.c:986
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Načtení závislosti „%s“ selhalo"
 
-#: ../libpeas/peas-engine.c:1020
+#: ../libpeas/peas-engine.c:1000
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Program „%s“ pro načítání zásuvných modulů nebyl nalezen"
 
-#: ../libpeas/peas-engine.c:1032
+#: ../libpeas/peas-engine.c:1012
 #, c-format
 msgid "Failed to load"
 msgstr "Selhalo načtení"
@@ -146,20 +146,24 @@ msgstr "Zásuvný modul"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Zásuvný modul „%s“ nemohl být načten"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Vyskytla se chyba:"
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Vyskytla se chyba: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Spustit ze složky, ve které bylo sestaveno"
 
-#: ../peas-demo/peas-demo.c:85
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "U_končit"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "– ukázková aplikace libpeas"
 
