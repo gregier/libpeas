@@ -1,0 +1,150 @@
+# Occitan translation for libpeas.
+# Copyright (C) 2010-2011 Listed translators
+# This file is distributed under the same license as the libpeas package.
+# Cédric Valmary (totenoc.org) <cvalmary@yahoo.fr>, 2013.
+# Cédric Valmary (Tot en Òc) <cvalmary@yahoo.fr>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpea"
+"s&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-08-27 15:22+0000\n"
+"PO-Revision-Date: 2015-04-24 11:20+0200\n"
+"Last-Translator: Cédric Valmary (Tot en Òc) <cvalmary@yahoo.fr>\n"
+"Language-Team: www.totenoc.org\n"
+"Language: oc\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.0\n"
+"X-Project-Style: gnome\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Gestionari d'empeutons"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:2
+msgid "View"
+msgstr "Afichatge"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "Plugin Manager View"
+msgstr "Afichatge del gestionari d'empeutons"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:5
+msgid "Show Builtin"
+msgstr "Afichar los empeutons intèrnes"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:818
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "Dependéncia « %s » introbabla"
+
+#: ../libpeas/peas-engine.c:828
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "La dependéncia « %s » a pas pogut èsser cargada"
+
+#: ../libpeas/peas-engine.c:843
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "Lo cargador d'empeuton « %s » es pas estat trobat"
+
+#: ../libpeas/peas-engine.c:855
+#, c-format
+msgid "Failed to load"
+msgstr "Fracàs de cargament"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+msgid "Additional plugins must be disabled"
+msgstr "D'empeutons suplementaris devon èsser desactivats"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Los empeutons seguents dependon de « %s » e seràn desactivats tanben :"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+msgid "Plugins"
+msgstr "Empeutons"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+msgid "An additional plugin must be disabled"
+msgstr "Un empeuton suplementari deu èsser desactivat"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"L'empeuton « %s » depend de l'empeuton « %s ».\n"
+"Se desactivatz « %s », « %s » serà desactivat tanben."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+msgid "Disable Plugins"
+msgstr "Desactivar los empeutons"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+msgid "There was an error displaying the help."
+msgstr "Una error s'es producha pendent l'afichatge de l'ajuda."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:385
+msgid "_About"
+msgstr "A _prepaus"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:393
+msgid "_Preferences"
+msgstr "_Preferéncias"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+msgid "_Enabled"
+msgstr "_Activat"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+msgid "E_nable All"
+msgstr "Activar _tot"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+msgid "_Disable All"
+msgstr "_Desactivar tot"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
+msgid "Enabled"
+msgstr "Activat"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
+msgid "Plugin"
+msgstr "Empeuton"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
+#, c-format
+msgid ""
+"<b>The plugin '%s' could not be loaded</b>\n"
+"An error occurred: %s"
+msgstr ""
+"<b>L'empeuton « %s » a pas pogut èsser cargat</b>\n"
+"Una error s'es producha : %s"
+
+#: ../peas-demo/peas-demo.c:40
+msgid "Run from build directory"
+msgstr "Aviar a partir del repertòri de compilacion"
+
+#: ../peas-demo/peas-demo.c:100
+msgid "- libpeas demo application"
+msgstr "- aplicacion demo libpeas"
+
+#~ msgid "C_onfigure"
+#~ msgstr "C_onfigurer"
+
+#~ msgid "_Plugins:"
+#~ msgstr "_Greffons :"
+
+#~ msgid "A_ctivate"
+#~ msgstr "A_ctiver"
