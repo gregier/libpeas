@@ -133,16 +133,17 @@ AM_CONDITIONAL([ENABLE_GTK],[test "x$enable_gtk" = "xyes"])
 dnl ================================================================
 dnl Check for native OSX
 dnl ================================================================
-AC_MSG_CHECKING([for native Mac OS X])
-
 
 GTK_CHECK_BACKEND([quartz], [3.0.0], [os_osx=yes], [os_osx=no])
+
+AC_MSG_CHECKING([for native Mac OS X])
 AC_MSG_RESULT([$os_osx])
-AM_CONDITIONAL(OS_OSX, test "$os_osx" = "yes")
 
 if test "$os_osx" = "yes"; then
 	AC_DEFINE([OS_OSX],[1],[Defined if os is Mac OSX])
 fi
+
+AM_CONDITIONAL(OS_OSX, test "$os_osx" = "yes")
 
 dnl ================================================================
 dnl Check for GDB
@@ -326,6 +327,7 @@ else
         LUA51_BIN="$with_lua51"
         LUA51_CFLAGS=`$PKG_CONFIG --cflags $with_lua51`
         LUA51_LIBS=`$PKG_CONFIG --libs $with_lua51`
+        LUA51_STATIC_LIBS=`$PKG_CONFIG --static --libs $with_lua51`
         AC_SUBST(LUA51_BIN)
         AC_SUBST(LUA51_CFLAGS)
         AC_SUBST(LUA51_LIBS)
@@ -335,7 +337,7 @@ else
         peas_save_CFLAGS="$CFLAGS"
         peas_save_LIBS="$LIBS"
         CFLAGS="$PEAS_CFLAGS $LUA51_CFLAGS -I${srcdir}/loaders/lua5.1"
-        LIBS="$PEAS_LIBS $LUA51_LIBS"
+        LIBS="$PEAS_LIBS $LUA51_STATIC_LIBS"
         AC_TRY_RUN(peas_lgi_version_test(0),
                    found_lua51=yes,
                    found_lua51=no,
