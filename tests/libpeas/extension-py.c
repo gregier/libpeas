@@ -180,11 +180,19 @@ test_extension_py_already_initialized_subprocess (void)
 static void
 test_extension_py_mixed_python (void)
 {
+  GTestSubprocessFlags flags = 0;
+
+  /* Loading both Python 2 and Python 3 might cause
+   * the linker to spew warnings, i.e. on OpenBSD, so
+   * only inherit standard error when debugging
+   */
+  if (g_getenv ("PEAS_DEBUG") != NULL)
+    flags |= G_TEST_SUBPROCESS_INHERIT_STDERR;
+
   g_test_trap_subprocess (EXTENSION_TEST_NAME (PY_LOADER,
                                                "mixed-python/subprocess"),
-                          0, G_TEST_SUBPROCESS_INHERIT_STDERR);
+                          0, flags);
   g_test_trap_assert_passed ();
-  g_test_trap_assert_stderr ("");
 }
 
 static void
