@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libpeas\n"
+"Project-Id-Version: libpeas 3.17.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-19 21:18+0100\n"
-"PO-Revision-Date: 2015-03-19 21:19+0100\n"
+"POT-Creation-Date: 2015-05-14 17:03+0200\n"
+"PO-Revision-Date: 2015-05-14 17:03+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: nb\n"
@@ -143,9 +143,13 @@ msgstr "Tillegg"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Tillegg «%s» kunne ikke lastes"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "En feil oppsto: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "En feil oppsto: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
