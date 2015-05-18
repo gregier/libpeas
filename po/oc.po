@@ -1,23 +1,22 @@
 # Occitan translation for libpeas.
-# Copyright (C) 2010-2011 Listed translators
+# Copyright (C) 2010-2014 Listed translators
 # This file is distributed under the same license as the libpeas package.
-# Cédric Valmary (totenoc.org) <cvalmary@yahoo.fr>, 2013.
-# Cédric Valmary (Tot en Òc) <cvalmary@yahoo.fr>, 2015.
+# Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpea"
-"s&keywords=I18N+L10N&component=general\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas"
+"&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2013-08-27 15:22+0000\n"
-"PO-Revision-Date: 2015-04-24 11:20+0200\n"
-"Last-Translator: Cédric Valmary (Tot en Òc) <cvalmary@yahoo.fr>\n"
-"Language-Team: www.totenoc.org\n"
+"PO-Revision-Date: 2015-05-18 16:11+0200\n"
+"Last-Translator: Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>\n"
+"Language-Team: Tot en òc (totenoc.eu)\n"
 "Language: oc\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.0\n"
+"X-Generator: Virtaal 0.7.1\n"
 "X-Project-Style: gnome\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
@@ -42,22 +41,22 @@ msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
 #: ../libpeas/peas-engine.c:818
-#, c-format
+#, c-format, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Dependéncia « %s » introbabla"
 
 #: ../libpeas/peas-engine.c:828
-#, c-format
+#, c-format, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "La dependéncia « %s » a pas pogut èsser cargada"
 
 #: ../libpeas/peas-engine.c:843
-#, c-format
+#, c-format, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Lo cargador d'empeuton « %s » es pas estat trobat"
 
 #: ../libpeas/peas-engine.c:855
-#, c-format
+#, c-format, c-format
 msgid "Failed to load"
 msgstr "Fracàs de cargament"
 
@@ -66,7 +65,7 @@ msgid "Additional plugins must be disabled"
 msgstr "D'empeutons suplementaris devon èsser desactivats"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
-#, c-format
+#, c-format, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Los empeutons seguents dependon de « %s » e seràn desactivats tanben :"
 
@@ -79,7 +78,7 @@ msgid "An additional plugin must be disabled"
 msgstr "Un empeuton suplementari deu èsser desactivat"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
-#, c-format
+#, c-format, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
@@ -141,10 +140,40 @@ msgid "- libpeas demo application"
 msgstr "- aplicacion demo libpeas"
 
 #~ msgid "C_onfigure"
-#~ msgstr "C_onfigurer"
+#~ msgstr "C_onfigurar"
 
 #~ msgid "_Plugins:"
-#~ msgstr "_Greffons :"
+#~ msgstr "Em_peutons :"
 
 #~ msgid "A_ctivate"
-#~ msgstr "A_ctiver"
+#~ msgstr "A_ctivar"
+
+#~ msgid "_Cancel"
+#~ msgstr "_Anullar"
+
+#~ msgid "_Close"
+#~ msgstr "_Tampa"
+
+#~ msgid "_Help"
+#~ msgstr "A_juda"
+
+#~ msgid "Pr_eferences"
+#~ msgstr "P_referéncias"
+
+#, c-format
+#~ msgid "The plugin '%s' could not be loaded"
+#~ msgstr "Le greffon « %s » n'a pas pu être chargé"
+
+#, c-format
+#~| msgid "An error occurred: "
+#~ msgid "An error occurred: %s"
+#~ msgstr "Une erreur est survenue : "
+
+#~ msgid "_Quit"
+#~ msgstr "_Quitter"
+
+#~ msgid "About"
+#~ msgstr "À propos"
+
+#~ msgid "Preferences"
+#~ msgstr "Préférences"
