@@ -1,6 +1,8 @@
 /*
- * peas-gtk.h
+ * peas-gtk-autocleanups.h
  * This file is part of libpeas
+ *
+ * Copyright (C) 2015 - Garrett Regier
  *
  * libpeas is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,12 +19,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
  */
 
-#ifndef __PEAS_GTK_H__
-#define __PEAS_GTK_H__
 
-#include "peas-gtk-autocleanups.h"
+#ifndef __PEAS_GTK_AUTOCLEANUPS_H__
+#define __PEAS_GTK_AUTOCLEANUPS_H__
+
 #include "peas-gtk-configurable.h"
 #include "peas-gtk-plugin-manager.h"
 #include "peas-gtk-plugin-manager-view.h"
 
-#endif
+G_BEGIN_DECLS
+
+#ifndef __GI_SCANNER__
+#if GLIB_CHECK_VERSION (2, 44, 0)
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PeasGtkConfigurable, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PeasGtkPluginManager, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PeasGtkPluginManagerView, g_object_unref)
+
+#endif /* GLIB_CHECK_VERSION (2, 44, 0) */
+#endif /* __GI_SCANNER__ */
+
+G_END_DECLS
+
+#endif /* __PEAS_GTK_AUTOCLEANUPS_H__ */

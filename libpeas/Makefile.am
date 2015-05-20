@@ -24,6 +24,7 @@ endif
 libpeas_1_0_la_LIBADD = $(PEAS_LIBS)
 
 INST_H_FILES =			\
+	peas-autocleanups.h	\
 	peas-plugin-info.h	\
 	peas-object-module.h	\
 	peas-extension-base.h	\

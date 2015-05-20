@@ -25,6 +25,7 @@ libpeas_gtk_1_0_la_LDFLAGS += -framework Cocoa
 endif
 
 INST_H_FILES = \
+	peas-gtk-autocleanups.h		\
 	peas-gtk-configurable.h		\
 	peas-gtk-plugin-manager.h	\
 	peas-gtk-plugin-manager-view.h	\
