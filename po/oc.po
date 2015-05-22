@@ -167,7 +167,7 @@ msgstr "- aplicacion demo libpeas"
 #, c-format
 #~| msgid "An error occurred: "
 #~ msgid "An error occurred: %s"
-#~ msgstr "Une erreur est survenue : "
+#~ msgstr "Une erreur est survenue : %s"
 
 #~ msgid "_Quit"
 #~ msgstr "_Quitter"
