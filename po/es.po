@@ -2,15 +2,15 @@
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
 # Jorge González <jorgegonz@svn.gnome.org>, 2010, 2011.
-# Daniel Mustieles <daniel.mustieles@gmail.com>, 2012, 2014.
+# Daniel Mustieles <daniel.mustieles@gmail.com>, 2012, 2014, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-12-22 10:50+0000\n"
-"PO-Revision-Date: 2014-12-22 12:28+0100\n"
+"POT-Creation-Date: 2015-05-26 11:50+0000\n"
+"PO-Revision-Date: 2015-05-26 19:14+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: \n"
@@ -42,22 +42,22 @@ msgstr "Mostrar incluidos"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:996
+#: ../libpeas/peas-engine.c:976
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "No se encontró la dependencia «%s»"
 
-#: ../libpeas/peas-engine.c:1006
+#: ../libpeas/peas-engine.c:986
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Falló al cargar la dependencia «%s»"
 
-#: ../libpeas/peas-engine.c:1020
+#: ../libpeas/peas-engine.c:1000
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "No se encontró el cargador de complemento «%s»"
 
-#: ../libpeas/peas-engine.c:1032
+#: ../libpeas/peas-engine.c:1012
 #, c-format
 msgid "Failed to load"
 msgstr "Falló al cargar"
@@ -145,36 +145,36 @@ msgstr "Complemento"
 #. Avoid having markup in a translated string
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-#| msgid ""
-#| "<b>The plugin '%s' could not be loaded</b>\n"
-#| "An error occurred: %s"
 msgid "The plugin '%s' could not be loaded"
 msgstr "No se pudo cargar el complemento «%s»"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Ha ocurrido un error: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+#| msgid "An error occurred: "
+msgid "An error occurred: %s"
+msgstr "Ocurrió un error: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Ejecutar desde la carpeta de construcción"
 
-#: ../peas-demo/peas-demo.c:85
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "_Salir"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "- libpeas aplicación de demostración"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:77
-#| msgid "_About"
 msgid "About"
 msgstr "Acerca de"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:82
-#| msgid "_Preferences"
 msgid "Preferences"
 msgstr "Preferencias"
 
