@@ -1,16 +1,16 @@
 # Hungarian translation of libpeas
-# Copyright 2010 Free Software Foundation, Inc.
+# Copyright (C) 2010, 2011, 2012, 2013, 2014, 2015 Free Software Foundation, Inc.
 # This file is distributed under the same license as the libpeas package.
 #
 # Gabor Kelemen <kelemeng at gnome dot hu>, 2010, 2011, 2012.
-# Balázs Úr <urbalazs at gmail dot com>, 2014.
+# Balázs Úr <urbalazs at gmail dot com>, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-12-20 22:50+0000\n"
-"PO-Revision-Date: 2014-12-21 00:34+0100\n"
+"POT-Creation-Date: 2015-06-04 10:39+0000\n"
+"PO-Revision-Date: 2015-06-04 22:04+0200\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope at googlegroups dot com>\n"
 "Language: \n"
@@ -42,22 +42,22 @@ msgstr "Beépített megjelenítése"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:996
+#: ../libpeas/peas-engine.c:976
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "A függőség („%s”) nem található"
 
-#: ../libpeas/peas-engine.c:1006
+#: ../libpeas/peas-engine.c:986
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "A függőség („%s”) betöltése meghiúsult"
 
-#: ../libpeas/peas-engine.c:1020
+#: ../libpeas/peas-engine.c:1000
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "A bővítménybetöltő („%s”) nem található"
 
-#: ../libpeas/peas-engine.c:1032
+#: ../libpeas/peas-engine.c:1012
 #, c-format
 msgid "Failed to load"
 msgstr "A betöltés meghiúsult"
@@ -146,36 +146,36 @@ msgstr "Bővítmény"
 #. Avoid having markup in a translated string
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-#| msgid ""
-#| "<b>The plugin '%s' could not be loaded</b>\n"
-#| "An error occurred: %s"
 msgid "The plugin '%s' could not be loaded"
 msgstr "A(z) „%s” bővítmény nem tölthető be"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Hiba történt: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+#| msgid "An error occurred: "
+msgid "An error occurred: %s"
+msgstr "Hiba történt: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Futtatás a build könyvtárból"
 
-#: ../peas-demo/peas-demo.c:85
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "_Kilépés"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "- libpeas demó alkalmazás"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:77
-#| msgid "_About"
 msgid "About"
 msgstr "Névjegy"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:82
-#| msgid "_Preferences"
 msgid "Preferences"
 msgstr "Beállítások"
 
