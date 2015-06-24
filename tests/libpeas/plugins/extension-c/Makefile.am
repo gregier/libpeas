@@ -18,7 +18,8 @@ libextension_c_la_SOURCES = \
 libextension_c_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 libextension_c_la_LIBADD = \
 	$(PEAS_LIBS)						\
-	$(builddir)/../../introspection/libintrospection-1.0.la
+	$(builddir)/../../introspection/libintrospection-1.0.la \
+	$(top_builddir)/libpeas/libpeas-1.0.la
 
 libextension_c_missing_symbol_la_SOURCES = \
 	extension-c-missing-symbol-plugin.c
