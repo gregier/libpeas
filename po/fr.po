@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-24 11:00+0000\n"
-"PO-Revision-Date: 2015-02-24 23:51+0100\n"
+"POT-Creation-Date: 2015-08-15 10:46+0000\n"
+"PO-Revision-Date: 2015-08-15 13:35+0200\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -144,12 +144,15 @@ msgstr "Greffon"
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
 msgid "The plugin '%s' could not be loaded"
-msgstr ""
-"Le greffon « %s » n'a pas pu être chargé"
+msgstr "Le greffon « %s » n'a pas pu être chargé"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Une erreur est survenue : "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Une erreur est survenue : %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
