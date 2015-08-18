@@ -5,20 +5,21 @@
 # Fran Diéguez <frandieguez@gnome.org>, 2010, 2011, 2012.
 # Leandro Regueiro <leandro.regueiro@gmail.com>, 2012.
 # Fran Dieguez <frandieguez@gnome.org>, 2014, 2015.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-13 00:18+0100\n"
-"PO-Revision-Date: 2015-01-13 00:18+0200\n"
+"POT-Creation-Date: 2015-08-19 01:09+0200\n"
+"PO-Revision-Date: 2015-08-19 01:09+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
-"Language-Team: gnome-l10n-gl@gnome.org\n"
+"Language-Team: Galician <gnome-l10n-gl@gnome.org>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
@@ -42,22 +43,22 @@ msgstr "Mostrar incluídos"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:996
+#: ../libpeas/peas-engine.c:976
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Non foi posíbel encontrar a dependencia «%s»"
 
-#: ../libpeas/peas-engine.c:1006
+#: ../libpeas/peas-engine.c:986
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Produciuse un erro ao cargar a dependencia «%s»"
 
-#: ../libpeas/peas-engine.c:1020
+#: ../libpeas/peas-engine.c:1000
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Non foi posíbel encontrar o cargador do engadido «%s»"
 
-#: ../libpeas/peas-engine.c:1032
+#: ../libpeas/peas-engine.c:1012
 #, c-format
 msgid "Failed to load"
 msgstr "Produciuse un erro ao cargar"
@@ -147,20 +148,24 @@ msgstr "Engadido"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Non foi posíbel cargar o engadido «%s»"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Produciuse un erro:"
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Produciuse un erro:%s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Executar desde o cartafol de construción"
 
-#: ../peas-demo/peas-demo.c:85
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "_Saír"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "- aplicativo de demostración de libpeas"
 
