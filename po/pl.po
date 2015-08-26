@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 20:32+0100\n"
-"PO-Revision-Date: 2015-03-02 20:33+0100\n"
+"POT-Creation-Date: 2015-08-26 19:57+0200\n"
+"PO-Revision-Date: 2015-08-26 19:58+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -48,17 +48,17 @@ msgstr "Peas GTK+"
 #: ../libpeas/peas-engine.c:976
 #, c-format
 msgid "Dependency '%s' was not found"
-msgstr "Nie odnaleziono zależności \"%s\""
+msgstr "Nie odnaleziono zależności „%s”"
 
 #: ../libpeas/peas-engine.c:986
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr "Wczytanie zależności \"%s\" się nie powiodło"
+msgstr "Wczytanie zależności „%s” się nie powiodło"
 
 #: ../libpeas/peas-engine.c:1000
 #, c-format
 msgid "Plugin loader '%s' was not found"
-msgstr "Nie odnaleziono programu wczytującego wtyczkę \"%s\""
+msgstr "Nie odnaleziono programu wczytującego wtyczkę „%s”"
 
 #: ../libpeas/peas-engine.c:1012
 #, c-format
@@ -72,7 +72,7 @@ msgstr "Dodatkowe wtyczki muszą zostać wyłączone"
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
-msgstr "Następujące wtyczki zależą od \"%s\" i także zostaną wyłączone:"
+msgstr "Następujące wtyczki zależą od „%s” i także zostaną wyłączone:"
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
 msgid "Plugins"
@@ -88,8 +88,8 @@ msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
 msgstr ""
-"Wtyczka \"%s\" zależy od wtyczki \"%s\".\n"
-"Jeśli \"%s\" zostanie wyłączona, to \"%s\" także zostanie wyłączona."
+"Wtyczka „%s” zależy od wtyczki „%s”.\n"
+"Jeśli „%s” zostanie wyłączona, to „%s” także zostanie wyłączona."
 
 #: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
 msgid "_Cancel"
@@ -148,11 +148,15 @@ msgstr "Wtyczka"
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
 msgid "The plugin '%s' could not be loaded"
-msgstr "Nie można wczytać wtyczki \"%s\""
+msgstr "Nie można wczytać wtyczki „%s”"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Wystąpił błąd: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Wystąpił błąd: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
@@ -165,7 +169,7 @@ msgstr "Za_kończ"
 
 #: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
-msgstr "- program demonstracyjny biblioteki libpeas"
+msgstr "— program demonstracyjny biblioteki libpeas"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:77
 msgid "About"
