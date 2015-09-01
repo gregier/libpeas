@@ -41,11 +41,9 @@ class Hooks(object):
             if int_handler == signal.default_int_handler:
                 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        # See PySys_SetArgvEx()
         sys.argv = [PRGNAME]
-        sys.path.pop(0)
-
         sys.path.insert(0, PEAS_PYEXECDIR)
+
         gettext.install(GETTEXT_PACKAGE, PEAS_LOCALEDIR)
 
         self.__module_cache = {}
