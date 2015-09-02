@@ -2,22 +2,23 @@
 # Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
 # This file is distributed under the same license as the libpeas package.
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2010, 2011, 2012.
+# Paul Seyfert <pseyfert@mathphys.fsk.uni-heidelberg.de>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-07-29 10:41+0000\n"
-"PO-Revision-Date: 2015-07-29 14:49+0100\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"POT-Creation-Date: 2015-09-01 22:44+0000\n"
+"PO-Revision-Date: 2015-09-02 09:54+0100\n"
+"Last-Translator: Paul Seyfert <pseyfert@mathphys.fsk.uni-heidelberg.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.1\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
@@ -148,9 +149,13 @@ msgstr "Plugin"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Das Plugin »%s« konnte nicht geladen werden"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Ein Fehler ist aufgetreten: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Ein Fehler ist aufgetreten: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
