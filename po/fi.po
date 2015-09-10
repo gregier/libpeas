@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: libpeas\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-03-13 11:03+0000\n"
-"PO-Revision-Date: 2015-03-13 17:46+0200\n"
+"POT-Creation-Date: 2015-09-05 10:46+0000\n"
+"PO-Revision-Date: 2015-09-05 16:13+0300\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <gnome-fi-laatu@lists.sourceforge.net>\n"
 "Language: \n"
@@ -114,7 +114,6 @@ msgid "_Help"
 msgstr "_Ohje"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
-#| msgid "_Preferences"
 msgid "Pr_eferences"
 msgstr "_Asetukset"
 
@@ -150,15 +149,17 @@ msgstr "Liitännäinen"
 #. Avoid having markup in a translated string
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-#| msgid ""
-#| "<b>The plugin '%s' could not be loaded</b>\n"
-#| "An error occurred: %s"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Liitännäistä ”%s” ei voitu ladata"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Tapahtui virhe:"
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+#| msgid "An error occurred: "
+msgid "An error occurred: %s"
+msgstr "Tapahtui virhe: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
@@ -174,11 +175,9 @@ msgid "- libpeas demo application"
 msgstr "- libpeas-demosovellus"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:77
-#| msgid "_About"
 msgid "About"
 msgstr "Tietoja"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:82
-#| msgid "_Preferences"
 msgid "Preferences"
 msgstr "Asetukset"
