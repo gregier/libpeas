@@ -6,9 +6,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-21 16:29+0100\n"
-"PO-Revision-Date: 2015-03-14 17:04+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-09-19 11:01+0000\n"
+"PO-Revision-Date: 2015-09-19 18:27+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -153,9 +154,13 @@ msgstr "Udvidelsesmodul"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Udvidelsesmodulet \"%s\" kunne ikke indlæses"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Der opstod en fejl: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Der opstod en fejl: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
