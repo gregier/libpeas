@@ -29,8 +29,14 @@
 
 #include "peas-utils.h"
 
-static const gchar *all_plugin_loaders[] = {"c", "lua5.1",
-                                            "python", "python3"};
+static const gchar *all_plugin_loaders[] = {
+  "c", "lua5.1", "python", "python3"
+};
+
+static const gchar *all_plugin_loader_modules[] = {
+  "cloader", "lua51loader", "pythonloader", "python3loader"
+};
+
 static const gint conflicting_plugin_loaders[PEAS_UTILS_N_LOADERS][2] = {
   { -1, -1 }, /* c       => {}          */
   { -1, -1 }, /* lua5.1  => {}          */
@@ -39,6 +45,7 @@ static const gint conflicting_plugin_loaders[PEAS_UTILS_N_LOADERS][2] = {
 };
 
 G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loaders) == PEAS_UTILS_N_LOADERS);
+G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loader_modules) == PEAS_UTILS_N_LOADERS);
 G_STATIC_ASSERT (G_N_ELEMENTS (conflicting_plugin_loaders) == PEAS_UTILS_N_LOADERS);
 
 static void
@@ -188,6 +195,15 @@ peas_utils_get_loader_from_id (gint loader_id)
   g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
 
   return all_plugin_loaders[loader_id];
+}
+
+const gchar *
+peas_utils_get_loader_module_from_id (gint loader_id)
+{
+  g_return_val_if_fail (loader_id >= 0, NULL);
+  g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
+
+  return all_plugin_loader_modules[loader_id];
 }
 
 const gint *

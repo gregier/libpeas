@@ -35,6 +35,8 @@ gboolean  peas_utils_valist_to_parameter_list (GType         iface_type,
 gint     peas_utils_get_loader_id             (const gchar  *loader) G_GNUC_CONST;
 const gchar *
          peas_utils_get_loader_from_id        (gint          loader_id) G_GNUC_CONST;
+const gchar *
+         peas_utils_get_loader_module_from_id (gint          loader_id) G_GNUC_CONST;
 const gint *
          peas_utils_get_conflicting_loaders_from_id
                                               (gint          loader_id) G_GNUC_CONST;

@@ -647,25 +647,15 @@ static PeasObjectModule *
 get_plugin_loader_module (gint loader_id)
 {
   GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
-  gint i, j;
-  const gchar *loader_name;
-  gchar *module_name, *module_dir;
+  const gchar *loader_name, *module_name;
+  gchar *module_dir;
 
   if (global_loader_info->module != NULL)
     return global_loader_info->module;
 
   loader_name = peas_utils_get_loader_from_id (loader_id);
-  module_name = g_strconcat (loader_name, "loader", NULL);
+  module_name = peas_utils_get_loader_module_from_id (loader_id);
   module_dir = peas_dirs_get_plugin_loader_dir (loader_name);
-
-  /* Remove '.'s from the module name */
-  for (i = 0, j = 0; module_name[i] != '\0'; ++i)
-    {
-      if (module_name[i] != '.')
-        module_name[j++] = module_name[i];
-    }
-
-  module_name[j] = '\0';
 
   /* Bind loaders globally, binding
    * locally can break the plugin loaders
@@ -681,7 +671,6 @@ get_plugin_loader_module (gint loader_id)
     }
 
   g_free (module_dir);
-  g_free (module_name);
 
   return global_loader_info->module;
 }
