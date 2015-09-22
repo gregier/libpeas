@@ -42,7 +42,6 @@ class Hooks(object):
                 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         sys.argv = [PRGNAME]
-        sys.path.insert(0, PEAS_PYEXECDIR)
 
         gettext.install(GETTEXT_PACKAGE, PEAS_LOCALEDIR)
 

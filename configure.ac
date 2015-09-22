@@ -400,12 +400,10 @@ else
                     PYTHON2_CFLAGS=`${PYTHON2_CONFIG} --includes`
                     PYTHON2_LIBS=`${PYTHON2_CONFIG} --libs`
                     PYTHON2_LDFLAGS=`${PYTHON2_CONFIG} --ldflags`
-                    PYTHON2_PYEXECDIR=`$PYTHON2 -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1, 0, prefix='\\$' '{exec_prefix}'))"`
                     AC_SUBST(PYTHON2_BIN)
                     AC_SUBST(PYTHON2_CFLAGS)
                     AC_SUBST(PYTHON2_LIBS)
                     AC_SUBST(PYTHON2_LDFLAGS)
-                    AC_SUBST(PYTHON2_PYEXECDIR)
                     AC_DEFINE(ENABLE_PYTHON2, 1, [Define to compile with Python 2 support])
                 ], [
                     found_python2="no (PyGObject not found)"
@@ -446,12 +444,10 @@ else
                 PYTHON3_CFLAGS=`${PYTHON3_CONFIG} --includes`
                 PYTHON3_LIBS=`${PYTHON3_CONFIG} --libs`
                 PYTHON3_LDFLAGS=`${PYTHON3_CONFIG} --ldflags`
-                PYTHON3_PYEXECDIR="${pyexecdir}"
                 AC_SUBST(PYTHON3_BIN)
                 AC_SUBST(PYTHON3_CFLAGS)
                 AC_SUBST(PYTHON3_LIBS)
                 AC_SUBST(PYTHON3_LDFLAGS)
-                AC_SUBST(PYTHON3_PYEXECDIR)
                 AC_DEFINE(ENABLE_PYTHON3, 1, [Define to compile with Python 3 support])
             ], [
                 found_python3="no (PyGObject not found)"

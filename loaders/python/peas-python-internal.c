@@ -127,8 +127,6 @@ peas_python_internal_setup (gboolean already_initialized)
                                                     "PRGNAME",
                                                     prgname) == 0);
   goto_error_if_failed (PyModule_AddStringMacro (internal_module,
-                                                 PEAS_PYEXECDIR) == 0);
-  goto_error_if_failed (PyModule_AddStringMacro (internal_module,
                                                  GETTEXT_PACKAGE) == 0);
   goto_error_if_failed (PyModule_AddStringMacro (internal_module,
                                                  PEAS_LOCALEDIR) == 0);

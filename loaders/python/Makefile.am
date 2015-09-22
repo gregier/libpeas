@@ -10,7 +10,6 @@ AM_CPPFLAGS = \
 	$(DISABLE_DEPRECATED)		\
 	$(PYGOBJECT_CFLAGS)		\
 	$(PYTHON2_CFLAGS)		\
-	-DPEAS_PYEXECDIR=\""$(PYTHON2_PYEXECDIR)"\" \
 	-DPEAS_LOCALEDIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 
 loader_LTLIBRARIES = libpythonloader.la
