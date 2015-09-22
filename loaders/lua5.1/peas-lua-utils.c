@@ -72,7 +72,7 @@ peas_lua_utils_check_version (lua_State *L,
   const gchar *version_str;
   gchar **version_str_parts;
   gint n_version_parts;
-  gint *version_parts;
+  gint64 *version_parts;
   gint i;
   gboolean success = FALSE;
 
@@ -82,7 +82,7 @@ peas_lua_utils_check_version (lua_State *L,
   version_str_parts = g_strsplit (version_str, ".", 0);
 
   n_version_parts = g_strv_length (version_str_parts);
-  version_parts = g_newa (gint, n_version_parts);
+  version_parts = g_newa (gint64, n_version_parts);
 
   for (i = 0; i < n_version_parts; ++i)
     {
