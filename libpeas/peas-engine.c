@@ -352,7 +352,7 @@ peas_engine_init (PeasEngine *engine)
   priv->in_dispose = FALSE;
 
   /* The C plugin loader is always enabled */
-  priv->loaders[peas_utils_get_loader_id ("C")].enabled = TRUE;
+  priv->loaders[PEAS_UTILS_C_LOADER_ID].enabled = TRUE;
 }
 
 /**
@@ -628,8 +628,14 @@ peas_engine_class_init (PeasEngineClass *klass)
    * global init function for libpeas. */
   peas_debug_init ();
 
+  /* This cannot be done as a compile-time
+   * assert, but is critical for correct behavior
+   */
+  g_assert (g_strcmp0 (peas_utils_get_loader_from_id (PEAS_UTILS_C_LOADER_ID),
+                       "c") == 0);
+
   /* The C plugin loader is always enabled */
-  loaders[peas_utils_get_loader_id ("C")].enabled = TRUE;
+  loaders[PEAS_UTILS_C_LOADER_ID].enabled = TRUE;
 }
 
 static PeasObjectModule *
@@ -669,7 +675,7 @@ create_plugin_loader (gint loader_id)
 {
   PeasPluginLoader *loader;
 
-  if (peas_utils_get_loader_id ("C") == loader_id)
+  if (loader_id == PEAS_UTILS_C_LOADER_ID)
     {
       loader = peas_plugin_loader_c_new ();
     }

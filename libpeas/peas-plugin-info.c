@@ -169,7 +169,7 @@ _peas_plugin_info_new (const gchar *filename,
   if (loader == NULL || *loader == '\0')
     {
       /* Default to the C loader */
-      info->loader_id = peas_utils_get_loader_id ("C");
+      info->loader_id = PEAS_UTILS_C_LOADER_ID;
     }
   else
     {
