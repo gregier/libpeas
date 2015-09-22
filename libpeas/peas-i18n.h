@@ -66,6 +66,9 @@ G_BEGIN_DECLS
 
 const gchar *peas_gettext (const char *msgid) G_GNUC_FORMAT(1);
 
+/* not really I18N-related, but also a string marker macro */
+#define I_(string) g_intern_static_string (string)
+
 G_END_DECLS
 
 #endif /* __PEAS_I18N_H__ */

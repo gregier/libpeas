@@ -599,7 +599,7 @@ peas_engine_class_init (PeasEngineClass *klass)
    * g_signal_connect_after().
    */
   signals[LOAD_PLUGIN] =
-    g_signal_new ("load-plugin",
+    g_signal_new (I_("load-plugin"),
                   the_type,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PeasEngineClass, load_plugin),
@@ -624,7 +624,7 @@ peas_engine_class_init (PeasEngineClass *klass)
    * use g_signal_connect_after().
    */
   signals[UNLOAD_PLUGIN] =
-    g_signal_new ("unload-plugin",
+    g_signal_new (I_("unload-plugin"),
                   the_type,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PeasEngineClass, unload_plugin),

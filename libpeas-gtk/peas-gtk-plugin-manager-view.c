@@ -818,7 +818,7 @@ peas_gtk_plugin_manager_view_class_init (PeasGtkPluginManagerViewClass *klass)
    * connect to this signal and add your menuitems to the @menu.
    */
   signals[POPULATE_POPUP] =
-    g_signal_new ("populate-popup",
+    g_signal_new (I_("populate-popup"),
                   the_type,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PeasGtkPluginManagerViewClass, populate_popup),

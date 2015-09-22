@@ -4,6 +4,7 @@
 data/glade/libpeas-gtk.xml.in
 libpeas/peas-dirs.c
 libpeas/peas-engine.c
+libpeas/peas-extension-set.c
 libpeas/peas-object-module.c
 libpeas/peas-plugin-info.c
 libpeas/peas-plugin-loader.c

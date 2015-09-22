@@ -26,10 +26,12 @@
 #include <string.h>
 
 #include "peas-extension-set.h"
+
+#include "peas-i18n.h"
+#include "peas-introspection.h"
 #include "peas-plugin-info.h"
 #include "peas-marshal.h"
 #include "peas-utils.h"
-#include "peas-introspection.h"
 
 /**
  * SECTION:peas-extension-set
@@ -363,7 +365,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
    * was created. You should set those up by yourself.
    */
   signals[EXTENSION_ADDED] =
-    g_signal_new ("extension-added",
+    g_signal_new (I_("extension-added"),
                   the_type,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PeasExtensionSetClass, extension_added),
@@ -391,7 +393,7 @@ peas_extension_set_class_init (PeasExtensionSetClass *klass)
    * instance is destroyed. You should clean those up by yourself.
    */
   signals[EXTENSION_REMOVED] =
-    g_signal_new ("extension-removed",
+    g_signal_new (I_("extension-removed"),
                   the_type,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PeasExtensionSetClass, extension_removed),
