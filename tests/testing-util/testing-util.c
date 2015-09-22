@@ -47,6 +47,7 @@ static void unhandled_private_notify (gpointer value);
 static void log_hooks_private_notify (gpointer value);
 
 static gboolean initialized = FALSE;
+static GLogLevelFlags fatal_flags = 0;
 
 static gpointer dead_engine = NULL;
 #define DEAD_ENGINE ((gpointer) &dead_engine)
@@ -155,6 +156,15 @@ log_handler (const gchar    *log_domain,
 
   /* Use the default log handler directly to avoid recurse complaints */
   g_log_default_handler (log_domain, log_level, message, user_data);
+
+  /* Support for the standard G_DEBUG flags */
+  if (((log_level & G_LOG_LEVEL_WARNING) != 0 &&
+       (fatal_flags & G_LOG_LEVEL_WARNING) != 0) ||
+      ((log_level & G_LOG_LEVEL_CRITICAL) != 0 &&
+       (fatal_flags & G_LOG_LEVEL_CRITICAL) != 0))
+    {
+      G_BREAKPOINT ();
+    }
 }
 
 void
@@ -179,6 +189,10 @@ void
 testing_util_init (void)
 {
   GError *error = NULL;
+  const GDebugKey glib_debug_keys[] = {
+    { "fatal-warnings",  G_LOG_LEVEL_WARNING  },
+    { "fatal-criticals", G_LOG_LEVEL_CRITICAL }
+  };
 
   if (initialized)
     return;
@@ -187,6 +201,17 @@ testing_util_init (void)
   g_log_set_always_fatal (G_LOG_LEVEL_ERROR);
 
   g_log_set_default_handler (log_handler, NULL);
+
+  /* Force a breakpoint when the standard GLib debug flags
+   * are used. This is not supplied automatically because
+   * GLib's test utilities change the default.
+   */
+  fatal_flags = g_parse_debug_string (g_getenv ("G_DEBUG"), glib_debug_keys,
+                                      G_N_ELEMENTS (glib_debug_keys));
+
+  /* The "fatal-warnings" key implies "fatal-criticals" */
+  if ((fatal_flags & G_LOG_LEVEL_WARNING) != 0)
+    fatal_flags |= G_LOG_LEVEL_CRITICAL;
 
   g_irepository_require_private (g_irepository_get_default (),
                                  BUILDDIR "/libpeas",
