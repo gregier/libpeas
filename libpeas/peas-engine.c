@@ -829,6 +829,9 @@ peas_engine_enable_loader (PeasEngine  *engine,
 
   g_mutex_lock (&loaders_lock);
 
+  /* Don't check if the loader failed
+   * as we want to warn multiple times
+   */
   if (loaders[loader_id].enabled)
     {
       loader_info->enabled = TRUE;
@@ -857,6 +860,7 @@ peas_engine_enable_loader (PeasEngine  *engine,
                      peas_utils_get_loader_from_id (loader_ids[i]));
 
           loader_info->failed = TRUE;
+          loaders[loader_id].failed = TRUE;
           g_mutex_unlock (&loaders_lock);
           return;
         }
@@ -1492,6 +1496,7 @@ peas_engine_shutdown (void)
       /* Don't bother unloading the
        * module as it is always resident
        */
+      loader_info->enabled = FALSE;
       loader_info->failed = TRUE;
     }
 
