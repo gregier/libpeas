@@ -1351,8 +1351,11 @@ string_in_strv (const gchar  *needle,
     return FALSE;
 
   for (i = 0; haystack[i] != NULL; i++)
-    if (strcmp (haystack[i], needle) == 0)
-      return TRUE;
+    {
+      if (strcmp (haystack[i], needle) == 0)
+        return TRUE;
+    }
+
   return FALSE;
 }
 

@@ -68,19 +68,16 @@ find_param_spec_in_interfaces (GPtrArray   *type_structs,
                                const gchar *name)
 {
   guint i;
+  GParamSpec *pspec = NULL;
 
-  for (i = 0; i < type_structs->len; ++i)
+  for (i = 0; i < type_structs->len && pspec == NULL; ++i)
     {
-      GParamSpec *pspec;
+      gpointer iface = g_ptr_array_index (type_structs, i);
 
-      pspec = g_object_interface_find_property (g_ptr_array_index (type_structs, i),
-                                                name);
-
-      if (pspec != NULL)
-        return pspec;
+      pspec = g_object_interface_find_property (iface, name);
     }
 
-  return NULL;
+  return pspec;
 }
 
 gboolean
