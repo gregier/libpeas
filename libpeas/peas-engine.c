@@ -325,8 +325,17 @@ peas_engine_init (PeasEngine *engine)
 {
   PeasEnginePrivate *priv = GET_PRIV (engine);
 
-  /* Set the default engine here and not in constructor() to make sure
-   * that if a plugin is loaded and calls peas_engine_get_default()
+  /* Don't need to use atomics as peas_engine_shutdown()
+   * is private API and as such is not multithread-safe
+   */
+  if (shutdown)
+    {
+      g_error ("libpeas cannot create a plugin engine "
+               "as it has been shutdown.");
+    }
+
+  /* Set the default engine here to make sure that if a
+   * plugin is loaded and calls peas_engine_get_default()
    * that this engine is returned and not another.
    *
    * While peas_engine_get_default() is not thread-safe
@@ -370,32 +379,6 @@ peas_engine_garbage_collect (PeasEngine *engine)
       if (loader_info->loader != NULL)
         peas_plugin_loader_garbage_collect (loader_info->loader);
     }
-}
-
-static GObject *
-peas_engine_constructor (GType                  type,
-                         guint                  n_construct_params,
-                         GObjectConstructParam *construct_params)
-{
-  /* We don't support calling PeasEngine API without module support */
-  if (!g_module_supported ())
-    {
-      g_error ("libpeas is not able to create the "
-               "plugins engine as modules are not supported.");
-    }
-
-  /* Don't need to use atomics as peas_engine_shutdown()
-   * is private API and as such is not multithread-safe
-   */
-  if (shutdown)
-    {
-      g_error ("libpeas cannot create a plugin engine "
-               "as it has been shutdown.");
-    }
-
-  return G_OBJECT_CLASS (peas_engine_parent_class)->constructor (type,
-                                                                 n_construct_params,
-                                                                 construct_params);
 }
 
 static void
@@ -513,7 +496,6 @@ peas_engine_class_init (PeasEngineClass *klass)
   GType the_type = G_TYPE_FROM_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->constructor = peas_engine_constructor;
   object_class->set_property = peas_engine_set_property;
   object_class->get_property = peas_engine_get_property;
   object_class->dispose = peas_engine_dispose;
@@ -634,6 +616,13 @@ peas_engine_class_init (PeasEngineClass *klass)
                   G_SIGNAL_TYPE_STATIC_SCOPE);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
+
+  /* We don't support calling PeasEngine API without module support */
+  if (!g_module_supported ())
+    {
+      g_error ("libpeas is not able to create the "
+               "plugins engine as modules are not supported.");
+    }
 
   /* We are doing some global initialization here as there is currently no
    * global init function for libpeas. */
