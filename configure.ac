@@ -591,7 +591,6 @@ Configuration:
         Build libpeas-gtk             : ${enable_gtk}
         Coverage testing              : ${enable_gcov}
         Glade Catalog                 : ${found_glade_catalog}
-        Disable deprecated features   : ${enable_deprecation}
 
 Languages support:
 
