@@ -118,6 +118,11 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
   object_class->get_property = peas_extension_base_get_property;
   object_class->set_property = peas_extension_base_set_property;
 
+  /**
+   * PeasExtensionBase:plugin-info:
+   *
+   * The #PeasPluginInfo related to the current plugin.
+   */
   properties[PROP_PLUGIN_INFO] =
     g_param_spec_boxed ("plugin-info",
                         "Plugin Information",
@@ -127,6 +132,15 @@ peas_extension_base_class_init (PeasExtensionBaseClass *klass)
                         G_PARAM_CONSTRUCT_ONLY |
                         G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PeasExtensionBase:data-dir:
+   *
+   * The The full path of the directory where the plugin
+   * should look for its data files.
+   *
+   * Note: This is the same path as that returned by
+   * peas_plugin_info_get_data_dir().
+   */
   properties[PROP_DATA_DIR] =
     g_param_spec_string ("data-dir",
                          "Data Directory",
