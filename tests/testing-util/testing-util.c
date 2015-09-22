@@ -341,20 +341,22 @@ testing_util_pop_log_hooks (void)
   msg = g_string_new ("");
 
   if (unhit_hooks->len != 0)
-    g_string_append (msg, "Log hooks were not triggered:");
+    {
+      g_string_append (msg, "Log hooks were not triggered:");
 
-  if (unhit_hooks->len == 1)
-    {
-      hook = g_ptr_array_index (unhit_hooks, 0);
-      g_string_append_printf (msg, " '%s'", hook->pattern);
-    }
-  else if (unhit_hooks->len > 1)
-    {
-      for (i = 0; i < unhit_hooks->len; ++i)
+      if (unhit_hooks->len == 1)
         {
-          hook = g_ptr_array_index (unhit_hooks, i);
+          hook = g_ptr_array_index (unhit_hooks, 0);
+          g_string_append_printf (msg, " '%s'", hook->pattern);
+        }
+      else
+        {
+          for (i = 0; i < unhit_hooks->len; ++i)
+            {
+              hook = g_ptr_array_index (unhit_hooks, i);
 
-          g_string_append_printf (msg, "\n\t'%s'", hook->pattern);
+              g_string_append_printf (msg, "\n\t'%s'", hook->pattern);
+            }
         }
     }
 
