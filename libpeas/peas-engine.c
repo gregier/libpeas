@@ -529,8 +529,7 @@ peas_engine_class_init (PeasEngineClass *klass)
    *
    * This will be modified when peas_engine_rescan_plugins() is called.
    *
-   * Note that the list belongs to the engine and should not be modified
-   * or freed.
+   * Note: the list belongs to the engine and should not be modified or freed.
    */
   properties[PROP_PLUGIN_LIST] =
     g_param_spec_pointer ("plugin-list",
@@ -808,9 +807,9 @@ get_plugin_loader (PeasEngine *engine,
  *
  * Enable a loader, enables a loader for plugins.
  * The C plugin loader is always enabled. The other plugin
- * loaders are: lua5.1 and python and python3.
+ * loaders are: lua5.1, python and python3.
  *
- * For instance, the following code will enable python plugins
+ * For instance, the following code will enable Python 2 plugins
  * to be loaded:
  * |[
  * peas_engine_enable_loader (engine, "python");

@@ -190,7 +190,7 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
   loader_class->create_extension = peas_plugin_loader_c_create_extension;
 }
 
-/**
+/*
  * peas_plugin_loader_c_new:
  *
  * Return a new instance of #PeasPluginLoaderC.

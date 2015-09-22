@@ -344,7 +344,7 @@ peas_object_module_new (const gchar *module_name,
  * @resident: If the module should be resident.
  * @local_linkage: Whether to load the module with local linkage.
  *
- * Creates a new #PeasObjectModule with local linkage.
+ * Creates a new #PeasObjectModule.
  *
  * Return value: a new #PeasObjectModule.
  *

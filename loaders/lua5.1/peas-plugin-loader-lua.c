@@ -102,6 +102,7 @@ thread_leave (PeasPluginLoaderLua  *lua_loader,
   PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
   lua_State *L = info->loader_data;
 
+  /* Prevent keeping the L as a usable variable */
   g_assert (*L_ptr == L);
   *L_ptr = NULL;
 
