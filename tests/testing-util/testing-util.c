@@ -261,9 +261,12 @@ testing_util_run_tests (void)
 
   retval = g_test_run ();
 
-  /* Cannot call this with atexit() because
-   * gcov does not register that it was called.
+  /* Cleanup various data early otherwise some
+   * tools, like gcov, will not process it correctly
    */
+  g_private_replace (&engine_key, NULL);
+  g_private_replace (&unhandled_key, NULL);
+  g_private_replace (&log_hooks_key, NULL);
   peas_engine_shutdown ();
 
   return retval;
