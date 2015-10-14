@@ -6,17 +6,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-01-08 18:43+0100\n"
-"PO-Revision-Date: 2015-01-08 18:44+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-14 13:51+0200\n"
+"PO-Revision-Date: 2015-10-09 22:53+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@zundan.com>\n"
-"Language-Team: Basque <librezale@librezale.org>\n"
+"Language-Team: Basque <Basque <librezale@librezale.org>>\n"
 "Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.4\n"
+"X-Generator: Lokalize 1.5\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "\n"
 
@@ -42,22 +41,22 @@ msgstr "Erakutsi barnekoak"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:996
+#: ../libpeas/peas-engine.c:963
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Ez da '%s' mendekotasuna aurkitu"
 
-#: ../libpeas/peas-engine.c:1006
+#: ../libpeas/peas-engine.c:973
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Huts egin du '%s' mendekotasuna kargatzean"
 
-#: ../libpeas/peas-engine.c:1020
+#: ../libpeas/peas-engine.c:987
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Ez da '%s' pluginen kargatzailea aurkitu"
 
-#: ../libpeas/peas-engine.c:1032
+#: ../libpeas/peas-engine.c:999
 #, c-format
 msgid "Failed to load"
 msgstr "Huts egin du kargatzean"
@@ -147,20 +146,24 @@ msgstr "Plugina"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Ezin izan da '%s' plugina kargatu"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:638
-msgid "An error occurred: "
-msgstr "Errorea gertatu da: "
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Errorea gertatu da: %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Exekutatu konpilazioko direktoriotik"
 
-#: ../peas-demo/peas-demo.c:85
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "I_rten"
 
-#: ../peas-demo/peas-demo.c:101
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "- libpeas erakusketako aplikazioa"
 
