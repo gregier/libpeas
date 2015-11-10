@@ -1,14 +1,15 @@
 # Occitan translation for libpeas.
 # Copyright (C) 2010-2014 Listed translators
 # This file is distributed under the same license as the libpeas package.
+# Cédric Valmary <cvalmary@yahoo.fr>, 2015.
 # Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas"
 "&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-08-27 15:22+0000\n"
-"PO-Revision-Date: 2015-05-18 16:11+0200\n"
+"POT-Creation-Date: 2015-10-26 13:13+0000\n"
+"PO-Revision-Date: 2015-10-31 08:40+0200\n"
 "Last-Translator: Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>\n"
 "Language-Team: Tot en òc (totenoc.eu)\n"
 "Language: oc\n"
@@ -23,62 +24,63 @@ msgstr ""
 msgid "Plugin Manager"
 msgstr "Gestionari d'empeutons"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:2
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
 msgid "View"
 msgstr "Afichatge"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:3
+#: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
 msgstr "Afichatge del gestionari d'empeutons"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
-#: ../data/glade/libpeas-gtk.xml.in.h:5
+#: ../data/glade/libpeas-gtk.xml.in.h:6
 msgid "Show Builtin"
 msgstr "Afichar los empeutons intèrnes"
 
-#: ../data/glade/libpeas-gtk.xml.in.h:6
+#: ../data/glade/libpeas-gtk.xml.in.h:7
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:818
-#, c-format, c-format
+#: ../libpeas/peas-engine.c:963
+#, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Dependéncia « %s » introbabla"
 
-#: ../libpeas/peas-engine.c:828
-#, c-format, c-format
+#: ../libpeas/peas-engine.c:973
+#, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "La dependéncia « %s » a pas pogut èsser cargada"
 
-#: ../libpeas/peas-engine.c:843
-#, c-format, c-format
+#: ../libpeas/peas-engine.c:987
+#, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Lo cargador d'empeuton « %s » es pas estat trobat"
 
-#: ../libpeas/peas-engine.c:855
-#, c-format, c-format
+#: ../libpeas/peas-engine.c:999
+#, c-format
 msgid "Failed to load"
 msgstr "Fracàs de cargament"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 msgid "Additional plugins must be disabled"
 msgstr "D'empeutons suplementaris devon èsser desactivats"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
-#, c-format, c-format
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
+#, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Los empeutons seguents dependon de « %s » e seràn desactivats tanben :"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
 msgid "Plugins"
 msgstr "Empeutons"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:161
 msgid "An additional plugin must be disabled"
 msgstr "Un empeuton suplementari deu èsser desactivat"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
-#, c-format, c-format
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:168
+#, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
 "If you disable '%s', '%s' will also be disabled."
@@ -86,58 +88,100 @@ msgstr ""
 "L'empeuton « %s » depend de l'empeuton « %s ».\n"
 "Se desactivatz « %s », « %s » serà desactivat tanben."
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
+msgid "_Cancel"
+msgstr "_Anullar"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
 msgid "Disable Plugins"
 msgstr "Desactivar los empeutons"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:182
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
 msgid "There was an error displaying the help."
-msgstr "Una error s'es producha pendent l'afichatge de l'ajuda."
+msgstr "Una error s'es produsida pendent l'afichatge de l'ajuda."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:385
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
+msgid "_Close"
+msgstr "_Tampar"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
+msgid "_Help"
+msgstr "A_juda"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "P_referéncias"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
 msgid "_About"
 msgstr "A _prepaus"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:393
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_Preferences"
 msgstr "_Preferéncias"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
 msgid "_Enabled"
 msgstr "_Activat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "E_nable All"
 msgstr "Activar _tot"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
 msgid "_Disable All"
 msgstr "_Desactivar tot"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:510
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
 msgid "Enabled"
 msgstr "Activat"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:531
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:547
 msgid "Plugin"
 msgstr "Empeuton"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:621
+#. Avoid having markup in a translated string
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-msgid ""
-"<b>The plugin '%s' could not be loaded</b>\n"
-"An error occurred: %s"
-msgstr ""
-"<b>L'empeuton « %s » a pas pogut èsser cargat</b>\n"
-"Una error s'es producha : %s"
+msgid "The plugin '%s' could not be loaded"
+msgstr "L'empeuton « %s » a pas pogut èsser cargat"
 
-#: ../peas-demo/peas-demo.c:40
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Una error s'es produsida : %s"
+
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Aviar a partir del repertòri de compilacion"
 
-#: ../peas-demo/peas-demo.c:100
+#: ../peas-demo/peas-demo.c:92
+msgid "_Quit"
+msgstr "_Quitar"
+
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "- aplicacion demo libpeas"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:77
+msgid "About"
+msgstr "A prepaus"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:82
+msgid "Preferences"
+msgstr "Preferéncias"
+
+#~ msgid ""
+#~ "<b>The plugin '%s' could not be loaded</b>\n"
+#~ "An error occurred: %s"
+#~ msgstr ""
+#~ "<b>L'empeuton « %s » a pas pogut èsser cargat</b>\n"
+#~ "Una error s'es produsida : %s"
 
 #~ msgid "C_onfigure"
 #~ msgstr "C_onfigurar"
@@ -147,33 +191,3 @@ msgstr "- aplicacion demo libpeas"
 
 #~ msgid "A_ctivate"
 #~ msgstr "A_ctivar"
-
-#~ msgid "_Cancel"
-#~ msgstr "_Anullar"
-
-#~ msgid "_Close"
-#~ msgstr "_Tampa"
-
-#~ msgid "_Help"
-#~ msgstr "A_juda"
-
-#~ msgid "Pr_eferences"
-#~ msgstr "P_referéncias"
-
-#, c-format
-#~ msgid "The plugin '%s' could not be loaded"
-#~ msgstr "Le greffon « %s » n'a pas pu être chargé"
-
-#, c-format
-#~| msgid "An error occurred: "
-#~ msgid "An error occurred: %s"
-#~ msgstr "Une erreur est survenue : %s"
-
-#~ msgid "_Quit"
-#~ msgstr "_Quitter"
-
-#~ msgid "About"
-#~ msgstr "À propos"
-
-#~ msgid "Preferences"
-#~ msgstr "Préférences"
