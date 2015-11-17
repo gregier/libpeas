@@ -331,16 +331,14 @@ multiple_threads_loaders_in_thread (guint    nth_thread,
 }
 
 static void
-test_extension_multiple_threads_global_loaders (PeasEngine     *engine,
-                                                PeasPluginInfo *info)
+test_extension_multiple_threads_global_loaders (void)
 {
   run_in_multiple_threads ((GFunc) multiple_threads_loaders_in_thread,
                            GINT_TO_POINTER (FALSE));
 }
 
 static void
-test_extension_multiple_threads_nonglobal_loaders (PeasEngine     *engine,
-                                                   PeasPluginInfo *info)
+test_extension_multiple_threads_nonglobal_loaders (void)
 {
   run_in_multiple_threads ((GFunc) multiple_threads_loaders_in_thread,
                            GINT_TO_POINTER (TRUE));
@@ -496,6 +494,16 @@ test_extension_call_multi_args (PeasEngine     *engine,
     g_free (full_path); \
   } G_STMT_END
 
+#define _EXTENSION_TEST_FUNC(loader, path, ftest) \
+  G_STMT_START { \
+    gchar *full_path = g_strdup_printf (EXTENSION_TEST_NAME (%s, "%s"), \
+                                        loader, path); \
+\
+    g_test_add_func (full_path, test_extension_##ftest); \
+\
+    g_free (full_path); \
+  } G_STMT_END
+
 void
 testing_extension_basic (const gchar *loader_)
 {
@@ -538,10 +546,10 @@ testing_extension_basic (const gchar *loader_)
   _EXTENSION_TEST (loader, "plugin-info", plugin_info);
   _EXTENSION_TEST (loader, "get-settings", get_settings);
 
-  _EXTENSION_TEST (loader, "multiple-threads/global-loaders",
-                   multiple_threads_global_loaders);
-  _EXTENSION_TEST (loader, "multiple-threads/nonglobal-loaders",
-                   multiple_threads_nonglobal_loaders);
+  _EXTENSION_TEST_FUNC (loader, "multiple-threads/global-loaders",
+                        multiple_threads_global_loaders);
+  _EXTENSION_TEST_FUNC (loader, "multiple-threads/nonglobal-loaders",
+                        multiple_threads_nonglobal_loaders);
 
   /* Not needed for C plugins as they are independent of libpeas */
   if (g_strcmp0 (loader, "c") != 0)
