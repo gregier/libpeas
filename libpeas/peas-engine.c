@@ -104,6 +104,8 @@ struct _PeasEnginePrivate {
   GList *search_paths;
   GList *plugin_list;
 
+  gint alive_extensions;
+
   guint in_dispose : 1;
   guint use_nonglobal_loaders : 1;
 };
@@ -372,6 +374,8 @@ peas_engine_garbage_collect (PeasEngine *engine)
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
+  g_object_ref (engine);
+
   for (i = 0; i < G_N_ELEMENTS (loaders); ++i)
     {
       LoaderInfo *loader_info = &priv->loaders[i];
@@ -379,6 +383,8 @@ peas_engine_garbage_collect (PeasEngine *engine)
       if (loader_info->loader != NULL)
         peas_plugin_loader_garbage_collect (loader_info->loader);
     }
+
+  g_object_unref (engine);
 }
 
 static void
@@ -441,6 +447,43 @@ peas_engine_dispose (GObject *object)
   GList *item;
   gint i;
 
+  /* We must first check that no extension are alive
+   * as unloading the plugins could cause serious issues.
+   */
+  if (g_atomic_int_get (&priv->alive_extensions) != 0)
+    {
+      gint alive_extensions;
+
+      /* A plugin could have created an
+       * extension that has not been collected yet
+       */
+      peas_engine_garbage_collect (engine);
+
+      alive_extensions = g_atomic_int_get (&priv->alive_extensions);
+      if (alive_extensions != 0)
+        {
+          if (alive_extensions == 1)
+            {
+              g_critical ("Cannot dispose PeasEngine as an "
+                          "extension is still alive");
+            }
+          else
+            {
+              g_critical ("Cannot dispose PeasEngine as %d "
+                          "extensions are still alive", alive_extensions);
+            }
+
+          /* Increase the reference count if the
+           * PeasEngine is being destroyed and report it
+           */
+          if (g_atomic_int_compare_and_exchange (&object->ref_count, 0, 1))
+            g_critical ("PeasEngine has been unreferenced too many times");
+
+          /* We must always chain-up */
+          goto out;
+        }
+    }
+
   /* See peas_engine_unload_plugin_real() */
   priv->in_dispose = TRUE;
 
@@ -460,6 +503,8 @@ peas_engine_dispose (GObject *object)
 
       g_clear_object (&loader_info->loader);
     }
+
+out:
 
   G_OBJECT_CLASS (peas_engine_parent_class)->dispose (object);
 }
@@ -1142,6 +1187,21 @@ peas_engine_provides_extension (PeasEngine     *engine,
   return peas_plugin_loader_provides_extension (loader, info, extension_type);
 }
 
+static void
+extension_weak_notify (PeasEngine    *engine,
+                       PeasExtension *extension)
+{
+  PeasEnginePrivate *priv = GET_PRIV (engine);
+
+  /* We MUST decrement the alive extension count before
+   * unreferencing the PeasEngine. Otherwise, dispose
+   * would assume that the PeasEngine was unreferenced
+   * too many times if this was the last reference.
+   */
+  g_atomic_int_add (&priv->alive_extensions, -1);
+  g_object_unref (engine);
+}
+
 /**
  * peas_engine_create_extensionv: (rename-to peas_engine_create_extension)
  * @engine: A #PeasEngine.
@@ -1167,6 +1227,7 @@ peas_engine_create_extensionv (PeasEngine     *engine,
                                guint           n_parameters,
                                GParameter     *parameters)
 {
+  PeasEnginePrivate *priv = GET_PRIV (engine);
   PeasPluginLoader *loader;
   PeasExtension *extension;
 
@@ -1186,6 +1247,14 @@ peas_engine_create_extensionv (PeasEngine     *engine,
                  g_type_name (extension_type));
       return NULL;
     }
+
+  /* Use atomics as the extension
+   * might be unreferenced in another thread
+   */
+  g_atomic_int_inc (&priv->alive_extensions);
+  g_object_weak_ref (extension,
+                     (GWeakNotify) extension_weak_notify,
+                     g_object_ref (engine));
 
   return extension;
 }

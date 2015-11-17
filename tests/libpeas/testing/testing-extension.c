@@ -214,6 +214,79 @@ test_extension_create_with_prerequisite (PeasEngine     *engine,
 }
 
 static void
+weak_notify_called (gboolean   *called,
+                    PeasEngine *engine)
+{
+  g_assert (*called == FALSE);
+  *called = TRUE;
+}
+
+static void
+test_extension_dispose_with_alive_extension (void)
+{
+  PeasEngine *engine;
+  PeasPluginInfo *info;
+  PeasExtension *extension_1, *extension_2;
+  IntrospectionBase *base;
+  gboolean weak_ref_called;
+
+  testing_util_push_log_hook ("Cannot dispose PeasEngine as 2 "
+                              "extensions are still alive");
+  testing_util_push_log_hook ("Cannot dispose PeasEngine as an "
+                              "extension is still alive");
+
+  /* This test really only affects non-global plugin
+   * loaders because peas_engine_shutdown() cannot be
+   * used, it checks that all plugin loaders have been freed
+   */
+  engine = testing_engine_new_full (TRUE);
+  peas_engine_enable_loader (engine, loader);
+
+  info = peas_engine_get_plugin_info (engine, extension_plugin);
+  g_assert (info != NULL);
+
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  extension_1 = peas_engine_create_extension (engine, info,
+                                              INTROSPECTION_TYPE_BASE,
+                                              NULL);
+  extension_2 = peas_engine_create_extension (engine, info,
+                                              INTROSPECTION_TYPE_BASE,
+                                              NULL);
+
+  /* Make sure that we always chain-up in dispose() */
+  weak_ref_called = FALSE;
+  g_object_weak_ref (G_OBJECT (engine),
+                     (GWeakNotify) weak_notify_called,
+                     &weak_ref_called);
+
+  g_object_run_dispose (G_OBJECT (engine));
+  g_assert (weak_ref_called);
+
+  /* Generally this would cause a crash if PeasEngine wasn't careful */
+  base = INTROSPECTION_BASE (extension_1);
+  g_assert (introspection_base_get_plugin_info (base) == info);
+
+  /* The original weak ref has been removed */
+  weak_ref_called = FALSE;
+  g_object_weak_ref (G_OBJECT (engine),
+                     (GWeakNotify) weak_notify_called,
+                     &weak_ref_called);
+
+  /* Try it again with only one extension still alive */
+  g_object_unref (extension_2);
+  g_object_run_dispose (G_OBJECT (engine));
+  g_assert (weak_ref_called);
+
+  /* Generally this would cause a crash if PeasEngine wasn't careful */
+  base = INTROSPECTION_BASE (extension_1);
+  g_assert (introspection_base_get_plugin_info (base) == info);
+
+  g_object_unref (extension_1);
+  testing_engine_free (engine);
+}
+
+static void
 test_extension_reload (PeasEngine     *engine,
                        PeasPluginInfo *info)
 {
@@ -539,7 +612,11 @@ testing_extension_basic (const gchar *loader_)
 
   _EXTENSION_TEST (loader, "create-valid", create_valid);
   _EXTENSION_TEST (loader, "create-invalid", create_invalid);
-  _EXTENSION_TEST (loader, "create-with-prerequisite", create_with_prerequisite);
+  _EXTENSION_TEST (loader, "create-with-prerequisite",
+                   create_with_prerequisite);
+
+  _EXTENSION_TEST_FUNC (loader, "dispose-with-alive-extension",
+                        dispose_with_alive_extension);
 
   _EXTENSION_TEST (loader, "reload", reload);
 

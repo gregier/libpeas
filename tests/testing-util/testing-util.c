@@ -222,11 +222,24 @@ testing_util_init (void)
 }
 
 static void
-engine_weak_notify (gpointer    unused,
-                    PeasEngine *engine)
+engine_weak_notify (gpointer  unused,
+                    GObject  *object)
 {
-  /* Cannot use NULL because testing_util_engine_free() must be called */
-  g_private_set (&engine_key, DEAD_ENGINE);
+  /* We will be called from GObject's dispose, but that
+   * doesn't mean the PeasEngine will actually be freed
+   */
+  if (g_atomic_int_get (&object->ref_count) != 1)
+    {
+      /* The weak ref has been removed, so add it back */
+      g_object_weak_ref (object, engine_weak_notify, NULL);
+    }
+  else
+    {
+      /* Cannot use NULL because
+       * testing_util_engine_free() must be called
+       */
+      g_private_set (&engine_key, DEAD_ENGINE);
+    }
 }
 
 PeasEngine *
@@ -249,9 +262,7 @@ testing_util_engine_new_full (gboolean nonglobal_loaders)
 
   g_private_set (&engine_key, engine);
 
-  g_object_weak_ref (G_OBJECT (engine),
-                     (GWeakNotify) engine_weak_notify,
-                     NULL);
+  g_object_weak_ref (G_OBJECT (engine), engine_weak_notify, NULL);
 
   peas_engine_add_search_path (engine, BUILDDIR "/tests/plugins",
                                        SRCDIR   "/tests/plugins");
@@ -266,6 +277,9 @@ testing_util_engine_free (PeasEngine *engine)
   if (g_private_get (&engine_key) != DEAD_ENGINE)
     {
       g_object_unref (engine);
+
+      if (g_private_get (&engine_key) != DEAD_ENGINE)
+        peas_engine_garbage_collect (engine);
 
       /* Make sure that at the end of every test the engine is freed */
       g_assert (g_private_get (&engine_key) == DEAD_ENGINE);
