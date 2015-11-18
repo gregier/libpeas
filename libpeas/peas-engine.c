@@ -124,6 +124,42 @@ static void peas_engine_load_plugin_real   (PeasEngine     *engine,
 static void peas_engine_unload_plugin_real (PeasEngine     *engine,
                                             PeasPluginInfo *info);
 
+static GList *
+plugin_info_prepend_sorted (GList          *plugin_list,
+                            PeasPluginInfo *info)
+{
+  guint i;
+  GList *furthest_dep = NULL;
+  const gchar **dependencies;
+
+  dependencies = peas_plugin_info_get_dependencies (info);
+
+  for (i = 0; dependencies[i] != NULL; ++i)
+    {
+      GList *pos = furthest_dep != NULL ? furthest_dep : plugin_list;
+
+      for (; pos != NULL; pos = pos->next)
+        {
+          if (strcmp (dependencies[i],
+                      peas_plugin_info_get_module_name (pos->data)) == 0)
+            {
+              furthest_dep = pos;
+              break;
+            }
+        }
+    }
+
+  if (furthest_dep == NULL)
+    return g_list_prepend (plugin_list, info);
+
+  g_debug ("Adding '%s' after '%s' due to dependencies",
+           peas_plugin_info_get_module_name (info),
+           peas_plugin_info_get_module_name (furthest_dep->data));
+
+  g_list_insert (furthest_dep, info, 1);
+  return plugin_list;
+}
+
 static void
 load_plugin_info (PeasEngine  *engine,
                   const gchar *filename,
@@ -144,20 +180,17 @@ load_plugin_info (PeasEngine  *engine,
       return;
     }
 
-  /* If a plugin with this name has already been loaded
-   * drop this one (user plugins override system plugins) */
   module_name = peas_plugin_info_get_module_name (info);
   if (peas_engine_get_plugin_info (engine, module_name) != NULL)
     {
       _peas_plugin_info_unref (info);
+      return;
     }
-  else
-    {
-      priv->plugin_list = g_list_prepend (priv->plugin_list, info);
 
-      g_object_notify_by_pspec (G_OBJECT (engine),
-                                properties[PROP_PLUGIN_LIST]);
-    }
+  priv->plugin_list = plugin_info_prepend_sorted (priv->plugin_list, info);
+
+  g_object_notify_by_pspec (G_OBJECT (engine),
+                            properties[PROP_PLUGIN_LIST]);
 }
 
 static void

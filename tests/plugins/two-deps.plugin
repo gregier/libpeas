@@ -1,0 +1,7 @@
+[Plugin]
+Module=two-deps
+Depends=loadable;builtin
+Name=Two Deps
+Description=This plugin cannot be loaded and has two deps.
+Authors=Garrett Regier
+Copyright=Copyright © 2015 Garrett Regier

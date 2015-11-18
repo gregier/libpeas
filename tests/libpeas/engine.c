@@ -263,6 +263,39 @@ test_engine_not_loadable_plugin (PeasEngine *engine)
 }
 
 static void
+test_engine_plugin_list (PeasEngine *engine)
+{
+  GList *plugin_list;
+  const gchar **dependencies;
+  gint builtin_index, loadable_index, two_deps_index;
+  PeasPluginInfo *builtin_info, *loadable_info, *two_deps_info;
+
+  plugin_list = (GList *) peas_engine_get_plugin_list (engine);
+
+  builtin_info = peas_engine_get_plugin_info (engine, "builtin");
+  loadable_info = peas_engine_get_plugin_info (engine, "loadable");
+  two_deps_info = peas_engine_get_plugin_info (engine, "two-deps");
+
+  builtin_index = g_list_index (plugin_list, builtin_info);
+  loadable_index = g_list_index (plugin_list, loadable_info);
+  two_deps_index = g_list_index (plugin_list, two_deps_info);
+
+  g_assert_cmpint (builtin_index, !=, -1);
+  g_assert_cmpint (loadable_index, !=, -1);
+  g_assert_cmpint (two_deps_index, !=, -1);
+
+  /* Verify that we are finding the furthest dependency in the list */
+  dependencies = peas_plugin_info_get_dependencies (two_deps_info);
+  g_assert_cmpint (loadable_index, <, builtin_index);
+  g_assert_cmpstr (dependencies[0], ==, "loadable");
+  g_assert_cmpstr (dependencies[1], ==, "builtin");
+
+  /* The two-deps plugin should be ordered after builtin and loadable */
+  g_assert_cmpint (builtin_index, <, two_deps_index);
+  g_assert_cmpint (loadable_index, <, two_deps_index);
+}
+
+static void
 load_plugin_cb (PeasEngine     *engine,
                 PeasPluginInfo *info,
                 gint           *loaded)
@@ -454,6 +487,7 @@ main (int    argc,
   TEST ("unavailable-plugin", unavailable_plugin);
   TEST ("not-loadable-plugin", not_loadable_plugin);
 
+  TEST ("plugin-list", plugin_list);
   TEST ("loaded-plugins", loaded_plugins);
 
   TEST ("enable-unkown-loader", enable_unkown_loader);
