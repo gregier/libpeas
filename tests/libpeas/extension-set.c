@@ -286,6 +286,52 @@ test_extension_set_foreach (PeasEngine *engine)
   g_object_unref (extension_set);
 }
 
+static void
+ordering_cb (PeasExtensionSet  *set,
+             PeasPluginInfo    *info,
+             PeasExtension     *extension,
+             GList            **order)
+{
+  const gchar *order_module_name = (const gchar *) (*order)->data;
+
+  g_assert_cmpstr (order_module_name, ==,
+                   peas_plugin_info_get_module_name (info));
+  *order = g_list_delete_link (*order, *order);
+}
+
+static void
+test_extension_set_ordering (PeasEngine *engine)
+{
+  guint i;
+  GList *foreach_order = NULL;
+  GList *dispose_order = NULL;
+  PeasExtensionSet *extension_set;
+
+  for (i = 0; i < G_N_ELEMENTS (loadable_plugins); ++i)
+    {
+      /* Use descriptive names to make an assert more informative */
+      foreach_order = g_list_append (foreach_order,
+                                     (gpointer) loadable_plugins[i]);
+      dispose_order = g_list_prepend (dispose_order,
+                                      (gpointer) loadable_plugins[i]);
+    }
+
+  extension_set = testing_extension_set_new (engine, NULL);
+
+  peas_extension_set_foreach (extension_set,
+                              (PeasExtensionSetForeachFunc) ordering_cb,
+                              &foreach_order);
+  g_assert (foreach_order == NULL);
+
+
+  g_signal_connect (extension_set,
+                    "extension-removed",
+                    G_CALLBACK (ordering_cb),
+                    &dispose_order);
+  g_object_unref (extension_set);
+  g_assert (dispose_order == NULL);
+}
+
 int
 main (int    argc,
       char **argv)
@@ -309,6 +355,8 @@ main (int    argc,
   TEST ("call-invalid", call_invalid);
 
   TEST ("foreach", foreach);
+
+  TEST ("ordering", ordering);
 
 #undef TEST
 

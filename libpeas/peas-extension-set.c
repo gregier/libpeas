@@ -94,7 +94,7 @@ struct _PeasExtensionSetPrivate {
   guint n_parameters;
   GParameter *parameters;
 
-  GList *extensions;
+  GQueue extensions;
 };
 
 typedef struct {
@@ -219,11 +219,11 @@ add_extension (PeasExtensionSet *set,
                                          priv->n_parameters,
                                          priv->parameters);
 
-  item = (ExtensionItem *) g_slice_new (ExtensionItem);
+  item = g_slice_new (ExtensionItem);
   item->info = info;
   item->exten = exten;
 
-  priv->extensions = g_list_prepend (priv->extensions, item);
+  g_queue_push_tail (&priv->extensions, item);
   g_signal_emit (set, signals[EXTENSION_ADDED], 0, info, exten);
 }
 
@@ -244,16 +244,16 @@ remove_extension (PeasExtensionSet *set,
 {
   PeasExtensionSetPrivate *priv = GET_PRIV (set);
   GList *l;
-  ExtensionItem *item;
 
-  for (l = priv->extensions; l; l = l->next)
+  for (l = priv->extensions.head; l != NULL; l = l->next)
     {
-      item = (ExtensionItem *) l->data;
+      ExtensionItem *item = l->data;
+
       if (item->info != info)
         continue;
 
       remove_extension_item (set, item);
-      priv->extensions = g_list_delete_link (priv->extensions, l);
+      g_queue_delete_link (&priv->extensions, l);
       return;
     }
 }
@@ -261,6 +261,9 @@ remove_extension (PeasExtensionSet *set,
 static void
 peas_extension_set_init (PeasExtensionSet *set)
 {
+  PeasExtensionSetPrivate *priv = GET_PRIV (set);
+
+  g_queue_init (&priv->extensions);
 }
 
 static void
@@ -296,13 +299,12 @@ peas_extension_set_dispose (GObject *object)
   PeasExtensionSetPrivate *priv = GET_PRIV (set);
   GList *l;
 
-  if (priv->extensions != NULL)
+  if (priv->extensions.length > 0)
     {
-      for (l = priv->extensions; l != NULL; l = l->next)
+      for (l = priv->extensions.tail; l != NULL; l = l->prev)
         remove_extension_item (set, (ExtensionItem *) l->data);
 
-      g_list_free (priv->extensions);
-      priv->extensions = NULL;
+      g_queue_clear (&priv->extensions);
     }
 
   if (priv->parameters != NULL)
@@ -329,7 +331,7 @@ peas_extension_set_call_real (PeasExtensionSet *set,
   GList *l;
   GIArgument dummy;
 
-  for (l = priv->extensions; l; l = l->next)
+  for (l = priv->extensions.head; l != NULL; l = l->next)
     {
       ExtensionItem *item = (ExtensionItem *) l->data;
       ret = peas_extension_callv (item->exten, method_name, args, &dummy) && ret;
@@ -455,7 +457,7 @@ peas_extension_set_get_extension (PeasExtensionSet *set,
   g_return_val_if_fail (PEAS_IS_EXTENSION_SET (set), NULL);
   g_return_val_if_fail (info != NULL, NULL);
 
-  for (l = priv->extensions; l != NULL; l = l->next)
+  for (l = priv->extensions.head; l != NULL; l = l->next)
     {
       ExtensionItem *item = l->data;
 
@@ -594,7 +596,7 @@ peas_extension_set_foreach (PeasExtensionSet            *set,
   g_return_if_fail (PEAS_IS_EXTENSION_SET (set));
   g_return_if_fail (func != NULL);
 
-  for (l = priv->extensions; l; l = l->next)
+  for (l = priv->extensions.head; l != NULL; l = l->next)
     {
       ExtensionItem *item = (ExtensionItem *) l->data;
 
