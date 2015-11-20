@@ -407,8 +407,10 @@ peas_object_module_create_object (PeasObjectModule *module,
 
   impls = (InterfaceImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
-    if (impls[i].iface_type == interface)
-      return impls[i].func (n_parameters, parameters, impls[i].user_data);
+    {
+      if (impls[i].iface_type == interface)
+        return impls[i].func (n_parameters, parameters, impls[i].user_data);
+    }
 
   return NULL;
 }
@@ -437,8 +439,10 @@ peas_object_module_provides_object (PeasObjectModule *module,
 
   impls = (InterfaceImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
-    if (impls[i].iface_type == interface)
-      return TRUE;
+    {
+      if (impls[i].iface_type == interface)
+        return TRUE;
+    }
 
   return FALSE;
 }
