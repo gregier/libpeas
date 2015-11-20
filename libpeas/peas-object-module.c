@@ -82,6 +82,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (PeasObjectModule,
 #define GET_PRIV(o) \
   (peas_object_module_get_instance_private (o))
 
+#define TYPE_MISSING_PLUGIN_INFO_PROPERTY (G_TYPE_FLAG_RESERVED_ID_BIT)
+
+static const gchar *intern_plugin_info = NULL;
+
 static gboolean
 peas_object_module_load (GTypeModule *gmodule)
 {
@@ -260,6 +264,8 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GTypeModuleClass *module_class = G_TYPE_MODULE_CLASS (klass);
+
+  intern_plugin_info = g_intern_static_string ("plugin-info");
 
   object_class->set_property = peas_object_module_set_property;
   object_class->get_property = peas_object_module_get_property;
@@ -524,28 +530,29 @@ create_gobject_from_type (guint       n_parameters,
                           GParameter *parameters,
                           gpointer    user_data)
 {
-  GType exten_type;
-  GObjectClass *cls;
-  GObject *instance;
+  GType exten_type = GPOINTER_TO_SIZE (user_data);
 
-  exten_type = GPOINTER_TO_SIZE (user_data);
+  /* We should be called with a "plugin-info" property appended
+   * to the parameters. Let's get rid of it if the actual type
+   * doesn't have such a property as it would cause a warning.
+   */
+  if ((exten_type & TYPE_MISSING_PLUGIN_INFO_PROPERTY) != 0)
+    {
+      exten_type &= ~TYPE_MISSING_PLUGIN_INFO_PROPERTY;
 
-  cls = g_type_class_ref (exten_type);
+      if (n_parameters > 0)
+        {
+          GParameter *info_param = &parameters[n_parameters - 1];
 
-  /* If we are instantiating a plugin, then the factory function is
-   * called with a "plugin-info" property appended to the parameters.
-   * Let's get rid of it if the actual type doesn't have such a
-   * property to avoid a warning. */
-  if (n_parameters > 0 &&
-      strcmp (parameters[n_parameters - 1].name, "plugin-info") == 0 &&
-      g_object_class_find_property (cls, "plugin-info") == NULL)
-    n_parameters--;
+          if (info_param->name == intern_plugin_info &&
+              G_VALUE_TYPE (&info_param->value) == PEAS_TYPE_PLUGIN_INFO)
+            {
+              n_parameters--;
+            }
+        }
+    }
 
-  instance = G_OBJECT (g_object_newv (exten_type, n_parameters, parameters));
-
-  g_type_class_unref (cls);
-
-  return instance;
+  return G_OBJECT (g_object_newv (exten_type, n_parameters, parameters));
 }
 
 /**
@@ -562,6 +569,9 @@ peas_object_module_register_extension_type (PeasObjectModule *module,
                                             GType             iface_type,
                                             GType             extension_type)
 {
+  GObjectClass *cls;
+  GParamSpec *pspec;
+
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
   g_return_if_fail (!peas_object_module_provides_object (module, iface_type));
   g_return_if_fail (g_type_is_a (extension_type, iface_type));
@@ -569,9 +579,18 @@ peas_object_module_register_extension_type (PeasObjectModule *module,
   if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
     g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
 
+  cls = g_type_class_ref (extension_type);
+  pspec = g_object_class_find_property (cls, "plugin-info");
+
+  /* Avoid checking for this each time in the factory function */
+  if (pspec == NULL || pspec->value_type != PEAS_TYPE_PLUGIN_INFO)
+    extension_type |= TYPE_MISSING_PLUGIN_INFO_PROPERTY;
+
   peas_object_module_register_extension_factory (module,
                                                  iface_type,
                                                  create_gobject_from_type,
                                                  GSIZE_TO_POINTER (extension_type),
                                                  NULL);
+
+  g_type_class_unref (cls);
 }
