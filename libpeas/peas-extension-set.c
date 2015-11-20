@@ -315,6 +315,8 @@ peas_extension_set_dispose (GObject *object)
     }
 
   g_clear_object (&priv->engine);
+
+  G_OBJECT_CLASS (peas_extension_set_parent_class)->dispose (object);
 }
 
 static gboolean
