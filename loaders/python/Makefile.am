@@ -38,13 +38,19 @@ peas-python-internal.pyc: peas-python-internal.py
 all-local: peas-python-internal.pyc
 
 loader_resources_deps = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/peas-python.gresource.xml)
-peas-python-resources.c: $(srcdir)/peas-python.gresource.xml $(loader_resources_deps)
-	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --internal --target=$@ --sourcedir=$(srcdir) --generate-source $(srcdir)/peas-python.gresource.xml
+loader_resources_c_deps = $(srcdir)/peas-python.gresource.xml $(loader_resources_deps)
+
+peas-python-resources.c: $(loader_resources_c_deps)
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+	--target="$@"					\
+	--sourcedir="$(srcdir)"				\
+	--generate-source				\
+	--internal					\
+	"$(srcdir)/peas-python.gresource.xml"
 
 EXTRA_DIST = \
 	peas-python-compile.py		\
-	peas-python.gresource.xml	\
-	$(loader_resources_deps)
+	$(loader_resources_c_deps)
 
 CLEANFILES = \
 	peas-python-internal.pyc	\

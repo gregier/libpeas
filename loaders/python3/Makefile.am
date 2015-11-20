@@ -37,13 +37,18 @@ peas-python3-internal.pyc: $(srcdir)/../python/peas-python-internal.py
 
 all-local: peas-python3-internal.pyc
 
-loader_resources_deps = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/peas-python3.gresource.xml)
-peas-python3-resources.c: $(srcdir)/peas-python3.gresource.xml $(loader_resources_deps)
-	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --internal --target=$@ --sourcedir=$(srcdir) --generate-source $(srcdir)/peas-python3.gresource.xml
+loader_resources_deps = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir="$(srcdir)" --generate-dependencies "$(srcdir)/peas-python3.gresource.xml")
+loader_resources_c_deps = $(srcdir)/peas-python3.gresource.xml $(loader_resources_deps)
 
-EXTRA_DIST = \
-	peas-python3.gresource.xml	\
-	$(loader_resources_deps)
+peas-python3-resources.c: $(loader_resources_c_deps)
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+	--target="$@"					\
+	--sourcedir="$(srcdir)"				\
+	--generate-source				\
+	--internal					\
+	"$(srcdir)/peas-python3.gresource.xml"
+
+EXTRA_DIST = $(loader_resources_c_deps)
 
 CLEANFILES = \
 	peas-python3-internal.pyc	\
