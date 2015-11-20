@@ -564,12 +564,10 @@ peas_object_module_register_extension_type (PeasObjectModule *module,
 {
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
   g_return_if_fail (!peas_object_module_provides_object (module, iface_type));
+  g_return_if_fail (g_type_is_a (extension_type, iface_type));
 
   if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
-    {
-      g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
-      g_return_if_fail (g_type_is_a (extension_type, iface_type));
-    }
+    g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
 
   peas_object_module_register_extension_factory (module,
                                                  iface_type,
