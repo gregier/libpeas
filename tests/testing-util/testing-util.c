@@ -190,8 +190,8 @@ testing_util_init (void)
 {
   GError *error = NULL;
   const GDebugKey glib_debug_keys[] = {
-    { "fatal-warnings",  G_LOG_LEVEL_WARNING  },
-    { "fatal-criticals", G_LOG_LEVEL_CRITICAL }
+    { "fatal-criticals", G_LOG_LEVEL_CRITICAL },
+    { "fatal-warnings",  G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING }
   };
 
   if (initialized)
@@ -208,10 +208,6 @@ testing_util_init (void)
    */
   fatal_flags = g_parse_debug_string (g_getenv ("G_DEBUG"), glib_debug_keys,
                                       G_N_ELEMENTS (glib_debug_keys));
-
-  /* The "fatal-warnings" key implies "fatal-criticals" */
-  if ((fatal_flags & G_LOG_LEVEL_WARNING) != 0)
-    fatal_flags |= G_LOG_LEVEL_CRITICAL;
 
   g_irepository_require_private (g_irepository_get_default (),
                                  BUILDDIR "/libpeas",
