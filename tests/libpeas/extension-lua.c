@@ -40,7 +40,7 @@
 static void
 set_garbage_collector_state (PeasEngine     *engine,
                              PeasPluginInfo *info,
-                             gboolean        running)
+                             gboolean        start)
 {
   PeasExtension *extension;
 
@@ -48,7 +48,7 @@ set_garbage_collector_state (PeasEngine     *engine,
                                             PEAS_TYPE_ACTIVATABLE,
                                             NULL);
 
-  if (running)
+  if (start)
     {
       /* collectgarbage('restart') */
       peas_activatable_activate (PEAS_ACTIVATABLE (extension));
