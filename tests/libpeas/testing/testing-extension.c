@@ -35,7 +35,6 @@
 
 #include "introspection-base.h"
 #include "introspection-callable.h"
-#include "introspection-has-missing-prerequisite.h"
 #include "introspection-has-prerequisite.h"
 #include "introspection-unimplemented.h"
 
@@ -170,24 +169,6 @@ test_extension_create_invalid (PeasEngine     *engine,
                                             "invalid-property", "does-not-exist",
                                             NULL);
   g_assert (!PEAS_IS_EXTENSION (extension));
-
-  /* This cannot be tested in PyGI and Seed's log handler messes this up */
-  if (g_strcmp0 (extension_plugin, "extension-c") != 0 &&
-      g_strcmp0 (extension_plugin, "extension-lua51") != 0 &&
-      g_strcmp0 (extension_plugin, "extension-python") != 0 &&
-      g_strcmp0 (extension_plugin, "extension-python3") != 0)
-    {
-      testing_util_push_log_hook ("*cannot add *IntrospectionHasMissingPrerequisite* "
-                                  "which does not conform to *IntrospectionCallable*");
-      testing_util_push_log_hook ("*Type *HasMissingPrerequisite* is invalid");
-      testing_util_push_log_hook ("*does not provide a *HasMissingPrerequisite* extension");
-
-      /* Missing Prerequisite */
-      extension = peas_engine_create_extension (engine, info,
-                                                INTROSPECTION_TYPE_HAS_MISSING_PREREQUISITE,
-                                                NULL);
-      g_assert (!PEAS_IS_EXTENSION (extension));
-    }
 
   /* Not loaded */
   g_assert (peas_engine_unload_plugin (engine, info));
