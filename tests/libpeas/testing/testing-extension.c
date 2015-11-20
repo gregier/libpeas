@@ -144,7 +144,7 @@ test_extension_create_invalid (PeasEngine     *engine,
 
   testing_util_push_log_hook ("*assertion*G_TYPE_IS_INTERFACE*failed");
   testing_util_push_log_hook ("*does not provide a 'IntrospectionUnimplemented' extension");
-  testing_util_push_log_hook ("*type 'IntrospectionCallable' has no property named 'invalid-property'");
+  testing_util_push_log_hook ("*type 'IntrospectionCallable' has no property named 'does-not-exist'");
   testing_util_push_log_hook ("*assertion*peas_plugin_info_is_loaded*failed");
 
   /* Invalid GType */
@@ -163,10 +163,10 @@ test_extension_create_invalid (PeasEngine     *engine,
                                             NULL);
   g_assert (!PEAS_IS_EXTENSION (extension));
 
-  /* Interface does not have an 'invalid-property' property */
+  /* Interface does not have a specified property */
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_CALLABLE,
-                                            "invalid-property", "does-not-exist",
+                                            "does-not-exist", "",
                                             NULL);
   g_assert (!PEAS_IS_EXTENSION (extension));
 
