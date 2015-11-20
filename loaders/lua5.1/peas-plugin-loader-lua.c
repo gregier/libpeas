@@ -54,8 +54,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderLua,
 #define GET_PRIV(o) \
   (peas_plugin_loader_lua_get_instance_private (o))
 
-static
-G_DEFINE_QUARK (peas-extension-type, extension_type)
+static GQuark quark_extension_type = 0;
 
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
@@ -181,7 +180,7 @@ peas_plugin_loader_lua_create_extension (PeasPluginLoader *loader,
   /* We have to remember which interface we are instantiating
    * for the deprecated peas_extension_get_extension_type().
    */
-  g_object_set_qdata (object, extension_type_quark (),
+  g_object_set_qdata (object, quark_extension_type,
                       GSIZE_TO_POINTER (exten_type));
 
   luaL_checkstack (L, 2, "");
@@ -373,6 +372,8 @@ peas_plugin_loader_lua_class_init (PeasPluginLoaderLuaClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasPluginLoaderClass *loader_class = PEAS_PLUGIN_LOADER_CLASS (klass);
+
+  quark_extension_type = g_quark_from_static_string ("peas-extension-type");
 
   object_class->finalize = peas_plugin_loader_lua_finalize;
 

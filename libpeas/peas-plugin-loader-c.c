@@ -44,8 +44,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderC,
 #define GET_PRIV(o) \
   (peas_plugin_loader_c_get_instance_private (o))
 
-static
-G_DEFINE_QUARK (peas-extension-type, extension_type)
+static GQuark quark_extension_type = 0;
 
 static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader *loader,
@@ -145,7 +144,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
   /* We have to remember which interface we are instantiating
    * for the deprecated peas_extension_get_extension_type().
    */
-  g_object_set_qdata (instance, extension_type_quark (),
+  g_object_set_qdata (instance, quark_extension_type,
                       GSIZE_TO_POINTER (exten_type));
 
   return instance;
@@ -181,6 +180,8 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PeasPluginLoaderClass *loader_class = PEAS_PLUGIN_LOADER_CLASS (klass);
+
+  quark_extension_type = g_quark_from_static_string ("peas-extension-type");
 
   object_class->finalize = peas_plugin_loader_c_finalize;
 
