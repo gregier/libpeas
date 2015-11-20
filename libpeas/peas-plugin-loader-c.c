@@ -45,6 +45,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderC,
   (peas_plugin_loader_c_get_instance_private (o))
 
 static GQuark quark_extension_type = 0;
+static const gchar *intern_plugin_info = NULL;
 
 static gboolean
 peas_plugin_loader_c_load (PeasPluginLoader *loader,
@@ -123,7 +124,7 @@ peas_plugin_loader_c_create_extension (PeasPluginLoader *loader,
    * If the instance does not have a plugin-info property
    * then PeasObjectModule will remove the property.
    */
-  exten_parameters[n_parameters].name = g_intern_static_string ("plugin-info");
+  exten_parameters[n_parameters].name = intern_plugin_info;
   memset (&exten_parameters[n_parameters].value, 0, sizeof (GValue));
   g_value_init (&exten_parameters[n_parameters].value, PEAS_TYPE_PLUGIN_INFO);
   g_value_set_boxed (&exten_parameters[n_parameters].value, info);
@@ -182,6 +183,7 @@ peas_plugin_loader_c_class_init (PeasPluginLoaderCClass *klass)
   PeasPluginLoaderClass *loader_class = PEAS_PLUGIN_LOADER_CLASS (klass);
 
   quark_extension_type = g_quark_from_static_string ("peas-extension-type");
+  intern_plugin_info = g_intern_static_string ("plugin-info");
 
   object_class->finalize = peas_plugin_loader_c_finalize;
 
