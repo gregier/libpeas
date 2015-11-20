@@ -18,6 +18,7 @@ libextension_c_la_SOURCES = \
 libextension_c_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 libextension_c_la_LIBADD = \
 	$(PEAS_LIBS)						\
+	$(top_builddir)/libpeas/libpeas-1.0.la	                \
 	$(builddir)/../../introspection/libintrospection-1.0.la
 
 libextension_c_missing_symbol_la_SOURCES = \
