@@ -651,7 +651,6 @@ peas_gtk_plugin_manager_view_query_tooltip (GtkWidget  *widget,
   return TRUE;
 }
 
-
 static void
 peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
                                             GtkTreePath       *path,
@@ -660,6 +659,7 @@ peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
   PeasGtkPluginManagerView *view = PEAS_GTK_PLUGIN_MANAGER_VIEW (tree_view);
   PeasGtkPluginManagerViewPrivate *priv = GET_PRIV (view);
   GtkTreeIter iter;
+  GtkTreeViewClass *tree_view_class;
 
   if (!gtk_tree_model_get_iter (gtk_tree_view_get_model (tree_view), &iter, path))
     return;
@@ -668,6 +668,10 @@ peas_gtk_plugin_manager_view_row_activated (GtkTreeView       *tree_view,
 
   if (peas_gtk_plugin_manager_store_can_enable (priv->store, &iter))
     toggle_enabled (view, &iter);
+
+  tree_view_class = GTK_TREE_VIEW_CLASS (peas_gtk_plugin_manager_view_parent_class);
+  if (tree_view_class->row_activated != NULL)
+    tree_view_class->row_activated (tree_view, path, column);
 }
 
 static void
