@@ -336,6 +336,9 @@ peas_object_module_new (const gchar *module_name,
                         const gchar *path,
                         gboolean     resident)
 {
+  g_return_val_if_fail (module_name != NULL && *module_name != '\0', NULL);
+  g_return_val_if_fail (path != NULL && *path != '\0', NULL);
+
   return PEAS_OBJECT_MODULE (g_object_new (PEAS_TYPE_OBJECT_MODULE,
                                            "module-name", module_name,
                                            "path", path,
@@ -362,6 +365,9 @@ peas_object_module_new_full (const gchar *module_name,
                              gboolean     resident,
                              gboolean     local_linkage)
 {
+  g_return_val_if_fail (module_name != NULL && *module_name != '\0', NULL);
+  g_return_val_if_fail (path != NULL && *path != '\0', NULL);
+
   return PEAS_OBJECT_MODULE (g_object_new (PEAS_TYPE_OBJECT_MODULE,
                                            "module-name", module_name,
                                            "path", path,
@@ -396,6 +402,9 @@ peas_object_module_create_object (PeasObjectModule *module,
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
+  if (interface != PEAS_TYPE_PLUGIN_LOADER)
+    g_return_val_if_fail (G_TYPE_IS_INTERFACE (interface), NULL);
+
   impls = (InterfaceImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
     if (impls[i].iface_type == interface)
@@ -422,6 +431,9 @@ peas_object_module_provides_object (PeasObjectModule *module,
   InterfaceImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), FALSE);
+
+  if (interface != PEAS_TYPE_PLUGIN_LOADER)
+    g_return_val_if_fail (G_TYPE_IS_INTERFACE (interface), FALSE);
 
   impls = (InterfaceImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
