@@ -59,10 +59,27 @@ extension_removed_cb (PeasExtensionSet *extension_set,
   --(*active);
 }
 
-static void
-sync_active_extensions (PeasExtensionSet *extension_set,
-                        gint             *active)
+static PeasExtensionSet *
+testing_extension_set_new (PeasEngine *engine,
+                           gint       *active)
 {
+  gint i;
+  PeasPluginInfo *info;
+  PeasExtensionSet *extension_set;
+
+  extension_set = peas_extension_set_new (engine,
+                                          PEAS_TYPE_ACTIVATABLE,
+                                          "object", NULL,
+                                          NULL);
+
+  if (active == NULL)
+    {
+      active = g_new (gint, 1);
+      g_object_set_data_full (G_OBJECT (extension_set),
+                              "testing-extension-set-active", active,
+                              g_free);
+    }
+
   *active = 0;
 
   g_signal_connect (extension_set,
@@ -73,6 +90,26 @@ sync_active_extensions (PeasExtensionSet *extension_set,
                     "extension-removed",
                     G_CALLBACK (extension_removed_cb),
                     active);
+
+  peas_extension_set_foreach (extension_set,
+                              (PeasExtensionSetForeachFunc) extension_added_cb,
+                              active);
+
+  for (i = 0; i < G_N_ELEMENTS (loadable_plugins); ++i)
+    {
+      g_assert_cmpint (*active, ==, i);
+
+      info = peas_engine_get_plugin_info (engine, loadable_plugins[i]);
+      g_assert (peas_engine_load_plugin (engine, info));
+    }
+
+  /* Load a plugin that does not provide a PeasActivatable */
+  info = peas_engine_get_plugin_info (engine, "extension-c");
+  g_assert (peas_engine_load_plugin (engine, info));
+
+  g_assert_cmpint (*active, ==, G_N_ELEMENTS (loadable_plugins));
+
+  return extension_set;
 }
 
 static void
@@ -136,54 +173,33 @@ test_extension_set_create_invalid (PeasEngine *engine)
 }
 
 static void
-test_extension_set_activate (PeasEngine *engine)
+test_extension_set_extension_added (PeasEngine *engine)
 {
-  gint i, active;
-  PeasPluginInfo *info;
+  gint active;
   PeasExtensionSet *extension_set;
 
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
-
-  sync_active_extensions (extension_set, &active);
-
-  for (i = 0; i < G_N_ELEMENTS (loadable_plugins); ++i)
-    {
-      g_assert_cmpint (active, ==, i);
-
-      info = peas_engine_get_plugin_info (engine, loadable_plugins[i]);
-
-      g_assert (peas_engine_load_plugin (engine, info));
-    }
-
-  /* Load a plugin that does not provide a PeasActivatable */
-  info = peas_engine_get_plugin_info (engine, "extension-c");
-  g_assert (peas_engine_load_plugin (engine, info));
-
-  g_assert_cmpint (active, ==, G_N_ELEMENTS (loadable_plugins));
-
+  /* This will check that an extension is added
+   * as plugins are loaded and cause active to
+   * be synced with the number of added extensions
+   */
+  extension_set = testing_extension_set_new (engine, &active);
+  
   g_object_unref (extension_set);
 
+  /* Verify that freeing the extension
+   * set causes the extensions to be removed
+   */
   g_assert_cmpint (active, ==, 0);
 }
 
 static void
-test_extension_set_deactivate (PeasEngine *engine)
+test_extension_set_extension_removed (PeasEngine *engine)
 {
   gint i, active;
   PeasPluginInfo *info;
   PeasExtensionSet *extension_set;
 
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
-
-  sync_active_extensions (extension_set, &active);
-
-  test_extension_set_activate (engine);
+  extension_set = testing_extension_set_new (engine, &active);
 
   /* Unload the plugin that does not provide a PeasActivatable */
   info = peas_engine_get_plugin_info (engine, "extension-c");
@@ -211,19 +227,18 @@ test_extension_set_get_extension (PeasEngine *engine)
   PeasExtension *extension;
   PeasExtensionSet *extension_set;
 
+  extension_set = testing_extension_set_new (engine, NULL);
   info = peas_engine_get_plugin_info (engine, loadable_plugins[0]);
 
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
-
-  g_assert (peas_extension_set_get_extension (extension_set, info) == NULL);
-  g_assert (peas_engine_load_plugin (engine, info));
-
   extension = peas_extension_set_get_extension (extension_set, info);
-
   g_assert (PEAS_IS_ACTIVATABLE (extension));
+
+  g_object_add_weak_pointer (G_OBJECT (extension),
+                             (gpointer) &extension);
+  g_assert (peas_engine_unload_plugin (engine, info));
+
+  g_assert (extension == NULL);
+  g_assert (peas_extension_set_get_extension (extension_set, info) == NULL);
 
   g_object_unref (extension_set);
 }
@@ -233,12 +248,7 @@ test_extension_set_call_valid (PeasEngine *engine)
 {
   PeasExtensionSet *extension_set;
 
-  test_extension_set_activate (engine);
-
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
+  extension_set = testing_extension_set_new (engine, NULL);
 
   g_assert (peas_extension_set_call (extension_set, "activate", NULL));
 
@@ -250,14 +260,9 @@ test_extension_set_call_invalid (PeasEngine *engine)
 {
   PeasExtensionSet *extension_set;
 
-  test_extension_set_activate (engine);
-
   testing_util_push_log_hook ("Method 'PeasActivatable.invalid' was not found");
 
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
+  extension_set = testing_extension_set_new (engine, NULL);
 
   g_assert (!peas_extension_set_call (extension_set, "invalid", NULL));
 
@@ -267,21 +272,16 @@ test_extension_set_call_invalid (PeasEngine *engine)
 static void
 test_extension_set_foreach (PeasEngine *engine)
 {
+  gint count = 0;
   PeasExtensionSet *extension_set;
-  gint active = 0;
 
-  test_extension_set_activate (engine);
-
-  extension_set = peas_extension_set_new (engine,
-                                          PEAS_TYPE_ACTIVATABLE,
-                                          "object", NULL,
-                                          NULL);
+  extension_set = testing_extension_set_new (engine, NULL);
 
   peas_extension_set_foreach (extension_set,
                               (PeasExtensionSetForeachFunc) extension_added_cb,
-                              &active);
+                              &count);
 
-  g_assert_cmpint (active, ==, G_N_ELEMENTS (loadable_plugins));
+  g_assert_cmpint (count, ==, G_N_ELEMENTS (loadable_plugins));
 
   g_object_unref (extension_set);
 }
@@ -300,8 +300,8 @@ main (int    argc,
   TEST ("create-valid", create_valid);
   TEST ("create-invalid", create_invalid);
 
-  TEST ("activate", activate);
-  TEST ("deactivate", deactivate);
+  TEST ("extension-added", extension_added);
+  TEST ("extension-removed", extension_removed);
 
   TEST ("get-extension", get_extension);
 
