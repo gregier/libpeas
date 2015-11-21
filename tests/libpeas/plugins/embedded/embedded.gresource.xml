@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gnome/libpeas/tests/plugins">
+    <file>embedded.plugin</file>
+    <file>embedded-missing-symbol.plugin</file>
+  </gresource>
+</gresources>

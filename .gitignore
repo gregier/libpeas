@@ -87,6 +87,8 @@ Makefile.in
 /tests/libpeas/extension-python3
 /tests/libpeas/extension-set
 /tests/libpeas/plugin-info
+/tests/libpeas/plugins/embedded/embedded-resources.c
+/tests/libpeas/plugins/embedded/embedded-resources.h
 /tests/libpeas/plugins/extension-python/extension-python.gschema.xml
 /tests/libpeas/plugins/extension-python/extension-python.plugin
 /tests/libpeas/plugins/extension-python/extension-python.py

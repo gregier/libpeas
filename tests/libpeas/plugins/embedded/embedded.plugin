@@ -1,0 +1,7 @@
+[Plugin]
+Module=embedded
+Embedded=testing_embedded_plugin_register_types
+Name=Embedded
+Description=A plugin that is embedded.
+Authors=Garrett Regier
+Copyright=Copyright © 2015 Garrett Regier

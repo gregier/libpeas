@@ -556,6 +556,7 @@ po/Makefile.in
 tests/Makefile
 tests/libpeas/Makefile
 tests/libpeas/plugins/Makefile
+tests/libpeas/plugins/embedded/Makefile
 tests/libpeas/plugins/extension-c/Makefile
 tests/libpeas/plugins/extension-lua/Makefile
 tests/libpeas/plugins/extension-python/Makefile

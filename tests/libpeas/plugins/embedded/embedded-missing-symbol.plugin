@@ -1,0 +1,7 @@
+[Plugin]
+Module=embedded-missing-symbol
+Embedded=embedded_missing_symbol__this_symbol_does_not_exist__register_types
+Name=Embedded Missing Symbol
+Description=This plugin is embedded with a missing symbol.
+Authors=Garrett Regier
+Copyright=Copyright © 2015 Garrett Regier

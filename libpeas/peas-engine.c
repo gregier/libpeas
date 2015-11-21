@@ -161,10 +161,10 @@ load_plugin_info (PeasEngine  *engine,
 }
 
 static void
-load_dir_real (PeasEngine  *engine,
-               const gchar *module_dir,
-               const gchar *data_dir,
-               guint        recursions)
+load_file_dir_real (PeasEngine  *engine,
+                    const gchar *module_dir,
+                    const gchar *data_dir,
+                    guint        recursions)
 {
   GError *error = NULL;
   GDir *d;
@@ -188,7 +188,7 @@ load_dir_real (PeasEngine  *engine,
       if (g_file_test (filename, G_FILE_TEST_IS_DIR))
         {
           if (recursions > 0)
-            load_dir_real (engine, filename, data_dir, recursions - 1);
+            load_file_dir_real (engine, filename, data_dir, recursions - 1);
         }
       else if (g_str_has_suffix (dirent, ".plugin"))
         {
@@ -199,6 +199,67 @@ load_dir_real (PeasEngine  *engine,
     }
 
   g_dir_close (d);
+}
+
+static void
+load_resource_dir_real (PeasEngine  *engine,
+                        const gchar *module_dir,
+                        const gchar *data_dir,
+                        guint        recursions)
+{
+  guint i;
+  const gchar *module_path;
+  gchar **children;
+  GError *error = NULL;
+
+  g_debug ("Loading %s/*.plugin...", module_dir);
+
+  module_path = module_dir + strlen ("resource://");
+  children = g_resources_enumerate_children (module_path,
+                                             G_RESOURCE_LOOKUP_FLAGS_NONE,
+                                             &error);
+
+  if (error != NULL)
+    {
+      g_debug ("%s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  for (i = 0; children[i] != NULL; ++i)
+    {
+      gboolean is_dir;
+      gchar *child;
+
+      is_dir = g_str_has_suffix (children[i], "/");
+
+      if (is_dir && recursions == 0)
+        continue;
+
+      if (!is_dir && !g_str_has_suffix (children[i], ".plugin"))
+        continue;
+
+      child = g_build_path ("/", module_dir, children[i], NULL);
+
+      if (is_dir)
+        load_resource_dir_real (engine, child, data_dir, recursions - 1);
+      else
+        load_plugin_info (engine, child, module_dir, data_dir);
+
+      g_free (child);
+    }
+
+  g_strfreev (children);
+}
+
+static void
+load_dir_real (PeasEngine *engine,
+               SearchPath *sp)
+{
+  if (!g_str_has_prefix (sp->module_dir, "resource://"))
+    load_file_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+  else
+    load_resource_dir_real (engine, sp->module_dir, sp->data_dir, 1);
 }
 
 /**
@@ -229,10 +290,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 
   /* Go and read everything from the provided search paths */
   for (item = priv->search_paths; item != NULL; item = item->next)
-    {
-      SearchPath *sp = (SearchPath *) item->data;
-      load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
-    }
+    load_dir_real (engine, (SearchPath *) item->data);
 
   g_object_thaw_notify (G_OBJECT (engine));
 }
@@ -256,7 +314,7 @@ peas_engine_insert_search_path (PeasEngine  *engine,
   priv->search_paths = g_list_insert (priv->search_paths, sp, position);
 
   g_object_freeze_notify (G_OBJECT (engine));
-  load_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+  load_dir_real (engine, sp);
   g_object_thaw_notify (G_OBJECT (engine));
 }
 

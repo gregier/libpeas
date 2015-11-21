@@ -1,6 +1,6 @@
 include $(top_srcdir)/tests/Makefile.plugin
 
-SUBDIRS = extension-c
+SUBDIRS = embedded extension-c
 
 if ENABLE_LUA51
 SUBDIRS += extension-lua

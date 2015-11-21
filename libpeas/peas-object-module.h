@@ -91,6 +91,8 @@ PeasObjectModule   *peas_object_module_new_full               (const gchar      
                                                                const gchar      *path,
                                                                gboolean          resident,
                                                                gboolean          local_linkage);
+PeasObjectModule   *peas_object_module_new_embedded           (const gchar      *module_name,
+                                                               const gchar      *symbol);
 
 GObject            *peas_object_module_create_object          (PeasObjectModule *module,
                                                                GType             interface,
@@ -101,6 +103,7 @@ gboolean            peas_object_module_provides_object        (PeasObjectModule 
 
 const gchar        *peas_object_module_get_path               (PeasObjectModule *module);
 const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);
+const gchar        *peas_object_module_get_symbol             (PeasObjectModule *module);
 
 GModule            *peas_object_module_get_library            (PeasObjectModule *module);
 

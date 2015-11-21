@@ -25,6 +25,8 @@ TEST_PROGS += \
 	extension-set	\
 	plugin-info
 
+extension_c_LDADD = $(LDADD) $(builddir)/plugins/embedded/libembedded.la
+
 if ENABLE_LUA51
 TEST_PROGS               += extension-lua51
 extension_lua51_SOURCES   = extension-lua.c

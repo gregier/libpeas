@@ -76,10 +76,25 @@ testing_engine_new_full (gboolean nonglobal_loaders)
                               "*unkown-loader.plugin* does-not-exist");
   testing_util_push_log_hook ("*Error loading *unkown-loader.plugin*");
 
+  testing_util_push_log_hook ("Bad plugin file '"
+                              BUILDDIR "*/embedded*.plugin': "
+                              "embedded plugins must be a resource");
+  testing_util_push_log_hook ("Error loading '"
+                              BUILDDIR "*/embedded*.plugin'*");
+
+  testing_util_push_log_hook ("Bad plugin file '"
+                              BUILDDIR "*embedded-invalid-loader.plugin': "
+                              "embedded plugins must use the C plugin loader");
+
   /* Must be after pushing log hooks */
   engine = testing_util_engine_new_full (nonglobal_loaders);
-  peas_engine_add_search_path (engine, BUILDDIR "/tests/libpeas/plugins",
-                                       SRCDIR   "/tests/libpeas/plugins");
+
+  peas_engine_add_search_path (engine,
+                               "resource:///org/gnome/libpeas/"
+                               "tests/plugins", NULL);
+  peas_engine_add_search_path (engine,
+                               BUILDDIR "/tests/libpeas/plugins",
+                               SRCDIR   "/tests/libpeas/plugins");
 
   return engine;
 }

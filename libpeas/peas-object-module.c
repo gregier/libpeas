@@ -48,6 +48,7 @@ enum {
   PROP_0,
   PROP_MODULE_NAME,
   PROP_PATH,
+  PROP_SYMBOL,
   PROP_RESIDENT,
   PROP_LOCAL_LINKAGE,
   N_PROPERTIES
@@ -70,6 +71,7 @@ struct _PeasObjectModulePrivate {
 
   gchar *path;
   gchar *module_name;
+  gchar *symbol;
 
   guint resident : 1;
   guint local_linkage : 1;
@@ -91,27 +93,39 @@ peas_object_module_load (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
   PeasObjectModulePrivate *priv = GET_PRIV (module);
-  GModuleFlags flags = 0;
-  gchar *path;
 
-  if (priv->local_linkage)
-    flags = G_MODULE_BIND_LOCAL;
+  g_return_val_if_fail (priv->module_name != NULL, FALSE);
 
-  path = g_module_build_path (priv->path, priv->module_name);
-  g_return_val_if_fail (path != NULL, FALSE);
+  if (priv->path == NULL)
+    {
+      g_return_val_if_fail (priv->resident, FALSE);
+      g_return_val_if_fail (!priv->local_linkage, FALSE);
 
-  /* g_module_build_path() will add G_MODULE_SUFFIX to the path,
-   * however g_module_open() will only try to load the libtool archive
-   * if there is no suffix specified. So we remove G_MODULE_SUFFIX here
-   * which allows uninstalled builds to load plugins as well, as there
-   * is only the .la file in the build directory.
-   */
-  if (G_MODULE_SUFFIX[0] != '\0' && g_str_has_suffix (path, "." G_MODULE_SUFFIX))
-    path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
+      priv->library = g_module_open (NULL, 0);
+    }
+  else
+    {
+      gchar *path;
+      GModuleFlags flags = 0;
 
-  /* Bind symbols immediately to avoid errors long after loading */
-  priv->library = g_module_open (path, flags);
-  g_free (path);
+      path = g_module_build_path (priv->path, priv->module_name);
+
+      /* g_module_build_path() will add G_MODULE_SUFFIX to the path,
+       * however g_module_open() will only try to load the libtool archive
+       * if there is no suffix specified. So we remove G_MODULE_SUFFIX here
+       * which allows uninstalled builds to load plugins as well, as there
+       * is only the .la file in the build directory.
+       */
+      if (G_MODULE_SUFFIX[0] != '\0' && g_str_has_suffix (path, "." G_MODULE_SUFFIX))
+        path[strlen (path) - strlen (G_MODULE_SUFFIX) - 1] = '\0';
+
+      if (priv->local_linkage)
+        flags = G_MODULE_BIND_LOCAL;
+
+      /* Bind symbols immediately to avoid errors long after loading */
+      priv->library = g_module_open (path, flags);
+      g_free (path);
+    }
 
   if (priv->library == NULL)
     {
@@ -122,12 +136,11 @@ peas_object_module_load (GTypeModule *gmodule)
     }
 
   /* Extract the required symbol from the library */
-  if (!g_module_symbol (priv->library,
-                        "peas_register_types",
+  if (!g_module_symbol (priv->library, priv->symbol,
                         (gpointer) &priv->register_func))
     {
-      g_warning ("Failed to get 'peas_register_types' for module '%s': %s",
-                 priv->module_name, g_module_error ());
+      g_warning ("Failed to get '%s' for module '%s': %s",
+                 priv->symbol, priv->module_name, g_module_error ());
       g_module_close (priv->library);
 
       return FALSE;
@@ -138,8 +151,8 @@ peas_object_module_load (GTypeModule *gmodule)
    */
   if (priv->register_func == NULL)
     {
-      g_warning ("Invalid 'peas_register_types' in module '%s'",
-                 priv->module_name);
+      g_warning ("Invalid '%s' in module '%s'",
+                 priv->symbol, priv->module_name);
       g_module_close (priv->library);
 
       return FALSE;
@@ -194,6 +207,7 @@ peas_object_module_finalize (GObject *object)
 
   g_free (priv->path);
   g_free (priv->module_name);
+  g_free (priv->symbol);
   g_array_unref (priv->implementations);
 
   G_OBJECT_CLASS (peas_object_module_parent_class)->finalize (object);
@@ -215,6 +229,9 @@ peas_object_module_get_property (GObject    *object,
       break;
     case PROP_PATH:
       g_value_set_string (value, priv->path);
+      break;
+    case PROP_SYMBOL:
+      g_value_set_string (value, priv->symbol);
       break;
     case PROP_RESIDENT:
       g_value_set_boolean (value, priv->resident);
@@ -246,6 +263,9 @@ peas_object_module_set_property (GObject      *object,
       break;
     case PROP_PATH:
       priv->path = g_value_dup_string (value);
+      break;
+    case PROP_SYMBOL:
+      priv->symbol = g_value_dup_string (value);
       break;
     case PROP_RESIDENT:
       priv->resident = g_value_get_boolean (value);
@@ -288,6 +308,15 @@ peas_object_module_class_init (PeasObjectModuleClass *klass)
                          "Path",
                          "The path to use when loading this module",
                          NULL,
+                         G_PARAM_READWRITE |
+                         G_PARAM_CONSTRUCT_ONLY |
+                         G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_SYMBOL] =
+    g_param_spec_string ("symbol",
+                         "Symbol",
+                         "The registration symbol to use for this module",
+                         "peas_register_types",
                          G_PARAM_READWRITE |
                          G_PARAM_CONSTRUCT_ONLY |
                          G_PARAM_STATIC_STRINGS);
@@ -373,6 +402,31 @@ peas_object_module_new_full (const gchar *module_name,
                                            "path", path,
                                            "resident", resident,
                                            "local-linkage", local_linkage,
+                                           NULL));
+}
+
+/**
+ * peas_object_module_new_embedded: (skip)
+ * @module_name: The module name.
+ *
+ * Creates a new #PeasObjectModule for an embedded plugin.
+ *
+ * Return value: a new #PeasObjectModule.
+ *
+ * Since: 1.18
+ */
+PeasObjectModule *
+peas_object_module_new_embedded (const gchar *module_name,
+                                 const gchar *symbol)
+{
+  g_return_val_if_fail (module_name != NULL && *module_name != '\0', NULL);
+  g_return_val_if_fail (symbol != NULL && *symbol != '\0', NULL);
+
+  return PEAS_OBJECT_MODULE (g_object_new (PEAS_TYPE_OBJECT_MODULE,
+                                           "module-name", module_name,
+                                           "symbol", symbol,
+                                           "resident", TRUE,
+                                           "local-linkage", FALSE,
                                            NULL));
 }
 
@@ -481,6 +535,26 @@ peas_object_module_get_module_name (PeasObjectModule *module)
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
 
   return priv->module_name;
+}
+
+/**
+ * peas_object_module_get_symbol: (skip)
+ * @module: A #PeasObjectModule.
+ *
+ * Gets the symbol name used to register extension implementations.
+ *
+ * Return value: the symbol name.
+ *
+ * Since: 1.18
+ */
+const gchar *
+peas_object_module_get_symbol (PeasObjectModule *module)
+{
+  PeasObjectModulePrivate *priv = GET_PRIV (module);
+
+  g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+
+  return priv->symbol;
 }
 
 /**

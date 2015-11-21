@@ -85,6 +85,7 @@ _peas_plugin_info_unref (PeasPluginInfo *info)
   g_free (info->filename);
   g_free (info->module_dir);
   g_free (info->data_dir);
+  g_free (info->embedded);
   g_free (info->module_name);
   g_strfreev (info->dependencies);
   g_free (info->name);
@@ -124,19 +125,42 @@ _peas_plugin_info_new (const gchar *filename,
                        const gchar *data_dir)
 {
   gsize i;
+  gboolean is_resource;
   gchar *loader = NULL;
   gchar **strv, **keys;
   PeasPluginInfo *info;
   GKeyFile *plugin_file;
+  GBytes *bytes = NULL;
   GError *error = NULL;
 
   g_return_val_if_fail (filename != NULL, NULL);
+
+  is_resource = g_str_has_prefix (filename, "resource://");
 
   info = g_new0 (PeasPluginInfo, 1);
   info->refcount = 1;
 
   plugin_file = g_key_file_new ();
-  if (!g_key_file_load_from_file (plugin_file, filename,
+  
+  if (is_resource)
+    {
+      bytes = g_resources_lookup_data (filename + strlen ("resource://"),
+                                       G_RESOURCE_LOOKUP_FLAGS_NONE,
+                                       &error);
+    }
+  else
+    {
+      gchar *content;
+      gsize length;
+
+      if (g_file_get_contents (filename, &content, &length, &error))
+        bytes = g_bytes_new_take (content, length);
+    }
+
+  if (bytes == NULL ||
+      !g_key_file_load_from_data (plugin_file,
+                                  g_bytes_get_data (bytes, NULL),
+                                  g_bytes_get_size (bytes),
                                   G_KEY_FILE_NONE, &error))
     {
       g_warning ("Bad plugin file '%s': %s", filename, error->message);
@@ -183,7 +207,31 @@ _peas_plugin_info_new (const gchar *filename,
         }
     }
 
-  g_free (loader);
+  /* Get Embedded */
+  info->embedded = g_key_file_get_string (plugin_file, "Plugin",
+                                          "Embedded", NULL);
+  if (info->embedded != NULL)
+    {
+      if (info->loader_id != PEAS_UTILS_C_LOADER_ID)
+        {
+          g_warning ("Bad plugin file '%s': embedded plugins "
+                     "must use the C plugin loader", filename);
+          goto error;
+        }
+
+      if (!is_resource)
+        {
+          g_warning ("Bad plugin file '%s': embedded plugins "
+                     "must be a resource", filename);
+          goto error;
+        }
+    }
+  else if (is_resource)
+    {
+      g_warning ("Bad plugin file '%s': resource plugins must be embedded",
+                 filename);
+      goto error;
+    }
 
   /* Get the dependency list */
   info->dependencies = g_key_file_get_string_list (plugin_file,
@@ -259,11 +307,14 @@ _peas_plugin_info_new (const gchar *filename,
 
   g_strfreev (keys);
 
+  g_free (loader);
+  g_bytes_unref (bytes);
   g_key_file_free (plugin_file);
 
   info->filename = g_strdup (filename);
   info->module_dir = g_strdup (module_dir);
-  info->data_dir = g_build_filename (data_dir, info->module_name, NULL);
+  info->data_dir = g_build_path (is_resource ? "/" : G_DIR_SEPARATOR_S,
+                                 data_dir, info->module_name, NULL);
 
   /* If we know nothing about the availability of the plugin,
      set it as available */
@@ -273,10 +324,12 @@ _peas_plugin_info_new (const gchar *filename,
 
 error:
 
+  g_free (info->embedded);
   g_free (loader);
   g_free (info->module_name);
   g_free (info->name);
   g_free (info);
+  g_clear_pointer (&bytes, g_bytes_unref);
   g_key_file_free (plugin_file);
 
   return NULL;
