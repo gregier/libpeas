@@ -1002,6 +1002,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 
   g_debug ("Loaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
+  g_assert (peas_plugin_info_is_available (info, NULL));
   g_object_notify_by_pspec (G_OBJECT (engine),
                             properties[PROP_LOADED_PLUGINS]);
 
@@ -1010,7 +1011,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 error:
 
   info->loaded = FALSE;
-  info->available = FALSE;
+  g_assert (!peas_plugin_info_is_available (info, NULL));
 }
 
 /**

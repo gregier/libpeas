@@ -56,11 +56,6 @@ struct _PeasPluginInfo {
   GError *error;
 
   guint loaded : 1;
-  /* A plugin is unavailable if it is not possible to load it
-     due to an error loading the plugin module (e.g. for Python plugins
-     when the interpreter has not been correctly initializated) */
-  guint available : 1;
-
   guint builtin : 1;
   guint hidden : 1;
 };

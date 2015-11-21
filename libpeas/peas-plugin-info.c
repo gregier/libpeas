@@ -265,10 +265,6 @@ _peas_plugin_info_new (const gchar *filename,
   info->module_dir = g_strdup (module_dir);
   info->data_dir = g_build_filename (data_dir, info->module_name, NULL);
 
-  /* If we know nothing about the availability of the plugin,
-     set it as available */
-  info->available = TRUE;
-
   return info;
 
 error:
@@ -295,7 +291,11 @@ peas_plugin_info_is_loaded (const PeasPluginInfo *info)
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
-  return info->available && info->loaded;
+  if (!info->loaded)
+    return FALSE;
+
+  g_assert (info->error == NULL);
+  return TRUE;
 }
 
 /**
@@ -317,13 +317,17 @@ peas_plugin_info_is_available (const PeasPluginInfo  *info,
 {
   g_return_val_if_fail (info != NULL, FALSE);
 
+  if (info->error == NULL)
+    return TRUE;
+
   /* Uses g_propagate_error() so we get the right warning
    * in the case that *error != NULL
    */
-  if (error != NULL && info->error != NULL)
+  if (error != NULL)
     g_propagate_error (error, g_error_copy (info->error));
 
-  return info->available != FALSE;
+  g_assert (!info->loaded);
+  return FALSE;
 }
 
 /**
