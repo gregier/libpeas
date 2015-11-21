@@ -74,6 +74,9 @@ GQuark        peas_plugin_info_error_quark      (void);
 gboolean      peas_plugin_info_is_loaded        (const PeasPluginInfo *info);
 gboolean      peas_plugin_info_is_available     (const PeasPluginInfo *info,
                                                  GError               **error);
+void          peas_plugin_info_set_error        (const PeasPluginInfo *info,
+                                                 const GError         *error);
+
 gboolean      peas_plugin_info_is_builtin       (const PeasPluginInfo *info);
 gboolean      peas_plugin_info_is_hidden        (const PeasPluginInfo *info);
 

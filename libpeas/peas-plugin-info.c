@@ -331,6 +331,43 @@ peas_plugin_info_is_available (const PeasPluginInfo  *info,
 }
 
 /**
+ * peas_plugin_info_set_error:
+ * @info: A #PeasPluginInfo.
+ * @error: A #GError.
+ *
+ * Sets the plugins's error and marked as not available.
+ *
+ * A plugin's error can only be set if it is
+ * currently available and not loaded.
+ *
+ * Since: 1.18
+ */
+void
+peas_plugin_info_set_error (const PeasPluginInfo *info,
+                            const GError         *error)
+{
+  g_return_if_fail (info != NULL);
+  g_return_if_fail (error != NULL);
+
+  if (info->error != NULL)
+    {
+      g_warning ("Failed to set error for plugin '%s': "
+                 "error is already set", info->module_name);
+    }
+  else if (info->loaded)
+    {
+      g_warning ("Failed to set error for plugin '%s': "
+                 "plugin is already loaded", info->module_name);
+    }
+  else
+    {
+      PeasPluginInfo *mutable_info = (PeasPluginInfo *) info;
+
+      mutable_info->error = g_error_copy (error);
+    }
+}
+
+/**
  * peas_plugin_info_is_builtin:
  * @info: A #PeasPluginInfo.
  *

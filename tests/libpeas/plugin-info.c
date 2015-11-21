@@ -176,6 +176,61 @@ test_plugin_info_os_dependant_help (PeasEngine *engine)
 #endif
 }
 
+static void
+test_plugin_info_set_error (PeasEngine *engine)
+{
+  GQuark error_quark;
+  GError *custom_error;
+  PeasPluginInfo *info;
+  GError *error = NULL;
+
+  testing_util_push_log_hook ("Failed to set error for plugin "
+                              "'builtin': plugin is already loaded");
+  testing_util_push_log_hook ("Failed to load module 'not-loadable'*");
+  testing_util_push_log_hook ("Error loading plugin 'not-loadable'");
+  testing_util_push_log_hook ("Failed to set error for plugin "
+                              "'not-loadable': error is already set");
+
+  error_quark = g_quark_from_static_string ("test-error");
+  custom_error = g_error_new_literal (error_quark, 47, "Hello World!");
+
+  /* Set error before loading a plugin */
+  info = peas_engine_get_plugin_info (engine, "loadable");
+  peas_plugin_info_set_error (info, custom_error);
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, error_quark, 47);
+  g_clear_error (&error);
+
+  /* Set error after loading a plugin */
+  info = peas_engine_get_plugin_info (engine, "builtin");
+  g_assert (peas_engine_load_plugin (engine, info));
+  peas_plugin_info_set_error (info, custom_error);
+  g_assert (peas_plugin_info_is_loaded (info));
+  g_assert (peas_plugin_info_is_available (info, &error));
+  g_assert_no_error (error);
+
+  /* Set error after unloading a plugin */
+  info = peas_engine_get_plugin_info (engine, "builtin");
+  g_assert (peas_engine_unload_plugin (engine, info));
+  peas_plugin_info_set_error (info, custom_error);
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, error_quark, 47);
+  g_clear_error (&error);
+
+  /* Set error on a plugin that failed to load */
+  info = peas_engine_get_plugin_info (engine, "not-loadable");
+  g_assert (!peas_engine_load_plugin (engine, info));
+  peas_plugin_info_set_error (info, custom_error);
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED);
+  g_error_free (error);
+}
+
 int
 main (int    argc,
       char **argv)
@@ -196,6 +251,8 @@ main (int    argc,
   TEST ("missing-name", missing_name);
 
   TEST ("os-dependant-help", os_dependant_help);
+
+  TEST ("set-error", set_error);
 
 #undef TEST
 
