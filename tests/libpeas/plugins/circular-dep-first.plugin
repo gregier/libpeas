@@ -1,0 +1,7 @@
+[Plugin]
+Module=circular-dep-first
+Depends=loadable;circular-dep-second
+Name=First Circular Dependency
+Description=This plugin is the first in a circular dependency.
+Authors=Garrett Regier
+Copyright=Copyright © 2015 Garrett Regier

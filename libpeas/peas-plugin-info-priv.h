@@ -58,6 +58,7 @@ struct _PeasPluginInfo {
   guint loaded : 1;
   guint builtin : 1;
   guint hidden : 1;
+  guint circular_marker : 1;
 };
 
 PeasPluginInfo *_peas_plugin_info_new   (const gchar    *filename,

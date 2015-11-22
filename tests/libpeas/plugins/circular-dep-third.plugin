@@ -1,0 +1,7 @@
+[Plugin]
+Module=circular-dep-third
+Depends=has-dep;circular-dep-first
+Name=Third Circular Dependency
+Description=This plugin is the third in a circular dependency.
+Authors=Garrett Regier
+Copyright=Copyright © 2015 Garrett Regier

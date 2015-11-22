@@ -15,6 +15,9 @@ endif
 endif
 
 noinst_PLUGIN = \
+	circular-dep-first.plugin		\
+	circular-dep-second.plugin		\
+	circular-dep-third.plugin		\
 	extension-c-nonexistent.plugin		\
 	extension-lua51-nonexistent.plugin	\
 	extension-python-nonexistent.plugin	\

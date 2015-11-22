@@ -156,11 +156,68 @@ static void
 test_engine_load_plugin_with_self_dep (PeasEngine *engine)
 {
   PeasPluginInfo *info;
+  GError *error = NULL;
+
+  testing_util_push_log_hook ("Could not load plugin 'self-dep': "
+                              "a circular dependecy was detected");
 
   info = peas_engine_get_plugin_info (engine, "self-dep");
 
-  g_assert (peas_engine_load_plugin (engine, info));
-  g_assert (peas_plugin_info_is_loaded (info));
+  g_assert (!peas_engine_load_plugin (engine, info));
+  g_assert (!peas_plugin_info_is_loaded (info));
+  g_assert (!peas_plugin_info_is_available (info, &error));
+  g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                  PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED);
+
+  g_error_free (error);
+}
+
+static void
+test_engine_load_plugin_with_circular_dep (PeasEngine *engine)
+{
+  guint i;
+  PeasPluginInfo *info;
+  GError *error = NULL;
+  const gchar *circular_deps[] = {
+    "circular-dep-first", "circular-dep-second", "circular-dep-third"
+  };
+  const gchar *other_deps[] = {
+    "loadable", "builtin", "has-dep"
+  };
+
+  testing_util_push_log_hook ("Could not load plugin 'circular-dep-first': "
+                              "a circular dependecy was detected");
+  testing_util_push_log_hook ("Could not load plugin 'circular-dep-second': "
+                              "a circular dependecy was detected");
+  testing_util_push_log_hook ("Could not load plugin 'circular-dep-third': "
+                              "a circular dependecy was detected");
+
+  for (i = 0; i < G_N_ELEMENTS (circular_deps); ++i)
+    {
+      info = peas_engine_get_plugin_info (engine, circular_deps[i]);
+
+      g_assert (!peas_engine_load_plugin (engine, info));
+      g_assert (!peas_plugin_info_is_loaded (info));
+      g_assert (!peas_plugin_info_is_available (info, &error));
+      g_assert_error (error, PEAS_PLUGIN_INFO_ERROR,
+                      PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED);
+      g_clear_error (&error);
+    }
+
+  /* Only the actual chain of circular
+   * dependencies should be marked as failed
+   */
+  for (i = 0; i < G_N_ELEMENTS (other_deps); ++i)
+    {
+      info = peas_engine_get_plugin_info (engine, circular_deps[i]);
+      g_assert (peas_plugin_info_has_dependency (info, other_deps[i]));
+
+      info = peas_engine_get_plugin_info (engine, other_deps[i]);
+
+      g_assert (peas_plugin_info_is_loaded (info));
+      g_assert (peas_plugin_info_is_available (info, &error));
+      g_assert_no_error (error);
+    }
 }
 
 static void
@@ -212,19 +269,6 @@ test_engine_unload_plugin_with_dep (PeasEngine *engine)
 
   info = peas_engine_get_plugin_info (engine, "has-dep");
 
-  g_assert (!peas_plugin_info_is_loaded (info));
-}
-
-static void
-test_engine_unload_plugin_with_self_dep (PeasEngine *engine)
-{
-  PeasPluginInfo *info;
-
-  test_engine_load_plugin_with_self_dep (engine);
-
-  info = peas_engine_get_plugin_info (engine, "self-dep");
-
-  g_assert (peas_engine_unload_plugin (engine, info));
   g_assert (!peas_plugin_info_is_loaded (info));
 }
 
@@ -445,11 +489,11 @@ main (int    argc,
   TEST ("load-plugin", load_plugin);
   TEST ("load-plugin-with-dep", load_plugin_with_dep);
   TEST ("load-plugin-with-self-dep", load_plugin_with_self_dep);
+  TEST ("load-plugin-with-circular-dep", load_plugin_with_circular_dep);
   TEST ("load-plugin-with-nonexistent-dep", load_plugin_with_nonexistent_dep);
 
   TEST ("unload-plugin", unload_plugin);
   TEST ("unload-plugin-with-dep", unload_plugin_with_dep);
-  TEST ("unload-plugin-with-self-dep", unload_plugin_with_self_dep);
 
   TEST ("unavailable-plugin", unavailable_plugin);
   TEST ("not-loadable-plugin", not_loadable_plugin);

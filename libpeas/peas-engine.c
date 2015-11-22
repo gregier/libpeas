@@ -930,6 +930,40 @@ peas_engine_get_plugin_info (PeasEngine  *engine,
   return l == NULL ? NULL : (PeasPluginInfo *) l->data;
 }
 
+static gboolean
+check_for_circular_dependency (PeasEngine     *engine,
+                               PeasPluginInfo *info)
+{
+  guint i;
+  const gchar **dependencies;
+
+  if (!info->circular_marker)
+    return FALSE;
+
+  if (info->error != NULL)
+    return TRUE;
+
+  g_warning ("Could not load plugin '%s': "
+             "a circular dependecy was detected",
+             peas_plugin_info_get_module_name (info));
+  g_set_error (&info->error,
+               PEAS_PLUGIN_INFO_ERROR,
+               PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
+               _("Circular dependency detected"));
+
+  dependencies = peas_plugin_info_get_dependencies (info);
+  for (i = 0; dependencies[i] != NULL; i++)
+    {
+      PeasPluginInfo *dep_info;
+
+      dep_info = peas_engine_get_plugin_info (engine, dependencies[i]);
+
+      check_for_circular_dependency (engine, dep_info);
+    }
+
+  return TRUE;
+}
+
 static void
 peas_engine_load_plugin_real (PeasEngine     *engine,
                               PeasPluginInfo *info)
@@ -945,9 +979,11 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
   if (!peas_plugin_info_is_available (info, NULL))
     return;
 
-  /* We set the plugin info as loaded before trying to load the dependencies,
-   * to make sure we won't have an infinite loop. */
-  info->loaded = TRUE;
+  if (check_for_circular_dependency (engine, info))
+    return;
+
+  /* Prevent any circular dependencies */
+  info->circular_marker = TRUE;
 
   dependencies = peas_plugin_info_get_dependencies (info);
   for (i = 0; dependencies[i] != NULL; i++)
@@ -967,11 +1003,19 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 
       if (!peas_engine_load_plugin (engine, dep_info))
         {
-          g_set_error (&info->error,
-                       PEAS_PLUGIN_INFO_ERROR,
-                       PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
-                       _("Dependency '%s' failed to load"),
-                       peas_plugin_info_get_name (dep_info));
+          /* In the event of a circular
+           * dependency the error will already be set
+           */
+          if (info->error == NULL)
+            {
+              /* Already warned */
+              g_set_error (&info->error,
+                           PEAS_PLUGIN_INFO_ERROR,
+                           PEAS_PLUGIN_INFO_ERROR_LOADING_FAILED,
+                           _("Dependency '%s' failed to load"),
+                           peas_plugin_info_get_name (dep_info));
+            }
+
           goto error;
         }
     }
@@ -1002,7 +1046,11 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 
   g_debug ("Loaded plugin '%s'", peas_plugin_info_get_module_name (info));
 
+  info->loaded = TRUE;
+  info->circular_marker = FALSE;
+
   g_assert (peas_plugin_info_is_available (info, NULL));
+
   g_object_notify_by_pspec (G_OBJECT (engine),
                             properties[PROP_LOADED_PLUGINS]);
 
@@ -1010,7 +1058,9 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
 
 error:
 
-  info->loaded = FALSE;
+  info->circular_marker = FALSE;
+
+  g_assert (!peas_plugin_info_is_loaded (info));
   g_assert (!peas_plugin_info_is_available (info, NULL));
 }
 

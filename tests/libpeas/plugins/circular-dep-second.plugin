@@ -1,0 +1,7 @@
+[Plugin]
+Module=circular-dep-second
+Depends=builtin;circular-dep-third
+Name=Second Circular Dependency
+Description=This plugin is the second in a circular dependency.
+Authors=Garrett Regier
+Copyright=Copyright © 2015 Garrett Regier

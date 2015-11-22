@@ -38,7 +38,7 @@ struct _TestFixture {
 
 /* Have dependencies before the plugin that requires them */
 static const gchar *loadable_plugins[] = {
-  "loadable", "has-dep", "self-dep"
+  "loadable", "has-dep", "builtin"
 };
 
 static void
