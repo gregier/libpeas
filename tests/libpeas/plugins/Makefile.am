@@ -28,6 +28,6 @@ noinst_PLUGIN = \
 	nonexistent-dep.plugin			\
 	not-loadable.plugin			\
 	os-dependant-help.plugin		\
-	unkown-loader.plugin
+	unknown-loader.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)

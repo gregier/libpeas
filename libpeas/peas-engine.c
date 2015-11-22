@@ -140,7 +140,7 @@ load_plugin_info (PeasEngine  *engine,
 
   if (info == NULL)
     {
-      g_warning ("Error loading '%s'", filename);
+      /* Already warned */
       return;
     }
 

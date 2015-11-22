@@ -61,20 +61,13 @@ testing_engine_new_full (gboolean nonglobal_loaders)
 {
   PeasEngine *engine;
 
-  testing_util_push_log_hook ("*Bad plugin file *invalid.plugin*");
-  testing_util_push_log_hook ("*Error loading *invalid.plugin*");
-
-  testing_util_push_log_hook ("*Could not find 'Module' in "
-                              "*info-missing-module.plugin*");
-  testing_util_push_log_hook ("*Error loading *info-missing-module.plugin*");
-
-  testing_util_push_log_hook ("*Could not find 'Name' in "
-                              "*info-missing-name.plugin*");
-  testing_util_push_log_hook ("*Error loading *info-missing-name.plugin*");
-
-  testing_util_push_log_hook ("*Unkown 'Loader' in "
-                              "*unkown-loader.plugin* does-not-exist");
-  testing_util_push_log_hook ("*Error loading *unkown-loader.plugin*");
+  testing_util_push_log_hook ("Error loading *invalid.plugin*");
+  testing_util_push_log_hook ("Error loading *info-missing-module.plugin*"
+                              "Could not find 'Module'*");
+  testing_util_push_log_hook ("Error loading *info-missing-name.plugin*"
+                              "Could not find 'Name'*");
+  testing_util_push_log_hook ("Error loading *unknown-loader.plugin*"
+                              "Unknown 'Loader'* 'does-not-exist'*");
 
   /* Must be after pushing log hooks */
   engine = testing_util_engine_new_full (nonglobal_loaders);

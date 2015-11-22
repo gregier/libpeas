@@ -139,7 +139,7 @@ _peas_plugin_info_new (const gchar *filename,
   if (!g_key_file_load_from_file (plugin_file, filename,
                                   G_KEY_FILE_NONE, &error))
     {
-      g_warning ("Bad plugin file '%s': %s", filename, error->message);
+      g_warning ("Error loading '%s': %s", filename, error->message);
       g_error_free (error);
       goto error;
     }
@@ -149,7 +149,8 @@ _peas_plugin_info_new (const gchar *filename,
                                              "Module", NULL);
   if (info->module_name == NULL || *info->module_name == '\0')
     {
-      g_warning ("Could not find 'Module' in '[Plugin]' section in '%s'",
+      g_warning ("Error loading '%s': "
+                 "Could not find 'Module' in '[Plugin]' section",
                  filename);
       goto error;
     }
@@ -159,7 +160,8 @@ _peas_plugin_info_new (const gchar *filename,
                                       "Name", NULL, NULL);
   if (info->name == NULL || *info->name == '\0')
     {
-      g_warning ("Could not find 'Name' in '[Plugin]' section in '%s'",
+      g_warning ("Error loading '%s': "
+                 "Could not find 'Name' in '[Plugin]' section",
                  filename);
       goto error;
     }
@@ -177,7 +179,8 @@ _peas_plugin_info_new (const gchar *filename,
 
       if (info->loader_id == -1)
         {
-          g_warning ("Unkown 'Loader' in '[Plugin]' section in '%s': %s",
+          g_warning ("Error loading '%s': "
+                     "Unknown 'Loader' in '[Plugin]' section: '%s'",
                      filename, loader);
           goto error;
         }
