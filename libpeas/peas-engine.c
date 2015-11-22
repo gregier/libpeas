@@ -101,7 +101,7 @@ typedef struct _SearchPath {
 struct _PeasEnginePrivate {
   LoaderInfo loaders[PEAS_UTILS_N_LOADERS];
 
-  GList *search_paths;
+  GQueue search_paths;
   GQueue plugin_list;
 
   guint in_dispose : 1;
@@ -359,7 +359,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  if (priv->search_paths == NULL)
+  if (priv->search_paths.length == 0)
     {
       g_debug ("No search paths where provided");
       return;
@@ -368,7 +368,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
   g_object_freeze_notify (G_OBJECT (engine));
 
   /* Go and read everything from the provided search paths */
-  for (item = priv->search_paths; item != NULL; item = item->next)
+  for (item = priv->search_paths.head; item != NULL; item = item->next)
     found |= load_dir_real (engine, (SearchPath *) item->data);
 
   if (found)
@@ -379,7 +379,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 
 static void
 peas_engine_insert_search_path (PeasEngine  *engine,
-                                gint         position,
+                                gboolean     prepend,
                                 const gchar *module_dir,
                                 const gchar *data_dir)
 {
@@ -393,7 +393,10 @@ peas_engine_insert_search_path (PeasEngine  *engine,
   sp->module_dir = g_strdup (module_dir);
   sp->data_dir = g_strdup (data_dir ? data_dir : module_dir);
 
-  priv->search_paths = g_list_insert (priv->search_paths, sp, position);
+  if (prepend)
+    g_queue_push_head (&priv->search_paths, sp);
+  else
+    g_queue_push_tail (&priv->search_paths, sp);
 
   g_object_freeze_notify (G_OBJECT (engine));
 
@@ -431,7 +434,7 @@ peas_engine_add_search_path (PeasEngine  *engine,
                              const gchar *module_dir,
                              const gchar *data_dir)
 {
-  peas_engine_insert_search_path (engine, -1, module_dir, data_dir);
+  peas_engine_insert_search_path (engine, FALSE, module_dir, data_dir);
 }
 
 /**
@@ -452,7 +455,7 @@ peas_engine_prepend_search_path (PeasEngine  *engine,
                                  const gchar *module_dir,
                                  const gchar *data_dir)
 {
-  peas_engine_insert_search_path (engine, 0, module_dir, data_dir);
+  peas_engine_insert_search_path (engine, TRUE, module_dir, data_dir);
 }
 
 static void
@@ -494,6 +497,7 @@ peas_engine_init (PeasEngine *engine)
 
   priv->in_dispose = FALSE;
 
+  g_queue_init (&priv->search_paths);
   g_queue_init (&priv->plugin_list);
 
   /* The C plugin loader is always enabled */
@@ -625,7 +629,7 @@ peas_engine_finalize (GObject *object)
     }
 
   /* free the search path list */
-  for (item = priv->search_paths; item; item = item->next)
+  for (item = priv->search_paths.head; item != NULL; item = item->next)
     {
       SearchPath *sp = (SearchPath *) item->data;
 
@@ -634,7 +638,7 @@ peas_engine_finalize (GObject *object)
       g_slice_free (SearchPath, sp);
     }
 
-  g_list_free (priv->search_paths);
+  g_queue_clear (&priv->search_paths);
   g_queue_clear (&priv->plugin_list);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);
