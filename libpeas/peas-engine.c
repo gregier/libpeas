@@ -102,7 +102,7 @@ struct _PeasEnginePrivate {
   LoaderInfo loaders[PEAS_UTILS_N_LOADERS];
 
   GList *search_paths;
-  GList *plugin_list;
+  GQueue plugin_list;
 
   guint in_dispose : 1;
   guint use_nonglobal_loaders : 1;
@@ -124,8 +124,8 @@ static void peas_engine_load_plugin_real   (PeasEngine     *engine,
 static void peas_engine_unload_plugin_real (PeasEngine     *engine,
                                             PeasPluginInfo *info);
 
-static GList *
-plugin_info_prepend_sorted (GList          *plugin_list,
+static void
+plugin_info_prepend_sorted (GQueue         *plugin_list,
                             PeasPluginInfo *info)
 {
   guint i;
@@ -136,7 +136,7 @@ plugin_info_prepend_sorted (GList          *plugin_list,
 
   for (i = 0; dependencies[i] != NULL; ++i)
     {
-      GList *pos = furthest_dep != NULL ? furthest_dep : plugin_list;
+      GList *pos = furthest_dep != NULL ? furthest_dep : plugin_list->head;
 
       for (; pos != NULL; pos = pos->next)
         {
@@ -149,15 +149,20 @@ plugin_info_prepend_sorted (GList          *plugin_list,
         }
     }
 
+  /* GLib changed only accepts NULL for
+   * g_queue_insert_after() at version 2.44
+   */
   if (furthest_dep == NULL)
-    return g_list_prepend (plugin_list, info);
+    {
+      g_queue_push_tail (plugin_list, info);
+      return;
+    }
 
   g_debug ("Adding '%s' after '%s' due to dependencies",
            peas_plugin_info_get_module_name (info),
            peas_plugin_info_get_module_name (furthest_dep->data));
 
-  g_list_insert (furthest_dep, info, 1);
-  return plugin_list;
+  g_queue_insert_after (plugin_list, furthest_dep, info);
 }
 
 static gboolean
@@ -187,7 +192,7 @@ load_plugin_info (PeasEngine  *engine,
       return FALSE;
     }
 
-  priv->plugin_list = plugin_info_prepend_sorted (priv->plugin_list, info);
+  plugin_info_prepend_sorted (&priv->plugin_list, info);
   g_object_notify_by_pspec (G_OBJECT (engine),
                             properties[PROP_PLUGIN_LIST]);
 
@@ -323,7 +328,7 @@ plugin_list_changed (PeasEngine *engine)
 
   msg = g_string_new ("Plugins: ");
 
-  for (pos = priv->plugin_list; pos != NULL; pos = pos->next)
+  for (pos = priv->plugin_list.head; pos != NULL; pos = pos->next)
     {
       if (pos->prev != NULL)
         g_string_append (msg, ", ");
@@ -489,6 +494,8 @@ peas_engine_init (PeasEngine *engine)
 
   priv->in_dispose = FALSE;
 
+  g_queue_init (&priv->plugin_list);
+
   /* The C plugin loader is always enabled */
   priv->loaders[PEAS_UTILS_C_LOADER_ID].enabled = TRUE;
 }
@@ -583,7 +590,7 @@ peas_engine_dispose (GObject *object)
   priv->in_dispose = TRUE;
 
   /* First unload all the plugins */
-  for (item = priv->plugin_list; item; item = item->next)
+  for (item = priv->plugin_list.tail; item != NULL; item = item->prev)
     {
       PeasPluginInfo *info = PEAS_PLUGIN_INFO (item->data);
 
@@ -610,8 +617,12 @@ peas_engine_finalize (GObject *object)
   GList *item;
 
   /* free the infos */
-  g_list_free_full (priv->plugin_list,
-                    (GDestroyNotify) _peas_plugin_info_unref);
+  for (item = priv->plugin_list.head; item != NULL; item = item->next)
+    {
+      PeasPluginInfo *info = (PeasPluginInfo *) item->data;
+
+      _peas_plugin_info_unref (info);
+    }
 
   /* free the search path list */
   for (item = priv->search_paths; item; item = item->next)
@@ -624,6 +635,7 @@ peas_engine_finalize (GObject *object)
     }
 
   g_list_free (priv->search_paths);
+  g_queue_clear (&priv->plugin_list);
 
   G_OBJECT_CLASS (peas_engine_parent_class)->finalize (object);
 }
@@ -1030,14 +1042,7 @@ peas_engine_get_plugin_list (PeasEngine *engine)
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
 
-  return priv->plugin_list;
-}
-
-static gint
-compare_plugin_info_and_name (PeasPluginInfo *info,
-                              const gchar    *module_name)
-{
-  return strcmp (peas_plugin_info_get_module_name (info), module_name);
+  return priv->plugin_list.head;
 }
 
 /**
@@ -1061,11 +1066,16 @@ peas_engine_get_plugin_info (PeasEngine  *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (plugin_name != NULL, NULL);
 
-  l = g_list_find_custom (priv->plugin_list,
-                          plugin_name,
-                          (GCompareFunc) compare_plugin_info_and_name);
+  for (l = priv->plugin_list.head; l != NULL; l = l->next)
+    {
+      PeasPluginInfo *info = (PeasPluginInfo *) l->data;
+      const gchar *module_name = peas_plugin_info_get_module_name (info);
 
-  return l == NULL ? NULL : (PeasPluginInfo *) l->data;
+      if (strcmp (module_name, plugin_name) == 0)
+        return info;
+    }
+
+  return NULL;
 }
 
 static void
@@ -1198,7 +1208,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
 
   /* First unload all the dependant plugins */
   module_name = peas_plugin_info_get_module_name (info);
-  for (item = priv->plugin_list; item; item = item->next)
+  for (item = priv->plugin_list.tail; item != NULL; item = item->prev)
     {
       PeasPluginInfo *other_info = PEAS_PLUGIN_INFO (item->data);
 
@@ -1452,7 +1462,7 @@ peas_engine_get_loaded_plugins (PeasEngine *engine)
 
   array = g_array_new (TRUE, FALSE, sizeof (gchar *));
 
-  for (pl = priv->plugin_list; pl; pl = pl->next)
+  for (pl = priv->plugin_list.head; pl != NULL; pl = pl->next)
     {
       PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
       gchar *module_name;
@@ -1506,7 +1516,7 @@ peas_engine_set_loaded_plugins (PeasEngine   *engine,
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
-  for (pl = priv->plugin_list; pl; pl = pl->next)
+  for (pl = priv->plugin_list.head; pl != NULL; pl = pl->next)
     {
       PeasPluginInfo *info = (PeasPluginInfo *) pl->data;
       const gchar *module_name;
