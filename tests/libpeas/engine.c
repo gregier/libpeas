@@ -286,9 +286,9 @@ test_engine_plugin_list (PeasEngine *engine)
 
   /* Verify that we are finding the furthest dependency in the list */
   dependencies = peas_plugin_info_get_dependencies (two_deps_info);
-  g_assert_cmpint (builtin_index, <, loadable_index);
-  g_assert_cmpstr (dependencies[0], ==, "builtin");
-  g_assert_cmpstr (dependencies[1], ==, "loadable");
+  g_assert_cmpint (builtin_index, >, loadable_index);
+  g_assert_cmpstr (dependencies[0], ==, "loadable");
+  g_assert_cmpstr (dependencies[1], ==, "builtin");
 
   /* The two-deps plugin should be ordered after builtin and loadable */
   g_assert_cmpint (builtin_index, <, two_deps_index);

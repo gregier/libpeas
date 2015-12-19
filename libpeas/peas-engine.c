@@ -125,8 +125,8 @@ static void peas_engine_unload_plugin_real (PeasEngine     *engine,
                                             PeasPluginInfo *info);
 
 static void
-plugin_info_prepend_sorted (GQueue         *plugin_list,
-                            PeasPluginInfo *info)
+plugin_info_add_sorted (GQueue         *plugin_list,
+                        PeasPluginInfo *info)
 {
   guint i;
   GList *furthest_dep = NULL;
@@ -154,7 +154,7 @@ plugin_info_prepend_sorted (GQueue         *plugin_list,
    */
   if (furthest_dep == NULL)
     {
-      g_queue_push_tail (plugin_list, info);
+      g_queue_push_head (plugin_list, info);
       return;
     }
 
@@ -192,7 +192,7 @@ load_plugin_info (PeasEngine  *engine,
       return FALSE;
     }
 
-  plugin_info_prepend_sorted (&priv->plugin_list, info);
+  plugin_info_add_sorted (&priv->plugin_list, info);
   g_object_notify_by_pspec (G_OBJECT (engine),
                             properties[PROP_PLUGIN_LIST]);
 

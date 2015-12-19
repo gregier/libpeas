@@ -249,6 +249,17 @@ testing_util_engine_new_full (gboolean nonglobal_loaders)
                      (GWeakNotify) engine_weak_notify,
                      NULL);
 
+  /* The plugins that two-deps depends on must be added
+   * to the engine before it. This is used to verify that
+   * the engine will order the plugin list correctly.
+   */
+  peas_engine_add_search_path (engine,
+                               BUILDDIR "/tests/plugins/builtin",
+                               SRCDIR   "/tests/plugins/builtin");
+  peas_engine_add_search_path (engine,
+                               BUILDDIR "/tests/plugins/loadable",
+                               SRCDIR   "/tests/plugins/loadable");
+
   peas_engine_add_search_path (engine,
                                BUILDDIR "/tests/plugins",
                                SRCDIR   "/tests/plugins");
