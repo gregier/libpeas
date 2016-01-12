@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-09-02 10:43+0000\n"
-"PO-Revision-Date: 2015-09-02 21:11+0300\n"
+"POT-Creation-Date: 2016-01-06 13:17+0000\n"
+"PO-Revision-Date: 2016-01-06 20:53+0200\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lietuvių <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -19,11 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
 "%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Gtranslator 2.91.7\n"
+"X-Generator: Poedit 1.8.6\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
-msgstr "Įskiepių tvarkyklė"
+msgstr "Įskiepių tvarkytuvė"
 
 #. Translators: What PeasGtkPluginManagerView to use
 #: ../data/glade/libpeas-gtk.xml.in.h:3
@@ -32,7 +32,7 @@ msgstr "Rodinys"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:4
 msgid "Plugin Manager View"
-msgstr "Įskiepių tvarkyklės rodinys"
+msgstr "Įskiepių tvarkytuvės rodinys"
 
 #. Translators: Whether builtin plugins should appear in the view (property name)
 #: ../data/glade/libpeas-gtk.xml.in.h:6
@@ -43,22 +43,22 @@ msgstr "Rodyti integruotus"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:976
+#: ../libpeas/peas-engine.c:1115
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Priklausomybė „%s“ nerasta"
 
-#: ../libpeas/peas-engine.c:986
+#: ../libpeas/peas-engine.c:1125
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Nepavyko įkelti priklausomybės „%s“"
 
-#: ../libpeas/peas-engine.c:1000
+#: ../libpeas/peas-engine.c:1139
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Įskiepių įkėlėjas „%s“ nerastas"
 
-#: ../libpeas/peas-engine.c:1012
+#: ../libpeas/peas-engine.c:1151
 #, c-format
 msgid "Failed to load"
 msgstr "Nepavyko įkelti"
@@ -111,7 +111,7 @@ msgstr "_Žinynas"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
 msgid "Pr_eferences"
-msgstr "_Nustatymai"
+msgstr "_Nuostatos"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
@@ -120,7 +120,7 @@ msgstr "_Apie"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_Preferences"
-msgstr "_Nustatymai"
+msgstr "_Nuostatos"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
 msgid "_Enabled"
@@ -153,7 +153,6 @@ msgstr "Įskiepis „%s“ negali būti įkeltas"
 #.
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
 #, c-format
-#| msgid "An error occurred: "
 msgid "An error occurred: %s"
 msgstr "Įvyko klaida: %s"
 
@@ -176,4 +175,4 @@ msgstr "Apie"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:82
 msgid "Preferences"
-msgstr "Nustatymai"
+msgstr "Nuostatos"
