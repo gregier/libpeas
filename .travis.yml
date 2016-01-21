@@ -117,13 +117,13 @@ install:
 
   # Need at least glib version 2.38
   - (cd "${JHBUILD}" &&
-     git clone --depth 1 https://github.com/GNOME/glib.git &&
+     git clone https://github.com/GNOME/glib.git &&
      cd glib && git checkout 2.44.0 &&
      jhbuild buildone -n glib)
 
   # Need at least gobject-introspection version 1.39
   - (cd "${JHBUILD}" &&
-     git clone --depth 1 https://github.com/GNOME/gobject-introspection.git &&
+     git clone https://github.com/GNOME/gobject-introspection.git &&
      cd gobject-introspection && git checkout GOBJECT_INTROSPECTION_1_44_0 &&
      jhbuild buildone -n gobject-introspection)
 
