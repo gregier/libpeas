@@ -18,16 +18,18 @@ env:
     - JHBUILD="${HOME}/gnome"
 
   matrix:
-    - ENABLE_GTK=no
-    - ENABLE_GTK=yes
     - ENABLE_LUA51=yes
     - ENABLE_LUA51=yes ENABLE_LUAJIT=yes
-    - ENABLE_PYTHON2=yes
-    - ENABLE_PYTHON3=yes
-    - ENABLE_PYTHON2=yes ENABLE_PYTHON3=yes
-    - ENABLE_GTK=yes ENABLE_LUA51=yes
-      ENABLE_PYTHON2=yes ENABLE_PYTHON3=yes
-      ENABLE_DISTCHECK=yes
+
+
+#    - ENABLE_GTK=no
+#    - ENABLE_GTK=yes
+#    - ENABLE_PYTHON2=yes
+#    - ENABLE_PYTHON3=yes
+#    - ENABLE_PYTHON2=yes ENABLE_PYTHON3=yes
+#    - ENABLE_GTK=yes ENABLE_LUA51=yes
+#      ENABLE_PYTHON2=yes ENABLE_PYTHON3=yes
+#      ENABLE_DISTCHECK=yes
 
 notifications:
   email:
