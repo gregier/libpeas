@@ -138,7 +138,8 @@ install:
   - if [ "x${ENABLE_PYTHON2}" == "xyes" ] ||
        [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
       (cd "${JHBUILD}" &&
-       git clone --depth 1 https://github.com/GNOME/pygobject.git);
+       git clone --depth 100 https://github.com/GNOME/pygobject.git &&
+       cd pygobject && git checkout 3.18.0);
     fi
 
   # Need PyGObject built for Python 2
