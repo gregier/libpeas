@@ -117,8 +117,9 @@ install:
 
   # Need at least glib version 2.38
   - (cd "${JHBUILD}" &&
-     git clone --depth 1 https://github.com/GNOME/glib.git &&
-     jhbuild buildone -n glib)
+     git clone https://github.com/GNOME/glib.git &&
+     jhbuild buildone -n glib &&
+     cd glib && git checkout 2.47.4)
 
   # Need at least gobject-introspection version 1.39
   - (cd "${JHBUILD}" &&
