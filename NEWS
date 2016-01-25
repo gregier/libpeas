@@ -1,3 +1,21 @@
+Overview of Changes in libpeas 1.17.0
+====================================
+
+* Fix Python plugin loader module paths
+* Do not add pyexecdir to Python's paths at runtime
+* Add support for embedded C plugins
+* Order the PeasEngine:plugin-list by dependencies
+* Keep plugins order in PeasExtensionSet
+* Misc bugfixes
+
+* Translation updates:
+  - Basque
+  - Chinese
+  - Lithuanian
+  - Occitan
+  - Serbian
+  - Serbian (Latin)
+
 Overview of Changes in libpeas 1.16.0
 ====================================
 
