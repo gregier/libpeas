@@ -1,14 +1,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Rudolfs <rudolfs.mazurs@gmail.com>, 2011, 2012, 2014.
+# Rudolfs <rudolfs.mazurs@gmail.com>, 2011, 2012, 2014, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-10-06 21:58+0000\n"
-"PO-Revision-Date: 2014-10-07 21:00+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas&"
+"keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-02-04 13:25+0000\n"
+"PO-Revision-Date: 2016-02-06 20:39+0200\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
 "2);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
 msgid "Plugin Manager"
@@ -41,44 +41,44 @@ msgstr "Rādīt iebūvētos"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:856
+#: ../libpeas/peas-engine.c:1115
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Netika atrasta atkarība “%s”"
 
-#: ../libpeas/peas-engine.c:866
+#: ../libpeas/peas-engine.c:1125
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Atkarību “%s” neizdevās ielādēt"
 
-#: ../libpeas/peas-engine.c:880
+#: ../libpeas/peas-engine.c:1139
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Netika atrasts spraudņu ielādētājs “%s”"
 
-#: ../libpeas/peas-engine.c:892
+#: ../libpeas/peas-engine.c:1151
 #, c-format
 msgid "Failed to load"
 msgstr "Neizdevās ielādēt"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:91
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
 msgid "Additional plugins must be disabled"
 msgstr "Papildu spraudņi ir jādeaktivē"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:98
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
 #, c-format
 msgid "The following plugins depend on '%s' and will also be disabled:"
 msgstr "Sekojošie spraudņi ir atkarīgi no “%s” un arī tiks deaktivēti:"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:140
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
 msgid "Plugins"
 msgstr "Spraudņi"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:156
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:161
 msgid "An additional plugin must be disabled"
 msgstr "Papildu spraudnis ir jādeaktivē"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:163
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:168
 #, c-format
 msgid ""
 "The '%s' plugin depends on the '%s' plugin.\n"
@@ -87,84 +87,95 @@ msgstr ""
 "Spraudnis “%s” ir atkarīgs no spraudņa “%s”.\n"
 "Ja deaktivēsiet “%s”, “%s” arī tiks deaktivēts."
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:181
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
 msgid "_Cancel"
 msgstr "At_celt"
 
-#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:183
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
 msgid "Disable Plugins"
 msgstr "Deaktivēt spraudņus"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:187
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
 msgid "There was an error displaying the help."
 msgstr "Parādot palīdzību, gadījās kļūda."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:244
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
 msgid "_Close"
 msgstr "_Aizvērt"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:256
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
 msgid "_Help"
 msgstr "_Palīdzība"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
-#| msgid "_Preferences"
 msgid "Pr_eferences"
 msgstr "I_estatījumi"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:382
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
 msgid "_About"
 msgstr "P_ar"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:390
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
 msgid "_Preferences"
 msgstr "_Iestatījumi"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:334
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
 msgid "_Enabled"
 msgstr "_Aktivēts"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:345
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "E_nable All"
 msgstr "A_ktivēt visus"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:349
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
 msgid "_Disable All"
 msgstr "_Deaktivēt visus"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:509
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
 msgid "Enabled"
 msgstr "Aktivēts"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:530
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:547
 msgid "Plugin"
 msgstr "Spraudnis"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:615
+#. Avoid having markup in a translated string
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-msgid ""
-"<b>The plugin '%s' could not be loaded</b>\n"
-"An error occurred: %s"
-msgstr ""
-"<b>Nevarēja ielādēt spraudni “%s”</b>\n"
-"Gadījās kļūda — %s"
+#| msgid ""
+#| "<b>The plugin '%s' could not be loaded</b>\n"
+#| "An error occurred: %s"
+msgid "The plugin '%s' could not be loaded"
+msgstr "Nevarēja ielādēt spraudni “%s”"
+
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#.
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Gadījās kļūda — %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
 msgid "Run from build directory"
 msgstr "Palaist no būvējuma mapes"
 
-#: ../peas-demo/peas-demo.c:83
+#: ../peas-demo/peas-demo.c:92
 msgid "_Quit"
 msgstr "_Iziet"
 
-#: ../peas-demo/peas-demo.c:99
+#: ../peas-demo/peas-demo.c:108
 msgid "- libpeas demo application"
 msgstr "- libpeas demonstrācijas lietotne"
 
-#~ msgid "C_onfigure"
-#~ msgstr "K_onfigurēt"
+#: ../tests/libpeas-gtk/plugin-manager.c:77
+#| msgid "_About"
+msgid "About"
+msgstr "Par"
 
-#~ msgid "_Plugins:"
-#~ msgstr "_Spraudņi:"
+#: ../tests/libpeas-gtk/plugin-manager.c:82
+#| msgid "_Preferences"
+msgid "Preferences"
+msgstr "Iestatījumi"
