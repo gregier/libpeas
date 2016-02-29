@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libpeas"
-"&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-10-26 13:13+0000\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libpeas&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-02-18 13:25+0000\n"
 "PO-Revision-Date: 2015-10-31 08:40+0200\n"
 "Last-Translator: Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>\n"
 "Language-Team: Tot en òc (totenoc.eu)\n"
@@ -42,22 +42,22 @@ msgstr "Afichar los empeutons intèrnes"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:963
+#: ../libpeas/peas-engine.c:1115
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Dependéncia « %s » introbabla"
 
-#: ../libpeas/peas-engine.c:973
+#: ../libpeas/peas-engine.c:1125
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "La dependéncia « %s » a pas pogut èsser cargada"
 
-#: ../libpeas/peas-engine.c:987
+#: ../libpeas/peas-engine.c:1139
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "Lo cargador d'empeuton « %s » es pas estat trobat"
 
-#: ../libpeas/peas-engine.c:999
+#: ../libpeas/peas-engine.c:1151
 #, c-format
 msgid "Failed to load"
 msgstr "Fracàs de cargament"
@@ -98,7 +98,7 @@ msgstr "Desactivar los empeutons"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
 msgid "There was an error displaying the help."
-msgstr "Una error s'es produsida pendent l'afichatge de l'ajuda."
+msgstr "Una error s'es producha pendent l'afichatge de l'ajuda."
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
 msgid "_Close"
@@ -153,7 +153,7 @@ msgstr "L'empeuton « %s » a pas pogut èsser cargat"
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
 #, c-format
 msgid "An error occurred: %s"
-msgstr "Una error s'es produsida : %s"
+msgstr "Una error s'es producha : %s"
 
 #. Translators: The directory in which the demo program was compiled at
 #: ../peas-demo/peas-demo.c:41
@@ -181,7 +181,7 @@ msgstr "Preferéncias"
 #~ "An error occurred: %s"
 #~ msgstr ""
 #~ "<b>L'empeuton « %s » a pas pogut èsser cargat</b>\n"
-#~ "Una error s'es produsida : %s"
+#~ "Una error s'es producha : %s"
 
 #~ msgid "C_onfigure"
 #~ msgstr "C_onfigurar"
