@@ -38,11 +38,12 @@ static const gchar *all_plugin_loader_modules[] = {
   "cloader", "lua51loader", "pythonloader", "python3loader"
 };
 
-static const gint conflicting_plugin_loaders[PEAS_UTILS_N_LOADERS][2] = {
-  { -1, -1 }, /* c       => {}          */
-  { -1, -1 }, /* lua5.1  => {}          */
-  {  3, -1 }, /* python  => { python3 } */
-  {  2, -1 }  /* python3 => { python  } */
+static const PeasUtilsLoaderID
+conflicting_plugin_loaders[PEAS_UTILS_N_LOADERS][2] = {
+  { PEAS_UTILS_INVALID_LOADER_ID, PEAS_UTILS_INVALID_LOADER_ID },
+  { PEAS_UTILS_INVALID_LOADER_ID, PEAS_UTILS_INVALID_LOADER_ID },
+  { PEAS_UTILS_PYTHON3_LOADER_ID, PEAS_UTILS_INVALID_LOADER_ID },
+  { PEAS_UTILS_PYTHON_LOADER_ID,  PEAS_UTILS_INVALID_LOADER_ID }
 };
 
 G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loaders) == PEAS_UTILS_N_LOADERS);
@@ -177,7 +178,7 @@ error:
   return FALSE;
 }
 
-gint
+PeasUtilsLoaderID
 peas_utils_get_loader_id (const gchar *loader)
 {
   gint i;
@@ -198,34 +199,34 @@ peas_utils_get_loader_id (const gchar *loader)
   for (i = 0; i < G_N_ELEMENTS (all_plugin_loaders); ++i)
     {
       if (g_strcmp0 (lowercase, all_plugin_loaders[i]) == 0)
-        return i;
+        return (PeasUtilsLoaderID) i;
     }
 
-  return -1;
+  return PEAS_UTILS_INVALID_LOADER_ID;
 }
 
 const gchar *
-peas_utils_get_loader_from_id (gint loader_id)
+peas_utils_get_loader_name (PeasUtilsLoaderID loader_id)
 {
-  g_return_val_if_fail (loader_id >= 0, NULL);
+  g_return_val_if_fail (loader_id > PEAS_UTILS_INVALID_LOADER_ID, NULL);
   g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
 
   return all_plugin_loaders[loader_id];
 }
 
 const gchar *
-peas_utils_get_loader_module_from_id (gint loader_id)
+peas_utils_get_loader_module_name (PeasUtilsLoaderID loader_id)
 {
-  g_return_val_if_fail (loader_id >= 0, NULL);
+  g_return_val_if_fail (loader_id > PEAS_UTILS_INVALID_LOADER_ID, NULL);
   g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
 
   return all_plugin_loader_modules[loader_id];
 }
 
-const gint *
-peas_utils_get_conflicting_loaders_from_id (gint loader_id)
+const PeasUtilsLoaderID *
+peas_utils_get_conflicting_loaders (PeasUtilsLoaderID loader_id)
 {
-  g_return_val_if_fail (loader_id >= 0, NULL);
+  g_return_val_if_fail (loader_id > PEAS_UTILS_INVALID_LOADER_ID, NULL);
   g_return_val_if_fail (loader_id < PEAS_UTILS_N_LOADERS, NULL);
 
   return conflicting_plugin_loaders[loader_id];

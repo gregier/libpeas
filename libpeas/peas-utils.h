@@ -24,20 +24,24 @@
 
 #include <glib-object.h>
 
-#define PEAS_UTILS_C_LOADER_ID  0
-#define PEAS_UTILS_N_LOADERS    4
+typedef enum {
+  PEAS_UTILS_INVALID_LOADER_ID = -1,
+  PEAS_UTILS_C_LOADER_ID,
+  PEAS_UTILS_LUA51_LOADER_ID,
+  PEAS_UTILS_PYTHON_LOADER_ID,
+  PEAS_UTILS_PYTHON3_LOADER_ID,
+  PEAS_UTILS_N_LOADERS
+} PeasUtilsLoaderID;
 
-GArray  *peas_utils_valist_to_parameter_list  (GType        iface_type,
-                                               const gchar *first_property,
-                                               va_list      var_args);
+GArray      *peas_utils_valist_to_parameter_list (GType              iface_type,
+                                                  const gchar       *first_property,
+                                                  va_list            var_args);
 
-gint     peas_utils_get_loader_id             (const gchar *loader) G_GNUC_CONST;
-const gchar *
-         peas_utils_get_loader_from_id        (gint         loader_id) G_GNUC_CONST;
-const gchar *
-         peas_utils_get_loader_module_from_id (gint         loader_id) G_GNUC_CONST;
-const gint *
-         peas_utils_get_conflicting_loaders_from_id
-                                              (gint         loader_id) G_GNUC_CONST;
+PeasUtilsLoaderID
+             peas_utils_get_loader_id            (const gchar       *loader) G_GNUC_CONST;
+const gchar *peas_utils_get_loader_name          (PeasUtilsLoaderID  loader_id) G_GNUC_CONST;
+const gchar *peas_utils_get_loader_module_name   (PeasUtilsLoaderID  loader_id) G_GNUC_CONST;
+const PeasUtilsLoaderID *
+             peas_utils_get_conflicting_loaders  (PeasUtilsLoaderID  loader_id) G_GNUC_CONST;
 
 #endif /* __PEAS_UTILS_H__ */

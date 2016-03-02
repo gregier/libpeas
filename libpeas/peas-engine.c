@@ -785,7 +785,7 @@ peas_engine_class_init (PeasEngineClass *klass)
 }
 
 static PeasObjectModule *
-get_plugin_loader_module (gint loader_id)
+get_plugin_loader_module (PeasUtilsLoaderID loader_id)
 {
   GlobalLoaderInfo *global_loader_info = &loaders[loader_id];
   const gchar *loader_name, *module_name;
@@ -794,8 +794,8 @@ get_plugin_loader_module (gint loader_id)
   if (global_loader_info->module != NULL)
     return global_loader_info->module;
 
-  loader_name = peas_utils_get_loader_from_id (loader_id);
-  module_name = peas_utils_get_loader_module_from_id (loader_id);
+  loader_name = peas_utils_get_loader_name (loader_id);
+  module_name = peas_utils_get_loader_module_name (loader_id);
   module_dir = peas_dirs_get_plugin_loader_dir (loader_name);
 
   /* Bind loaders globally, binding
@@ -817,7 +817,7 @@ get_plugin_loader_module (gint loader_id)
 }
 
 static PeasPluginLoader *
-create_plugin_loader (gint loader_id)
+create_plugin_loader (PeasUtilsLoaderID loader_id)
 {
   PeasPluginLoader *loader;
 
@@ -842,7 +842,7 @@ create_plugin_loader (gint loader_id)
   if (loader == NULL || !peas_plugin_loader_initialize (loader))
     {
       g_warning ("Loader '%s' is not a valid PeasPluginLoader instance",
-                 peas_utils_get_loader_from_id (loader_id));
+                 peas_utils_get_loader_name (loader_id));
       g_clear_object (&loader);
     }
 
@@ -885,8 +885,8 @@ get_local_plugin_loader (PeasEngine *engine,
 }
 
 static PeasPluginLoader *
-get_plugin_loader (PeasEngine *engine,
-                   gint        loader_id)
+get_plugin_loader (PeasEngine        *engine,
+                   PeasUtilsLoaderID  loader_id)
 {
   PeasEnginePrivate *priv = GET_PRIV (engine);
   LoaderInfo *loader_info = &priv->loaders[loader_id];
@@ -902,7 +902,7 @@ get_plugin_loader (PeasEngine *engine,
       if (!global_loader_info->enabled)
         {
           g_warning ("The '%s' plugin loader has not been enabled",
-                     peas_utils_get_loader_from_id (loader_id));
+                     peas_utils_get_loader_name (loader_id));
 
           g_mutex_unlock (&loaders_lock);
           return NULL;
@@ -911,13 +911,13 @@ get_plugin_loader (PeasEngine *engine,
       g_warning ("The '%s' plugin loader was not enabled "
                  "for this engine. This will no longer be "
                  "supported at some point in the future!",
-                 peas_utils_get_loader_from_id (loader_id));
+                 peas_utils_get_loader_name (loader_id));
 
       g_mutex_unlock (&loaders_lock);
 
       /* Avoid bypassing logic in peas_engine_enable_loader() */
       peas_engine_enable_loader (engine,
-                                 peas_utils_get_loader_from_id (loader_id));
+                                 peas_utils_get_loader_name (loader_id));
       return get_plugin_loader (engine, loader_id);
     }
 
@@ -956,14 +956,14 @@ peas_engine_enable_loader (PeasEngine  *engine,
 {
   PeasEnginePrivate *priv = GET_PRIV (engine);
   LoaderInfo *loader_info;
-  gint loader_id;
+  PeasUtilsLoaderID loader_id;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
   g_return_if_fail (loader_name != NULL && *loader_name != '\0');
 
   loader_id = peas_utils_get_loader_id (loader_name);
 
-  if (loader_id == -1)
+  if (loader_id == PEAS_UTILS_INVALID_LOADER_ID)
     {
       g_warning ("Failed to enable unknown plugin loader '%s'", loader_name);
       return;
@@ -989,21 +989,21 @@ peas_engine_enable_loader (PeasEngine  *engine,
   if (g_getenv ("PEAS_ALLOW_CONFLICTING_LOADERS") == NULL)
     {
       gint i;
-      const gint *loader_ids;
+      const PeasUtilsLoaderID *loader_ids;
 
-      loader_ids = peas_utils_get_conflicting_loaders_from_id (loader_id);
+      loader_ids = peas_utils_get_conflicting_loaders (loader_id);
 
       /* Some loaders conflict with each other
        * and cannot be used in the same process
        */
-      for (i = 0; loader_ids[i] != -1; ++i)
+      for (i = 0; loader_ids[i] != PEAS_UTILS_INVALID_LOADER_ID; ++i)
         {
           if (!loaders[loader_ids[i]].enabled)
             continue;
 
           g_warning ("Cannot enable plugin loader '%s' as the "
                      "'%s' plugin loader is already enabled.", loader_name,
-                     peas_utils_get_loader_from_id (loader_ids[i]));
+                     peas_utils_get_loader_name (loader_ids[i]));
 
           loader_info->failed = TRUE;
           loaders[loader_id].failed = TRUE;
@@ -1129,7 +1129,7 @@ peas_engine_load_plugin_real (PeasEngine     *engine,
                    PEAS_PLUGIN_INFO_ERROR,
                    PEAS_PLUGIN_INFO_ERROR_LOADER_NOT_FOUND,
                    _("Plugin loader '%s' was not found"),
-                   peas_utils_get_loader_from_id (info->loader_id));
+                   peas_utils_get_loader_name (info->loader_id));
       goto error;
     }
 
