@@ -26,10 +26,13 @@
 #include "introspection-has-prerequisite.h"
 
 #include "introspection-base.h"
+#include "introspection-prerequisite.h"
 
-G_DEFINE_INTERFACE(IntrospectionHasPrerequisite,
-                   introspection_has_prerequisite,
-                   INTROSPECTION_TYPE_BASE)
+G_DEFINE_INTERFACE_WITH_CODE (IntrospectionHasPrerequisite,
+                              introspection_has_prerequisite,
+                              INTROSPECTION_TYPE_PREREQUISITE,
+                              g_type_interface_add_prerequisite (g_define_type_id,
+                                                                 INTROSPECTION_TYPE_BASE))
 
 void
 introspection_has_prerequisite_default_init (IntrospectionHasPrerequisiteInterface *iface)

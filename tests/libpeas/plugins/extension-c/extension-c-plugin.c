@@ -32,6 +32,7 @@
 #include "introspection-base.h"
 #include "introspection-callable.h"
 #include "introspection-has-prerequisite.h"
+#include "introspection-prerequisite.h"
 
 #include "extension-c-plugin.h"
 
@@ -44,7 +45,7 @@ static void introspection_has_prerequisite_iface_init (IntrospectionHasPrerequis
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingExtensionCPlugin,
                                 testing_extension_c_plugin,
-                                PEAS_TYPE_EXTENSION_BASE,
+                                INTROSPECTION_TYPE_PREREQUISITE,
                                 0,
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (INTROSPECTION_TYPE_BASE,
                                                                introspection_base_iface_init)

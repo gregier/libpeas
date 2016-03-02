@@ -19,6 +19,8 @@ libintrospection_1_0_la_SOURCES = \
 	introspection-callable.h		\
 	introspection-has-prerequisite.c	\
 	introspection-has-prerequisite.h	\
+	introspection-prerequisite.c	        \
+	introspection-prerequisite.h	        \
 	introspection-unimplemented.c		\
 	introspection-unimplemented.h
 

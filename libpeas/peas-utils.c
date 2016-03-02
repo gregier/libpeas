@@ -3,6 +3,7 @@
  * This file is part of libpeas
  *
  * Copyright (C) 2010 Steve Frécinaux
+ * Copyright (C) 2011-2016 Garrett Regier
  *
  * libpeas is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,37 +50,55 @@ G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loader_modules) == PEAS_UTILS_N_LOADER
 G_STATIC_ASSERT (G_N_ELEMENTS (conflicting_plugin_loaders) == PEAS_UTILS_N_LOADERS);
 
 static void
-add_all_interfaces (GType      iface_type,
-                    GPtrArray *type_structs)
+add_all_prerequisites (GType          iface_type,
+                       GObjectClass **klass,
+                       GPtrArray     *ifaces)
 {
   GType *prereq;
   guint n_prereq;
   guint i;
 
-  g_ptr_array_add (type_structs,
-                   g_type_default_interface_ref (iface_type));
+  g_ptr_array_add (ifaces, g_type_default_interface_ref (iface_type));
 
   prereq = g_type_interface_prerequisites (iface_type, &n_prereq);
 
   for (i = 0; i < n_prereq; ++i)
     {
       if (G_TYPE_IS_INTERFACE (prereq[i]))
-        add_all_interfaces (prereq[i], type_structs);
+        {
+          add_all_prerequisites (prereq[i], klass, ifaces);
+        }
+      else if (G_TYPE_IS_OBJECT (prereq[i]))
+        {
+          if (*klass == NULL)
+            {
+              *klass = g_type_class_ref (prereq[i]);
+            }
+          else if (g_type_is_a (prereq[i], G_OBJECT_CLASS_TYPE (*klass)))
+            {
+              g_type_class_unref (*klass);
+              *klass = g_type_class_ref (prereq[i]);
+            }
+        }
     }
 
   g_free (prereq);
 }
 
 static GParamSpec *
-find_param_spec_in_interfaces (GPtrArray   *type_structs,
-                               const gchar *name)
+find_param_spec_for_prerequisites (const gchar  *name,
+                                   GObjectClass *klass,
+                                   GPtrArray    *ifaces)
 {
   guint i;
   GParamSpec *pspec = NULL;
 
-  for (i = 0; i < type_structs->len && pspec == NULL; ++i)
+  if (klass != NULL)
+    pspec = g_object_class_find_property (klass, name);
+
+  for (i = 0; i < ifaces->len && pspec == NULL; ++i)
     {
-      gpointer iface = g_ptr_array_index (type_structs, i);
+      gpointer iface = g_ptr_array_index (ifaces, i);
 
       pspec = g_object_interface_find_property (iface, name);
     }
@@ -94,16 +113,17 @@ peas_utils_valist_to_parameter_list (GType         iface_type,
                                      GParameter  **params,
                                      guint        *n_params)
 {
-  GPtrArray *type_structs;
+  GObjectClass *klass = NULL;
+  GPtrArray *ifaces;
   const gchar *name;
   guint n_allocated_params;
 
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (iface_type), FALSE);
 
-  type_structs = g_ptr_array_new ();
-  g_ptr_array_set_free_func (type_structs,
+  ifaces = g_ptr_array_new ();
+  g_ptr_array_set_free_func (ifaces,
                              (GDestroyNotify) g_type_default_interface_unref);
-  add_all_interfaces (iface_type, type_structs);
+  add_all_prerequisites (iface_type, &klass, ifaces);
 
   *n_params = 0;
   n_allocated_params = 16;
@@ -113,7 +133,9 @@ peas_utils_valist_to_parameter_list (GType         iface_type,
   while (name)
     {
       gchar *error_msg = NULL;
-      GParamSpec *pspec = find_param_spec_in_interfaces (type_structs, name);
+      GParamSpec *pspec;
+
+      pspec = find_param_spec_for_prerequisites (name, klass, ifaces);
 
       if (!pspec)
         {
@@ -146,7 +168,8 @@ peas_utils_valist_to_parameter_list (GType         iface_type,
       name = va_arg (args, gchar*);
     }
 
-  g_ptr_array_unref (type_structs);
+  g_ptr_array_unref (ifaces);
+  g_clear_pointer (&klass, g_type_class_unref);
 
   return TRUE;
 
@@ -156,7 +179,8 @@ error:
     g_value_unset (&(*params)[*n_params].value);
 
   g_free (*params);
-  g_ptr_array_unref (type_structs);
+  g_ptr_array_unref (ifaces);
+  g_clear_pointer (&klass, g_type_class_unref);
 
   return FALSE;
 }
