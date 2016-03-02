@@ -190,13 +190,20 @@ test_extension_create_with_prerequisite (PeasEngine     *engine,
                                          PeasPluginInfo *info)
 {
   PeasExtension *extension;
+  gint prerequisite_property = -1;
 
   extension = peas_engine_create_extension (engine, info,
                                             INTROSPECTION_TYPE_HAS_PREREQUISITE,
+                                            "prerequisite-property", 47,
                                             NULL);
 
   g_assert (INTROSPECTION_IS_HAS_PREREQUISITE (extension));
   g_assert (INTROSPECTION_IS_CALLABLE (extension));
+
+  g_object_get (extension,
+                "prerequisite-property", &prerequisite_property,
+                NULL);
+  g_assert_cmpint (prerequisite_property, ==, 47);
 
   g_object_unref (extension);
 }

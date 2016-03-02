@@ -2,7 +2,7 @@
  * introspection-has-prerequisite.h
  * This file is part of libpeas
  *
- * Copyright (C) 2011 Garrett Regier
+ * Copyright (C) 2011-2017 Garrett Regier
  *
  * libpeas is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,13 +23,19 @@
 #include <config.h>
 #endif
 
+#include "introspection-base.h"
+#include "introspection-callable.h"
 #include "introspection-has-prerequisite.h"
 
-#include "introspection-base.h"
+#include "introspection-prerequisite.h"
 
-G_DEFINE_INTERFACE(IntrospectionHasPrerequisite,
-                   introspection_has_prerequisite,
-                   INTROSPECTION_TYPE_BASE)
+G_DEFINE_INTERFACE_WITH_CODE(IntrospectionHasPrerequisite,
+                             introspection_has_prerequisite,
+                             INTROSPECTION_TYPE_PREREQUISITE,
+                             g_type_interface_add_prerequisite (g_define_type_id,
+                                                                INTROSPECTION_TYPE_BASE);
+                             g_type_interface_add_prerequisite (g_define_type_id,
+                                                                INTROSPECTION_TYPE_CALLABLE);)
 
 void
 introspection_has_prerequisite_default_init (IntrospectionHasPrerequisiteInterface *iface)

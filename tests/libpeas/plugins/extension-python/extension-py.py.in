@@ -27,7 +27,7 @@ from gi.repository import GObject, Introspection, Peas
 __all__ = [ 'ExtensionPythonPlugin' ]
 
 
-class ExtensionPythonPlugin(GObject.Object, Peas.Activatable,
+class ExtensionPythonPlugin(Introspection.Prerequisite, Peas.Activatable,
                             Introspection.Base, Introspection.Callable,
                             Introspection.HasPrerequisite):
 
