@@ -673,8 +673,12 @@ peas_object_module_register_extension_type (PeasObjectModule *module,
   pspec = g_object_class_find_property (cls, "plugin-info");
 
   /* Avoid checking for this each time in the factory function */
-  if (pspec == NULL || pspec->value_type != PEAS_TYPE_PLUGIN_INFO)
-    extension_type |= TYPE_MISSING_PLUGIN_INFO_PROPERTY;
+  if (pspec == NULL ||
+      (pspec->flags & G_PARAM_WRITABLE) == 0 ||
+      pspec->value_type != PEAS_TYPE_PLUGIN_INFO)
+    {
+      extension_type |= TYPE_MISSING_PLUGIN_INFO_PROPERTY;
+    }
 
   peas_object_module_register_extension_factory (module,
                                                  iface_type,
