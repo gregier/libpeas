@@ -201,7 +201,7 @@ _peas_plugin_info_new (const gchar *filename,
 
       if (info->loader_id == PEAS_UTILS_INVALID_LOADER_ID)
         {
-          g_warning ("Unkown 'Loader' in '[Plugin]' section in '%s': %s",
+          g_warning ("Unknown 'Loader' in '[Plugin]' section in '%s': %s",
                      filename, loader);
           goto error;
         }

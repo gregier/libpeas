@@ -72,9 +72,9 @@ testing_engine_new_full (gboolean nonglobal_loaders)
                               "*info-missing-name.plugin*");
   testing_util_push_log_hook ("*Error loading *info-missing-name.plugin*");
 
-  testing_util_push_log_hook ("*Unkown 'Loader' in "
-                              "*unkown-loader.plugin* does-not-exist");
-  testing_util_push_log_hook ("*Error loading *unkown-loader.plugin*");
+  testing_util_push_log_hook ("*Unknown 'Loader' in "
+                              "*unknown-loader.plugin* does-not-exist");
+  testing_util_push_log_hook ("*Error loading *unknown-loader.plugin*");
 
   testing_util_push_log_hook ("Bad plugin file '"
                               BUILDDIR "*/embedded*.plugin': "

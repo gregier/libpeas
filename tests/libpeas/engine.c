@@ -413,7 +413,7 @@ test_engine_loaded_plugins (PeasEngine *engine)
 }
 
 static void
-test_engine_enable_unkown_loader (PeasEngine *engine)
+test_engine_enable_unknown_loader (PeasEngine *engine)
 {
   testing_util_push_log_hook ("Failed to enable unknown "
                               "plugin loader 'does-not-exist'");
@@ -490,7 +490,7 @@ main (int    argc,
   TEST ("plugin-list", plugin_list);
   TEST ("loaded-plugins", loaded_plugins);
 
-  TEST ("enable-unkown-loader", enable_unkown_loader);
+  TEST ("enable-unknown-loader", enable_unknown_loader);
   TEST ("enable-loader-multiple-times", enable_loader_multiple_times);
 
   TEST ("nonexistent-search-path", nonexistent_search_path);

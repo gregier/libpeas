@@ -26,6 +26,6 @@ noinst_PLUGIN = \
 	not-loadable.plugin			\
 	os-dependant-help.plugin		\
 	two-deps.plugin				\
-	unkown-loader.plugin
+	unknown-loader.plugin
 
 EXTRA_DIST = $(noinst_PLUGIN)
