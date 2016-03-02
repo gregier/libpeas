@@ -780,12 +780,6 @@ peas_engine_class_init (PeasEngineClass *klass)
    * global init function for libpeas. */
   peas_debug_init ();
 
-  /* This cannot be done as a compile-time
-   * assert, but is critical for correct behavior
-   */
-  g_assert (g_strcmp0 (peas_utils_get_loader_from_id (PEAS_UTILS_C_LOADER_ID),
-                       "c") == 0);
-
   /* The C plugin loader is always enabled */
   loaders[PEAS_UTILS_C_LOADER_ID].enabled = TRUE;
 }
