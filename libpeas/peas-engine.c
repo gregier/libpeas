@@ -165,7 +165,7 @@ plugin_info_add_sorted (GQueue         *plugin_list,
   g_queue_insert_after (plugin_list, furthest_dep, info);
 }
 
-static gboolean
+static void
 load_plugin_info (PeasEngine  *engine,
                   const gchar *filename,
                   const gchar *module_dir,
@@ -182,24 +182,22 @@ load_plugin_info (PeasEngine  *engine,
   if (info == NULL)
     {
       g_warning ("Error loading '%s'", filename);
-      return FALSE;
+      return;
     }
 
   module_name = peas_plugin_info_get_module_name (info);
   if (peas_engine_get_plugin_info (engine, module_name) != NULL)
     {
       _peas_plugin_info_unref (info);
-      return FALSE;
+      return;
     }
 
   plugin_info_add_sorted (&priv->plugin_list, info);
   g_object_notify_by_pspec (G_OBJECT (engine),
                             properties[PROP_PLUGIN_LIST]);
-
-  return TRUE;
 }
 
-static gboolean
+static void
 load_file_dir_real (PeasEngine  *engine,
                     const gchar *module_dir,
                     const gchar *data_dir,
@@ -208,7 +206,6 @@ load_file_dir_real (PeasEngine  *engine,
   GDir *d;
   const gchar *dirent;
   GError *error = NULL;
-  gboolean found = FALSE;
 
   g_debug ("Loading %s/*.plugin...", module_dir);
 
@@ -218,7 +215,7 @@ load_file_dir_real (PeasEngine  *engine,
     {
       g_debug ("%s", error->message);
       g_error_free (error);
-      return FALSE;
+      return;
     }
 
   while ((dirent = g_dir_read_name (d)))
@@ -229,25 +226,22 @@ load_file_dir_real (PeasEngine  *engine,
         {
           if (recursions > 0)
             {
-              found |= load_file_dir_real (engine, filename,
-                                           data_dir, recursions - 1);
+              load_file_dir_real (engine, filename,
+                                  data_dir, recursions - 1);
             }
         }
       else if (g_str_has_suffix (dirent, ".plugin"))
         {
-          found |= load_plugin_info (engine, filename,
-                                     module_dir, data_dir);
+          load_plugin_info (engine, filename, module_dir, data_dir);
         }
 
       g_free (filename);
     }
 
   g_dir_close (d);
-
-  return found;
 }
 
-static gboolean
+static void
 load_resource_dir_real (PeasEngine  *engine,
                         const gchar *module_dir,
                         const gchar *data_dir,
@@ -257,7 +251,6 @@ load_resource_dir_real (PeasEngine  *engine,
   const gchar *module_path;
   gchar **children;
   GError *error = NULL;
-  gboolean found = FALSE;
 
   g_debug ("Loading %s/*.plugin...", module_dir);
 
@@ -270,7 +263,7 @@ load_resource_dir_real (PeasEngine  *engine,
     {
       g_debug ("%s", error->message);
       g_error_free (error);
-      return FALSE;
+      return;
     }
 
   for (i = 0; children[i] != NULL; ++i)
@@ -290,30 +283,36 @@ load_resource_dir_real (PeasEngine  *engine,
 
       if (is_dir)
         {
-          found |= load_resource_dir_real (engine, child,
-                                           data_dir, recursions - 1);
+          load_resource_dir_real (engine, child, data_dir, recursions - 1);
         }
       else
         {
-          found |= load_plugin_info (engine, child, module_dir, data_dir);
+          load_plugin_info (engine, child, module_dir, data_dir);
         }
 
       g_free (child);
     }
 
   g_strfreev (children);
-
-  return found;
 }
 
 static gboolean
 load_dir_real (PeasEngine *engine,
                SearchPath *sp)
 {
-  if (!g_str_has_prefix (sp->module_dir, "resource://"))
-    return load_file_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+  PeasEnginePrivate *priv = GET_PRIV (engine);
+  guint old_n_plugins = priv->plugin_list.length;
 
-  return load_resource_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+  if (!g_str_has_prefix (sp->module_dir, "resource://"))
+    {
+      load_file_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+    }
+  else
+    {
+      load_resource_dir_real (engine, sp->module_dir, sp->data_dir, 1);
+    }
+
+  return old_n_plugins != priv->plugin_list.length;
 }
 
 static void
@@ -355,7 +354,7 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 {
   PeasEnginePrivate *priv = GET_PRIV (engine);
   GList *item;
-  gboolean found = FALSE;
+  gboolean new = FALSE;
 
   g_return_if_fail (PEAS_IS_ENGINE (engine));
 
@@ -367,11 +366,10 @@ peas_engine_rescan_plugins (PeasEngine *engine)
 
   g_object_freeze_notify (G_OBJECT (engine));
 
-  /* Go and read everything from the provided search paths */
   for (item = priv->search_paths.head; item != NULL; item = item->next)
-    found |= load_dir_real (engine, (SearchPath *) item->data);
+    new |= load_dir_real (engine, (SearchPath *) item->data);
 
-  if (found)
+  if (new)
     plugin_list_changed (engine);
 
   g_object_thaw_notify (G_OBJECT (engine));
