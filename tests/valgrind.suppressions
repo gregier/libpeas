@@ -367,3 +367,10 @@
   ...
   fun:peas_object_module_new
 }
+{
+  # GTypeModules cannot be freed
+  peas_object_module_new_embedded
+  Memcheck:Leak
+  ...
+  fun:peas_object_module_new_embedded
+}
