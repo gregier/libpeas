@@ -149,8 +149,8 @@ plugin_info_add_sorted (GQueue         *plugin_list,
         }
     }
 
-  /* GLib changed only accepts NULL for
-   * g_queue_insert_after() at version 2.44
+  /* GLib only accepts NULL for
+   * g_queue_insert_after() with version 2.44
    */
   if (furthest_dep == NULL)
     {
