@@ -1365,8 +1365,7 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
                                      const gchar    *first_property,
                                      va_list         var_args)
 {
-  guint n_parameters;
-  GParameter *parameters;
+  GArray *params;
   PeasExtension *exten;
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
@@ -1374,21 +1373,19 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
-  if (!peas_utils_valist_to_parameter_list (extension_type, first_property,
-                                            var_args, &parameters,
-                                            &n_parameters))
-    {
-      /* Already warned */
-      return NULL;
-    }
+  params = peas_utils_valist_to_parameter_list (extension_type,
+                                                first_property,
+                                                var_args);
 
-  exten = peas_engine_create_extensionv (engine, info, extension_type,
-                                         n_parameters, parameters);
+  /* Already warned */
+  if (params == NULL)
+    return NULL;
 
-  while (n_parameters-- > 0)
-    g_value_unset (&parameters[n_parameters].value);
-  g_free (parameters);
+  exten = peas_engine_create_extensionv (engine, info,
+                                         extension_type, params->len,
+                                         &g_array_index (params, GParameter, 0));
 
+  g_array_unref (params);
   return exten;
 }
 

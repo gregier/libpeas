@@ -106,79 +106,71 @@ find_param_spec_for_prerequisites (const gchar  *name,
   return pspec;
 }
 
-gboolean
-peas_utils_valist_to_parameter_list (GType         iface_type,
-                                     const gchar  *first_property,
-                                     va_list       args,
-                                     GParameter  **params,
-                                     guint        *n_params)
+static void
+parameter_unset (GParameter *param)
 {
+  param->name = NULL;
+  g_value_unset (&param->value);
+}
+
+GArray *
+peas_utils_valist_to_parameter_list (GType        iface_type,
+                                     const gchar *first_property,
+                                     va_list      args)
+{
+  GArray *params;
   GObjectClass *klass = NULL;
   GPtrArray *ifaces;
   const gchar *name;
-  guint n_allocated_params;
 
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (iface_type), FALSE);
+
+  params = g_array_new (FALSE, TRUE, sizeof (GParameter));
+  g_array_set_clear_func (params, (GDestroyNotify) parameter_unset);
 
   ifaces = g_ptr_array_new ();
   g_ptr_array_set_free_func (ifaces,
                              (GDestroyNotify) g_type_default_interface_unref);
   add_all_prerequisites (iface_type, &klass, ifaces);
 
-  *n_params = 0;
-  n_allocated_params = 16;
-  *params = g_new0 (GParameter, n_allocated_params);
-
-  name = first_property;
-  while (name)
+  for (name = first_property; name != NULL; name = va_arg (args, gchar *))
     {
-      gchar *error_msg = NULL;
       GParamSpec *pspec;
+      gchar *error_msg = NULL;
+      GParameter *param;
 
       pspec = find_param_spec_for_prerequisites (name, klass, ifaces);
 
-      if (!pspec)
+      if (pspec == NULL)
         {
           g_warning ("%s: type '%s' has no property named '%s'",
                      G_STRFUNC, g_type_name (iface_type), name);
           goto error;
         }
 
-      if (*n_params >= n_allocated_params)
-        {
-          n_allocated_params += 16;
-          *params = g_renew (GParameter, *params, n_allocated_params);
-          memset (*params + (n_allocated_params - 16),
-                  0, sizeof (GParameter) * 16);
-        }
+      g_array_set_size (params, params->len + 1);
+      param = &g_array_index (params, GParameter, params->len - 1);
 
-      (*params)[*n_params].name = name;
-      G_VALUE_COLLECT_INIT (&(*params)[*n_params].value, pspec->value_type,
+      param->name = name;
+      G_VALUE_COLLECT_INIT (&param->value, pspec->value_type,
                             args, 0, &error_msg);
 
-      (*n_params)++;
-
-      if (error_msg)
+      if (error_msg != NULL)
         {
           g_warning ("%s: %s", G_STRFUNC, error_msg);
           g_free (error_msg);
           goto error;
         }
-
-      name = va_arg (args, gchar*);
     }
 
   g_ptr_array_unref (ifaces);
   g_clear_pointer (&klass, g_type_class_unref);
 
-  return TRUE;
+  return params;
 
 error:
 
-  for (; *n_params > 0; --(*n_params))
-    g_value_unset (&(*params)[*n_params].value);
-
-  g_free (*params);
+  g_array_unref (params);
   g_ptr_array_unref (ifaces);
   g_clear_pointer (&klass, g_type_class_unref);
 
