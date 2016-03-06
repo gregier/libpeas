@@ -31,9 +31,28 @@
 
 #include "loadable-plugin.h"
 
-typedef struct {
+#define TESTING_TYPE_LOADABLE_PLUGIN         (testing_loadable_plugin_get_type ())
+#define TESTING_LOADABLE_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_LOADABLE_PLUGIN, TestingLoadablePlugin))
+#define TESTING_LOADABLE_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_LOADABLE_PLUGIN, TestingLoadablePlugin))
+#define TESTING_IS_LOADABLE_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_LOADABLE_PLUGIN))
+#define TESTING_IS_LOADABLE_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_LOADABLE_PLUGIN))
+#define TESTING_LOADABLE_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_LOADABLE_PLUGIN, TestingLoadablePluginClass))
+
+typedef struct _TestingLoadablePlugin         TestingLoadablePlugin;
+typedef struct _TestingLoadablePluginClass    TestingLoadablePluginClass;
+
+struct _TestingLoadablePlugin {
+  /* Inherit from GObject and not PeasExtensionBase
+   * to check that it is possible
+   */
+  GObject parent_instance;
+
   GObject *object;
-} TestingLoadablePluginPrivate;
+};
+
+struct _TestingLoadablePluginClass {
+  PeasExtensionBaseClass parent_class;
+};
 
 /* Used by the local linkage test */
 G_MODULE_EXPORT gpointer global_symbol_clash;
@@ -44,18 +63,12 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingLoadablePlugin,
                                 testing_loadable_plugin,
                                 G_TYPE_OBJECT,
                                 0,
-                                G_ADD_PRIVATE_DYNAMIC (TestingLoadablePlugin)
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
-
-#define GET_PRIV(o) \
-  (testing_loadable_plugin_get_instance_private (o))
 
 enum {
   PROP_0,
   PROP_GLOBAL_SYMBOL_CLASH,
-
-  /* PeasActivatable */
   PROP_OBJECT,
   N_PROPERTIES = PROP_OBJECT
 };
@@ -69,12 +82,11 @@ testing_loadable_plugin_set_property (GObject      *object,
                                       GParamSpec   *pspec)
 {
   TestingLoadablePlugin *plugin = TESTING_LOADABLE_PLUGIN (object);
-  TestingLoadablePluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      priv->object = g_value_get_object (value);
+      plugin->object = g_value_get_object (value);
       break;
 
     default:
@@ -90,7 +102,6 @@ testing_loadable_plugin_get_property (GObject    *object,
                                       GParamSpec *pspec)
 {
   TestingLoadablePlugin *plugin = TESTING_LOADABLE_PLUGIN (object);
-  TestingLoadablePluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
@@ -99,7 +110,7 @@ testing_loadable_plugin_get_property (GObject    *object,
       break;
 
     case PROP_OBJECT:
-      g_value_set_object (value, priv->object);
+      g_value_set_object (value, plugin->object);
       break;
 
     default:

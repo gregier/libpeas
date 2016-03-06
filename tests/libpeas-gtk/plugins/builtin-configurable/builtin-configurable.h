@@ -26,24 +26,6 @@
 
 G_BEGIN_DECLS
 
-#define TESTING_TYPE_BUILTIN_CONFIGURABLE         (testing_builtin_configurable_get_type ())
-#define TESTING_BUILTIN_CONFIGURABLE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_BUILTIN_CONFIGURABLE, TestingBuiltinConfigurable))
-#define TESTING_BUILTIN_CONFIGURABLE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_BUILTIN_CONFIGURABLE, TestingBuiltinConfigurable))
-#define TESTING_IS_BUILTIN_CONFIGURABLE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_BUILTIN_CONFIGURABLE))
-#define TESTING_IS_BUILTIN_CONFIGURABLE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_BUILTIN_CONFIGURABLE))
-#define TESTING_BUILTIN_CONFIGURABLE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_BUILTIN_CONFIGURABLE, TestingBuiltinConfigurableClass))
-
-typedef struct _TestingBuiltinConfigurable         TestingBuiltinConfigurable;
-typedef struct _TestingBuiltinConfigurableClass    TestingBuiltinConfigurableClass;
-
-struct _TestingBuiltinConfigurable {
-  PeasExtensionBase parent_instance;
-};
-
-struct _TestingBuiltinConfigurableClass {
-  PeasExtensionBaseClass parent_class;
-};
-
 GType                 testing_builtin_configurable_get_type (void) G_GNUC_CONST;
 G_MODULE_EXPORT void  peas_register_types                   (PeasObjectModule *module);
 

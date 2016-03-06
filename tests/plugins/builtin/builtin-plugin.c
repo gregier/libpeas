@@ -31,9 +31,25 @@
 
 #include "builtin-plugin.h"
 
-typedef struct {
+#define TESTING_TYPE_BUILTIN_PLUGIN         (testing_builtin_plugin_get_type ())
+#define TESTING_BUILTIN_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_BUILTIN_PLUGIN, TestingBuiltinPlugin))
+#define TESTING_BUILTIN_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_BUILTIN_PLUGIN, TestingBuiltinPlugin))
+#define TESTING_IS_BUILTIN_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_BUILTIN_PLUGIN))
+#define TESTING_IS_BUILTIN_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_BUILTIN_PLUGIN))
+#define TESTING_BUILTIN_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_BUILTIN_PLUGIN, TestingBuiltinPluginClass))
+
+typedef struct _TestingBuiltinPlugin         TestingBuiltinPlugin;
+typedef struct _TestingBuiltinPluginClass    TestingBuiltinPluginClass;
+
+struct _TestingBuiltinPlugin {
+  PeasExtensionBase parent_instance;
+
   GObject *object;
-} TestingBuiltinPluginPrivate;
+};
+
+struct _TestingBuiltinPluginClass {
+  PeasExtensionBaseClass parent_class;
+};
 
 static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
@@ -41,12 +57,8 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingBuiltinPlugin,
                                 testing_builtin_plugin,
                                 PEAS_TYPE_EXTENSION_BASE,
                                 0,
-                                G_ADD_PRIVATE_DYNAMIC (TestingBuiltinPlugin)
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
-
-#define GET_PRIV(o) \
-  (testing_builtin_plugin_get_instance_private (o))
 
 enum {
   PROP_0,
@@ -60,12 +72,11 @@ testing_builtin_plugin_set_property (GObject      *object,
                                      GParamSpec   *pspec)
 {
   TestingBuiltinPlugin *plugin = TESTING_BUILTIN_PLUGIN (object);
-  TestingBuiltinPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      priv->object = g_value_get_object (value);
+      plugin->object = g_value_get_object (value);
       break;
 
     default:
@@ -81,12 +92,11 @@ testing_builtin_plugin_get_property (GObject    *object,
                                      GParamSpec *pspec)
 {
   TestingBuiltinPlugin *plugin = TESTING_BUILTIN_PLUGIN (object);
-  TestingBuiltinPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      g_value_set_object (value, priv->object);
+      g_value_set_object (value, plugin->object);
       break;
 
     default:

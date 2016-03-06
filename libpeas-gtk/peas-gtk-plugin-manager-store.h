@@ -56,14 +56,6 @@ typedef enum {
 typedef struct _PeasGtkPluginManagerStore         PeasGtkPluginManagerStore;
 typedef struct _PeasGtkPluginManagerStoreClass    PeasGtkPluginManagerStoreClass;
 
-struct _PeasGtkPluginManagerStore {
-  GtkListStore parent;
-};
-
-struct _PeasGtkPluginManagerStoreClass {
-  GtkListStoreClass parent_class;
-};
-
 GType                       peas_gtk_plugin_manager_store_get_type              (void) G_GNUC_CONST;
 PeasGtkPluginManagerStore  *peas_gtk_plugin_manager_store_new                   (PeasEngine                *engine);
 

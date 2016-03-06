@@ -27,22 +27,8 @@
 G_BEGIN_DECLS
 
 #define TESTING_TYPE_EMBEDDED_PLUGIN         (testing_embedded_plugin_get_type ())
-#define TESTING_EMBEDDED_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_EMBEDDED_PLUGIN, TestingEmbeddedPlugin))
-#define TESTING_EMBEDDED_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_EMBEDDED_PLUGIN, TestingEmbeddedPlugin))
 #define TESTING_IS_EMBEDDED_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_EMBEDDED_PLUGIN))
 #define TESTING_IS_EMBEDDED_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_EMBEDDED_PLUGIN))
-#define TESTING_EMBEDDED_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_EMBEDDED_PLUGIN, TestingEmbeddedPluginClass))
-
-typedef struct _TestingEmbeddedPlugin         TestingEmbeddedPlugin;
-typedef struct _TestingEmbeddedPluginClass    TestingEmbeddedPluginClass;
-
-struct _TestingEmbeddedPlugin {
-  PeasExtensionBase parent_instance;
-};
-
-struct _TestingEmbeddedPluginClass {
-  PeasExtensionBaseClass parent_class;
-};
 
 GType                testing_embedded_plugin_get_type       (void) G_GNUC_CONST;
 G_MODULE_EXPORT void testing_embedded_plugin_register_types (PeasObjectModule *module);

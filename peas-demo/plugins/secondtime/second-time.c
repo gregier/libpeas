@@ -32,6 +32,27 @@
 
 #include "second-time.h"
 
+#define PEASDEMO_TYPE_SECOND_TIME         (peasdemo_second_time_get_type ())
+#define PEASDEMO_SECOND_TIME(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), PEASDEMO_TYPE_SECOND_TIME, PeasDemoSecondTime))
+#define PEASDEMO_SECOND_TIME_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), PEASDEMO_TYPE_SECOND_TIME, PeasDemoSecondTime))
+#define PEASDEMO_IS_SECOND_TIME(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), PEASDEMO_TYPE_SECOND_TIME))
+#define PEASDEMO_IS_SECOND_TIME_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), PEASDEMO_TYPE_SECOND_TIME))
+#define PEASDEMO_SECOND_TIME_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), PEASDEMO_TYPE_SECOND_TIME, PeasDemoSecondTimeClass))
+
+typedef struct _PeasDemoSecondTime       PeasDemoSecondTime;
+typedef struct _PeasDemoSecondTimeClass  PeasDemoSecondTimeClass;
+
+struct _PeasDemoSecondTime {
+  PeasExtensionBase parent_instance;
+
+  GtkWidget *window;
+  GtkWidget *label;
+};
+
+struct _PeasDemoSecondTimeClass {
+  PeasExtensionBaseClass parent_class;
+};
+
 static void peas_activatable_iface_init     (PeasActivatableInterface    *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (PeasDemoSecondTime,

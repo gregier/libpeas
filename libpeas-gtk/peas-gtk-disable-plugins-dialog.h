@@ -27,27 +27,6 @@
 
 G_BEGIN_DECLS
 
-/*
- * Type checking and casting macros
- */
-#define PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG            (peas_gtk_disable_plugins_dialog_get_type())
-#define PEAS_GTK_DISABLE_PLUGINS_DIALOG(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG, PeasGtkDisablePluginsDialog))
-#define PEAS_GTK_DISABLE_PLUGINS_DIALOG_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG, PeasGtkDisablePluginsDialogClass))
-#define PEAS_GTK_IS_DISABLE_PLUGINS_DIALOG(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG))
-#define PEAS_GTK_IS_DISABLE_PLUGINS_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG))
-#define PEAS_GTK_DISABLE_PLUGINS_DIALOG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PEAS_GTK_TYPE_DISABLE_PLUGINS_DIALOG, PeasGtkDisablePluginsDialogClass))
-
-typedef struct _PeasGtkDisablePluginsDialog         PeasGtkDisablePluginsDialog;
-typedef struct _PeasGtkDisablePluginsDialogClass    PeasGtkDisablePluginsDialogClass;
-
-struct _PeasGtkDisablePluginsDialog {
-  GtkMessageDialog parent;
-};
-
-struct _PeasGtkDisablePluginsDialogClass {
-  GtkMessageDialogClass parent_class;
-};
-
 GType      peas_gtk_disable_plugins_dialog_get_type (void) G_GNUC_CONST;
 
 GtkWidget *peas_gtk_disable_plugins_dialog_new      (GtkWindow      *parent,

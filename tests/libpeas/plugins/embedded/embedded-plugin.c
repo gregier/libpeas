@@ -29,9 +29,22 @@
 
 #include "embedded-plugin.h"
 
-typedef struct {
+#define TESTING_EMBEDDED_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_EMBEDDED_PLUGIN, TestingEmbeddedPlugin))
+#define TESTING_EMBEDDED_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_EMBEDDED_PLUGIN, TestingEmbeddedPlugin))
+#define TESTING_EMBEDDED_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_EMBEDDED_PLUGIN, TestingEmbeddedPluginClass))
+
+typedef struct _TestingEmbeddedPlugin         TestingEmbeddedPlugin;
+typedef struct _TestingEmbeddedPluginClass    TestingEmbeddedPluginClass;
+
+struct _TestingEmbeddedPlugin {
+  PeasExtensionBase parent_instance;
+
   GObject *object;
-} TestingEmbeddedPluginPrivate;
+};
+
+struct _TestingEmbeddedPluginClass {
+  PeasExtensionBaseClass parent_class;
+};
 
 static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
@@ -39,12 +52,8 @@ G_DEFINE_TYPE_EXTENDED (TestingEmbeddedPlugin,
                         testing_embedded_plugin,
                         PEAS_TYPE_EXTENSION_BASE,
                         0,
-                        G_ADD_PRIVATE (TestingEmbeddedPlugin)
                         G_IMPLEMENT_INTERFACE (PEAS_TYPE_ACTIVATABLE,
                                                peas_activatable_iface_init))
-
-#define GET_PRIV(o) \
-  (testing_embedded_plugin_get_instance_private (o))
 
 enum {
   PROP_0,
@@ -58,12 +67,11 @@ testing_embedded_plugin_set_property (GObject      *object,
                                       GParamSpec   *pspec)
 {
   TestingEmbeddedPlugin *plugin = TESTING_EMBEDDED_PLUGIN (object);
-  TestingEmbeddedPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      priv->object = g_value_get_object (value);
+      plugin->object = g_value_get_object (value);
       break;
 
     default:
@@ -79,12 +87,11 @@ testing_embedded_plugin_get_property (GObject    *object,
                                       GParamSpec *pspec)
 {
   TestingEmbeddedPlugin *plugin = TESTING_EMBEDDED_PLUGIN (object);
-  TestingEmbeddedPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      g_value_set_object (value, priv->object);
+      g_value_set_object (value, plugin->object);
       break;
 
     default:

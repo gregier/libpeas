@@ -25,16 +25,9 @@
 
 #include "introspection-prerequisite.h"
 
-typedef struct {
-  gint value;
-} IntrospectionPrerequisitePrivate;
-
-G_DEFINE_TYPE_WITH_PRIVATE (IntrospectionPrerequisite,
-                            introspection_prerequisite,
-                            PEAS_TYPE_EXTENSION_BASE)
-
-#define GET_PRIV(o) \
-  (introspection_prerequisite_get_instance_private (o))
+G_DEFINE_TYPE (IntrospectionPrerequisite,
+               introspection_prerequisite,
+               PEAS_TYPE_EXTENSION_BASE)
 
 enum {
   PROP_0,
@@ -50,13 +43,13 @@ introspection_prerequisite_get_property (GObject    *object,
                                          GValue     *value,
                                          GParamSpec *pspec)
 {
-  IntrospectionPrerequisite *prereq = INTROSPECTION_PREREQUISITE (object);
-  IntrospectionPrerequisitePrivate *priv = GET_PRIV (prereq);
+  gpointer tmp;
 
   switch (prop_id)
     {
     case PROP_PREREQUISITE_PROPERTY:
-      g_value_set_int (value, priv->value);
+      tmp = g_object_get_data (object, "prerequisite-property");
+      g_value_set_int (value, GPOINTER_TO_INT (tmp));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -70,13 +63,11 @@ introspection_prerequisite_set_property (GObject      *object,
                                          const GValue *value,
                                          GParamSpec   *pspec)
 {
-  IntrospectionPrerequisite *prereq = INTROSPECTION_PREREQUISITE (object);
-  IntrospectionPrerequisitePrivate *priv = GET_PRIV (prereq);
-
   switch (prop_id)
     {
     case PROP_PREREQUISITE_PROPERTY:
-      priv->value = g_value_get_int (value);
+      g_object_set_data (object, "prerequisite-property",
+                         GINT_TO_POINTER (g_value_get_int (value)));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -99,6 +90,7 @@ introspection_prerequisite_class_init (IntrospectionPrerequisiteClass *klass)
                         G_MININT,
                         G_MAXINT,
                         -1,
+                        G_PARAM_CONSTRUCT |
                         G_PARAM_READWRITE |
                         G_PARAM_STATIC_STRINGS);
 

@@ -32,6 +32,24 @@
 
 #include "configurable-plugin.h"
 
+#define TESTING_TYPE_CONFIGURABLE_PLUGIN         (testing_configurable_plugin_get_type ())
+#define TESTING_CONFIGURABLE_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_CONFIGURABLE_PLUGIN, TestingConfigurablePlugin))
+#define TESTING_CONFIGURABLE_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_CONFIGURABLE_PLUGIN, TestingConfigurablePlugin))
+#define TESTING_IS_CONFIGURABLE_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_CONFIGURABLE_PLUGIN))
+#define TESTING_IS_CONFIGURABLE_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_CONFIGURABLE_PLUGIN))
+#define TESTING_CONFIGURABLE_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_CONFIGURABLE_PLUGIN, TestingConfigurablePluginClass))
+
+typedef struct _TestingConfigurablePlugin         TestingConfigurablePlugin;
+typedef struct _TestingConfigurablePluginClass    TestingConfigurablePluginClass;
+
+struct _TestingConfigurablePlugin {
+  PeasExtensionBase parent_instance;
+};
+
+struct _TestingConfigurablePluginClass {
+  PeasExtensionBaseClass parent_class;
+};
+
 static void peas_gtk_configurable_iface_init (PeasGtkConfigurableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingConfigurablePlugin,

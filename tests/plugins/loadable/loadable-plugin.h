@@ -26,27 +26,6 @@
 
 G_BEGIN_DECLS
 
-#define TESTING_TYPE_LOADABLE_PLUGIN         (testing_loadable_plugin_get_type ())
-#define TESTING_LOADABLE_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_LOADABLE_PLUGIN, TestingLoadablePlugin))
-#define TESTING_LOADABLE_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_LOADABLE_PLUGIN, TestingLoadablePlugin))
-#define TESTING_IS_LOADABLE_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_LOADABLE_PLUGIN))
-#define TESTING_IS_LOADABLE_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_LOADABLE_PLUGIN))
-#define TESTING_LOADABLE_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_LOADABLE_PLUGIN, TestingLoadablePluginClass))
-
-typedef struct _TestingLoadablePlugin         TestingLoadablePlugin;
-typedef struct _TestingLoadablePluginClass    TestingLoadablePluginClass;
-
-struct _TestingLoadablePlugin {
-  /* Inherit from GObject and not PeasExtensionBase
-   * to check that it is possible
-   */
-  GObject parent_instance;
-};
-
-struct _TestingLoadablePluginClass {
-  PeasExtensionBaseClass parent_class;
-};
-
 /* Used by the local linkage test */
 G_MODULE_EXPORT gpointer global_symbol_clash;
 

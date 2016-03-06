@@ -46,9 +46,16 @@ static const GType ColumnTypes[] = {
 
 G_STATIC_ASSERT (G_N_ELEMENTS (ColumnTypes) == PEAS_GTK_PLUGIN_MANAGER_STORE_N_COLUMNS);
 
-typedef struct {
+
+struct _PeasGtkPluginManagerStore {
+  GtkListStore parent;
+
   PeasEngine *engine;
-} PeasGtkPluginManagerStorePrivate;
+};
+
+struct _PeasGtkPluginManagerStoreClass {
+  GtkListStoreClass parent_class;
+};
 
 /* Properties */
 enum {
@@ -59,12 +66,9 @@ enum {
 
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
-G_DEFINE_TYPE_WITH_PRIVATE (PeasGtkPluginManagerStore,
-                            peas_gtk_plugin_manager_store,
-                            GTK_TYPE_LIST_STORE)
-
-#define GET_PRIV(o) \
-  (peas_gtk_plugin_manager_store_get_instance_private (o))
+G_DEFINE_TYPE (PeasGtkPluginManagerStore,
+               peas_gtk_plugin_manager_store,
+               GTK_TYPE_LIST_STORE)
 
 static void
 update_plugin (PeasGtkPluginManagerStore *store,
@@ -222,12 +226,11 @@ peas_gtk_plugin_manager_store_set_property (GObject      *object,
                                             GParamSpec   *pspec)
 {
   PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
-  PeasGtkPluginManagerStorePrivate *priv = GET_PRIV (store);
 
   switch (prop_id)
     {
     case PROP_ENGINE:
-      priv->engine = g_value_get_object (value);
+      store->engine = g_value_get_object (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -242,12 +245,11 @@ peas_gtk_plugin_manager_store_get_property (GObject    *object,
                                             GParamSpec *pspec)
 {
   PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
-  PeasGtkPluginManagerStorePrivate *priv = GET_PRIV (store);
 
   switch (prop_id)
     {
     case PROP_ENGINE:
-      g_value_set_object (value, priv->engine);
+      g_value_set_object (value, store->engine);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -259,19 +261,18 @@ static void
 peas_gtk_plugin_manager_store_constructed (GObject *object)
 {
   PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
-  PeasGtkPluginManagerStorePrivate *priv = GET_PRIV (store);
 
-  if (priv->engine == NULL)
-    priv->engine = peas_engine_get_default ();
+  if (store->engine == NULL)
+    store->engine = peas_engine_get_default ();
 
-  g_object_ref (priv->engine);
+  g_object_ref (store->engine);
 
-  g_signal_connect_object (priv->engine,
+  g_signal_connect_object (store->engine,
                            "load-plugin",
                            G_CALLBACK (plugin_loaded_toggled_cb),
                            store,
                            G_CONNECT_AFTER);
-  g_signal_connect_object (priv->engine,
+  g_signal_connect_object (store->engine,
                            "unload-plugin",
                            G_CALLBACK (plugin_loaded_toggled_cb),
                            store,
@@ -286,9 +287,8 @@ static void
 peas_gtk_plugin_manager_store_dispose (GObject *object)
 {
   PeasGtkPluginManagerStore *store = PEAS_GTK_PLUGIN_MANAGER_STORE (object);
-  PeasGtkPluginManagerStorePrivate *priv = GET_PRIV (store);
 
-  g_clear_object (&priv->engine);
+  g_clear_object (&store->engine);
 
   G_OBJECT_CLASS (peas_gtk_plugin_manager_store_parent_class)->dispose (object);
 }
@@ -349,7 +349,6 @@ peas_gtk_plugin_manager_store_new (PeasEngine *engine)
 void
 peas_gtk_plugin_manager_store_reload (PeasGtkPluginManagerStore *store)
 {
-  PeasGtkPluginManagerStorePrivate *priv = GET_PRIV (store);
   GtkListStore *list_store;
   const GList *plugins;
   GtkTreeIter iter;
@@ -360,7 +359,7 @@ peas_gtk_plugin_manager_store_reload (PeasGtkPluginManagerStore *store)
 
   gtk_list_store_clear (list_store);
 
-  plugins = peas_engine_get_plugin_list (priv->engine);
+  plugins = peas_engine_get_plugin_list (store->engine);
 
   while (plugins != NULL)
     {
@@ -391,7 +390,6 @@ peas_gtk_plugin_manager_store_set_enabled (PeasGtkPluginManagerStore *store,
                                            GtkTreeIter               *iter,
                                            gboolean                   enabled)
 {
-  PeasGtkPluginManagerStorePrivate *priv = GET_PRIV (store);
   PeasPluginInfo *info;
 
   g_return_if_fail (PEAS_GTK_IS_PLUGIN_MANAGER_STORE (store));
@@ -403,11 +401,11 @@ peas_gtk_plugin_manager_store_set_enabled (PeasGtkPluginManagerStore *store,
 
   if (enabled)
     {
-      peas_engine_load_plugin (priv->engine, info);
+      peas_engine_load_plugin (store->engine, info);
     }
   else
     {
-      peas_engine_unload_plugin (priv->engine, info);
+      peas_engine_unload_plugin (store->engine, info);
     }
 
   /* Don't need to manually update the plugin as

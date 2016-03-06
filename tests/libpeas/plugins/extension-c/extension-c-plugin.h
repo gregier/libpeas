@@ -26,24 +26,6 @@
 
 G_BEGIN_DECLS
 
-#define TESTING_TYPE_EXTENSION_C_PLUGIN         (testing_extension_c_plugin_get_type ())
-#define TESTING_EXTENSION_C_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_EXTENSION_C_PLUGIN, TestingExtensionCPlugin))
-#define TESTING_EXTENSION_C_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_EXTENSION_C_PLUGIN, TestingExtensionCPlugin))
-#define TESTING_IS_EXTENSION_C_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_EXTENSION_C_PLUGIN))
-#define TESTING_IS_EXTENSION_C_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_EXTENSION_C_PLUGIN))
-#define TESTING_EXTENSION_C_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_EXTENSION_C_PLUGIN, TestingExtensionCPluginClass))
-
-typedef struct _TestingExtensionCPlugin         TestingExtensionCPlugin;
-typedef struct _TestingExtensionCPluginClass    TestingExtensionCPluginClass;
-
-struct _TestingExtensionCPlugin {
-  PeasExtensionBase parent_instance;
-};
-
-struct _TestingExtensionCPluginClass {
-  PeasExtensionBaseClass parent_class;
-};
-
 /* Used by the local linkage test */
 G_MODULE_EXPORT gpointer global_symbol_clash;
 

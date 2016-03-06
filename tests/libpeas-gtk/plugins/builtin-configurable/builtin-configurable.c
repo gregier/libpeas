@@ -32,6 +32,24 @@
 
 #include "builtin-configurable.h"
 
+#define TESTING_TYPE_BUILTIN_CONFIGURABLE         (testing_builtin_configurable_get_type ())
+#define TESTING_BUILTIN_CONFIGURABLE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_BUILTIN_CONFIGURABLE, TestingBuiltinConfigurable))
+#define TESTING_BUILTIN_CONFIGURABLE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_BUILTIN_CONFIGURABLE, TestingBuiltinConfigurable))
+#define TESTING_IS_BUILTIN_CONFIGURABLE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_BUILTIN_CONFIGURABLE))
+#define TESTING_IS_BUILTIN_CONFIGURABLE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_BUILTIN_CONFIGURABLE))
+#define TESTING_BUILTIN_CONFIGURABLE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_BUILTIN_CONFIGURABLE, TestingBuiltinConfigurableClass))
+
+typedef struct _TestingBuiltinConfigurable         TestingBuiltinConfigurable;
+typedef struct _TestingBuiltinConfigurableClass    TestingBuiltinConfigurableClass;
+
+struct _TestingBuiltinConfigurable {
+  PeasExtensionBase parent_instance;
+};
+
+struct _TestingBuiltinConfigurableClass {
+  PeasExtensionBaseClass parent_class;
+};
+
 static void peas_gtk_configurable_iface_init (PeasGtkConfigurableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingBuiltinConfigurable,

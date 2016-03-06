@@ -31,9 +31,25 @@
 
 #include "self-dep-plugin.h"
 
-typedef struct {
+#define TESTING_TYPE_SELF_DEP_PLUGIN         (testing_self_dep_plugin_get_type ())
+#define TESTING_SELF_DEP_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TESTING_TYPE_SELF_DEP_PLUGIN, TestingSelfDepPlugin))
+#define TESTING_SELF_DEP_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), TESTING_TYPE_SELF_DEP_PLUGIN, TestingSelfDepPlugin))
+#define TESTING_IS_SELF_DEP_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TESTING_TYPE_SELF_DEP_PLUGIN))
+#define TESTING_IS_SELF_DEP_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), TESTING_TYPE_SELF_DEP_PLUGIN))
+#define TESTING_SELF_DEP_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TESTING_TYPE_SELF_DEP_PLUGIN, TestingSelfDepPluginClass))
+
+typedef struct _TestingSelfDepPlugin         TestingSelfDepPlugin;
+typedef struct _TestingSelfDepPluginClass    TestingSelfDepPluginClass;
+
+struct _TestingSelfDepPlugin {
+  PeasExtensionBase parent_instance;
+
   GObject *object;
-} TestingSelfDepPluginPrivate;
+};
+
+struct _TestingSelfDepPluginClass {
+  PeasExtensionBaseClass parent_class;
+};
 
 static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
@@ -41,12 +57,8 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingSelfDepPlugin,
                                 testing_self_dep_plugin,
                                 PEAS_TYPE_EXTENSION_BASE,
                                 0,
-                                G_ADD_PRIVATE_DYNAMIC (TestingSelfDepPlugin)
                                 G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_TYPE_ACTIVATABLE,
                                                                peas_activatable_iface_init))
-
-#define GET_PRIV(o) \
-  (testing_self_dep_plugin_get_instance_private (o))
 
 enum {
   PROP_0,
@@ -60,12 +72,11 @@ testing_self_dep_plugin_set_property (GObject      *object,
                                       GParamSpec   *pspec)
 {
   TestingSelfDepPlugin *plugin = TESTING_SELF_DEP_PLUGIN (object);
-  TestingSelfDepPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      priv->object = g_value_get_object (value);
+      plugin->object = g_value_get_object (value);
       break;
 
     default:
@@ -81,12 +92,11 @@ testing_self_dep_plugin_get_property (GObject    *object,
                                       GParamSpec *pspec)
 {
   TestingSelfDepPlugin *plugin = TESTING_SELF_DEP_PLUGIN (object);
-  TestingSelfDepPluginPrivate *priv = GET_PRIV (plugin);
 
   switch (prop_id)
     {
     case PROP_OBJECT:
-      g_value_set_object (value, priv->object);
+      g_value_set_object (value, plugin->object);
       break;
 
     default:

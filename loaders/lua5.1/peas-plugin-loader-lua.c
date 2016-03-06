@@ -24,13 +24,15 @@
 #endif
 
 #include "peas-plugin-loader-lua.h"
-#include "libpeas/peas-plugin-info-priv.h"
 
 #include <string.h>
 
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+
+#include "libpeas/peas-plugin-info-priv.h"
+#include "libpeas/peas-plugin-loader.h"
 
 #include "peas-lua-internal.h"
 #include "peas-lua-utils.h"
@@ -39,20 +41,34 @@
 typedef void (* LgiLockFunc) (gpointer lgi_lock);
 
 
-typedef struct {
+#define PEAS_TYPE_PLUGIN_LOADER_LUA             (peas_plugin_loader_lua_get_type ())
+#define PEAS_PLUGIN_LOADER_LUA(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_PLUGIN_LOADER_LUA, PeasPluginLoaderLua))
+#define PEAS_PLUGIN_LOADER_LUA_CONST(obj)       (G_TYPE_CHECK_INSTANCE_CAST ((obj), PEAS_TYPE_PLUGIN_LOADER_LUA, PeasPluginLoaderLua const))
+#define PEAS_PLUGIN_LOADER_LUA_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), PEAS_TYPE_PLUGIN_LOADER_LUA, PeasPluginLoaderLuaClass))
+#define PEAS_IS_PLUGIN_LOADER_LUA(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PEAS_TYPE_PLUGIN_LOADER_LUA))
+#define PEAS_IS_PLUGIN_LOADER_LUA_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), PEAS_TYPE_PLUGIN_LOADER_LUA))
+#define PEAS_PLUGIN_LOADER_LUA_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), PEAS_TYPE_PLUGIN_LOADER_LUA, PeasPluginLoaderLuaClass))
+
+typedef struct _PeasPluginLoaderLua         PeasPluginLoaderLua;
+typedef struct _PeasPluginLoaderLuaClass    PeasPluginLoaderLuaClass;
+
+struct _PeasPluginLoaderLua {
+  PeasPluginLoader parent;
+
   lua_State *L;
 
   gpointer lgi_lock;
   LgiLockFunc lgi_enter_func;
   LgiLockFunc lgi_leave_func;
-} PeasPluginLoaderLuaPrivate;
+};
 
-G_DEFINE_TYPE_WITH_PRIVATE (PeasPluginLoaderLua,
-                            peas_plugin_loader_lua,
-                            PEAS_TYPE_PLUGIN_LOADER)
+struct _PeasPluginLoaderLuaClass {
+  PeasPluginLoaderClass parent_class;
+};
 
-#define GET_PRIV(o) \
-  (peas_plugin_loader_lua_get_instance_private (o))
+G_DEFINE_TYPE (PeasPluginLoaderLua,
+               peas_plugin_loader_lua,
+               PEAS_TYPE_PLUGIN_LOADER)
 
 static GQuark quark_extension_type = 0;
 
@@ -68,11 +84,10 @@ static lua_State *
 thread_enter (PeasPluginLoaderLua *lua_loader,
               PeasPluginInfo      *info)
 {
-  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
-  lua_State *L = priv->L;
+  lua_State *L = lua_loader->L;
   lua_State *NL = info->loader_data;
 
-  priv->lgi_enter_func (priv->lgi_lock);
+  lua_loader->lgi_enter_func (lua_loader->lgi_lock);
 
   if (NL != NULL)
     {
@@ -98,7 +113,6 @@ thread_leave (PeasPluginLoaderLua  *lua_loader,
               PeasPluginInfo       *info,
               lua_State           **L_ptr)
 {
-  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
   lua_State *L = info->loader_data;
 
   /* Prevent keeping the L as a usable variable */
@@ -108,7 +122,7 @@ thread_leave (PeasPluginLoaderLua  *lua_loader,
   /* The stack should always be empty */
   g_assert_cmpint (lua_gettop (L), ==, 0);
 
-  priv->lgi_leave_func (priv->lgi_lock);
+  lua_loader->lgi_leave_func (lua_loader->lgi_lock);
 }
 
 static GType
@@ -226,10 +240,9 @@ peas_plugin_loader_lua_unload (PeasPluginLoader *loader,
                                PeasPluginInfo   *info)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
-  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
-  lua_State *L = priv->L;
+  lua_State *L = lua_loader->L;
 
-  priv->lgi_enter_func (priv->lgi_lock);
+  lua_loader->lgi_enter_func (lua_loader->lgi_lock);
 
   /* The stack should always be empty */
   g_assert_cmpint (lua_gettop (info->loader_data), ==, 0);
@@ -241,21 +254,20 @@ peas_plugin_loader_lua_unload (PeasPluginLoader *loader,
 
   info->loader_data = NULL;
 
-  priv->lgi_leave_func (priv->lgi_lock);
+  lua_loader->lgi_leave_func (lua_loader->lgi_lock);
 }
 
 static void
 peas_plugin_loader_lua_garbage_collect (PeasPluginLoader *loader)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
-  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
-  lua_State *L = priv->L;
+  lua_State *L = lua_loader->L;
 
-  priv->lgi_enter_func (priv->lgi_lock);
+  lua_loader->lgi_enter_func (lua_loader->lgi_lock);
 
   peas_lua_internal_call (L, "garbage_collect", 0, LUA_TNIL);
 
-  priv->lgi_leave_func (priv->lgi_lock);
+  lua_loader->lgi_leave_func (lua_loader->lgi_lock);
 }
 
 static int
@@ -269,10 +281,9 @@ static gboolean
 peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (loader);
-  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
   lua_State *L;
 
-  priv->L = L = luaL_newstate ();
+  lua_loader->L = L = luaL_newstate ();
   if (L == NULL)
     {
       g_critical ("Failed to allocate lua_State");
@@ -298,22 +309,22 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
 
   lua_pushliteral (L, "lock");
   lua_rawget (L, -2);
-  priv->lgi_lock = lua_touserdata (L, -1);
+  lua_loader->lgi_lock = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
   lua_pushliteral (L, "enter");
   lua_rawget (L, -2);
-  priv->lgi_enter_func = lua_touserdata (L, -1);
+  lua_loader->lgi_enter_func = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
   lua_pushliteral (L, "leave");
   lua_rawget (L, -2);
-  priv->lgi_leave_func = lua_touserdata (L, -1);
+  lua_loader->lgi_leave_func = lua_touserdata (L, -1);
   lua_pop (L, 1);
 
-  if (priv->lgi_lock == NULL ||
-      priv->lgi_enter_func == NULL ||
-      priv->lgi_leave_func == NULL)
+  if (lua_loader->lgi_lock == NULL ||
+      lua_loader->lgi_enter_func == NULL ||
+      lua_loader->lgi_leave_func == NULL)
     {
       g_warning ("Failed to find 'lgi.lock', 'lgi.enter' and 'lgi.leave'");
       return FALSE;
@@ -334,7 +345,7 @@ peas_plugin_loader_lua_initialize (PeasPluginLoader *loader)
   /* Initially the lock is taken by LGI,
    * release as we are not running Lua code
    */
-  priv->lgi_leave_func (priv->lgi_lock);
+  lua_loader->lgi_leave_func (lua_loader->lgi_lock);
   return TRUE;
 }
 
@@ -353,16 +364,15 @@ static void
 peas_plugin_loader_lua_finalize (GObject *object)
 {
   PeasPluginLoaderLua *lua_loader = PEAS_PLUGIN_LOADER_LUA (object);
-  PeasPluginLoaderLuaPrivate *priv = GET_PRIV (lua_loader);
 
   /* Must take the lock as Lua code will run on lua_close
    * and another thread might be running Lua code already
    */
-  if (priv->lgi_enter_func != NULL)
-    priv->lgi_enter_func (priv->lgi_lock);
+  if (lua_loader->lgi_enter_func != NULL)
+    lua_loader->lgi_enter_func (lua_loader->lgi_lock);
 
-  peas_lua_internal_shutdown (priv->L);
-  g_clear_pointer (&priv->L, (GDestroyNotify) lua_close);
+  peas_lua_internal_shutdown (lua_loader->L);
+  g_clear_pointer (&lua_loader->L, (GDestroyNotify) lua_close);
 
   G_OBJECT_CLASS (peas_plugin_loader_lua_parent_class)->finalize (object);
 }
