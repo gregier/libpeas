@@ -322,7 +322,7 @@ plugin_list_changed (PeasEngine *engine)
   GString *msg;
   GList *pos;
 
-  if (g_getenv ("PEAS_DEBUG") == NULL)
+  if (!peas_debug_enabled ())
     return;
 
   msg = g_string_new ("Plugins: ");

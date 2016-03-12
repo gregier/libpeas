@@ -27,7 +27,8 @@
 
 G_BEGIN_DECLS
 
-void  peas_debug_init (void);
+void      peas_debug_init    (void);
+gboolean  peas_debug_enabled (void);
 
 G_END_DECLS
 

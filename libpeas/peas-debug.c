@@ -25,44 +25,50 @@
 
 #include "peas-debug.h"
 
+#include <string.h>
 
-static void
-debug_log_handler (const gchar    *log_domain,
-                   GLogLevelFlags  log_level,
-                   const gchar    *message,
-                   gpointer        user_data)
+
+static gint peas_debug_state = -1;
+
+
+gboolean
+peas_debug_enabled (void)
 {
+  g_assert (peas_debug_state == 0 || peas_debug_state == 1);
+
+  return peas_debug_state == 1;
 }
 
 void
 peas_debug_init (void)
 {
-  if (g_getenv ("PEAS_DEBUG") == NULL)
+  const gchar *domains;
+
+  domains = g_getenv ("G_MESSAGES_DEBUG");
+
+  if (domains != NULL &&
+      (strcmp (domains, "all") == 0 ||
+       strstr (domains, G_LOG_DOMAIN) != NULL))
     {
-      g_log_set_handler (G_LOG_DOMAIN,
-                         G_LOG_LEVEL_DEBUG,
-                         debug_log_handler,
-                         NULL);
+      peas_debug_state = 1;
+      return;
+    }
+
+  peas_debug_state = g_getenv ("PEAS_DEBUG") == NULL ? 0 : 1;
+  if (peas_debug_state == 0)
+    return;
+
+  if (domains == NULL)
+    {
+      g_setenv ("G_MESSAGES_DEBUG", G_LOG_DOMAIN, TRUE);
     }
   else
     {
-      const gchar *g_messages_debug;
+      gchar *new_domains;
 
-      g_messages_debug = g_getenv ("G_MESSAGES_DEBUG");
+      new_domains = g_strconcat (domains, " ", G_LOG_DOMAIN, NULL);
+      g_setenv ("G_MESSAGES_DEBUG", new_domains, TRUE);
 
-      if (g_messages_debug == NULL)
-        {
-          g_setenv ("G_MESSAGES_DEBUG", G_LOG_DOMAIN, TRUE);
-        }
-      else
-        {
-          gchar *new_g_messages_debug;
-
-          new_g_messages_debug = g_strconcat (g_messages_debug, " ",
-                                              G_LOG_DOMAIN, NULL);
-          g_setenv ("G_MESSAGES_DEBUG", new_g_messages_debug, TRUE);
-
-          g_free (new_g_messages_debug);
-        }
+      g_free (new_domains);
     }
 }
