@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-04-02 12:51+0000\n"
-"PO-Revision-Date: 2016-04-03 01:22+0200\n"
+"POT-Creation-Date: 2016-04-08 00:59+0000\n"
+"PO-Revision-Date: 2016-04-08 10:09+0200\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <fur@li.org>\n"
 "Language: fur\n"
@@ -48,7 +48,7 @@ msgstr "La dipendence '%s' no je stade cjatade"
 #: ../libpeas/peas-engine.c:1125
 #, c-format
 msgid "Dependency '%s' failed to load"
-msgstr "No si è rivâts a cjamâ la dipendence '%s' "
+msgstr "No si è rivâts a cjamâ la dipendence '%s'"
 
 #: ../libpeas/peas-engine.c:1139
 #, c-format
@@ -143,7 +143,7 @@ msgstr "Plugin"
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
 msgid "The plugin '%s' could not be loaded"
-msgstr "Il plugin '%s' a nol pues sedi cjamât"
+msgstr "Il plugin '%s' nol pues jessi cjamât"
 
 #. Keep separate because some translations do special things
 #. * for the ':' and might accidentally not keep the space after it
