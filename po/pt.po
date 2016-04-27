@@ -3,22 +3,23 @@
 # This file is distributed under the same license as the libpeas package.
 # António Lima <amrlima@gmail.com>, 2010, 2011, 2012, 2013.
 # Pedro Albuquerque <palbuquerque73@openmailbox.com>, 2015.
+# Sérgio Cardeira <cardeira.sergio@gmail.com>, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libpeas master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libpeas&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-06-07 22:38+0000\n"
-"PO-Revision-Date: 2015-06-25 09:19+0100\n"
-"Last-Translator: Pedro Albuquerque <palbuquerque73@openmailbox.com>\n"
-"Language-Team: Português <palbuquerque73@openmailbox.com>\n"
+"POT-Creation-Date: 2016-02-21 01:26+0000\n"
+"PO-Revision-Date: 2016-02-21 03:13-0100\n"
+"Last-Translator: Sérgio Cardeira <cardeira.sergio@gmail.com>\n"
+"Language-Team: Português <gnome_pt@yahoogroups.com>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Gtranslator 2.91.7\n"
 "X-Project-Style: gnome\n"
 
 #: ../data/glade/libpeas-gtk.xml.in.h:1
@@ -43,22 +44,22 @@ msgstr "Mostrar embutidos"
 msgid "Peas Gtk"
 msgstr "Peas Gtk"
 
-#: ../libpeas/peas-engine.c:976
+#: ../libpeas/peas-engine.c:1115
 #, c-format
 msgid "Dependency '%s' was not found"
 msgstr "Não foi encontrada a dependência \"%s\""
 
-#: ../libpeas/peas-engine.c:986
+#: ../libpeas/peas-engine.c:1125
 #, c-format
 msgid "Dependency '%s' failed to load"
 msgstr "Falha ao carregar a dependência \"%s\""
 
-#: ../libpeas/peas-engine.c:1000
+#: ../libpeas/peas-engine.c:1139
 #, c-format
 msgid "Plugin loader '%s' was not found"
 msgstr "O carregador de extensões \"%s\" não foi encontrado"
 
-#: ../libpeas/peas-engine.c:1012
+#: ../libpeas/peas-engine.c:1151
 #, c-format
 msgid "Failed to load"
 msgstr "Falha ao carregar"
@@ -107,10 +108,9 @@ msgstr "_Fechar"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
 msgid "_Help"
-msgstr "A_Juda"
+msgstr "A_juda"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
-#| msgid "_Preferences"
 msgid "Pr_eferences"
 msgstr "_Preferências"
 
@@ -129,7 +129,7 @@ msgstr "_Ativo"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
 msgid "E_nable All"
-msgstr "Ativar _Todos"
+msgstr "Ativar _todos"
 
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
 msgid "_Disable All"
@@ -146,9 +146,6 @@ msgstr "Extensão"
 #. Avoid having markup in a translated string
 #: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
 #, c-format
-#| msgid ""
-#| "<b>The plugin '%s' could not be loaded</b>\n"
-#| "An error occurred: %s"
 msgid "The plugin '%s' could not be loaded"
 msgstr "Não foi possível carregar a extensão \"%s\""
 
@@ -174,12 +171,10 @@ msgid "- libpeas demo application"
 msgstr "- aplicação de demonstração de libpeas"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:77
-#| msgid "_About"
 msgid "About"
 msgstr "Sobre"
 
 #: ../tests/libpeas-gtk/plugin-manager.c:82
-#| msgid "_Preferences"
 msgid "Preferences"
 msgstr "Preferências"
 
