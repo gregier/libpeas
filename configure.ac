@@ -17,7 +17,7 @@ AC_PREREQ(2.63.2)
 # <mclasen> on the stable branch, interface age == micro
 # <mclasen> on the unstable (ie master), interface age = 0
 m4_define(peas_major_version,  1)
-m4_define(peas_minor_version,  18)
+m4_define(peas_minor_version,  20)
 m4_define(peas_micro_version,  0)
 m4_define(peas_interface_age,  0)
 
