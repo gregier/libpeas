@@ -1166,7 +1166,7 @@ error:
 }
 
 /**
- * peas_engine_load_plugin: (virtual load_plugin)
+ * peas_engine_load_plugin:
  * @engine: A #PeasEngine.
  * @info: A #PeasPluginInfo.
  *
@@ -1240,7 +1240,7 @@ peas_engine_unload_plugin_real (PeasEngine     *engine,
 }
 
 /**
- * peas_engine_unload_plugin: (virtual unload_plugin)
+ * peas_engine_unload_plugin:
  * @engine: A #PeasEngine.
  * @info: A #PeasPluginInfo.
  *
