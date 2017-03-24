@@ -13,6 +13,8 @@ libintrospection_1_0_la_LIBADD = \
 	$(top_builddir)/libpeas/libpeas-1.0.la
 
 libintrospection_1_0_la_SOURCES = \
+	introspection-abstract.c		\
+	introspection-abstract.h		\
 	introspection-base.c			\
 	introspection-base.h			\
 	introspection-callable.c		\

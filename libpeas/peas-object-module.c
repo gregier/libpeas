@@ -40,6 +40,9 @@
  * of extensions.  It will be used by C extensions implementors to register
  * extension implementations from within the peas_register_types module
  * function.
+ *
+ * Since libpeas 1.22, @extension_type can be an Abstract #GType
+ * and not just an Interface #GType.
  **/
 
 typedef void (*PeasObjectModuleRegisterFunc) (PeasObjectModule *module);
@@ -57,11 +60,11 @@ enum {
 static GParamSpec *properties[N_PROPERTIES] = { NULL };
 
 typedef struct {
-  GType iface_type;
+  GType exten_type;
   PeasFactoryFunc func;
   gpointer user_data;
   GDestroyNotify destroy_func;
-} InterfaceImplementation;
+} ExtensionImplementation;
 
 struct _PeasObjectModulePrivate {
   GModule *library;
@@ -171,7 +174,7 @@ peas_object_module_unload (GTypeModule *gmodule)
 {
   PeasObjectModule *module = PEAS_OBJECT_MODULE (gmodule);
   PeasObjectModulePrivate *priv = GET_PRIV (module);
-  InterfaceImplementation *impls;
+  ExtensionImplementation *impls;
   guint i;
 
   g_module_close (priv->library);
@@ -179,7 +182,7 @@ peas_object_module_unload (GTypeModule *gmodule)
   priv->library = NULL;
   priv->register_func = NULL;
 
-  impls = (InterfaceImplementation *) priv->implementations->data;
+  impls = (ExtensionImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
     {
       if (impls[i].destroy_func != NULL)
@@ -196,7 +199,7 @@ peas_object_module_init (PeasObjectModule *module)
   PeasObjectModulePrivate *priv = GET_PRIV (module);
 
   priv->implementations = g_array_new (FALSE, FALSE,
-                                       sizeof (InterfaceImplementation));
+                                       sizeof (ExtensionImplementation));
 }
 
 static void
@@ -433,36 +436,38 @@ peas_object_module_new_embedded (const gchar *module_name,
 /**
  * peas_object_module_create_object: (skip)
  * @module: A #PeasObjectModule.
- * @interface: The #GType of the extension interface.
+ * @exten_type: The #GType of the extension.
  * @n_parameters: The number of paramteters.
  * @parameters: (array length=n_parameters): The parameters.
  *
- * Creates an object for the @interface passing @n_parameters
+ * Creates an object for the @exten_type passing @n_parameters
  * and @parameters to the #PeasFactoryFunc. If @module does
- * not provide a #PeasFactoryFunc for @interface then
+ * not provide a #PeasFactoryFunc for @exten_type then
  * %NULL is returned.
+ *
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
  *
  * Return value: (transfer full): The created object, or %NULL.
  */
 GObject *
 peas_object_module_create_object (PeasObjectModule *module,
-                                  GType             interface,
+                                  GType             exten_type,
                                   guint             n_parameters,
                                   GParameter       *parameters)
 {
   PeasObjectModulePrivate *priv = GET_PRIV (module);
   guint i;
-  InterfaceImplementation *impls;
+  ExtensionImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                        G_TYPE_IS_ABSTRACT (exten_type), NULL);
 
-  if (interface != PEAS_TYPE_PLUGIN_LOADER)
-    g_return_val_if_fail (G_TYPE_IS_INTERFACE (interface), NULL);
-
-  impls = (InterfaceImplementation *) priv->implementations->data;
+  impls = (ExtensionImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
     {
-      if (impls[i].iface_type == interface)
+      if (impls[i].exten_type == exten_type)
         return impls[i].func (n_parameters, parameters, impls[i].user_data);
     }
 
@@ -472,29 +477,31 @@ peas_object_module_create_object (PeasObjectModule *module,
 /**
  * peas_object_module_provides_object: (skip)
  * @module: A #PeasObjectModule.
- * @interface: The #GType of the extension interface.
+ * @exten_type: The #GType of the extension.
  *
- * Determines if the module provides an extension for @interface.
+ * Determines if the module provides an extension for @exten_type.
  *
- * Return value: if the module provides an extension for @interface.
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
+ *
+ * Return value: if the module provides an extension for @exten_type.
  */
 gboolean
 peas_object_module_provides_object (PeasObjectModule *module,
-                                    GType             interface)
+                                    GType             exten_type)
 {
   PeasObjectModulePrivate *priv = GET_PRIV (module);
   guint i;
-  InterfaceImplementation *impls;
+  ExtensionImplementation *impls;
 
   g_return_val_if_fail (PEAS_IS_OBJECT_MODULE (module), FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                        G_TYPE_IS_ABSTRACT (exten_type), FALSE);
 
-  if (interface != PEAS_TYPE_PLUGIN_LOADER)
-    g_return_val_if_fail (G_TYPE_IS_INTERFACE (interface), FALSE);
-
-  impls = (InterfaceImplementation *) priv->implementations->data;
+  impls = (ExtensionImplementation *) priv->implementations->data;
   for (i = 0; i < priv->implementations->len; ++i)
     {
-      if (impls[i].iface_type == interface)
+      if (impls[i].exten_type == exten_type)
         return TRUE;
     }
 
@@ -578,8 +585,8 @@ peas_object_module_get_library (PeasObjectModule *module)
 /**
  * peas_object_module_register_extension_factory:
  * @module: Your plugin's #PeasObjectModule.
- * @iface_type: The #GType of the extension interface you implement.
- * @factory_func: The #PeasFactoryFunc that will create the @iface_type
+ * @exten_type: The #GType of the extension you implement.
+ * @factory_func: The #PeasFactoryFunc that will create the @exten_type
  *   instance when requested.
  * @user_data: Data to pass to @func calls.
  * @destroy_func: A #GDestroyNotify for @user_data.
@@ -592,27 +599,29 @@ peas_object_module_get_library (PeasObjectModule *module)
  * creating native types which cannot be instantiated correctly using
  * g_object_new().  For other uses, you will usually prefer relying on
  * peas_object_module_register_extension_type().
+ *
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
  */
 void
 peas_object_module_register_extension_factory (PeasObjectModule *module,
-                                               GType             iface_type,
+                                               GType             exten_type,
                                                PeasFactoryFunc   factory_func,
                                                gpointer          user_data,
                                                GDestroyNotify    destroy_func)
 {
   PeasObjectModulePrivate *priv = GET_PRIV (module);
-  InterfaceImplementation impl = { iface_type, factory_func, user_data, destroy_func };
+  ExtensionImplementation impl = { exten_type, factory_func, user_data, destroy_func };
 
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
-  g_return_if_fail (!peas_object_module_provides_object (module, iface_type));
+  g_return_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                    G_TYPE_IS_ABSTRACT (exten_type));
+  g_return_if_fail (!peas_object_module_provides_object (module, exten_type));
   g_return_if_fail (factory_func != NULL);
-
-  if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
-    g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
 
   g_array_append_val (priv->implementations, impl);
 
-  g_debug ("Registered extension for type '%s'", g_type_name (iface_type));
+  g_debug ("Registered extension for type '%s'", g_type_name (exten_type));
 }
 
 static GObject *
@@ -620,15 +629,15 @@ create_gobject_from_type (guint       n_parameters,
                           GParameter *parameters,
                           gpointer    user_data)
 {
-  GType exten_type = GPOINTER_TO_SIZE (user_data);
+  GType impl_type = GPOINTER_TO_SIZE (user_data);
 
   /* We should be called with a "plugin-info" property appended
    * to the parameters. Let's get rid of it if the actual type
    * doesn't have such a property as it would cause a warning.
    */
-  if ((exten_type & TYPE_MISSING_PLUGIN_INFO_PROPERTY) != 0)
+  if ((impl_type & TYPE_MISSING_PLUGIN_INFO_PROPERTY) != 0)
     {
-      exten_type &= ~TYPE_MISSING_PLUGIN_INFO_PROPERTY;
+      impl_type &= ~TYPE_MISSING_PLUGIN_INFO_PROPERTY;
 
       if (n_parameters > 0)
         {
@@ -642,44 +651,45 @@ create_gobject_from_type (guint       n_parameters,
         }
     }
 
-  return G_OBJECT (g_object_newv (exten_type, n_parameters, parameters));
+  return G_OBJECT (g_object_newv (impl_type, n_parameters, parameters));
 }
 
 /**
  * peas_object_module_register_extension_type:
  * @module: Your plugin's #PeasObjectModule.
- * @iface_type: The #GType of the extension interface you implement.
- * @extension_type: The #GType of your implementation of @iface_type.
+ * @exten_type: The #GType of the extension you implement.
+ * @impl_type: The #GType of your implementation of @exten_type.
  *
- * Register an extension type which implements the extension interface
- * @iface_type.
+ * Register @impl_type as an extension which implements @extension_type.
+ *
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
  */
 void
 peas_object_module_register_extension_type (PeasObjectModule *module,
-                                            GType             iface_type,
-                                            GType             extension_type)
+                                            GType             exten_type,
+                                            GType             impl_type)
 {
   GObjectClass *cls;
   GParamSpec *pspec;
 
   g_return_if_fail (PEAS_IS_OBJECT_MODULE (module));
-  g_return_if_fail (!peas_object_module_provides_object (module, iface_type));
-  g_return_if_fail (g_type_is_a (extension_type, iface_type));
+  g_return_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                    G_TYPE_IS_ABSTRACT (exten_type));
+  g_return_if_fail (!peas_object_module_provides_object (module, exten_type));
+  g_return_if_fail (g_type_is_a (impl_type, exten_type));
 
-  if (iface_type != PEAS_TYPE_PLUGIN_LOADER)
-    g_return_if_fail (G_TYPE_IS_INTERFACE (iface_type));
-
-  cls = g_type_class_ref (extension_type);
+  cls = g_type_class_ref (impl_type);
   pspec = g_object_class_find_property (cls, "plugin-info");
 
   /* Avoid checking for this each time in the factory function */
   if (pspec == NULL || pspec->value_type != PEAS_TYPE_PLUGIN_INFO)
-    extension_type |= TYPE_MISSING_PLUGIN_INFO_PROPERTY;
+    impl_type |= TYPE_MISSING_PLUGIN_INFO_PROPERTY;
 
   peas_object_module_register_extension_factory (module,
-                                                 iface_type,
+                                                 exten_type,
                                                  create_gobject_from_type,
-                                                 GSIZE_TO_POINTER (extension_type),
+                                                 GSIZE_TO_POINTER (impl_type),
                                                  NULL);
 
   g_type_class_unref (cls);

@@ -239,44 +239,44 @@ peas_gi_argument_to_pointer (GITypeInfo     *type_info,
 }
 
 GICallableInfo *
-peas_gi_get_method_info (GType        iface_type,
+peas_gi_get_method_info (GType        gtype,
                          const gchar *method_name)
 {
   GIRepository *repo;
-  GIBaseInfo *iface_info;
+  GIBaseInfo *type_info;
   GIFunctionInfo *func_info;
 
   repo = g_irepository_get_default ();
-  iface_info = g_irepository_find_by_gtype (repo, iface_type);
-  if (iface_info == NULL)
+  type_info = g_irepository_find_by_gtype (repo, gtype);
+  if (type_info == NULL)
     {
       g_warning ("Type not found in introspection: '%s'",
-                 g_type_name (iface_type));
+                 g_type_name (gtype));
       return NULL;
     }
 
-  switch (g_base_info_get_type (iface_info))
+  switch (g_base_info_get_type (type_info))
     {
     case GI_INFO_TYPE_OBJECT:
-      func_info = g_object_info_find_method ((GIObjectInfo *) iface_info,
+      func_info = g_object_info_find_method ((GIObjectInfo *) type_info,
                                              method_name);
       break;
     case GI_INFO_TYPE_INTERFACE:
-      func_info = g_interface_info_find_method ((GIInterfaceInfo *) iface_info,
+      func_info = g_interface_info_find_method ((GIInterfaceInfo *) type_info,
                                                 method_name);
       break;
     default:
       func_info = NULL;
     }
 
-  g_base_info_unref (iface_info);
+  g_base_info_unref (type_info);
   return (GICallableInfo *) func_info;
 }
 
 gboolean
 peas_gi_method_call (GObject        *instance,
                      GICallableInfo *func_info,
-                     GType           iface_type,
+                     GType           gtype,
                      const gchar    *method_name,
                      GIArgument     *args,
                      GIArgument     *return_value)
@@ -289,8 +289,9 @@ peas_gi_method_call (GObject        *instance,
 
   g_return_val_if_fail (G_IS_OBJECT (instance), FALSE);
   g_return_val_if_fail (func_info != NULL, FALSE);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (iface_type), FALSE);
-  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, iface_type),
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (gtype) ||
+                        G_TYPE_IS_ABSTRACT (gtype), FALSE);
+  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (instance, gtype),
                         FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
@@ -311,14 +312,14 @@ peas_gi_method_call (GObject        *instance,
   n_in_args++;
 
   g_debug ("Calling '%s.%s' on '%p'",
-           g_type_name (iface_type), method_name, instance);
+           g_type_name (gtype), method_name, instance);
 
   ret = g_function_info_invoke (func_info, in_args, n_in_args, out_args,
                                 n_out_args, return_value, &error);
   if (!ret)
     {
       g_warning ("Error while calling '%s.%s': %s",
-                 g_type_name (iface_type), method_name, error->message);
+                 g_type_name (gtype), method_name, error->message);
       g_error_free (error);
     }
 

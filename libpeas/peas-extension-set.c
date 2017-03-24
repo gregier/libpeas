@@ -615,6 +615,9 @@ peas_extension_set_foreach (PeasExtensionSet            *set,
  *
  * If @engine is %NULL, then the default engine will be used.
  *
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
+ *
  * See peas_extension_set_new() for more information.
  *
  * Returns: (transfer full): a new instance of #PeasExtensionSet.
@@ -628,7 +631,8 @@ peas_extension_set_newv (PeasEngine *engine,
   PeasParameterArray construct_properties = { n_parameters, parameters };
 
   g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                        G_TYPE_IS_ABSTRACT (exten_type), NULL);
 
   return PEAS_EXTENSION_SET (g_object_new (PEAS_TYPE_EXTENSION_SET,
                                            "engine", engine,
@@ -649,6 +653,9 @@ peas_extension_set_newv (PeasEngine *engine,
  *
  * If @engine is %NULL, then the default engine will be used.
  *
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
+ *
  * See peas_extension_set_new() for more information.
  *
  * Returns: a new instance of #PeasExtensionSet.
@@ -664,7 +671,8 @@ peas_extension_set_new_valist (PeasEngine  *engine,
   PeasExtensionSet *set;
 
   g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                        G_TYPE_IS_ABSTRACT (exten_type), NULL);
 
   if (!peas_utils_valist_to_parameter_list (exten_type, first_property,
                                             var_args, &parameters,
@@ -702,6 +710,9 @@ peas_extension_set_new_valist (PeasEngine  *engine,
  *
  * If @engine is %NULL, then the default engine will be used.
  *
+ * Since libpeas 1.22, @exten_type can be an Abstract #GType
+ * and not just an Interface #GType.
+ *
  * See peas_engine_create_extension() for more information.
  *
  * Returns: a new instance of #PeasExtensionSet.
@@ -716,7 +727,8 @@ peas_extension_set_new (PeasEngine  *engine,
   PeasExtensionSet *set;
 
   g_return_val_if_fail (engine == NULL || PEAS_IS_ENGINE (engine), NULL);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                        G_TYPE_IS_ABSTRACT (exten_type), NULL);
 
   va_start (var_args, first_property);
   set = peas_extension_set_new_valist (engine, exten_type, first_property, var_args);

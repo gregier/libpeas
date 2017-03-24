@@ -12,7 +12,9 @@ noinst_LTLIBRARIES = \
 	libextension-c-missing-symbol.la
 
 libextension_c_la_SOURCES = \
-	extension-c-plugin.c	\
+	extension-c-abstract.c  \
+	extension-c-abstract.h  \
+	extension-c-plugin.c    \
 	extension-c-plugin.h
 
 libextension_c_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)

@@ -24,7 +24,11 @@ import threading
 from gi.repository import GObject, Introspection, Peas
 
 
-__all__ = [ 'ExtensionPythonPlugin' ]
+__all__ = [ 'ExtensionPythonAbstract', 'ExtensionPythonPlugin' ]
+
+
+class ExtensionPythonAbstract(Introspection.Abstract):
+    pass
 
 
 class ExtensionPythonPlugin(Introspection.Prerequisite, Peas.Activatable,

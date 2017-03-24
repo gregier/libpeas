@@ -37,8 +37,8 @@
  * loaded plugins.
  *
  * To properly use the proxy instances, you will need GObject-introspection
- * data for the #GInterface or #GObjectClass you want to use as an extension
- * point.  For instance, if you wish to use #PeasActivatable, you will need to
+ * data for the #GType you want to use as an extension point.
+ * For instance, if you wish to use #PeasActivatable, you will need to
  * put the following code excerpt in the engine initialization code, in order
  * to load the required "Peas" typelib:
  *
@@ -47,7 +47,7 @@
  *                        "Peas", "1.0", 0, NULL);
  * ]|
  *
- * You should proceed the same way for any namespace which provides interfaces
+ * You should proceed the same way for any namespace which provides types
  * you want to use as extension points. GObject-introspection data is required
  * for all the supported languages, even for C.
  *
@@ -72,7 +72,7 @@ G_DEFINE_QUARK (peas-extension-type, extension_type)
 static GICallableInfo *
 get_method_info (PeasExtension *exten,
                  const gchar   *method_name,
-                 GType         *interface)
+                 GType         *gtype)
 {
   guint i;
   GType exten_type;
@@ -85,8 +85,8 @@ get_method_info (PeasExtension *exten,
 
   if (method_info != NULL)
     {
-      if (interface != NULL)
-        *interface = exten_type;
+      if (gtype != NULL)
+        *gtype = exten_type;
 
       return method_info;
     }
@@ -99,15 +99,15 @@ get_method_info (PeasExtension *exten,
 
       if (method_info != NULL)
         {
-          if (interface != NULL)
-            *interface = interfaces[i];
+          if (gtype != NULL)
+            *gtype = interfaces[i];
 
           break;
         }
     }
 
   if (method_info == NULL)
-    g_warning ("Could not find the interface for method '%s'", method_name);
+    g_warning ("Could not find the GType for method '%s'", method_name);
 
   g_free (interfaces);
   return method_info;
@@ -117,7 +117,7 @@ get_method_info (PeasExtension *exten,
  * peas_extension_get_extension_type:
  * @exten: A #PeasExtension.
  *
- * Get the type of the extension interface of the object proxied by @exten.
+ * Get the #GType of the extension proxied by @exten.
  *
  * Return value: The #GType proxied by @exten.
  *
@@ -154,7 +154,7 @@ peas_extension_get_extension_type (PeasExtension *exten)
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2: Use the interface directly instead.
+ * Deprecated: 1.2: Use the object directly instead.
  */
 gboolean
 peas_extension_call (PeasExtension *exten,
@@ -186,7 +186,7 @@ peas_extension_call (PeasExtension *exten,
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2: Use the interface directly instead.
+ * Deprecated: 1.2: Use the object directly instead.
  */
 gboolean
 peas_extension_call_valist (PeasExtension *exten,
@@ -241,7 +241,7 @@ peas_extension_call_valist (PeasExtension *exten,
  *
  * Return value: %TRUE on successful call.
  *
- * Deprecated: 1.2: Use the interface directly instead.
+ * Deprecated: 1.2: Use the object directly instead.
  */
 gboolean
 peas_extension_callv (PeasExtension *exten,
@@ -250,19 +250,19 @@ peas_extension_callv (PeasExtension *exten,
                       GIArgument    *return_value)
 {
   GICallableInfo *method_info;
-  GType interface;
+  GType gtype;
   gboolean success;
 
   g_return_val_if_fail (PEAS_IS_EXTENSION (exten), FALSE);
   g_return_val_if_fail (method_name != NULL, FALSE);
 
-  method_info = get_method_info (exten, method_name, &interface);
+  method_info = get_method_info (exten, method_name, &gtype);
 
   /* Already warned */
   if (method_info == NULL)
     return FALSE;
 
-  success = peas_gi_method_call (G_OBJECT (exten), method_info, interface,
+  success = peas_gi_method_call (G_OBJECT (exten), method_info, gtype,
                                  method_name, args, return_value);
 
   g_base_info_unref (method_info);

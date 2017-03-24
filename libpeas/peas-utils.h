@@ -27,7 +27,7 @@
 #define PEAS_UTILS_C_LOADER_ID  0
 #define PEAS_UTILS_N_LOADERS    4
 
-gboolean  peas_utils_valist_to_parameter_list (GType         iface_type,
+gboolean  peas_utils_valist_to_parameter_list (GType         exten_type,
                                                const gchar  *first_property,
                                                va_list       var_args,
                                                GParameter  **params,

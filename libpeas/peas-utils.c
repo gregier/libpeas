@@ -91,6 +91,34 @@ add_all_prerequisites (GType      iface_type,
   g_free (prereq);
 }
 
+static GPtrArray *
+find_base_type_and_interfaces (GType  exten_type,
+                               GType *base_type)
+{
+  GPtrArray *ifaces;
+  GType *interfaces;
+  gint i;
+
+  ifaces = g_ptr_array_new ();
+  g_ptr_array_set_free_func (ifaces,
+                             (GDestroyNotify) g_type_default_interface_unref);
+
+  if (G_TYPE_IS_INTERFACE (exten_type))
+    {
+      add_all_prerequisites (exten_type, base_type, ifaces);
+      return ifaces;
+    }
+
+  interfaces = g_type_interfaces (exten_type, NULL);
+  for (i = 0; interfaces[i] != G_TYPE_INVALID; ++i)
+    add_all_prerequisites (exten_type, base_type, ifaces);
+
+  *base_type = exten_type;
+
+  g_free (interfaces);
+  return ifaces;
+}
+
 static GParamSpec *
 find_param_spec_for_prerequisites (const gchar  *name,
                                    GObjectClass *klass,
@@ -113,7 +141,7 @@ find_param_spec_for_prerequisites (const gchar  *name,
 }
 
 gboolean
-peas_utils_valist_to_parameter_list (GType         iface_type,
+peas_utils_valist_to_parameter_list (GType         exten_type,
                                      const gchar  *first_property,
                                      va_list       args,
                                      GParameter  **params,
@@ -125,12 +153,10 @@ peas_utils_valist_to_parameter_list (GType         iface_type,
   const gchar *name;
   guint n_allocated_params;
 
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (iface_type), FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
+                        G_TYPE_IS_OBJECT (exten_type), FALSE);
 
-  ifaces = g_ptr_array_new ();
-  g_ptr_array_set_free_func (ifaces,
-                             (GDestroyNotify) g_type_default_interface_unref);
-  add_all_prerequisites (iface_type, &base_type, ifaces);
+  ifaces = find_base_type_and_interfaces (exten_type, &base_type);
 
   if (base_type != G_TYPE_INVALID)
     klass = g_type_class_ref (base_type);
@@ -150,7 +176,7 @@ peas_utils_valist_to_parameter_list (GType         iface_type,
       if (!pspec)
         {
           g_warning ("%s: type '%s' has no property named '%s'",
-                     G_STRFUNC, g_type_name (iface_type), name);
+                     G_STRFUNC, g_type_name (exten_type), name);
           goto error;
         }
 

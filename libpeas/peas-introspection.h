@@ -27,7 +27,7 @@
 
 G_BEGIN_DECLS
 
-GICallableInfo  *peas_gi_get_method_info          (GType           iface_type,
+GICallableInfo  *peas_gi_get_method_info          (GType           gtype,
                                                    const gchar    *method_name);
 
 void             peas_gi_valist_to_arguments      (GICallableInfo *callable_info,
@@ -39,7 +39,7 @@ void             peas_gi_argument_to_pointer      (GITypeInfo     *type_info,
                                                    gpointer        ptr);
 gboolean         peas_gi_method_call              (GObject        *instance,
                                                    GICallableInfo *method_info,
-                                                   GType           iface_type,
+                                                   GType           gtype,
                                                    const gchar    *method_name,
                                                    GIArgument     *args,
                                                    GIArgument     *return_value);

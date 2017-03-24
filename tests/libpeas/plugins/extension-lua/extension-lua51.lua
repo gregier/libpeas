@@ -22,6 +22,10 @@ local Introspection = lgi.Introspection
 local Peas = lgi.Peas
 
 
+local ExtensionLuaAbstract =
+    Introspection.Abstract:derive('ExtensionLuaAbstract')
+
+
 local ExtensionLuaPlugin =
     Introspection.Prerequisite:derive('ExtensionLuaPlugin', {
                                       Peas.Activatable,
@@ -100,6 +104,6 @@ assert(pcall(function()
     __STRICT = true
 end))
 
-return { ExtensionLuaPlugin }
+return { ExtensionLuaAbstract, ExtensionLuaPlugin }
 
 -- ex:set ts=4 et sw=4 ai:

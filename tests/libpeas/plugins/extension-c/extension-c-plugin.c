@@ -29,11 +29,13 @@
 
 #include <libpeas/peas.h>
 
+#include "introspection-abstract.h"
 #include "introspection-base.h"
 #include "introspection-callable.h"
 #include "introspection-has-prerequisite.h"
 #include "introspection-prerequisite.h"
 
+#include "extension-c-abstract.h"
 #include "extension-c-plugin.h"
 
 /* Used by the local linkage test */
@@ -175,7 +177,12 @@ testing_extension_c_plugin_class_finalize (TestingExtensionCPluginClass *klass)
 G_MODULE_EXPORT void
 peas_register_types (PeasObjectModule *module)
 {
+  testing_extension_c_abstract_register (G_TYPE_MODULE (module));
   testing_extension_c_plugin_register_type (G_TYPE_MODULE (module));
+
+  peas_object_module_register_extension_type (module,
+                                              INTROSPECTION_TYPE_ABSTRACT,
+                                              TESTING_TYPE_EXTENSION_C_ABSTRACT);
 
   peas_object_module_register_extension_type (module,
                                               INTROSPECTION_TYPE_BASE,

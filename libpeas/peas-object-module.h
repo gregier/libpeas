@@ -95,11 +95,11 @@ PeasObjectModule   *peas_object_module_new_embedded           (const gchar      
                                                                const gchar      *symbol);
 
 GObject            *peas_object_module_create_object          (PeasObjectModule *module,
-                                                               GType             interface,
+                                                               GType             exten_type,
                                                                guint             n_parameters,
                                                                GParameter       *parameters);
 gboolean            peas_object_module_provides_object        (PeasObjectModule *module,
-                                                               GType             interface);
+                                                               GType             exten_type);
 
 const gchar        *peas_object_module_get_path               (PeasObjectModule *module);
 const gchar        *peas_object_module_get_module_name        (PeasObjectModule *module);
@@ -109,14 +109,14 @@ GModule            *peas_object_module_get_library            (PeasObjectModule 
 
 void                peas_object_module_register_extension_factory
                                                               (PeasObjectModule *module,
-                                                               GType             iface_type,
+                                                               GType             exten_type,
                                                                PeasFactoryFunc   factory_func,
                                                                gpointer          user_data,
                                                                GDestroyNotify    destroy_func);
 void                peas_object_module_register_extension_type
                                                               (PeasObjectModule *module,
-                                                               GType             iface_type,
-                                                               GType             extension_type);
+                                                               GType             exten_type,
+                                                               GType             impl_type);
 
 G_END_DECLS
 

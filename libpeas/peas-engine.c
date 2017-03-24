@@ -57,6 +57,9 @@
  *     plugins and their extensions from within your application.</para>
  *   </listitem>
  * </itemizedlist>
+ *
+ * Since libpeas 1.22, @extension_type can be an Abstract #GType
+ * and not just an Interface #GType.
  **/
 
 /* Signals */
@@ -1274,6 +1277,9 @@ peas_engine_unload_plugin (PeasEngine     *engine,
  * Returns if @info provides an extension for @extension_type.
  * If the @info is not loaded than %FALSE will always be returned.
  *
+ * Since libpeas 1.22, @extension_type can be an Abstract #GType
+ * and not just an Interface #GType.
+ *
  * Returns: if @info provides an extension for @extension_type.
  */
 gboolean
@@ -1285,7 +1291,8 @@ peas_engine_provides_extension (PeasEngine     *engine,
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), FALSE);
   g_return_val_if_fail (info != NULL, FALSE);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type) ||
+                        G_TYPE_IS_ABSTRACT (extension_type), FALSE);
 
   if (!peas_plugin_info_is_loaded (info))
     return FALSE;
@@ -1303,9 +1310,12 @@ peas_engine_provides_extension (PeasEngine     *engine,
  * @parameters: (allow-none) (array length=n_parameters):
  *   an array of #GParameter.
  *
- * If the plugin identified by @info implements the @extension_type interface,
+ * If the plugin identified by @info implements the @extension_type,
  * then this function will return a new instance of this implementation,
  * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ *
+ * Since libpeas 1.22, @extension_type can be an Abstract #GType
+ * and not just an Interface #GType.
  *
  * See peas_engine_create_extension() for more information.
  *
@@ -1324,8 +1334,9 @@ peas_engine_create_extensionv (PeasEngine     *engine,
 
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type) ||
+                        G_TYPE_IS_ABSTRACT (extension_type), NULL);
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
 
   loader = get_plugin_loader (engine, info->loader_id);
   extension = peas_plugin_loader_create_extension (loader, info, extension_type,
@@ -1351,9 +1362,12 @@ peas_engine_create_extensionv (PeasEngine     *engine,
  * @var_args: the value of the first property, followed optionally by more
  *   name/value pairs, followed by %NULL.
  *
- * If the plugin identified by @info implements the @extension_type interface,
+ * If the plugin identified by @info implements the @extension_type,
  * then this function will return a new instance of this implementation,
  * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
+ *
+ * Since libpeas 1.22, @extension_type can be an Abstract #GType
+ * and not just an Interface #GType.
  *
  * See peas_engine_create_extension() for more information.
  *
@@ -1374,7 +1388,8 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type) ||
+                        G_TYPE_IS_ABSTRACT (extension_type), FALSE);
 
   if (!peas_utils_valist_to_parameter_list (extension_type, first_property,
                                             var_args, &parameters,
@@ -1403,7 +1418,7 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
  * @...: the value of the first property, followed optionally by more
  *   name/value pairs, followed by %NULL.
  *
- * If the plugin identified by @info implements the @extension_type interface,
+ * If the plugin identified by @info implements the @extension_type,
  * then this function will return a new instance of this implementation,
  * wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
  *
@@ -1415,6 +1430,9 @@ peas_engine_create_extension_valist (PeasEngine     *engine,
  * returned wrapped in a #PeasExtension proxy, following the current libpeas
  * principle of never giving you the actual object (also because it might as
  * well *not* be an actual object).
+ *
+ * Since libpeas 1.22, @extension_type can be an Abstract #GType
+ * and not just an Interface #GType.
  *
  * Returns: a new instance of #PeasExtension wrapping
  * the @extension_type instance, or %NULL.
@@ -1432,7 +1450,8 @@ peas_engine_create_extension (PeasEngine     *engine,
   g_return_val_if_fail (PEAS_IS_ENGINE (engine), NULL);
   g_return_val_if_fail (info != NULL, NULL);
   g_return_val_if_fail (peas_plugin_info_is_loaded (info), NULL);
-  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type), FALSE);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (extension_type) ||
+                        G_TYPE_IS_ABSTRACT (extension_type), FALSE);
 
   va_start (var_args, first_property);
   exten = peas_engine_create_extension_valist (engine, info, extension_type,
