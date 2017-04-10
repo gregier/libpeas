@@ -1,0 +1,174 @@
+# Croatian translation for libpeas
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the libpeas package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libpeas\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2016-09-20 04:41+0000\n"
+"PO-Revision-Date: 2015-11-28 15:36+0000\n"
+"Last-Translator: gogo <trebelnik2@gmail.com>\n"
+"Language-Team: Croatian <hr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-04-10 15:12+0000\n"
+"X-Generator: Launchpad (build 18343)\n"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:1
+msgid "Plugin Manager"
+msgstr "Upravitelj priključcima"
+
+#. Translators: What PeasGtkPluginManagerView to use
+#: ../data/glade/libpeas-gtk.xml.in.h:3
+msgid "View"
+msgstr "Pogled"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:4
+msgid "Plugin Manager View"
+msgstr "Pogled upravitelja priključcima"
+
+#. Translators: Whether builtin plugins should appear in the view (property name)
+#: ../data/glade/libpeas-gtk.xml.in.h:6
+msgid "Show Builtin"
+msgstr "Pokaži ugrađene"
+
+#: ../data/glade/libpeas-gtk.xml.in.h:7
+msgid "Peas Gtk"
+msgstr "Peas Gtk"
+
+#: ../libpeas/peas-engine.c:1115
+#, c-format
+msgid "Dependency '%s' was not found"
+msgstr "Zavisnost '%s' nije pronađena"
+
+#: ../libpeas/peas-engine.c:1125
+#, c-format
+msgid "Dependency '%s' failed to load"
+msgstr "Zavisnost '%s' se nije učitala"
+
+#: ../libpeas/peas-engine.c:1139
+#, c-format
+msgid "Plugin loader '%s' was not found"
+msgstr "Učitač priključka '%s' nije pronađen"
+
+#: ../libpeas/peas-engine.c:1151
+#, c-format
+msgid "Failed to load"
+msgstr "Neuspjelo učitavanje"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:95
+msgid "Additional plugins must be disabled"
+msgstr "Dodatni priključci se moraju onemogućiti"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:102
+#, c-format
+msgid "The following plugins depend on '%s' and will also be disabled:"
+msgstr "Sljedeći priključci ovise o '% s', a također će biti onemogućen:"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:144
+msgid "Plugins"
+msgstr "Priključci"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:161
+msgid "An additional plugin must be disabled"
+msgstr "Dodatni priključak mora biti onemogućen"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:168
+#, c-format
+msgid ""
+"The '%s' plugin depends on the '%s' plugin.\n"
+"If you disable '%s', '%s' will also be disabled."
+msgstr ""
+"Priključak '%s' ovisi o priključku '%s'.\n"
+"Ako onemogućite '%s', '%s' će također biti onemogućen."
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:182
+msgid "_Cancel"
+msgstr "_Odustani"
+
+#: ../libpeas-gtk/peas-gtk-disable-plugins-dialog.c:184
+msgid "Disable Plugins"
+msgstr "Onemogući priključke"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:207
+msgid "There was an error displaying the help."
+msgstr "Došlo je do greške pri prikazivanju pomoći."
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:253
+msgid "_Close"
+msgstr "_Zatvori"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:265
+msgid "_Help"
+msgstr "_Pomoć"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:323
+msgid "Pr_eferences"
+msgstr "Os_obitosti"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:328
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:379
+msgid "_About"
+msgstr "_O programu"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager.c:387
+msgid "_Preferences"
+msgstr "_Osobitosti"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:351
+msgid "_Enabled"
+msgstr "_Omogućeno"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:362
+msgid "E_nable All"
+msgstr "O_mogući sve"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:366
+msgid "_Disable All"
+msgstr "_Onemogući sve"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:526
+msgid "Enabled"
+msgstr "Omogućeno"
+
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:547
+msgid "Plugin"
+msgstr "Priključak"
+
+#. Avoid having markup in a translated string
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:634
+#, c-format
+msgid "The plugin '%s' could not be loaded"
+msgstr "Priključak '%s' ne može biti učitan"
+
+#. Keep separate because some translations do special things
+#. * for the ':' and might accidentally not keep the space after it
+#. 
+#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:640
+#, c-format
+msgid "An error occurred: %s"
+msgstr "Pojavila se greška: %s"
+
+#. Translators: The directory in which the demo program was compiled at
+#: ../peas-demo/peas-demo.c:41
+msgid "Run from build directory"
+msgstr "Pokreni iz direktorija građenja"
+
+#: ../peas-demo/peas-demo.c:92
+msgid "_Quit"
+msgstr "_Izlaz"
+
+#: ../peas-demo/peas-demo.c:108
+msgid "- libpeas demo application"
+msgstr "- libpeas demo aplikacija"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:77
+msgid "About"
+msgstr "O programu"
+
+#: ../tests/libpeas-gtk/plugin-manager.c:82
+msgid "Preferences"
+msgstr "Osobitosti"
