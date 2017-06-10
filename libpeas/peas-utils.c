@@ -49,6 +49,10 @@ G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loaders) == PEAS_UTILS_N_LOADERS);
 G_STATIC_ASSERT (G_N_ELEMENTS (all_plugin_loader_modules) == PEAS_UTILS_N_LOADERS);
 G_STATIC_ASSERT (G_N_ELEMENTS (conflicting_plugin_loaders) == PEAS_UTILS_N_LOADERS);
 
+static
+G_DEFINE_QUARK (peas-extension-base-class-and-interfaces-cache,
+                exten_type_cache)
+
 static void
 add_all_prerequisites (GType      iface_type,
                        GType     *base_type,
@@ -91,51 +95,87 @@ add_all_prerequisites (GType      iface_type,
   g_free (prereq);
 }
 
-static GPtrArray *
-find_base_type_and_interfaces (GType  exten_type,
-                               GType *base_type)
+static gpointer *
+find_base_class_and_interfaces (GType exten_type)
 {
-  GPtrArray *ifaces;
-  GType *interfaces;
-  gint i;
+  GPtrArray *results;
+  GType base_type = G_TYPE_INVALID;
+  static GMutex cache_lock;
+  gpointer *data, *cached_data;
 
-  ifaces = g_ptr_array_new ();
-  g_ptr_array_set_free_func (ifaces,
-                             (GDestroyNotify) g_type_default_interface_unref);
+  results = g_ptr_array_new ();
+
+  /* This is used for the GObjectClass of the base_type */
+  g_ptr_array_add (results, NULL);
 
   if (G_TYPE_IS_INTERFACE (exten_type))
     {
-      add_all_prerequisites (exten_type, base_type, ifaces);
-      return ifaces;
+      add_all_prerequisites (exten_type, &base_type, results);
+    }
+  else
+    {
+      gint i;
+      GType *interfaces;
+
+      interfaces = g_type_interfaces (exten_type, NULL);
+      for (i = 0; interfaces[i] != G_TYPE_INVALID; ++i)
+        add_all_prerequisites (interfaces[i], &base_type, results);
+
+      base_type = exten_type;
+
+      g_free (interfaces);
     }
 
-  interfaces = g_type_interfaces (exten_type, NULL);
-  for (i = 0; interfaces[i] != G_TYPE_INVALID; ++i)
-    add_all_prerequisites (exten_type, base_type, ifaces);
+  if (base_type != G_TYPE_INVALID)
+    g_ptr_array_index (results, 0) = g_type_class_ref (base_type);
 
-  *base_type = exten_type;
+  g_ptr_array_add (results, NULL);
+  data = g_ptr_array_free (results, FALSE);
 
-  g_free (interfaces);
-  return ifaces;
+  g_mutex_lock (&cache_lock);
+  cached_data = g_type_get_qdata (exten_type, exten_type_cache_quark ());
+
+  if (cached_data != NULL)
+    {
+      g_free (data);
+      data = cached_data;
+    }
+  else
+    {
+      g_type_set_qdata (exten_type, exten_type_cache_quark (), data);
+    }
+
+  g_mutex_unlock (&cache_lock);
+  return data;
 }
 
-static GParamSpec *
+static inline gpointer *
+get_base_class_and_interfaces (GType          exten_type,
+                               GObjectClass **base_class)
+{
+  gpointer *data;
+
+  data = g_type_get_qdata (exten_type, exten_type_cache_quark ());
+  if (G_UNLIKELY (data == NULL))
+    data = find_base_class_and_interfaces (exten_type);
+
+  *base_class = data[0];
+  return &data[1];
+}
+
+static inline GParamSpec *
 find_param_spec_for_prerequisites (const gchar  *name,
-                                   GObjectClass *klass,
-                                   GPtrArray    *ifaces)
+                                   GObjectClass *base_class,
+                                   gpointer     *ifaces)
 {
   guint i;
   GParamSpec *pspec = NULL;
 
-  if (klass != NULL)
-    pspec = g_object_class_find_property (klass, name);
+  if (base_class != NULL)
+    pspec = g_object_class_find_property (base_class, name);
 
-  for (i = 0; i < ifaces->len && pspec == NULL; ++i)
-    {
-      gpointer iface = g_ptr_array_index (ifaces, i);
-
-      pspec = g_object_interface_find_property (iface, name);
-    }
+  for (i = 0; ifaces[i] != NULL && pspec == NULL; ++i)
+    pspec = g_object_interface_find_property (ifaces[i], name);
 
   return pspec;
 }
@@ -147,19 +187,15 @@ peas_utils_valist_to_parameter_list (GType         exten_type,
                                      GParameter  **params,
                                      guint        *n_params)
 {
-  GPtrArray *ifaces;
-  GType base_type = G_TYPE_INVALID;
-  GObjectClass *klass = NULL;
+  gpointer *ifaces;
+  GObjectClass *base_class;
   const gchar *name;
   guint n_allocated_params;
 
   g_return_val_if_fail (G_TYPE_IS_INTERFACE (exten_type) ||
                         G_TYPE_IS_OBJECT (exten_type), FALSE);
 
-  ifaces = find_base_type_and_interfaces (exten_type, &base_type);
-
-  if (base_type != G_TYPE_INVALID)
-    klass = g_type_class_ref (base_type);
+  ifaces = get_base_class_and_interfaces (exten_type, &base_class);
 
   *n_params = 0;
   n_allocated_params = 16;
@@ -171,7 +207,7 @@ peas_utils_valist_to_parameter_list (GType         exten_type,
       gchar *error_msg = NULL;
       GParamSpec *pspec;
 
-      pspec = find_param_spec_for_prerequisites (name, klass, ifaces);
+      pspec = find_param_spec_for_prerequisites (name, base_class, ifaces);
 
       if (!pspec)
         {
@@ -204,9 +240,6 @@ peas_utils_valist_to_parameter_list (GType         exten_type,
       name = va_arg (args, gchar*);
     }
 
-  g_ptr_array_unref (ifaces);
-  g_clear_pointer (&klass, g_type_class_unref);
-
   return TRUE;
 
 error:
@@ -215,9 +248,6 @@ error:
     g_value_unset (&(*params)[*n_params].value);
 
   g_free (*params);
-  g_ptr_array_unref (ifaces);
-  g_clear_pointer (&klass, g_type_class_unref);
-
   return FALSE;
 }
 
