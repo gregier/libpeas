@@ -1,3 +1,5 @@
+icons_dir = join_paths(get_option('datadir'), 'icons/hicolor')
+
 icon_dirs = [
   '16x16',
   '22x22',
@@ -8,6 +10,6 @@ icon_dirs = [
 
 foreach icon_dir: icon_dirs
   install_subdir(icon_dir,
-    install_dir: join_paths(get_option('datadir'), 'icons/hicolor'),
+    install_dir: icons_dir,
   )
 endforeach

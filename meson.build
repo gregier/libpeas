@@ -154,5 +154,8 @@ subdir('tests/plugins')
 
 subdir('data/glade')
 subdir('data/icons')
-subdir('docs')
 subdir('po')
+
+if get_option('enable_gtk_doc')
+  subdir('docs')
+endif

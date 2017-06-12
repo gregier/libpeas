@@ -23,6 +23,10 @@ ignore_headers = [
   'peas-utils.h',
 ]
 
+images = [
+  'images/peas-gtk-plugin-manager.png',
+]
+
 glib_prefix = libgio_dep.get_pkgconfig_variable('prefix')
 glib_docpath = join_paths(glib_prefix, 'share', 'gtk-doc', 'html')
 docpath = join_paths(get_option('datadir'), 'gtk-doc', 'html')
@@ -34,22 +38,22 @@ endif
 
 
 gnome.gtkdoc('libpeas',
-  main_xml: 'libpeas-docs.sgml',
+  main_sgml: 'libpeas-docs.sgml',
   src_dir: src_dirs,
   dependencies: doc_deps,
   gobject_typesfile: 'libpeas.types',
+  html_assets: images,
   scan_args: [
     '--rebuild-types',
     '--ignore-headers=' + ' '.join(ignore_headers),
   ],
   fixxref_args: [
-    '--html-dir=@0@'.format(docpath),
-    '--extra-dir=@0@'.format(join_paths(glib_docpath, 'glib')),
-    '--extra-dir=@0@'.format(join_paths(glib_docpath, 'gobject')),
-    '--extra-dir=@0@'.format(join_paths(glib_docpath, 'gio')),
-    '--extra-dir=@0@'.format(join_paths(glib_docpath, 'gi')),
-    '--extra-dir=@0@'.format(join_paths(glib_docpath, 'gtk3')),
+    '--html-dir=' + docpath,
+    '--extra-dir=' + join_paths(glib_docpath, 'glib'),
+    '--extra-dir=' + join_paths(glib_docpath, 'gobject'),
+    '--extra-dir=' + join_paths(glib_docpath, 'gio'),
+    '--extra-dir=' + join_paths(glib_docpath, 'gi'),
+    '--extra-dir=' + join_paths(glib_docpath, 'gtk3'),
   ],
-  install_dir: 'libpeas',
   install: true
 )
