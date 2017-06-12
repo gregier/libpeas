@@ -77,9 +77,9 @@ test_c_args = [
   '-Wswitch-enum',
   '-Wundef',
 ]
-#if get_option('buildtype') != 'plain'
-#  test_c_args += '-fstack-protector-strong'
-#endif
+if get_option('buildtype') != 'plain'
+  test_c_args += '-fstack-protector-strong'
+endif
 if get_option('enable_profiling')
   test_c_args += '-pg'
 endif

@@ -602,7 +602,7 @@ testing_extension_add (const gchar *name,
     }
   else
     {
-      g_test_add (name, TestFixture, func,
+      g_test_add (path, TestFixture, func,
                   test_setup, test_runner, test_teardown);
     }
 
