@@ -1,0 +1,6 @@
+{
+global:
+    peas_gtk_*;
+local:
+    *;
+};

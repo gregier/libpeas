@@ -120,14 +120,14 @@ main (int    argc,
 
   if (run_from_build_dir)
     {
-      g_debug ("Running from build directory: %s", PEAS_BUILDDIR);
+      g_debug ("Running from build directory: %s", BUILDDIR);
 
       /* Use the uninstalled typelibs */
-      g_irepository_prepend_search_path (PEAS_BUILDDIR "/libpeas");
-      g_irepository_prepend_search_path (PEAS_BUILDDIR "/libpeas-gtk");
+      g_irepository_prepend_search_path (BUILDDIR "/libpeas");
+      g_irepository_prepend_search_path (BUILDDIR "/libpeas-gtk");
 
       /* Use the uninstalled plugin loaders */
-      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", PEAS_BUILDDIR "/loaders", TRUE);
+      g_setenv ("PEAS_PLUGIN_LOADERS_DIR", BUILDDIR "/loaders", TRUE);
     }
 
   engine = peas_engine_get_default ();
@@ -141,11 +141,11 @@ main (int    argc,
   peas_engine_enable_loader (engine, "python3");
 
   if (run_from_build_dir)
-    peas_engine_add_search_path (engine, PEAS_BUILDDIR "/peas-demo/plugins", NULL);
+    peas_engine_add_search_path (engine, BUILDDIR "/peas-demo/plugins", NULL);
   else
     peas_engine_add_search_path (engine,
-                                 PEAS_LIBDIR "/peas-demo/plugins/",
-                                 PEAS_PREFIX "/share/peas-demo/plugins");
+                                 PACKAGE_LIBDIR "/peas-demo/plugins/",
+                                 PACKAGE_DATADIR "/peas-demo/plugins");
 
   n_windows = 0;
   main_window = create_main_window ();

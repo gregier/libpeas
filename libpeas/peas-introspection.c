@@ -124,6 +124,9 @@ peas_gi_valist_to_arguments (GICallableInfo *callable_info,
         case GI_DIRECTION_OUT:
           cur_arg->v_pointer = va_arg (va_args, gpointer);
           break;
+        default:
+          g_assert_not_reached ();
+          break;
         }
     }
 
@@ -168,6 +171,9 @@ peas_gi_split_in_and_out_arguments (GICallableInfo *callable_info,
           break;
         case GI_DIRECTION_OUT:
           out_args[(*n_out_args)++] = args[i];
+          break;
+        default:
+          g_assert_not_reached ();
           break;
         }
     }
@@ -244,7 +250,8 @@ peas_gi_get_method_info (GType        gtype,
 {
   GIRepository *repo;
   GIBaseInfo *type_info;
-  GIFunctionInfo *func_info;
+  GIInfoType info_type;
+  GIFunctionInfo *func_info = NULL;
 
   repo = g_irepository_get_default ();
   type_info = g_irepository_find_by_gtype (repo, gtype);
@@ -255,18 +262,17 @@ peas_gi_get_method_info (GType        gtype,
       return NULL;
     }
 
-  switch (g_base_info_get_type (type_info))
+  info_type = g_base_info_get_type (type_info);
+
+  if (info_type == GI_INFO_TYPE_OBJECT)
     {
-    case GI_INFO_TYPE_OBJECT:
       func_info = g_object_info_find_method ((GIObjectInfo *) type_info,
                                              method_name);
-      break;
-    case GI_INFO_TYPE_INTERFACE:
+    }
+  else if (info_type == GI_INFO_TYPE_INTERFACE)
+    {
       func_info = g_interface_info_find_method ((GIInterfaceInfo *) type_info,
                                                 method_name);
-      break;
-    default:
-      func_info = NULL;
     }
 
   g_base_info_unref (type_info);

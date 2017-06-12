@@ -183,13 +183,7 @@ main (int   argc,
   /* Automatic resource registration has issues here */
   embedded_register_resource ();
 
-  /* Only test the basics */
-  testing_extension_basic ("c");
-
-  /* We still need to add the callable tests
-   * because of peas_extension_call()
-   */
-  testing_extension_callable ("c");
+  testing_extension_setup ("c", NULL);
 
   EXTENSION_TEST (c, "embedded", embedded);
   EXTENSION_TEST (c, "embedded-missing-symbol", embedded_missing_symbol);

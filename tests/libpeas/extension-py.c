@@ -225,38 +225,21 @@ main (int   argc,
 {
   testing_init (&argc, &argv);
 
-  /* Only test the basics */
-  testing_extension_basic (PY_LOADER_STR);
+  testing_extension_setup (PY_LOADER_STR, NULL);
 
-  /* We still need to add the callable tests
-   * because of peas_extension_call()
-   */
-  testing_extension_callable (PY_LOADER_STR);
-
-#undef EXTENSION_TEST
-#undef EXTENSION_TEST_FUNC
-  
-#define EXTENSION_TEST(loader, path, func) \
-  testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
-                         (gpointer) test_extension_py_##func)
-
-#define EXTENSION_TEST_FUNC(loader, path, func) \
-  g_test_add_func (EXTENSION_TEST_NAME (loader, path), \
-                   (gpointer) test_extension_py_##func)
-
-  EXTENSION_TEST (PY_LOADER, "instance-refcount", instance_refcount);
-  EXTENSION_TEST (PY_LOADER, "activatable-subject-refcount",
+  EXTENSION_TEST (py, "instance-refcount", instance_refcount);
+  EXTENSION_TEST (py, "activatable-subject-refcount",
                   activatable_subject_refcount);
 
-  EXTENSION_TEST (PY_LOADER, "nonexistent", nonexistent);
+  EXTENSION_TEST (py, "nonexistent", nonexistent);
 
-  EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized", already_initialized);
-  EXTENSION_TEST_FUNC (PY_LOADER, "already-initialized/subprocess",
+  EXTENSION_TEST_FUNC (py, "already-initialized", already_initialized);
+  EXTENSION_TEST_FUNC (py, "already-initialized/subprocess",
                        already_initialized_subprocess);
 
 #if ENABLE_PYTHON2 && ENABLE_PYTHON3
-  EXTENSION_TEST_FUNC (PY_LOADER, "mixed-python", mixed_python);
-  EXTENSION_TEST_FUNC (PY_LOADER, "mixed-python/subprocess",
+  EXTENSION_TEST_FUNC (py, "mixed-python", mixed_python);
+  EXTENSION_TEST_FUNC (py, "mixed-python/subprocess",
                        mixed_python_subprocess);
 #endif
 

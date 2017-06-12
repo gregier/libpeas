@@ -167,29 +167,12 @@ main (int   argc,
 {
   testing_init (&argc, &argv);
 
-  /* Only test the basics */
-  testing_extension_basic ("lua5.1");
+  testing_extension_setup ("lua5.1", "lua51");
 
-  /* We still need to add the callable tests
-   * because of peas_extension_call()
-   */
-  testing_extension_callable ("lua5.1");
-
-#undef EXTENSION_TEST
-#undef EXTENSION_TEST_FUNC
-  
-#define EXTENSION_TEST(loader, path, func) \
-  testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
-                         (gpointer) test_extension_lua_##func)
-
-#define EXTENSION_TEST_FUNC(loader, path, func) \
-  g_test_add_func (EXTENSION_TEST_NAME (loader, path), \
-                   (gpointer) test_extension_lua_##func)
-
-  EXTENSION_TEST (lua5.1, "instance-refcount", instance_refcount);
-  EXTENSION_TEST (lua5.1, "activatable-subject-refcount",
+  EXTENSION_TEST (lua, "instance-refcount", instance_refcount);
+  EXTENSION_TEST (lua, "activatable-subject-refcount",
                   activatable_subject_refcount);
-  EXTENSION_TEST (lua5.1, "nonexistent", nonexistent);
+  EXTENSION_TEST (lua, "nonexistent", nonexistent);
 
   return testing_extension_run_tests ();
 }

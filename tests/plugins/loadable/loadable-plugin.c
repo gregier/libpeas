@@ -35,9 +35,6 @@ typedef struct {
   GObject *object;
 } TestingLoadablePluginPrivate;
 
-/* Used by the local linkage test */
-G_MODULE_EXPORT gpointer global_symbol_clash;
-
 static void peas_activatable_iface_init (PeasActivatableInterface *iface);
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (TestingLoadablePlugin,

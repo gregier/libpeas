@@ -191,7 +191,7 @@ peas_dirs_get_locale_dir (void)
 #elif defined (OS_OSX)
   locale_dir = dirs_os_x_get_locale_dir ();
 #else
-  locale_dir = g_build_filename (DATADIR, "locale", NULL);
+  locale_dir = g_strdup (PACKAGE_LOCALEDIR);
 #endif
 
   return locale_dir;

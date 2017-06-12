@@ -28,28 +28,23 @@
 
 G_BEGIN_DECLS
 
-void testing_extension_basic      (const gchar   *loader);
-void testing_extension_callable   (const gchar   *loader);
-void testing_extension_add        (const gchar   *path,
-                                   GTestDataFunc  func);
-
-int testing_extension_run_tests   (void);
-
-#define testing_extension_all(loader) \
-  testing_extension_basic (loader); \
-  testing_extension_callable (loader);
+void testing_extension_add       (const gchar *name,
+                                  gboolean     with_fixture,
+                                  gpointer     func);
+void testing_extension_setup     (const gchar *loader_name,
+                                  const gchar *plugin_name);
+int  testing_extension_run_tests (void);
 
 /* These macros are here to add loader-specific tests. */
-#define EXTENSION_TEST_NAME(loader, path) \
-  ("/extension/" G_STRINGIFY (loader) "/" path)
+#define _EXTENSION_TEST_ADD(loader, name, with_fixture, func) \
+  testing_extension_add (name, with_fixture, \
+                         (gpointer) test_extension_##loader##_##func)
 
-#define EXTENSION_TEST(loader, path, func) \
-  testing_extension_add (EXTENSION_TEST_NAME (loader, path), \
-                         (GTestDataFunc) test_extension_##loader##_##func)
+#define EXTENSION_TEST(loader, name, func) \
+  _EXTENSION_TEST_ADD (loader, name, TRUE, func)
 
-#define EXTENSION_TEST_FUNC(loader, path, func) \
-  g_test_add_func (EXTENSION_TEST_NAME (loader, path), \
-                   (GTestFunc) test_extension_##loader##_##func)
+#define EXTENSION_TEST_FUNC(loader, name, func) \
+  _EXTENSION_TEST_ADD (loader, name, TRUE, func)
 
 G_END_DECLS
 
